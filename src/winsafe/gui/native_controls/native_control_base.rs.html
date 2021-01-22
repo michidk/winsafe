@@ -183,13 +183,6 @@
 <span id="180">180</span>
 <span id="181">181</span>
 <span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
 
@@ -221,32 +214,29 @@
 <span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Base to all native child controls.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
-<span class="kw">struct</span> <span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span> { <span class="comment">// actual fields of NativeControlBase</span>
+<span class="kw">struct</span> <span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> { <span class="comment">// actual fields of NativeControlBase</span>
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
-	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">Op</span><span class="op">&gt;</span>, <span class="comment">// specific control options, or just a control ID</span>
 	<span class="ident">parent_events</span>: <span class="ident">Ev</span>, <span class="comment">// specific control events, which delegate to parent events</span>
 	<span class="ident">subclass_events</span>: <span class="ident">MsgEvents</span>, <span class="comment">// for control subclassing</span>
 	<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>, <span class="comment">// used only in control creation</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>,
-		<span class="ident">parent_events</span>: <span class="ident">Ev</span>, <span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">Op</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span>, <span class="ident">Op</span><span class="op">&gt;</span>
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">parent_events</span>: <span class="ident">Ev</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span>
 	{
 		<span class="self">Self</span>(
 			<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">hwnd</span>: <span class="kw">unsafe</span> { <span class="ident">HWND</span>::<span class="ident">null_handle</span>() },
-					<span class="ident">opts_id</span>,
 					<span class="ident">parent_events</span>,
 					<span class="ident">subclass_events</span>: <span class="ident">MsgEvents</span>::<span class="ident">new</span>(),
 					<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()), <span class="comment">// ref implicitly converted to pointer</span>
@@ -258,10 +248,6 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_parent_created</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="kw">let</span> <span class="ident">parent_hwnd</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ptr_parent_hwnd</span>.<span class="ident">as_ref</span>() };
 		<span class="op">!</span><span class="ident">parent_hwnd</span>.<span class="ident">is_null</span>()
-	}
-
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">opts_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">Op</span><span class="op">&gt;</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span>
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Ev</span> {

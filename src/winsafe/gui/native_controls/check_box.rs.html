@@ -191,6 +191,11 @@
 <span id="188">188</span>
 <span id="189">189</span>
 <span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -212,10 +217,11 @@
 <span class="doccomment">/// The check box is actually a variation of the ordinary</span>
 <span class="doccomment">/// [`Button`](crate::gui::Button): just a button with a specific style.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CheckBox</span> {
-	<span class="ident">base</span>: <span class="ident">Arc</span><span class="op">&lt;</span>
-		<span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">ButtonEvents</span>, <span class="ident">CheckBoxOpts</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CheckBox</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
+
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of CheckBox</span>
+	<span class="ident">base</span>: <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">ButtonEvents</span><span class="op">&gt;</span>,
+	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">CheckBoxOpts</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
@@ -223,7 +229,7 @@
 
 <span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
 	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
 	}
 }
 
@@ -232,15 +238,17 @@
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CheckBox</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">CheckBoxOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span> {
-			<span class="ident">base</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(
-				<span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-					<span class="ident">parent</span>,
-					<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">opts</span>.<span class="ident">ctrl_id</span>),
-					<span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
-				),
+		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+			<span class="ident">Arc</span>::<span class="ident">new</span>(
+				<span class="ident">Obj</span> {
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
+						<span class="ident">parent</span>,
+						<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">opts</span>.<span class="ident">ctrl_id</span>),
+					),
+					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
+				},
 			),
-		};
+		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
@@ -251,15 +259,17 @@
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be loaded from a dialog resource</span>
 	<span class="doccomment">/// with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CheckBox</span> {
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span> {
-			<span class="ident">base</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(
-				<span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-					<span class="ident">parent</span>,
-					<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
-					<span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
-				),
+		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+			<span class="ident">Arc</span>::<span class="ident">new</span>(
+				<span class="ident">Obj</span> {
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
+						<span class="ident">parent</span>,
+						<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
+					),
+					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
+				},
 			),
-		};
+		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
@@ -269,7 +279,7 @@
 
 	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">opts_id</span>() {
+			<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 				<span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">vertical_text_align</span> { <span class="ident">pos</span>.<span class="ident">y</span> <span class="op">+</span><span class="op">=</span> <span class="number">3</span>; }
@@ -277,7 +287,7 @@
 
 					<span class="kw">let</span> <span class="ident">bound_box</span> <span class="op">=</span> <span class="ident">calc_text_bound_box_check</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>)<span class="question-mark">?</span>;
 
-					<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
+					<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
 						<span class="string">&quot;BUTTON&quot;</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>), <span class="ident">pos</span>, <span class="ident">bound_box</span>,
 						<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
 						<span class="ident">opts</span>.<span class="ident">ex_window_style</span>,
@@ -287,7 +297,7 @@
 					<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">WmSetFont</span>{ <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
 					<span class="prelude-val">Ok</span>(())
 				},
-				<span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
+				<span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
 			}
 		}().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
 	}
