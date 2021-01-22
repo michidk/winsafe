@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TBPF","`ITaskbarList3::SetProgressState` `tbpFlags`."]]});
