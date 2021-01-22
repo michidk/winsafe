@@ -1,0 +1,338 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! This crate provides bindings for a selected subset of the</span>
+<span class="doccomment">//! [Win32 API](https://docs.microsoft.com/en-us/windows/win32/) in safe,</span>
+<span class="doccomment">//! idiomatic Rust. This subset includes functions, structs and constants. In</span>
+<span class="doccomment">//! addition, it provides high-level [GUI wrappers](crate::gui) for windows and</span>
+<span class="doccomment">//! controls, allowing the development of complex and scalable Win32 GUI</span>
+<span class="doccomment">//! applications, in 100% native Win32.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Functions</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! WinSafe exposes native Win32 functions using the same original name, so it</span>
+<span class="doccomment">//! should look familiar to anyone who knows Win32. The functions can be</span>
+<span class="doccomment">//! categorized in three types:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! * free functions;</span>
+<span class="doccomment">//! * static methods;</span>
+<span class="doccomment">//! * instance methods.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Free functions are those found at the root of the crate:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,ignore</span>
+<span class="doccomment">//! use winsafe::PostQuitMessage;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! PostQuitMessage(0);</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Both static and instance methods belong to handle types, like</span>
+<span class="doccomment">//! [`HDC`](crate::HDC) or [`HWND`](crate::HWND). Handle types always start with</span>
+<span class="doccomment">//! the letter &quot;H&quot;. Static methods create new handle objects, while instance</span>
+<span class="doccomment">//! methods perform operations on existing handle objects.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Take the following C code:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```c</span>
+<span class="doccomment">//! HWND h = GetDesktopWindow();</span>
+<span class="doccomment">//! SetFocus(h);</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This is the equivalent of:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,ignore</span>
+<span class="doccomment">//! use winsafe::HWND;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let h = HWND::GetDesktopWindow();</span>
+<span class="doccomment">//! h.SetFocus();</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Structs</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! WinSafe structs are internally marked with `#[repr(C)]`. They all implement</span>
+<span class="doccomment">//! `Default` trait, and size fields like `cbSize` are private and automatically</span>
+<span class="doccomment">//! initialized.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! String pointer fields are also private, and can be retrieved using a getter</span>
+<span class="doccomment">//! method with the same field name. They can be set through a setter method,</span>
+<span class="doccomment">//! which often requires a buddy [`WString`](crate::WString) buffer:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,ignore</span>
+<span class="doccomment">//! use winsafe::{WNDCLASSEX, WString};</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let mut wcx = WNDCLASSEX::default(); // cbSize automatically set</span>
+<span class="doccomment">//! println!(&quot;Class name: {}&quot;, wcx.lpszClassName()); // initially an empty string</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let buf = WString::from_str(&quot;CLASS_NAME&quot;);</span>
+<span class="doccomment">//! wcx.set_lpszClassName(&amp;buf); // set string pointer field</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Constants</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The Win32 API, being a C API, has all its constants as simple `#define`</span>
+<span class="doccomment">//! macros. This has the drawback of different constant types being allowed to</span>
+<span class="doccomment">//! be mixed.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! WinSafe, in the other hand, defines types for all constants, so they cannot</span>
+<span class="doccomment">//! be mixed unless explicitly told to. All constants are defined inside the</span>
+<span class="doccomment">//! [`co`](crate::co) module.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Most constant types are named according to their prefix. For example,</span>
+<span class="doccomment">//! [`MessageBox`](crate::HWND::MessageBox) constants, like `MB_OKCANCEL`,</span>
+<span class="doccomment">//! belong to a type called [`MB`](crate::co::MB). These types implement bitwise</span>
+<span class="doccomment">//! operator traits, like</span>
+<span class="doccomment">//! [`BirOr`](https://doc.rust-lang.org/std/ops/trait.BitOr.html) and</span>
+<span class="doccomment">//! [`BitAnd`](https://doc.rust-lang.org/std/ops/trait.BitAnd.html). They also</span>
+<span class="doccomment">//! implement [`From`](https://doc.rust-lang.org/std/convert/trait.From.html)</span>
+<span class="doccomment">//! trait conversions for the underlying integer type – usually `u32`, but it</span>
+<span class="doccomment">//! varies.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Typed constants are used in function arguments and also in struct fields.</span>
+<span class="doccomment">//! For example, struct [`WNDCLASSEX`](crate::WNDCLASSEX) has a `style` field</span>
+<span class="doccomment">//! typed as [`CS`](crate::co::CS), which restricts the possible values.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! A message box &quot;hello world&quot; in C:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```c</span>
+<span class="doccomment">//! HWND h = GetDesktopWindow();</span>
+<span class="doccomment">//! MessageBox(h, L&quot;Hello, world&quot;, L&quot;Title&quot;, MB_OKCANCEL | MB_ICONINFORMATION);</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Is equivalent to:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,ignore</span>
+<span class="doccomment">//! use winsafe::{co::MB, HWND};</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let h = HWND::GetDesktopWindow();</span>
+<span class="doccomment">//! h.MessageBox(&quot;Hello, world&quot;, &quot;Title&quot;, MB::OKCANCEL | MB::ICONINFORMATION)</span>
+<span class="doccomment">//!   .unwrap();</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Errors</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [Win32 errors](https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes),</span>
+<span class="doccomment">//! natively returned by [`GetLastError`](crate::GetLastError) function, belong</span>
+<span class="doccomment">//! to the constant type [`ERROR`](crate::co::ERROR), which also holds</span>
+<span class="doccomment">//! [`HRESULT`](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/0642cb2f-2075-4469-918c-4441e69c548a)</span>
+<span class="doccomment">//! values. Most Win32 functions return a [`WinResult`](crate::WinResult) with a</span>
+<span class="doccomment">//! possible `ERROR`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Panics will happen only in case of misuse or internal bug.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Text encoding</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Windows natively uses</span>
+<span class="doccomment">//! [Unicode UTF-16](https://docs.microsoft.com/en-us/windows/win32/learnwin32/working-with-strings).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! WinSafe uses Unicode UTF-16 internally but exposes idiomatic UTF-8,</span>
+<span class="doccomment">//! performing conversions automatically when needed, so you don&#39;t have to worry</span>
+<span class="doccomment">//! about [`OsString`](https://doc.rust-lang.org/std/ffi/struct.OsString.html)</span>
+<span class="doccomment">//! or any low-level conversion.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! However, there are cases where a string conversion is still needed, like</span>
+<span class="doccomment">//! when dealing with native Win32 structs. In such cases, you can use the</span>
+<span class="doccomment">//! [`WString`](crate::WString) struct, which is also capable of working as a</span>
+<span class="doccomment">//! buffer to receive text from Win32 calls.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # High-level GUI</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! On top of all Win32 bindings, WinSafe features a set of high-level GUI</span>
+<span class="doccomment">//! structs, which scaffolds the boilerplate needed to build windows and</span>
+<span class="doccomment">//! controls. Unless you are writing something really specific, these high-level</span>
+<span class="doccomment">//! abstractions are highly recommended.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! They can be found in the module [`gui`](crate::gui).</span>
+
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">co</span>;
+
+<span class="kw">mod</span> <span class="ident">ffi</span>;
+<span class="kw">mod</span> <span class="ident">privs</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">gui</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">msg</span>;
+
+<span class="kw">mod</span> <span class="ident">aliases</span>;
+<span class="kw">mod</span> <span class="ident">com</span>;
+<span class="kw">mod</span> <span class="ident">enums</span>;
+<span class="kw">mod</span> <span class="ident">funcs</span>;
+<span class="kw">mod</span> <span class="ident">handles</span>;
+<span class="kw">mod</span> <span class="ident">structs</span>;
+<span class="kw">mod</span> <span class="ident">w_string</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">aliases</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">com</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">enums</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">funcs</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">handles</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">structs</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">w_string</span>::<span class="ident">WString</span>;
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "winsafe";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
