@@ -395,19 +395,51 @@
 <span id="392">392</span>
 <span id="393">393</span>
 <span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetAsyncKeyState</span>, <span class="ident">PostQuitMessage</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ListViewEvents</span>, <span class="ident">MsgEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">LVCOLUMN</span>, <span class="ident">LVITEM</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">LVCOLUMN</span>, <span class="ident">LVITEM</span>, <span class="ident">NMLVKEYDOWN</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// Native</span>
@@ -435,6 +467,7 @@
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">ListViewOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListView</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ListViewOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
+		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
@@ -450,6 +483,7 @@
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
+		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>);
 		<span class="ident">new_self</span>
 	}
 
@@ -471,6 +505,7 @@
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
+		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>);
 		<span class="ident">new_self</span>
 	}
 
@@ -497,6 +532,23 @@
 				<span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
 			}
 		}().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
+	}
+
+	<span class="kw">fn</span> <span class="ident">handled_events</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) {
+		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">add_nfy</span>(<span class="ident">ctrl_id</span>, <span class="ident">co</span>::<span class="ident">NM</span>::<span class="ident">LVN_KEYDOWN</span>, {
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="ident">lvnk</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="ident">NMLVKEYDOWN</span><span class="op">&gt;</span>() };
+
+				<span class="kw">if</span> <span class="ident">lvnk</span>.<span class="ident">wVKey</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">VK</span>::<span class="ident">from</span>(<span class="string">&#39;A&#39;</span> <span class="kw">as</span> <span class="ident">u16</span>)
+					<span class="op">&amp;&amp;</span> <span class="ident">GetAsyncKeyState</span>(<span class="ident">co</span>::<span class="ident">VK</span>::<span class="ident">CONTROL</span>) <span class="comment">// Ctrl+A pressed?</span>
+				{
+					<span class="ident">me</span>.<span class="ident">set_selected_all_items</span>(<span class="bool-val">true</span>)
+						.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>));
+				}
+				<span class="prelude-val">None</span>
+			}
+		});
 	}
 
 	<span class="macro">hwnd_ctrlid_on_onsubclass</span><span class="macro">!</span>(<span class="ident">ListViewEvents</span>);
@@ -692,6 +744,18 @@
 
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg</span>::<span class="ident">LvmSetItemText</span> {
 			<span class="ident">index</span>: <span class="ident">item_index</span> <span class="kw">as</span> <span class="ident">i32</span>,
+			<span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="ident">lvi</span>,
+		})
+	}
+
+	<span class="doccomment">/// Sets or remove the selection for all items.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected_all_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">set</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lvi</span> <span class="op">=</span> <span class="ident">LVITEM</span>::<span class="ident">default</span>();
+		<span class="ident">lvi</span>.<span class="ident">stateMask</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVIS</span>::<span class="ident">SELECTED</span>;
+		<span class="kw">if</span> <span class="ident">set</span> { <span class="ident">lvi</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVIS</span>::<span class="ident">SELECTED</span>; }
+
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg</span>::<span class="ident">LvmSetItemState</span> {
+			<span class="ident">index</span>: <span class="op">-</span><span class="number">1</span>,
 			<span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="ident">lvi</span>,
 		})
 	}
