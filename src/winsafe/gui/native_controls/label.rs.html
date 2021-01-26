@@ -223,7 +223,7 @@
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">LabelOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Label</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">LabelOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
@@ -235,16 +235,16 @@
 			),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be loaded from a dialog resource</span>
 	<span class="doccomment">/// with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Label</span> {
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
@@ -256,10 +256,10 @@
 			),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {

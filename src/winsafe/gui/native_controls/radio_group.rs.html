@@ -226,7 +226,7 @@
 			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">new_radio</span>);
 		}
 
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
@@ -235,10 +235,10 @@
 			)),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `RadioGroup` object, to be loaded from a dialog</span>
@@ -258,7 +258,7 @@
 			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">RadioButton</span>::<span class="ident">new_dlg</span>(<span class="ident">parent</span>, <span class="kw-2">*</span><span class="ident">ctrl_id</span>));
 		}
 
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
@@ -267,10 +267,10 @@
 			)),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
@@ -295,7 +295,7 @@
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">first_radio</span>.<span class="ident">is_parent_created</span>() {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
 		}
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_events</span>

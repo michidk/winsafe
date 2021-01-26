@@ -380,6 +380,8 @@
 <span id="377">377</span>
 <span id="378">378</span>
 <span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -420,7 +422,7 @@
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">ListViewOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListView</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ListViewOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
@@ -432,16 +434,16 @@
 			),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `ListView` object, to be loaded from a dialog resource</span>
 	<span class="doccomment">/// with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListView</span> {
-		<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span>(
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
@@ -453,10 +455,10 @@
 			),
 		);
 		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">me</span>.<span class="ident">clone</span>();
+			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
-		<span class="ident">me</span>
+		<span class="ident">new_self</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
@@ -487,6 +489,8 @@
 	<span class="macro">hwnd_ctrlid_on_onsubclass</span><span class="macro">!</span>(<span class="ident">ListViewEvents</span>);
 
 	<span class="doccomment">/// Adds many columns at once.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Widths will be adjusted to match current system DPI.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_columns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">texts_and_widths</span>: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">u32</span>)]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
