@@ -587,6 +587,30 @@
 <span id="584">584</span>
 <span id="585">585</span>
 <span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -614,8 +638,7 @@
 }
 
 <span class="doccomment">/// [`ATOM`](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#atom)</span>
-<span class="doccomment">/// returned by</span>
-<span class="doccomment">/// [`RegisterClassEx`](crate::RegisterClassEx).</span>
+<span class="doccomment">/// returned by [`RegisterClassEx`](crate::RegisterClassEx).</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ATOM</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">u16</span>);
@@ -630,7 +653,6 @@
 <span class="doccomment">/// [`BITMAPINFOHEADER`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BITMAPINFOHEADER</span> {
 	<span class="ident">biSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">biWidth</span>: <span class="ident">i32</span>,
@@ -688,7 +710,6 @@
 <span class="doccomment">/// [`CREATESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-createstructw)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CREATESTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">lpCreateParams</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">h</span>::<span class="ident">HINSTANCE</span>,
@@ -748,13 +769,24 @@
 	<span class="kw">pub</span> <span class="ident">lfClipPrecision</span>: <span class="ident">co</span>::<span class="ident">CLIP</span>,
 	<span class="kw">pub</span> <span class="ident">lfQuality</span>: <span class="ident">co</span>::<span class="ident">QUALITY</span>,
 	<span class="kw">pub</span> <span class="ident">lfPitchAndFamily</span>: <span class="ident">co</span>::<span class="ident">PITCH</span>,
-	<span class="kw">pub</span> <span class="ident">lfFaceName</span>: [<span class="ident">u16</span>; <span class="ident">LF_FACESIZE</span>],
+	<span class="ident">lfFaceName</span>: [<span class="ident">u16</span>; <span class="ident">LF_FACESIZE</span>],
+}
+
+<span class="kw">impl</span> <span class="ident">LOGFONT</span> {
+	<span class="doccomment">/// Returns the `lfFaceName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lfFaceName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="ident">WString</span>::<span class="ident">from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">lfFaceName</span>).<span class="ident">to_string</span>()
+	}
+
+	<span class="doccomment">/// Sets the `lfFaceName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lfFaceName</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+		<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">lfFaceName</span>);
+	}
 }
 
 <span class="doccomment">/// [`MENUINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuinfo)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MENUINFO</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">fMask</span>: <span class="ident">co</span>::<span class="ident">MIM</span>,
@@ -776,7 +808,6 @@
 <span class="doccomment">/// [`MENUITEMINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuiteminfow)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MENUITEMINFO</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">fMask</span>: <span class="ident">co</span>::<span class="ident">MIIM</span>,
@@ -815,7 +846,7 @@
 <span class="doccomment">/// [`MSG`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-msg)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MSG</span> {
 	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">message</span>: <span class="ident">co</span>::<span class="ident">WM</span>,
@@ -830,14 +861,14 @@
 
 <span class="doccomment">/// [`NCCALCSIZE_PARAMS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nccalcsize_params)</span>
 <span class="doccomment">/// struct.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// You cannot directly instantiate this object.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NCCALCSIZE_PARAMS</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">rgrc</span>: [<span class="ident">RECT</span>; <span class="number">3</span>],
 	<span class="ident">lppos</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span>,
 	<span class="ident">m_lppos</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span>,
 }
-
-<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NCCALCSIZE_PARAMS</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NCCALCSIZE_PARAMS</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lppos` field.</span>
@@ -874,7 +905,6 @@
 <span class="doccomment">/// [`NONCLIENTMETRICS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nonclientmetricsw)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NONCLIENTMETRICS</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">iBorderWidth</span>: <span class="ident">i32</span>,
@@ -912,14 +942,13 @@
 <span class="doccomment">/// [`OSVERSIONINFOEX`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexw)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OSVERSIONINFOEX</span> {
 	<span class="ident">dwOSVersionInfoSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwMajorVersion</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwMinorVersion</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwBuildNumber</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwPlatformId</span>: <span class="ident">co</span>::<span class="ident">VER_PLATFORM</span>,
-	<span class="kw">pub</span> <span class="ident">szCSDVersion</span>: [<span class="ident">u16</span>; <span class="number">128</span>],
+	<span class="ident">szCSDVersion</span>: [<span class="ident">u16</span>; <span class="number">128</span>],
 	<span class="kw">pub</span> <span class="ident">wServicePackMajor</span>: <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">wServicePackMinor</span>: <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">wSuiteMask</span>: <span class="ident">co</span>::<span class="ident">VER_SUITE</span>,
@@ -935,10 +964,21 @@
 	}
 }
 
+<span class="kw">impl</span> <span class="ident">OSVERSIONINFOEX</span> {
+	<span class="doccomment">/// Returns the `szCSDVersion` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">szCSDVersion</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="ident">WString</span>::<span class="ident">from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">szCSDVersion</span>).<span class="ident">to_string</span>()
+	}
+
+	<span class="doccomment">/// Sets the `szCSDVersion` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_szCSDVersion</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+		<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">szCSDVersion</span>);
+	}
+}
+
 <span class="doccomment">/// [`PAINTSTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-paintstruct)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PAINTSTRUCT</span> {
 	<span class="kw">pub</span> <span class="ident">hdc</span>: <span class="ident">h</span>::<span class="ident">HDC</span>,
 	<span class="kw">pub</span> <span class="ident">fErase</span>: <span class="ident">u32</span>,
@@ -953,7 +993,7 @@
 <span class="doccomment">/// [`POINT`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-point)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">POINT</span> {
 	<span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">i32</span>,
@@ -969,7 +1009,7 @@
 <span class="doccomment">/// [`RECT`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-rect)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RECT</span> {
 	<span class="kw">pub</span> <span class="ident">left</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">top</span>: <span class="ident">i32</span>,
@@ -987,7 +1027,6 @@
 <span class="doccomment">/// [`SECURITY_ATTRIBUTES`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa379560(v=vs.85))</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SECURITY_ATTRIBUTES</span> {
 	<span class="ident">nLength</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lpSecurityDescriptor</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
@@ -1005,7 +1044,7 @@
 <span class="doccomment">/// [`SIZE`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-size)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SIZE</span> {
 	<span class="kw">pub</span> <span class="ident">cx</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">cy</span>: <span class="ident">i32</span>,
@@ -1021,7 +1060,6 @@
 <span class="doccomment">/// [`STYLESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-stylestruct)</span>
 <span class="doccomment">/// struct for [`WS`](crate::co::WS).</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STYLESTRUCT_WS</span> {
 	<span class="kw">pub</span> <span class="ident">styleOld</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
 	<span class="kw">pub</span> <span class="ident">styleNew</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
@@ -1030,16 +1068,29 @@
 <span class="doccomment">/// [`STYLESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-stylestruct)</span>
 <span class="doccomment">/// struct for [`WS_EX`](crate::co::WS_EX).</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STYLESTRUCT_WS_EX</span> {
 	<span class="kw">pub</span> <span class="ident">styleOld</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
 	<span class="kw">pub</span> <span class="ident">styleNew</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
 }
 
+<span class="doccomment">/// [`SYSTEMTIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SYSTEMTIME</span> {
+	<span class="kw">pub</span> <span class="ident">wYear</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wMonth</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wDayOfWeek</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wDay</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wHour</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wMinute</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wSecond</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wMilliseconds</span>: <span class="ident">u16</span>,
+}
+
 <span class="doccomment">/// [`WINDOWINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowinfo)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WINDOWINFO</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">rcWindow</span>: <span class="ident">RECT</span>,
@@ -1064,7 +1115,6 @@
 <span class="doccomment">/// [`WINDOWPLACEMENT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowplacement)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WINDOWPLACEMENT</span> {
 	<span class="ident">length</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">flags</span>: <span class="ident">co</span>::<span class="ident">WPF</span>,
@@ -1086,7 +1136,6 @@
 <span class="doccomment">/// [`WINDOWPOS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowpos)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WINDOWPOS</span> {
 	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
 	<span class="ident">hwndInsertAfter</span>: <span class="ident">isize</span>,
@@ -1121,7 +1170,6 @@
 <span class="doccomment">/// [`WNDCLASSEX`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassexw)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">co</span>::<span class="ident">CS</span>,
@@ -1135,8 +1183,8 @@
 	<span class="ident">lpszMenuName</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
 	<span class="ident">lpszClassName</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">hIconSm</span>: <span class="ident">h</span>::<span class="ident">HICON</span>,
-	<span class="ident">_markerMenuName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">_markerClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">m_lpszMenuName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {

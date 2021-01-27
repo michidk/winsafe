@@ -167,6 +167,8 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This crate provides bindings for a selected subset of the</span>
 <span class="doccomment">//! [Win32 API](https://docs.microsoft.com/en-us/windows/win32/) in safe,</span>
@@ -216,22 +218,24 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Structs</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! WinSafe structs are internally marked with `#[repr(C)]`. They all implement</span>
-<span class="doccomment">//! `Default` trait, and size fields like `cbSize` are private and automatically</span>
-<span class="doccomment">//! initialized.</span>
+<span class="doccomment">//! WinSafe structs are direct representations of Win32 structs, all being</span>
+<span class="doccomment">//! marked with `#[repr(C)]`. Fields that control the struct size, usually named</span>
+<span class="doccomment">//! `cbSize`, are not public. They are automatically filled when the struct is</span>
+<span class="doccomment">//! instantiated.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! String pointer fields are also private, and can be retrieved using a getter</span>
-<span class="doccomment">//! method with the same field name. They can be set through a setter method,</span>
-<span class="doccomment">//! which often requires a buddy [`WString`](crate::WString) buffer:</span>
+<span class="doccomment">//! Pointer fields are also private. They can only be set and retrieved with</span>
+<span class="doccomment">//! getter and setter methods. In particular, when setting a string pointer</span>
+<span class="doccomment">//! field, you need to pass a reference to a [`WString`](crate::WString) buffer,</span>
+<span class="doccomment">//! which will keep the string contents:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust,ignore</span>
 <span class="doccomment">//! use winsafe::{WNDCLASSEX, WString};</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! let mut wcx = WNDCLASSEX::default(); // cbSize automatically set</span>
-<span class="doccomment">//! println!(&quot;Class name: {}&quot;, wcx.lpszClassName()); // initially an empty string</span>
+<span class="doccomment">//! println!(&quot;Class name: {}&quot;, wcx.lpszClassName()); // retrieve; initially an empty string</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! let buf = WString::from_str(&quot;CLASS_NAME&quot;);</span>
-<span class="doccomment">//! wcx.set_lpszClassName(&amp;buf); // set string pointer field</span>
+<span class="doccomment">//! wcx.set_lpszClassName(&amp;buf); // set; pass reference to buffer</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Constants</span>
