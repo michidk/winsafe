@@ -756,13 +756,171 @@
 <span id="753">753</span>
 <span id="754">754</span>
 <span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">Message</span>, <span class="ident">Wm</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">macros</span>::<span class="ident">ref_to_lp</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span> <span class="kw">as</span> <span class="ident">s</span>;
+
+<span class="doccomment">/// [`LVM_APPROXIMATEVIEWRECT`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-approximateviewrect)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `SIZE`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LvmApproximateViewRect</span> {
+	<span class="kw">pub</span> <span class="ident">num_items</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">proposed_x</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">proposed_y</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">LvmApproximateViewRect</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">s</span>::<span class="ident">SIZE</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		<span class="ident">s</span>::<span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="ident">LOWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">HIWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">i32</span>)
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
+		<span class="ident">Wm</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_APPROXIMATEVIEWRECT</span>,
+			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">num_items</span> {
+				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
+				<span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">num</span> <span class="kw">as</span> <span class="ident">isize</span>,
+			} <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(
+				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">proposed_x</span> {
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
+					<span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>,
+				} <span class="kw">as</span> <span class="ident">u16</span>,
+				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">proposed_y</span> {
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
+					<span class="prelude-val">Some</span>(<span class="ident">y</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>,
+				} <span class="kw">as</span> <span class="ident">u16</span>,
+			) <span class="kw">as</span> <span class="ident">isize</span>,
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="doccomment">/// [`LVM_ARRANGE`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-arrange)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LvmArrange</span> {
+	<span class="kw">pub</span> <span class="ident">arrangement</span>: <span class="ident">co</span>::<span class="ident">LVA</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">LvmArrange</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		<span class="kw">match</span> <span class="ident">v</span> {
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
+		<span class="ident">Wm</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_ARRANGE</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">arrangement</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">lparam</span>: <span class="number">0</span>,
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="macro">empty_msg</span><span class="macro">!</span> { <span class="ident">LvmCancelEditLabel</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_CANCELEDITLABEL</span>,
+	<span class="doccomment">/// [`LVM_CANCELEDITLABEL`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-canceleditlabel)</span>
+	<span class="doccomment">/// message, which has no parameters.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Return type: `()`.</span>
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// [`LVM_DELETEALLITEMS`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-deleteallitems)</span>
 <span class="doccomment">/// message, which has no parameters.</span>
@@ -919,7 +1077,7 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">from</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
+		<span class="ident">co</span>::<span class="ident">LVS_EX</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
@@ -983,7 +1141,7 @@
 		<span class="ident">Wm</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_GETNEXTITEM</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span> <span class="kw">as</span> <span class="ident">usize</span>,
-			<span class="ident">lparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">relationship</span>) <span class="kw">as</span> <span class="ident">isize</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">relationship</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
 }
@@ -1027,14 +1185,14 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVIS</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="ident">co</span>::<span class="ident">LVIS</span>::<span class="ident">from</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
+		<span class="ident">co</span>::<span class="ident">LVIS</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
 		<span class="ident">Wm</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_GETITEMSTATE</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
-			<span class="ident">lparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">mask</span>) <span class="kw">as</span> <span class="ident">isize</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">mask</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
 }
@@ -1102,7 +1260,7 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LV_VIEW</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="ident">co</span>::<span class="ident">LV_VIEW</span>::<span class="ident">from</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
+		<span class="ident">co</span>::<span class="ident">LV_VIEW</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
@@ -1328,14 +1486,14 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">from</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
+		<span class="ident">co</span>::<span class="ident">LVS_EX</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
 		<span class="ident">Wm</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_SETEXTENDEDLISTVIEWSTYLE</span>,
-			<span class="ident">wparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">style</span>) <span class="kw">as</span> <span class="ident">usize</span>,
-			<span class="ident">lparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">mask</span>) <span class="kw">as</span> <span class="ident">isize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">style</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">mask</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
 }
@@ -1449,7 +1607,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
 		<span class="ident">Wm</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_SETSELECTEDCOLUMN</span>,
-			<span class="ident">wparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">index</span>) <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -1478,7 +1636,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
 		<span class="ident">Wm</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LVM_SETVIEW</span>,
-			<span class="ident">wparam</span>: <span class="ident">u32</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">view</span>) <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">view</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}

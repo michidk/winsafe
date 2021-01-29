@@ -497,7 +497,7 @@
 <span class="doccomment">/// [`GetAsyncKeyState`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>: <span class="ident">co</span>::<span class="ident">VK</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetAsyncKeyState</span>(<span class="ident">u16</span>::<span class="ident">from</span>(<span class="ident">vKey</span>) <span class="kw">as</span> <span class="ident">i32</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 }
 
 <span class="doccomment">/// [`GetDialogBaseUnits`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits)</span>
@@ -548,7 +548,7 @@
 <span class="doccomment">/// [`GetLastError`](https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetLastError</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">ERROR</span> {
-	<span class="kw">unsafe</span> { <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">from</span>(<span class="ident">kernel32</span>::<span class="ident">GetLastError</span>()) }
+	<span class="kw">unsafe</span> { <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">kernel32</span>::<span class="ident">GetLastError</span>()) }
 }
 
 <span class="doccomment">/// [`GetMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)</span>
@@ -581,7 +581,7 @@
 <span class="doccomment">/// [`GetSysColor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">s</span>::<span class="ident">COLORREF</span> {
-	<span class="ident">s</span>::<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">nIndex</span>) <span class="kw">as</span> <span class="ident">i32</span>) })
+	<span class="ident">s</span>::<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) })
 }
 
 <span class="doccomment">/// [`GetSystemMetrics`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)</span>
@@ -621,7 +621,7 @@
 		<span class="kw">match</span> <span class="ident">r</span> {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
 			<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
-			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">from</span>(<span class="ident">err</span> <span class="kw">as</span> <span class="ident">u32</span>)),
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">err</span> <span class="kw">as</span> <span class="ident">u32</span>)),
 		}
 	} <span class="kw">else</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">r</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
@@ -804,7 +804,7 @@
 <span class="doccomment">/// [`PostQuitMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postquitmessage)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>: <span class="ident">co</span>::<span class="ident">ERROR</span>) {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">PostQuitMessage</span>(<span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">nExitCode</span>) <span class="kw">as</span> <span class="ident">i32</span>) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) }
 }
 
 <span class="doccomment">/// [`RegisterClassEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw)</span>

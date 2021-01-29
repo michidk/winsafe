@@ -987,6 +987,7 @@
 <span id="984">984</span>
 <span id="985">985</span>
 <span id="986">986</span>
+<span id="987">987</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1282,7 +1283,8 @@
 	<span class="doccomment">/// [`GetDC`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// **Note:** Must be paired with a [`ReleaseDC`](crate::HWND::ReleaseDC) call.</span>
+	<span class="doccomment">/// **Note:** Must be paired with a [`ReleaseDC`](crate::HWND::ReleaseDC)</span>
+	<span class="doccomment">/// call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDC</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetDC</span>(<span class="self">self</span>.<span class="ident">ptr</span>) }) {
 			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">HDC</span> { <span class="ident">ptr</span> }),
@@ -1379,7 +1381,7 @@
 			<span class="ident">user32</span>::<span class="ident">GetUpdateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">i32</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>::<span class="ident">from</span>(<span class="ident">ret</span>)),
+			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ret</span>)),
 		}
 	}
 
@@ -1457,7 +1459,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">REGION</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>::<span class="ident">from</span>(<span class="ident">ret</span>)),
+			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ret</span>)),
 		}
 	}
 
@@ -1466,7 +1468,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgnBox</span>(<span class="self">self</span>, <span class="ident">lprc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">REGION</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetWindowRgnBox</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mut_void</span>(<span class="ident">lprc</span>)) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>::<span class="ident">from</span>(<span class="ident">ret</span>)),
+			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ret</span>)),
 		}
 	}
 
@@ -1688,7 +1690,7 @@
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">DLGID</span>::<span class="ident">from</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="ident">u16</span>)),
+			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">DLGID</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="ident">u16</span>)),
 		}
 	}
 

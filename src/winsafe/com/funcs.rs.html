@@ -88,6 +88,7 @@
 <span id="85">85</span>
 <span id="86">86</span>
 <span id="87">87</span>
+<span id="88">88</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 COM free functions.</span>
 
@@ -126,7 +127,7 @@
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span>: <span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
 
-	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">from</span>(
+	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">ole32</span>::<span class="ident">CoCreateInstance</span>(
 				<span class="ident">const_void</span>(<span class="ident">rclsid</span>),
@@ -147,7 +148,8 @@
 <span class="doccomment">/// [`CoInitializeEx`](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex)</span>
 <span class="doccomment">/// function. Returns some error codes as success status.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// **Note:** Must be paired with a [`CoUninitialize`](crate::CoUninitialize) call.</span>
+<span class="doccomment">/// **Note:** Must be paired with a [`CoUninitialize`](crate::CoUninitialize)</span>
+<span class="doccomment">/// call.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Examples</span>
 <span class="doccomment">///</span>
@@ -157,7 +159,7 @@
 <span class="doccomment">/// CoInitializeEx(COINIT::MULTITHREADED).unwrap();</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoInitializeEx</span>(<span class="ident">dwCoInit</span>: <span class="ident">co</span>::<span class="ident">COINIT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">ERROR</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">from</span>(
+	<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
 		<span class="kw">unsafe</span> { <span class="ident">ole32</span>::<span class="ident">CoInitializeEx</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">dwCoInit</span>.<span class="ident">into</span>()) }
 	);
 	<span class="kw">match</span> <span class="ident">err</span> {
