@@ -287,15 +287,6 @@
 <span id="284">284</span>
 <span id="285">285</span>
 <span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -305,7 +296,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">user32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">const_void</span>, <span class="ident">mut_void</span>, <span class="ident">ptr_as_opt</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">ptr_as_opt</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">MENUINFO</span>, <span class="ident">MENUITEMINFO</span>};
 
 <span class="macro">handle_type</span><span class="macro">!</span> {
@@ -339,19 +330,16 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CheckMenuItem</span>(<span class="self">self</span>,
 		<span class="ident">uIDCheckItem</span>: <span class="ident">IdPos</span>, <span class="ident">uCheck</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">MF</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">uCheck</span> {
-			<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">CHECKED</span>
-		} <span class="kw">else</span> {
-			<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">UNCHECKED</span>
-		};
-
-		<span class="kw">match</span> <span class="ident">uIDCheckItem</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>,
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span>,
-		}
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">CheckMenuItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uIDCheckItem</span>.<span class="ident">into</span>(), <span class="ident">flags</span>.<span class="ident">into</span>())
+			<span class="ident">user32</span>::<span class="ident">CheckMenuItem</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">uIDCheckItem</span>.<span class="ident">id_or_pos_u32</span>(),
+				(<span class="ident">uIDCheckItem</span>.<span class="ident">mf_flag</span>() <span class="op">|</span> <span class="kw">if</span> <span class="ident">uCheck</span> {
+					<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">CHECKED</span>
+				} <span class="kw">else</span> {
+					<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">UNCHECKED</span>
+				}).<span class="ident">into</span>(),
+			)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">MF</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="ident">u32</span>)),
@@ -385,13 +373,12 @@
 	<span class="doccomment">/// [`DeleteMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-deletemenu)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DeleteMenu</span>(<span class="self">self</span>, <span class="ident">uPosition</span>: <span class="ident">IdPos</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">uPosition</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>,
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span>,
-		};
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">DeleteMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uPosition</span>.<span class="ident">into</span>(), <span class="ident">flags</span>.<span class="ident">into</span>())
+			<span class="ident">user32</span>::<span class="ident">DeleteMenu</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">uPosition</span>.<span class="ident">id_or_pos_u32</span>(),
+				<span class="ident">uPosition</span>.<span class="ident">mf_flag</span>().<span class="ident">into</span>(),
+			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
@@ -417,13 +404,14 @@
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">uEnable</span>;
 		<span class="ident">flags</span> <span class="op">&amp;=</span> <span class="op">!</span>(<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>); <span class="comment">// remove if set</span>
-		<span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">uIDEnableItem</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>, <span class="comment">// set correctly</span>
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span>,
-		};
+		<span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">uIDEnableItem</span>.<span class="ident">mf_flag</span>(); <span class="comment">// set correctly</span>
 
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">EnableMenuItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uIDEnableItem</span>.<span class="ident">into</span>(), <span class="ident">flags</span>.<span class="ident">into</span>())
+			<span class="ident">user32</span>::<span class="ident">EnableMenuItem</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">uIDEnableItem</span>.<span class="ident">id_or_pos_u32</span>(),
+				<span class="ident">flags</span>.<span class="ident">into</span>(),
+			)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">MF</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="ident">u32</span>)),
@@ -433,7 +421,7 @@
 	<span class="doccomment">/// [`GetMenuInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenuinfo)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuInfo</span>(<span class="self">self</span>, <span class="ident">lpmi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MENUINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mut_void</span>(<span class="ident">lpmi</span>)) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpmi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 		}
@@ -475,15 +463,12 @@
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">uFlags</span>;
 		<span class="ident">flags</span> <span class="op">&amp;=</span> <span class="op">!</span>(<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>); <span class="comment">// remove if set</span>
-		<span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">uPosition</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>, <span class="comment">// set correctly</span>
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span>,
-		};
+		<span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">uPosition</span>.<span class="ident">mf_flag</span>(); <span class="comment">// set correctly</span>
 
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">InsertMenuW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">uPosition</span>.<span class="ident">into</span>(),
+				<span class="ident">uPosition</span>.<span class="ident">id_or_pos_u32</span>(),
 				<span class="ident">flags</span>.<span class="ident">into</span>(),
 				<span class="ident">uIDNewItem</span>.<span class="ident">into</span>(),
 				<span class="ident">lpNewItem</span>.<span class="ident">as_ptr</span>(),
@@ -499,14 +484,12 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InsertMenuItem</span>(<span class="self">self</span>,
 		<span class="ident">item</span>: <span class="ident">IdPos</span>, <span class="ident">lpmi</span>: <span class="kw-2">&amp;</span><span class="ident">MENUITEMINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="ident">byPos</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">item</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-		};
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">InsertMenuItemW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">item</span>.<span class="ident">into</span>(), <span class="ident">byPos</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">const_void</span>(<span class="ident">lpmi</span>),
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">item</span>.<span class="ident">id_or_pos_u32</span>(),
+				<span class="ident">item</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="ident">i32</span>,
+				<span class="ident">lpmi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -523,13 +506,12 @@
 	<span class="doccomment">/// [`RemoveMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-removemenu)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RemoveMenu</span>(<span class="self">self</span>, <span class="ident">uPosition</span>: <span class="ident">IdPos</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">byPos</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">uPosition</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-		};
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">RemoveMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uPosition</span>.<span class="ident">into</span>(), <span class="ident">byPos</span> <span class="kw">as</span> <span class="ident">u32</span>)
+			<span class="ident">user32</span>::<span class="ident">RemoveMenu</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">uPosition</span>.<span class="ident">id_or_pos_u32</span>(),
+				<span class="ident">uPosition</span>.<span class="ident">mf_flag</span>().<span class="ident">into</span>(),
+			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
@@ -539,7 +521,9 @@
 	<span class="doccomment">/// [`SetMenuInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setmenuinfo)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetMenuInfo</span>(<span class="self">self</span>, <span class="ident">mii</span>: <span class="kw-2">&amp;</span><span class="ident">MENUINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">const_void</span>(<span class="ident">mii</span>)) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">SetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mii</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>)
+		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 		}
@@ -550,14 +534,12 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetMenuItemInfo</span>(<span class="self">self</span>,
 		<span class="ident">item</span>: <span class="ident">IdPos</span>, <span class="ident">lpmii</span>: <span class="kw-2">&amp;</span><span class="ident">MENUITEMINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="ident">byPos</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">item</span> {
-			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-		};
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">SetMenuItemInfoW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">item</span>.<span class="ident">into</span>(), <span class="ident">byPos</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">const_void</span>(<span class="ident">lpmii</span>),
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">item</span>.<span class="ident">id_or_pos_u32</span>(),
+				<span class="ident">item</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="ident">i32</span>,
+				<span class="ident">lpmii</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),

@@ -356,6 +356,21 @@
 <span id="353">353</span>
 <span id="354">354</span>
 <span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -598,6 +613,7 @@
 <span class="doccomment">/// * [`InsertMenuItem`](crate::HMENU::InsertMenuItem) `item`;</span>
 <span class="doccomment">/// * [`RemoveMenu`](crate::HMENU::RemoveMenu) `uPosition`;</span>
 <span class="doccomment">/// * [`SetMenuItemInfo`](crate::HMENU::SetMenuItemInfo) `item`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// A command ID.</span>
 	<span class="ident">Id</span>(<span class="ident">u16</span>),
@@ -605,11 +621,25 @@
 	<span class="ident">Pos</span>(<span class="ident">u32</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">IdPos</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">u32</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">IdPos</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">match</span> <span class="ident">v</span> {
+<span class="kw">impl</span> <span class="ident">IdPos</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_by_pos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+		}
+	}
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_or_pos_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">id</span> <span class="kw">as</span> <span class="ident">u32</span>,
 			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="ident">pos</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">pos</span>,
+		}
+	}
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mf_flag</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>,
+			<span class="ident">IdPos</span>::<span class="ident">Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span>,
 		}
 	}
 }

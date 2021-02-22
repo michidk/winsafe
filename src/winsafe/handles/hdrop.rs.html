@@ -77,14 +77,12 @@
 <span id="74">74</span>
 <span id="75">75</span>
 <span id="76">76</span>
-<span id="77">77</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">shell32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">mut_void</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">POINT</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -151,7 +149,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DragQueryPoint</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">POINT</span>, <span class="ident">bool</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pt</span> <span class="op">=</span> <span class="ident">POINT</span>::<span class="ident">default</span>();
 		<span class="kw">let</span> <span class="ident">clientArea</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-			<span class="ident">shell32</span>::<span class="ident">DragQueryPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mut_void</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pt</span>))
+			<span class="ident">shell32</span>::<span class="ident">DragQueryPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>)
 		};
 		(<span class="ident">pt</span>, <span class="ident">clientArea</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
 	}

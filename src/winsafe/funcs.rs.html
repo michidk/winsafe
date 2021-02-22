@@ -464,6 +464,11 @@
 <span id="461">461</span>
 <span id="462">462</span>
 <span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -477,19 +482,22 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">comctl32</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">Message</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">const_void</span>, <span class="ident">mut_void</span>, <span class="ident">parse_multi_z_str</span>, <span class="ident">ptr_as_opt</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span> <span class="kw">as</span> <span class="ident">s</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">parse_multi_z_str</span>, <span class="ident">ptr_as_opt</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">COLORREF</span>, <span class="ident">MSG</span>, <span class="ident">OSVERSIONINFOEX</span>, <span class="ident">RECT</span>, <span class="ident">TRACKMOUSEEVENT</span>, <span class="ident">WNDCLASSEX</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// [`AdjustWindowRectEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-adjustwindowrectex)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AdjustWindowRectEx</span>(
-	<span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>::<span class="ident">RECT</span>, <span class="ident">dwStyle</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
+	<span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>, <span class="ident">dwStyle</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
 	<span class="ident">bMenu</span>: <span class="ident">bool</span>, <span class="ident">dwExStyle</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">AdjustWindowRectEx</span>(
-			<span class="ident">mut_void</span>(<span class="ident">lpRect</span>), <span class="ident">dwStyle</span>.<span class="ident">into</span>(), <span class="ident">bMenu</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">dwExStyle</span>.<span class="ident">into</span>(),
+			<span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			<span class="ident">dwStyle</span>.<span class="ident">into</span>(),
+			<span class="ident">bMenu</span> <span class="kw">as</span> <span class="ident">i32</span>,
+			<span class="ident">dwExStyle</span>.<span class="ident">into</span>(),
 		)
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -499,8 +507,8 @@
 
 <span class="doccomment">/// [`DispatchMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-dispatchmessagew)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DispatchMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">s</span>::<span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">DispatchMessageW</span>(<span class="ident">const_void</span>(<span class="ident">lpMsg</span>)) }
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DispatchMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">DispatchMessageW</span>(<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }
 }
 
 <span class="doccomment">/// [`GetAsyncKeyState`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate)</span>
@@ -562,12 +570,12 @@
 
 <span class="doccomment">/// [`GetMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>::<span class="ident">MSG</span>, <span class="ident">hWnd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>, <span class="ident">hWnd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
 	<span class="ident">wMsgFilterMin</span>: <span class="ident">u32</span>, <span class="ident">wMsgFilterMax</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">GetMessageW</span>(
-			<span class="ident">mut_void</span>(<span class="ident">lpMsg</span>),
+			<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
 			<span class="kw">match</span> <span class="ident">hWnd</span> {
 				<span class="prelude-val">Some</span>(<span class="ident">hWnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hWnd</span>.<span class="ident">ptr</span>,
 				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
@@ -589,8 +597,8 @@
 
 <span class="doccomment">/// [`GetSysColor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">s</span>::<span class="ident">COLORREF</span> {
-	<span class="ident">s</span>::<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) })
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">COLORREF</span> {
+	<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) })
 }
 
 <span class="doccomment">/// [`GetSystemMetrics`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)</span>
@@ -677,7 +685,7 @@
 
 <span class="doccomment">/// [`IsWindowsServer`](https://docs.microsoft.com/en-us/windows/win32/api/versionhelpers/nf-versionhelpers-iswindowsserver)</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindowsServer</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">osvi</span> <span class="op">=</span> <span class="ident">s</span>::<span class="ident">OSVERSIONINFOEX</span>::<span class="ident">default</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">osvi</span> <span class="op">=</span> <span class="ident">OSVERSIONINFOEX</span>::<span class="ident">default</span>();
 	<span class="ident">osvi</span>.<span class="ident">wProductType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">VER_NT</span>::<span class="ident">WORKSTATION</span>;
 	<span class="kw">let</span> <span class="ident">dwlConditionMask</span> <span class="op">=</span> <span class="ident">VerSetConditionMask</span>(
 		<span class="number">0</span>, <span class="ident">co</span>::<span class="ident">VER_MASK</span>::<span class="ident">PRODUCT_TYPE</span>, <span class="ident">co</span>::<span class="ident">VER_COND</span>::<span class="ident">EQUAL</span>);
@@ -691,7 +699,7 @@
 	<span class="ident">wMajorVersion</span>: <span class="ident">u16</span>, <span class="ident">wMinorVersion</span>: <span class="ident">u16</span>,
 	<span class="ident">wServicePackMajor</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
 {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">osvi</span> <span class="op">=</span> <span class="ident">s</span>::<span class="ident">OSVERSIONINFOEX</span>::<span class="ident">default</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">osvi</span> <span class="op">=</span> <span class="ident">OSVERSIONINFOEX</span>::<span class="ident">default</span>();
 	<span class="kw">let</span> <span class="ident">dwlConditionMask</span> <span class="op">=</span> <span class="ident">VerSetConditionMask</span>(
 		<span class="ident">VerSetConditionMask</span>(
 			<span class="ident">VerSetConditionMask</span>(<span class="number">0</span>, <span class="ident">co</span>::<span class="ident">VER_MASK</span>::<span class="ident">MAJORVERSION</span>, <span class="ident">co</span>::<span class="ident">VER_COND</span>::<span class="ident">GREATER_EQUAL</span>),
@@ -779,12 +787,12 @@
 
 <span class="doccomment">/// [`PeekMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-peekmessagew)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PeekMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>::<span class="ident">MSG</span>, <span class="ident">hWnd</span>: <span class="ident">HWND</span>,
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PeekMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>, <span class="ident">hWnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">wMsgFilterMin</span>: <span class="ident">u32</span>, <span class="ident">wMsgFilterMax</span>: <span class="ident">u32</span>, <span class="ident">wRemoveMsg</span>: <span class="ident">co</span>::<span class="ident">PM</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 {
 	<span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">PeekMessageW</span>(
-			<span class="ident">mut_void</span>(<span class="ident">lpMsg</span>),
+			<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
 			<span class="ident">hWnd</span>.<span class="ident">ptr</span>,
 			<span class="ident">wMsgFilterMin</span>,
 			<span class="ident">wMsgFilterMax</span>,
@@ -818,12 +826,12 @@
 
 <span class="doccomment">/// [`RegisterClassEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegisterClassEx</span>(<span class="ident">lpwcx</span>: <span class="kw-2">&amp;</span><span class="ident">s</span>::<span class="ident">WNDCLASSEX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">s</span>::<span class="ident">ATOM</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegisterClassEx</span>(<span class="ident">lpwcx</span>: <span class="kw-2">&amp;</span><span class="ident">WNDCLASSEX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ATOM</span><span class="op">&gt;</span> {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
-		<span class="ident">user32</span>::<span class="ident">RegisterClassExW</span>(<span class="ident">lpwcx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">s</span>::<span class="ident">WNDCLASSEX</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>)
+		<span class="ident">user32</span>::<span class="ident">RegisterClassExW</span>(<span class="ident">lpwcx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">WNDCLASSEX</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>)
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-		<span class="ident">atom</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">s</span>::<span class="ident">ATOM</span>(<span class="ident">atom</span>)),
+		<span class="ident">atom</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">ATOM</span>(<span class="ident">atom</span>)),
 	}
 }
 
@@ -858,7 +866,7 @@
 	<span class="ident">pvParam</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">fWinIni</span>: <span class="ident">co</span>::<span class="ident">SPIF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 {
 	<span class="kw">match</span> <span class="ident">user32</span>::<span class="ident">SystemParametersInfoW</span>(
-		<span class="ident">uiAction</span>.<span class="ident">into</span>(), <span class="ident">uiParam</span>, <span class="ident">mut_void</span>(<span class="ident">pvParam</span>), <span class="ident">fWinIni</span>.<span class="ident">into</span>(),
+		<span class="ident">uiAction</span>.<span class="ident">into</span>(), <span class="ident">uiParam</span>, <span class="ident">pvParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">fWinIni</span>.<span class="ident">into</span>(),
 	) {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
@@ -867,8 +875,8 @@
 
 <span class="doccomment">/// [`TrackMouseEvent`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackmouseevent)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TrackMouseEvent</span>(<span class="ident">lpEventTrack</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>::<span class="ident">TRACKMOUSEEVENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">TrackMouseEvent</span>(<span class="ident">mut_void</span>(<span class="ident">lpEventTrack</span>)) } {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TrackMouseEvent</span>(<span class="ident">lpEventTrack</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TRACKMOUSEEVENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">TrackMouseEvent</span>(<span class="ident">lpEventTrack</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) } {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 	}
@@ -876,9 +884,9 @@
 
 <span class="doccomment">/// [`TranslateMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-translatemessage)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TranslateMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">s</span>::<span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TranslateMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 	<span class="kw">unsafe</span> {
-		<span class="ident">user32</span>::<span class="ident">TranslateMessage</span>(<span class="ident">const_void</span>(<span class="ident">lpMsg</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+		<span class="ident">user32</span>::<span class="ident">TranslateMessage</span>(<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 	}
 }
 
@@ -901,12 +909,14 @@
 <span class="doccomment">/// [`VerifyVersionInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-verifyversioninfow)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">VerifyVersionInfo</span>(
-	<span class="ident">lpVersionInformation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>::<span class="ident">OSVERSIONINFOEX</span>,
+	<span class="ident">lpVersionInformation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">OSVERSIONINFOEX</span>,
 	<span class="ident">dwTypeMask</span>: <span class="ident">co</span>::<span class="ident">VER_MASK</span>, <span class="ident">dwlConditionMask</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">kernel32</span>::<span class="ident">VerifyVersionInfoW</span>(
-			<span class="ident">mut_void</span>(<span class="ident">lpVersionInformation</span>), <span class="ident">dwTypeMask</span>.<span class="ident">into</span>(), <span class="ident">dwlConditionMask</span>,
+			<span class="ident">lpVersionInformation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			<span class="ident">dwTypeMask</span>.<span class="ident">into</span>(),
+			<span class="ident">dwlConditionMask</span>,
 		)
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
