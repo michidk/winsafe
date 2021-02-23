@@ -467,8 +467,6 @@
 <span id="464">464</span>
 <span id="465">465</span>
 <span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -495,9 +493,9 @@
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">AdjustWindowRectEx</span>(
 			<span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-			<span class="ident">dwStyle</span>.<span class="ident">into</span>(),
+			<span class="ident">dwStyle</span>.<span class="number">0</span>,
 			<span class="ident">bMenu</span> <span class="kw">as</span> <span class="ident">i32</span>,
-			<span class="ident">dwExStyle</span>.<span class="ident">into</span>(),
+			<span class="ident">dwExStyle</span>.<span class="number">0</span>,
 		)
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -592,7 +590,7 @@
 <span class="doccomment">/// [`GetQueueStatus`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getqueuestatus)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetQueueStatus</span>(<span class="ident">flags</span>: <span class="ident">co</span>::<span class="ident">QS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetQueueStatus</span>(<span class="ident">flags</span>.<span class="ident">into</span>()) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetQueueStatus</span>(<span class="ident">flags</span>.<span class="number">0</span>) }
 }
 
 <span class="doccomment">/// [`GetSysColor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor)</span>
@@ -604,7 +602,7 @@
 <span class="doccomment">/// [`GetSystemMetrics`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemMetrics</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">SM</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSystemMetrics</span>(<span class="ident">nIndex</span>.<span class="ident">into</span>()) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSystemMetrics</span>(<span class="ident">nIndex</span>.<span class="number">0</span>) }
 }
 
 <span class="doccomment">/// [`HIBYTE`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632656(v=vs.85))</span>
@@ -648,8 +646,8 @@
 <span class="doccomment">/// [`IsWindows10OrGreater`](https://docs.microsoft.com/en-us/windows/win32/api/versionhelpers/nf-versionhelpers-iswindows10orgreater)</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows10OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -657,8 +655,8 @@
 <span class="doccomment">/// [`IsWindows7OrGreater`](https://docs.microsoft.com/en-us/windows/win32/api/versionhelpers/nf-versionhelpers-iswindows7orgreater)</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows7OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -667,8 +665,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows8OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -677,8 +675,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows8Point1OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -723,8 +721,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindowsVistaOrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -738,7 +736,7 @@
 <span class="doccomment">/// [`LockSetForegroundWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-locksetforegroundwindow)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LockSetForegroundWindow</span>(<span class="ident">uLockCode</span>: <span class="ident">co</span>::<span class="ident">LSFW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">LockSetForegroundWindow</span>(<span class="ident">uLockCode</span>.<span class="ident">into</span>()) } {
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">LockSetForegroundWindow</span>(<span class="ident">uLockCode</span>.<span class="number">0</span>) } {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 	}
@@ -796,7 +794,7 @@
 			<span class="ident">hWnd</span>.<span class="ident">ptr</span>,
 			<span class="ident">wMsgFilterMin</span>,
 			<span class="ident">wMsgFilterMax</span>,
-			<span class="ident">wRemoveMsg</span>.<span class="ident">into</span>(),
+			<span class="ident">wRemoveMsg</span>.<span class="number">0</span>,
 		) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 	}
 }
@@ -810,7 +808,7 @@
 	<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">PostMessageW</span>(
-			<span class="ident">hWnd</span>.<span class="ident">into</span>(), <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="ident">into</span>(), <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
+			<span class="ident">hWnd</span>.<span class="ident">into</span>(), <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
 		)
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -838,7 +836,7 @@
 <span class="doccomment">/// [`SetLastError`](https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-setlasterror)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetLastError</span>(<span class="ident">dwErrCode</span>: <span class="ident">co</span>::<span class="ident">ERROR</span>) {
-	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">SetLastError</span>(<span class="ident">dwErrCode</span>.<span class="ident">into</span>()) }
+	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">SetLastError</span>(<span class="ident">dwErrCode</span>.<span class="number">0</span>) }
 }
 
 <span class="doccomment">/// [`SetProcessDPIAware`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setprocessdpiaware)</span>
@@ -866,7 +864,7 @@
 	<span class="ident">pvParam</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">fWinIni</span>: <span class="ident">co</span>::<span class="ident">SPIF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 {
 	<span class="kw">match</span> <span class="ident">user32</span>::<span class="ident">SystemParametersInfoW</span>(
-		<span class="ident">uiAction</span>.<span class="ident">into</span>(), <span class="ident">uiParam</span>, <span class="ident">pvParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">fWinIni</span>.<span class="ident">into</span>(),
+		<span class="ident">uiAction</span>.<span class="number">0</span>, <span class="ident">uiParam</span>, <span class="ident">pvParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">fWinIni</span>.<span class="number">0</span>,
 	) {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
@@ -915,7 +913,7 @@
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">kernel32</span>::<span class="ident">VerifyVersionInfoW</span>(
 			<span class="ident">lpVersionInformation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-			<span class="ident">dwTypeMask</span>.<span class="ident">into</span>(),
+			<span class="ident">dwTypeMask</span>.<span class="number">0</span>,
 			<span class="ident">dwlConditionMask</span>,
 		)
 	} {
@@ -933,9 +931,7 @@
 	<span class="ident">ConditionMask</span>: <span class="ident">u64</span>, <span class="ident">TypeMask</span>: <span class="ident">co</span>::<span class="ident">VER_MASK</span>, <span class="ident">Condition</span>: <span class="ident">co</span>::<span class="ident">VER_COND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span>
 {
 	<span class="kw">unsafe</span> {
-		<span class="ident">kernel32</span>::<span class="ident">VerSetConditionMask</span>(
-			<span class="ident">ConditionMask</span>, <span class="ident">TypeMask</span>.<span class="ident">into</span>(), <span class="ident">Condition</span>.<span class="ident">into</span>(),
-		)
+		<span class="ident">kernel32</span>::<span class="ident">VerSetConditionMask</span>(<span class="ident">ConditionMask</span>, <span class="ident">TypeMask</span>.<span class="number">0</span>, <span class="ident">Condition</span>.<span class="number">0</span>)
 	}
 }
 </pre></div>
