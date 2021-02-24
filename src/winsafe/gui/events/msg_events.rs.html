@@ -1018,6 +1018,10 @@
 <span id="1015">1015</span>
 <span id="1016">1016</span>
 <span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
@@ -1239,11 +1243,11 @@
 	<span class="doccomment">/// let CUSTOM_MSG = WM::from(0x1234);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm(CUSTOM_MSG, {</span>
-	<span class="doccomment">///   let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///   move |parms| {</span>
-	<span class="doccomment">///     println!(&quot;HWND: {}, msg ID: {}&quot;, wnd.hwnd(), parms.msg_id);</span>
-	<span class="doccomment">///     0</span>
-	<span class="doccomment">///   }</span>
+	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
+	<span class="doccomment">///     move |parms| {</span>
+	<span class="doccomment">///         println!(&quot;HWND: {}, msg ID: {}&quot;, wnd.hwnd(), parms.msg_id);</span>
+	<span class="doccomment">///         0</span>
+	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co</span>::<span class="ident">WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
@@ -1300,10 +1304,10 @@
 	<span class="doccomment">/// let wnd: WindowMain; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_command_accel_menu(co::DLGID::CANCEL.into(), {</span>
-	<span class="doccomment">///   let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///   move || {</span>
-	<span class="doccomment">///     wnd.hwnd().PostMessage(WmClose {}).unwrap();</span>
-	<span class="doccomment">///   }</span>
+	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
+	<span class="doccomment">///     move || {</span>
+	<span class="doccomment">///         wnd.hwnd().PostMessage(WmClose {}).unwrap();</span>
+	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command_accel_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
@@ -1443,13 +1447,15 @@
 	<span class="doccomment">/// let wnd: WindowMain; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_create({</span>
-	<span class="doccomment">///   let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///   move |parms| {</span>
-	<span class="doccomment">///     println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
-	<span class="doccomment">///       wnd.hwnd(),</span>
-	<span class="doccomment">///       parms.createstruct.cx, parms.createstruct.cy);</span>
-	<span class="doccomment">///     0</span>
-	<span class="doccomment">///   }</span>
+	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
+	<span class="doccomment">///     move |parms| {</span>
+	<span class="doccomment">///         println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
+	<span class="doccomment">///             wnd.hwnd(),</span>
+	<span class="doccomment">///             parms.createstruct.cx,</span>
+	<span class="doccomment">///             parms.createstruct.cy,</span>
+	<span class="doccomment">///         );</span>
+	<span class="doccomment">///         0</span>
+	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_create</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
@@ -1946,12 +1952,14 @@
 		<span class="doccomment">/// let wnd: WindowMain; // initialize it somewhere...</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_size({</span>
-		<span class="doccomment">///   let wnd = wnd.clone(); // pass into the closure</span>
-		<span class="doccomment">///   move |parms| {</span>
-		<span class="doccomment">///     println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
-		<span class="doccomment">///       wnd.hwnd(),</span>
-		<span class="doccomment">///       parms.width, parms.height);</span>
-		<span class="doccomment">///   }</span>
+		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
+		<span class="doccomment">///     move |parms| {</span>
+		<span class="doccomment">///         println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
+		<span class="doccomment">///             wnd.hwnd(),</span>
+		<span class="doccomment">///             parms.width,</span>
+		<span class="doccomment">///             parms.height,</span>
+		<span class="doccomment">///         );</span>
+		<span class="doccomment">///     }</span>
 		<span class="doccomment">/// });</span>
 		<span class="doccomment">/// ```</span>
 	}

@@ -213,14 +213,6 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
@@ -266,42 +258,38 @@
 <span class="doccomment">/// use winsafe::{gui, WinResult};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// fn main() {</span>
-<span class="doccomment">///   let my_main = MyMain::new();</span>
-<span class="doccomment">///   if let Err(e) = my_main.run() {</span>
-<span class="doccomment">///     eprintln!(&quot;{}&quot;, e);</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///     let my_main = MyMain::new();</span>
+<span class="doccomment">///     if let Err(e) = my_main.wnd.run_main(None) {</span>
+<span class="doccomment">///         eprintln!(&quot;{}&quot;, e);</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// pub struct MyMain {</span>
-<span class="doccomment">///   wnd: gui::CustomMain,</span>
+<span class="doccomment">///     wnd: gui::CustomMain,</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// impl MyMain {</span>
-<span class="doccomment">///   pub fn new() -&gt; MyMain {</span>
-<span class="doccomment">///     let wnd = gui::CustomMain::new(</span>
-<span class="doccomment">///       gui::CustomMainOpts {</span>
-<span class="doccomment">///         title: &quot;My window&quot;.to_owned(),</span>
-<span class="doccomment">///         ..Default::default()</span>
-<span class="doccomment">///       },</span>
-<span class="doccomment">///     );</span>
+<span class="doccomment">///     pub fn new() -&gt; MyMain {</span>
+<span class="doccomment">///         let wnd = gui::CustomMain::new(</span>
+<span class="doccomment">///             gui::CustomMainOpts {</span>
+<span class="doccomment">///                 title: &quot;My window&quot;.to_owned(),</span>
+<span class="doccomment">///                 ..Default::default()</span>
+<span class="doccomment">///             },</span>
+<span class="doccomment">///         );</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///     let new_self = Self { wnd };</span>
-<span class="doccomment">///     new_self.events();</span>
-<span class="doccomment">///     new_self</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///         let new_self = Self { wnd };</span>
+<span class="doccomment">///         new_self.events();</span>
+<span class="doccomment">///         new_self</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///   pub fn run(&amp;self) -&gt; WinResult&lt;()&gt; {</span>
-<span class="doccomment">///     self.wnd.run_main(None)</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///     fn events(&amp;self) {</span>
+<span class="doccomment">///         let wnd = self.wnd.clone(); // clone so it can be passed into the closure</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///   fn events(&amp;self) {</span>
-<span class="doccomment">/// 	  let wnd = self.wnd.clone(); // clone so it can be passed into the closure</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// 	  self.wnd.on().wm_l_button_down(move |params| {</span>
-<span class="doccomment">/// 	    let txt = &amp;format!(&quot;Coords {} x {}&quot;, params.coords.x, params.coords.y);</span>
-<span class="doccomment">/// 	    wnd.hwnd().SetWindowText(txt).unwrap();</span>
-<span class="doccomment">/// 	  });</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///         self.wnd.on().wm_l_button_down(move |params| {</span>
+<span class="doccomment">///             let txt = &amp;format!(&quot;Coords {} x {}&quot;, params.coords.x, params.coords.y);</span>
+<span class="doccomment">///             wnd.hwnd().SetWindowText(txt).unwrap();</span>
+<span class="doccomment">///         });</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
@@ -319,33 +307,29 @@
 <span class="doccomment">/// use winsafe::{gui, WinResult};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// fn main() {</span>
-<span class="doccomment">///   let my_dlg = MyDlg::new();</span>
-<span class="doccomment">///   if let Err(e) = my_dlg.run() {</span>
-<span class="doccomment">///     eprintln!(&quot;{}&quot;, e);</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///     let my_main = MyDlg::new();</span>
+<span class="doccomment">///     if let Err(e) = my_main.dlg.run_main(None) {</span>
+<span class="doccomment">///         eprintln!(&quot;{}&quot;, e);</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// pub struct MyDlg {</span>
-<span class="doccomment">///   dlg: gui::CustomMain,</span>
+<span class="doccomment">///     dlg: gui::CustomMain,</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// impl MyDlg {</span>
-<span class="doccomment">///   pub fn new() -&gt; MyDlg {</span>
-<span class="doccomment">///     // 101 is the ID of the dialog resource in the .rc file</span>
-<span class="doccomment">///     let dlg = gui::CustomMain::new_dlg(101, None, None);</span>
+<span class="doccomment">///     pub fn new() -&gt; MyDlg {</span>
+<span class="doccomment">///         // 101 is the ID of the dialog resource in the .rc file</span>
+<span class="doccomment">///         let dlg = gui::CustomMain::new_dlg(101, None, None);</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///     let new_self = Self { dlg };</span>
-<span class="doccomment">///     new_self.events();</span>
-<span class="doccomment">///     new_self</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///         let new_self = Self { dlg };</span>
+<span class="doccomment">///         new_self.events();</span>
+<span class="doccomment">///         new_self</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///   pub fn run(&amp;self) -&gt; WinResult&lt;()&gt; {</span>
-<span class="doccomment">///     self.dlg.run_main(None)</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///     fn events(&amp;self) {</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///   fn events(&amp;self) {</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///   }</span>
+<span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
