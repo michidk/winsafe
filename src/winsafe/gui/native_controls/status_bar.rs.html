@@ -215,7 +215,7 @@
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [status bar](https://docs.microsoft.com/en-us/windows/win32/controls/status-bars)</span>
-<span class="doccomment">/// control.</span>
+<span class="doccomment">/// control, which has one or more parts.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusBar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
@@ -349,7 +349,7 @@
 
 	<span class="doccomment">/// Retrieves the text or a part.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">part_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">part_index</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg</span>::<span class="ident">SbGetTextLength</span> { <span class="ident">part_index</span> }).<span class="number">0</span>;
+		<span class="kw">let</span> (<span class="ident">len</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg</span>::<span class="ident">SbGetTextLength</span> { <span class="ident">part_index</span> });
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">new_alloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
 
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg</span>::<span class="ident">SbGetText</span> {
