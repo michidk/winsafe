@@ -153,7 +153,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::<span class="ident">ui_font</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::<span class="ident">Parent</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HFONT</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MessageHandleable</span>, <span class="ident">Wm</span>, <span class="ident">WmInitDialog</span>, <span class="ident">WmSetFont</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MessageHandleable</span>, <span class="ident">wm</span>};
 
 <span class="doccomment">/// Base to all dialog windows.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DialogBase</span> {
@@ -229,11 +229,11 @@
 	{
 		<span class="op">|</span><span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
 		{
-			<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">Wm</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
+			<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Wm</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
 
 			<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
 				<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">INITDIALOG</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// first message being handled</span>
-					<span class="kw">let</span> <span class="ident">wm_idlg</span> <span class="op">=</span> <span class="ident">WmInitDialog</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+					<span class="kw">let</span> <span class="ident">wm_idlg</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">InitDialog</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
 					<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_idlg</span>.<span class="ident">additional_data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
 					<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">DWLP_USER</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="ident">isize</span>); <span class="comment">// store</span>
 					<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
@@ -277,12 +277,12 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">set_ui_font_on_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd_ref</span>().<span class="ident">SendMessage</span>(<span class="ident">WmSetFont</span> { <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">false</span> });
+		<span class="self">self</span>.<span class="ident">hwnd_ref</span>().<span class="ident">SendMessage</span>(<span class="ident">wm</span>::<span class="ident">SetFont</span> { <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">false</span> });
 		<span class="self">self</span>.<span class="ident">hwnd_ref</span>().<span class="ident">EnumChildWindows</span>(<span class="self">Self</span>::<span class="ident">enum_proc</span>, <span class="ident">ui_font</span>().<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>);
 	}
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">enum_proc</span>(<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
 		<span class="kw">let</span> <span class="ident">hfont</span> <span class="op">=</span> <span class="ident">HFONT</span> { <span class="ident">ptr</span>: <span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> };
-		<span class="ident">hchild</span>.<span class="ident">SendMessage</span>(<span class="ident">WmSetFont</span> { <span class="ident">hfont</span>, <span class="ident">redraw</span>: <span class="bool-val">false</span> });
+		<span class="ident">hchild</span>.<span class="ident">SendMessage</span>(<span class="ident">wm</span>::<span class="ident">SetFont</span> { <span class="ident">hfont</span>, <span class="ident">redraw</span>: <span class="bool-val">false</span> });
 		<span class="bool-val">true</span> <span class="kw">as</span> <span class="ident">i32</span>
 	}
 }
