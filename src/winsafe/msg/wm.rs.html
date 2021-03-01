@@ -1488,6 +1488,42 @@
 <span id="1485">1485</span>
 <span id="1486">1486</span>
 <span id="1487">1487</span>
+<span id="1488">1488</span>
+<span id="1489">1489</span>
+<span id="1490">1490</span>
+<span id="1491">1491</span>
+<span id="1492">1492</span>
+<span id="1493">1493</span>
+<span id="1494">1494</span>
+<span id="1495">1495</span>
+<span id="1496">1496</span>
+<span id="1497">1497</span>
+<span id="1498">1498</span>
+<span id="1499">1499</span>
+<span id="1500">1500</span>
+<span id="1501">1501</span>
+<span id="1502">1502</span>
+<span id="1503">1503</span>
+<span id="1504">1504</span>
+<span id="1505">1505</span>
+<span id="1506">1506</span>
+<span id="1507">1507</span>
+<span id="1508">1508</span>
+<span id="1509">1509</span>
+<span id="1510">1510</span>
+<span id="1511">1511</span>
+<span id="1512">1512</span>
+<span id="1513">1513</span>
+<span id="1514">1514</span>
+<span id="1515">1515</span>
+<span id="1516">1516</span>
+<span id="1517">1517</span>
+<span id="1518">1518</span>
+<span id="1519">1519</span>
+<span id="1520">1520</span>
+<span id="1521">1521</span>
+<span id="1522">1522</span>
+<span id="1523">1523</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -2831,6 +2867,42 @@
 				<span class="ident">co</span>::<span class="ident">GWL_C</span>::<span class="ident">STYLE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Ws</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
 				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Wsex</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
 			},
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="doccomment">/// [`WM_SYSCOMMAND`](https://docs.microsoft.com/en-us/windows/win32/menurc/wm-syscommand)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `()`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SysCommand</span> {
+	<span class="kw">pub</span> <span class="ident">request</span>: <span class="ident">co</span>::<span class="ident">SC</span>,
+	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SysCommand</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		()
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
+		<span class="ident">Wm</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSCOMMAND</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">position</span>),
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">MessageHandleable</span> <span class="kw">for</span> <span class="ident">SysCommand</span> {
+	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">Wm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span> {
+			<span class="ident">request</span>: <span class="ident">co</span>::<span class="ident">SC</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="ident">u32</span>),
+			<span class="ident">position</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
 		}
 	}
 }
