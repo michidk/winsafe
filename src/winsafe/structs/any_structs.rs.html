@@ -634,6 +634,29 @@
 <span id="631">631</span>
 <span id="632">632</span>
 <span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -644,9 +667,9 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WNDPROC</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndPlace</span>, <span class="ident">IdStr</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>, <span class="ident">IdStr</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">IsWindowsVistaOrGreater</span>, <span class="ident">HIDWORD</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LODWORD</span>, <span class="ident">LOWORD</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span> <span class="kw">as</span> <span class="ident">h</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HDC</span>, <span class="ident">HICON</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">LF_FACESIZE</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -740,9 +763,9 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CREATESTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">lpCreateParams</span>: <span class="ident">isize</span>,
-	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">h</span>::<span class="ident">HINSTANCE</span>,
-	<span class="kw">pub</span> <span class="ident">hMenu</span>: <span class="ident">h</span>::<span class="ident">HMENU</span>,
-	<span class="kw">pub</span> <span class="ident">hwndParent</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">HINSTANCE</span>,
+	<span class="kw">pub</span> <span class="ident">hMenu</span>: <span class="ident">HMENU</span>,
+	<span class="kw">pub</span> <span class="ident">hwndParent</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">cy</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">cx</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">i32</span>,
@@ -776,6 +799,29 @@
 	<span class="doccomment">/// Sets the `lpszClass` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpszClass</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">WString</span>) {
 		<span class="self">self</span>.<span class="ident">lpszClass</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() };
+	}
+}
+
+<span class="doccomment">/// [`HELPINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-helpinfo)</span>
+<span class="doccomment">/// struct.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// You cannot directly instantiate this object.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HELPINFO</span> {
+	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">iContextType</span>: <span class="ident">co</span>::<span class="ident">HELPINFO</span>,
+	<span class="kw">pub</span> <span class="ident">iCtrlId</span>: <span class="ident">i32</span>,
+	<span class="ident">hItemHandle</span>: <span class="ident">usize</span>, <span class="comment">// HWND|HMENU</span>
+	<span class="kw">pub</span> <span class="ident">dwContextId</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">MousePos</span>: <span class="ident">POINT</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">HELPINFO</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hItemHandle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span> {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">iContextType</span> {
+			<span class="ident">co</span>::<span class="ident">HELPINFO</span>::<span class="ident">WINDOW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span>::<span class="ident">Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span>::<span class="ident">Hmenu</span>(<span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }),
+		}
 	}
 }
 
@@ -820,7 +866,7 @@
 	<span class="kw">pub</span> <span class="ident">fMask</span>: <span class="ident">co</span>::<span class="ident">MIM</span>,
 	<span class="kw">pub</span> <span class="ident">dwStyle</span>: <span class="ident">co</span>::<span class="ident">MNS</span>,
 	<span class="kw">pub</span> <span class="ident">cyMax</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">hbrBack</span>: <span class="ident">h</span>::<span class="ident">HBRUSH</span>,
+	<span class="kw">pub</span> <span class="ident">hbrBack</span>: <span class="ident">HBRUSH</span>,
 	<span class="kw">pub</span> <span class="ident">dwContextHelpID</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwMenuData</span>: <span class="ident">usize</span>,
 }
@@ -842,13 +888,13 @@
 	<span class="kw">pub</span> <span class="ident">fType</span>: <span class="ident">co</span>::<span class="ident">MFT</span>,
 	<span class="kw">pub</span> <span class="ident">fState</span>: <span class="ident">co</span>::<span class="ident">MFS</span>,
 	<span class="kw">pub</span> <span class="ident">wID</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">hSubMenu</span>: <span class="ident">h</span>::<span class="ident">HMENU</span>,
-	<span class="kw">pub</span> <span class="ident">hbmpChecked</span>: <span class="ident">h</span>::<span class="ident">HBITMAP</span>,
-	<span class="kw">pub</span> <span class="ident">hbmpUnchecked</span>: <span class="ident">h</span>::<span class="ident">HBITMAP</span>,
+	<span class="kw">pub</span> <span class="ident">hSubMenu</span>: <span class="ident">HMENU</span>,
+	<span class="kw">pub</span> <span class="ident">hbmpChecked</span>: <span class="ident">HBITMAP</span>,
+	<span class="kw">pub</span> <span class="ident">hbmpUnchecked</span>: <span class="ident">HBITMAP</span>,
 	<span class="kw">pub</span> <span class="ident">dwItemData</span>: <span class="ident">usize</span>,
 	<span class="kw">pub</span> <span class="ident">dwTypeData</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">cch</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">hbmpItem</span>: <span class="ident">h</span>::<span class="ident">HBITMAP</span>,
+	<span class="kw">pub</span> <span class="ident">hbmpItem</span>: <span class="ident">HBITMAP</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MENUITEMINFO</span> {
@@ -876,7 +922,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MSG</span> {
-	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">message</span>: <span class="ident">co</span>::<span class="ident">WM</span>,
 	<span class="kw">pub</span> <span class="ident">wParam</span>: <span class="ident">usize</span>,
 	<span class="kw">pub</span> <span class="ident">lParam</span>: <span class="ident">isize</span>,
@@ -920,7 +966,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMHDR</span> {
 	<span class="doccomment">/// A window handle to the control sending the message.</span>
-	<span class="kw">pub</span> <span class="ident">hwndFrom</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hwndFrom</span>: <span class="ident">HWND</span>,
 	<span class="doccomment">/// ID of the control sending the message.</span>
 	<span class="kw">pub</span> <span class="ident">idFrom</span>: <span class="ident">usize</span>,
 	<span class="doccomment">/// Notification code sent in</span>
@@ -1008,7 +1054,7 @@
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PAINTSTRUCT</span> {
-	<span class="kw">pub</span> <span class="ident">hdc</span>: <span class="ident">h</span>::<span class="ident">HDC</span>,
+	<span class="kw">pub</span> <span class="ident">hdc</span>: <span class="ident">HDC</span>,
 	<span class="kw">pub</span> <span class="ident">fErase</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">rcPaint</span>: <span class="ident">RECT</span>,
 	<span class="ident">fRestore</span>: <span class="ident">u32</span>,
@@ -1122,7 +1168,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TRACKMOUSEEVENT</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co</span>::<span class="ident">TME</span>,
-	<span class="kw">pub</span> <span class="ident">hwndTrack</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hwndTrack</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">dwHoverTime</span>: <span class="ident">u32</span>,
 }
 
@@ -1183,7 +1229,7 @@
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WINDOWPOS</span> {
-	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">h</span>::<span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">hwndInsertAfter</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">i32</span>,
@@ -1199,7 +1245,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> {
 			<span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span>::<span class="ident">Place</span>(<span class="ident">co</span>::<span class="ident">HWND_PLACE</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span>)),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span>::<span class="ident">Hwnd</span>(<span class="ident">h</span>::<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span>::<span class="ident">Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }),
 		}
 	}
 
@@ -1222,13 +1268,13 @@
 	<span class="kw">pub</span> <span class="ident">lpfnWndProc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WNDPROC</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">cbClsExtra</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">cbWndExtra</span>: <span class="ident">i32</span>,
-	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">h</span>::<span class="ident">HINSTANCE</span>,
-	<span class="kw">pub</span> <span class="ident">hIcon</span>: <span class="ident">h</span>::<span class="ident">HICON</span>,
-	<span class="kw">pub</span> <span class="ident">hCursor</span>: <span class="ident">h</span>::<span class="ident">HCURSOR</span>,
-	<span class="kw">pub</span> <span class="ident">hbrBackground</span>: <span class="ident">h</span>::<span class="ident">HBRUSH</span>,
+	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">HINSTANCE</span>,
+	<span class="kw">pub</span> <span class="ident">hIcon</span>: <span class="ident">HICON</span>,
+	<span class="kw">pub</span> <span class="ident">hCursor</span>: <span class="ident">HCURSOR</span>,
+	<span class="kw">pub</span> <span class="ident">hbrBackground</span>: <span class="ident">HBRUSH</span>,
 	<span class="ident">lpszMenuName</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
 	<span class="ident">lpszClassName</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
-	<span class="kw">pub</span> <span class="ident">hIconSm</span>: <span class="ident">h</span>::<span class="ident">HICON</span>,
+	<span class="kw">pub</span> <span class="ident">hIconSm</span>: <span class="ident">HICON</span>,
 	<span class="ident">m_lpszMenuName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }

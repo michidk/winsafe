@@ -371,14 +371,53 @@
 <span id="368">368</span>
 <span id="369">369</span>
 <span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">MAKEDWORD</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">NCCALCSIZE_PARAMS</span>, <span class="ident">RECT</span>, <span class="ident">STYLESTRUCT_WS</span>, <span class="ident">STYLESTRUCT_WS_EX</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
+	<span class="ident">ATOM</span>,
+	<span class="ident">NCCALCSIZE_PARAMS</span>,
+	<span class="ident">POINT</span>,
+	<span class="ident">RECT</span>,
+	<span class="ident">STYLESTRUCT_WS</span>,
+	<span class="ident">STYLESTRUCT_WS_EX</span>,
+};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// Variant parameter used in</span>
@@ -474,10 +513,9 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`WM_ENTERIDLE`](crate::msg::wm::EnterIdle) reason.</span>
+<span class="doccomment">/// * [`HELPINFO`](crate::HELPINFO) `hItemHandle`.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndHmenu</span> {
-	<span class="doccomment">/// The system is idle because a dialog box is displayed.</span>
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
-	<span class="doccomment">/// The system is idle because a menu is displayed.</span>
 	<span class="ident">Hmenu</span>(<span class="ident">HMENU</span>),
 }
 
@@ -511,6 +549,30 @@
 			<span class="self">Self</span>::<span class="ident">Hwnd</span>(<span class="ident">hwnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">ptr</span>,
 			<span class="self">Self</span>::<span class="ident">Place</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
 			<span class="self">Self</span>::<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`WM_PARENTNOTIFY`](crate::msg::wm::ParentNotify) `data32`.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndPointId</span> {
+	<span class="doccomment">/// Handle to the child window.</span>
+	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
+	<span class="doccomment">/// Cursor coordinates.</span>
+	<span class="ident">Point</span>(<span class="ident">POINT</span>),
+	<span class="doccomment">/// Pointer identifier.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">HwndPointId</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="self">Self</span>::<span class="ident">Hwnd</span>(<span class="ident">hwnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>,
+			<span class="self">Self</span>::<span class="ident">Point</span>(<span class="ident">pt</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEDWORD</span>(<span class="ident">pt</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="ident">pt</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">u16</span>) <span class="kw">as</span> <span class="ident">isize</span>,
+			<span class="self">Self</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
 }

@@ -1094,6 +1094,30 @@
 <span id="1091">1091</span>
 <span id="1092">1092</span>
 <span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
+<span id="1109">1109</span>
+<span id="1110">1110</span>
+<span id="1111">1111</span>
+<span id="1112">1112</span>
+<span id="1113">1113</span>
+<span id="1114">1114</span>
+<span id="1115">1115</span>
+<span id="1116">1116</span>
+<span id="1117">1117</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -2013,6 +2037,12 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
+	<span class="doccomment">/// [`SetForegroundWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetForegroundWindow</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetForegroundWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	}
+
 	<span class="doccomment">/// [`SetParent`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setparent)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetParent</span>(<span class="self">self</span>, <span class="ident">hWndNewParent</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -2186,6 +2216,24 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WindowFromPoint</span>(<span class="ident">point</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
 		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">WindowFromPoint</span>(<span class="ident">point</span>.<span class="ident">x</span>, <span class="ident">point</span>.<span class="ident">y</span>) })
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+	}
+
+	<span class="doccomment">/// [`WinHelp`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-winhelpw)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WinHelp</span>(<span class="self">self</span>,
+		<span class="ident">lpszHelp</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">uCommand</span>: <span class="ident">co</span>::<span class="ident">HELPW</span>, <span class="ident">dwData</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
+		<span class="kw">match</span> <span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">WinHelpW</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpszHelp</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">uCommand</span>.<span class="number">0</span>,
+				<span class="ident">dwData</span>,
+			)
+		} {
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+		}
 	}
 }
 </pre></div>
