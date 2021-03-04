@@ -189,11 +189,11 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">IdMenu</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">MsgEvents</span>, <span class="ident">ProcessResult</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">wm</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">WndMsg</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">WC_DIALOG</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
@@ -218,7 +218,7 @@
 <span class="kw">struct</span> <span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> { <span class="comment">// actual fields of NativeControlBase</span>
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">parent_events</span>: <span class="ident">Ev</span>, <span class="comment">// specific control events, which delegate to parent events</span>
-	<span class="ident">subclass_events</span>: <span class="ident">MsgEvents</span>, <span class="comment">// for control subclassing</span>
+	<span class="ident">subclass_events</span>: <span class="ident">WindowEvents</span>, <span class="comment">// for control subclassing</span>
 	<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>, <span class="comment">// used only in control creation</span>
 }
 
@@ -237,7 +237,7 @@
 				<span class="ident">Obj</span> {
 					<span class="ident">hwnd</span>: <span class="kw">unsafe</span> { <span class="ident">HWND</span>::<span class="ident">null_handle</span>() },
 					<span class="ident">parent_events</span>,
-					<span class="ident">subclass_events</span>: <span class="ident">MsgEvents</span>::<span class="ident">new</span>(),
+					<span class="ident">subclass_events</span>: <span class="ident">WindowEvents</span>::<span class="ident">new</span>(),
 					<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()), <span class="comment">// ref implicitly converted to pointer</span>
 				},
 			),
@@ -257,7 +257,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_events</span>
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">MsgEvents</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add subclass events after the control is created.&quot;</span>);
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
@@ -340,7 +340,7 @@
 		<span class="op">|</span><span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
 		{
 			<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">ref_data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>; <span class="comment">// retrieve</span>
-			<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Wm</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
+			<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">maybe_processed</span> <span class="op">=</span> <span class="ident">ProcessResult</span>::<span class="ident">NotHandled</span>;
 
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">ptr_self</span>.<span class="ident">is_null</span>() {

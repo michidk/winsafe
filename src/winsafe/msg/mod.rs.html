@@ -22,18 +22,68 @@
 <span id="19">19</span>
 <span id="20">20</span>
 <span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Parameters of</span>
 <span class="doccomment">//! [window messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues).</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Each message struct defines the parameters it receives and also its return</span>
-<span class="doccomment">//! type.</span>
+<span class="doccomment">//! [`WndMsg`](crate::msg::WndMsg) is the generic message, with `WPARAM` and</span>
+<span class="doccomment">//! `LPARAM` fields. Other messages belong to a module according to its prefix,</span>
+<span class="doccomment">//! for example, [`BM_CLICK`](crate::msg::bm::Click) can be found in</span>
+<span class="doccomment">//! [`bm`](crate::msg::bm) module.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Examples</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Sending [`LVM_DELETEITEM`](crate::msg::lvm::DeleteItem) message with</span>
+<span class="doccomment">//! [`SendMessage`](crate::HWND::SendMessage) to delete the 3rd element in a</span>
+<span class="doccomment">//! [`ListView`](crate::gui::ListView) control. Notice how the `index` parameter</span>
+<span class="doccomment">//! is passed when initializing the message struct, and how it returns a</span>
+<span class="doccomment">//! `WinResult`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,ignore</span>
+<span class="doccomment">//! use winsafe::{HWND, msg::lvm};</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let hlistview: HWND; // initialize it somewhere...</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! hlistview.SendMessage({</span>
+<span class="doccomment">//!     lvm::DeleteItem {</span>
+<span class="doccomment">//!         index: 2,</span>
+<span class="doccomment">//!     },</span>
+<span class="doccomment">//! }).expect(&quot;Failed to delete item 2.&quot;);</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Each message has its own set of parameters. Also, each message has its own</span>
+<span class="doccomment">//! result type, which will be returned by `SendMessage`.</span>
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">macros</span>;
 
 <span class="kw">mod</span> <span class="ident">message</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">message</span>::{<span class="ident">Message</span>, <span class="ident">MessageHandleable</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">message</span>::{<span class="ident">MsgSend</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">WndMsg</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">bm</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cb</span>;

@@ -904,7 +904,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">Message</span>, <span class="ident">wm</span>::<span class="ident">Wm</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">LVCOLUMN</span>, <span class="ident">LVFINDINFO</span>, <span class="ident">LVITEM</span>, <span class="ident">SIZE</span>};
 
 <span class="doccomment">/// [`LVM_APPROXIMATEVIEWRECT`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-approximateviewrect)</span>
@@ -917,15 +917,15 @@
 	<span class="kw">pub</span> <span class="ident">proposed_y</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">ApproximateViewRect</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">ApproximateViewRect</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">SIZE</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="ident">LOWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">HIWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">i32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">APPROXIMATEVIEWRECT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">num_items</span> {
 				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
@@ -955,7 +955,7 @@
 	<span class="kw">pub</span> <span class="ident">arrangement</span>: <span class="ident">co</span>::<span class="ident">LVA</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">Arrange</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Arrange</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -965,8 +965,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">ARRANGE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">arrangement</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -991,7 +991,7 @@
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DeleteAllItems</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">DeleteAllItems</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">DeleteAllItems</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1001,8 +1001,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">DELETEALLITEMS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1020,7 +1020,7 @@
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">DeleteItem</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">DeleteItem</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1030,8 +1030,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">DELETEITEM</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1050,7 +1050,7 @@
 	<span class="kw">pub</span> <span class="ident">entirely_visible</span>: <span class="ident">bool</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">EnsureVisible</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">EnsureVisible</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1060,8 +1060,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">ENSUREVISIBLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="op">!</span><span class="self">self</span>.<span class="ident">entirely_visible</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1080,7 +1080,7 @@
 	<span class="kw">pub</span> <span class="ident">lvfindinfo</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVFINDINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">FindItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">FindItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1090,8 +1090,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">FINDITEM</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">index</span> {
 				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
@@ -1110,15 +1110,15 @@
 <span class="doccomment">/// Return type: `COLORREF`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetBkColor</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetBkColor</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetBkColor</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">COLORREF</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">COLORREF</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETBKCOLOR</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1137,7 +1137,7 @@
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1147,8 +1147,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETCOLUMN</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvcolumn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1166,7 +1166,7 @@
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetColumnWidth</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetColumnWidth</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1176,8 +1176,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETCOLUMNWIDTH</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1193,15 +1193,15 @@
 <span class="doccomment">/// Return type: `LVS_EX`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetExtendedListViewStyle</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetExtendedListViewStyle</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetExtendedListViewStyle</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">co</span>::<span class="ident">LVS_EX</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETEXTENDEDLISTVIEWSTYLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1217,7 +1217,7 @@
 <span class="doccomment">/// Return type: `WinResult&lt;HWND&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetHeader</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetHeader</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetHeader</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1227,8 +1227,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETHEADER</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1247,7 +1247,7 @@
 	<span class="kw">pub</span> <span class="ident">relationship</span>: <span class="ident">co</span>::<span class="ident">LVNI</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetNextItem</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetNextItem</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1257,8 +1257,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETNEXTITEM</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">relationship</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1274,15 +1274,15 @@
 <span class="doccomment">/// Return type: `u32`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetItemCount</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetItemCount</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetItemCount</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">u32</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETITEMCOUNT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1301,15 +1301,15 @@
 	<span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">co</span>::<span class="ident">LVIS</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetItemState</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetItemState</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVIS</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">co</span>::<span class="ident">LVIS</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETITEMSTATE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">mask</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1328,15 +1328,15 @@
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">u32</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETITEMTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1352,15 +1352,15 @@
 <span class="doccomment">/// Return type: `u32`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetSelectedCount</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetSelectedCount</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetSelectedCount</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">u32</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETSELECTEDCOUNT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1376,15 +1376,15 @@
 <span class="doccomment">/// Return type: `LV_VIEW`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetView</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">GetView</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetView</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LV_VIEW</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">co</span>::<span class="ident">LV_VIEW</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETVIEW</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1403,7 +1403,7 @@
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">InsertColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">InsertColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1413,8 +1413,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">INSERTCOLUMN</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvcolumn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1432,7 +1432,7 @@
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">InsertItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">InsertItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1442,8 +1442,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">INSERTITEM</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1459,15 +1459,15 @@
 <span class="doccomment">/// Return type: `bool`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IsGroupViewEnabled</span> {}
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">IsGroupViewEnabled</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">IsGroupViewEnabled</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">bool</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">v</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">ISGROUPVIEWENABLED</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1485,15 +1485,15 @@
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">IsItemVisible</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">IsItemVisible</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">bool</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">v</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">ISITEMVISIBLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1512,7 +1512,7 @@
 	<span class="kw">pub</span> <span class="ident">last_index</span>: <span class="ident">u32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">RedrawItems</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">RedrawItems</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1522,8 +1522,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">REDRAWITEMS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">first_index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">last_index</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1542,7 +1542,7 @@
 	<span class="kw">pub</span> <span class="ident">vertical</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">Scroll</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Scroll</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1552,8 +1552,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SCROLL</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">horizontal</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">vertical</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1572,7 +1572,7 @@
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1582,8 +1582,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETCOLUMN</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvcolumn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1602,15 +1602,15 @@
 	<span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">co</span>::<span class="ident">LVS_EX</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetExtendedListViewStyle</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetExtendedListViewStyle</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="ident">co</span>::<span class="ident">LVS_EX</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETEXTENDEDLISTVIEWSTYLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">style</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">mask</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1628,7 +1628,7 @@
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1638,8 +1638,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETITEM</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1658,7 +1658,7 @@
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetItemState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetItemState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1668,8 +1668,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETITEMSTATE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1688,7 +1688,7 @@
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1698,8 +1698,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETITEMTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
@@ -1717,15 +1717,15 @@
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetSelectedColumn</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetSelectedColumn</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETSELECTEDCOLUMN</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1743,7 +1743,7 @@
 	<span class="kw">pub</span> <span class="ident">view</span>: <span class="ident">co</span>::<span class="ident">LV_VIEW</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">SetView</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetView</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1753,8 +1753,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETVIEW</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">view</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
@@ -1772,7 +1772,7 @@
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Message</span> <span class="kw">for</span> <span class="ident">Update</span> {
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Update</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
@@ -1782,8 +1782,8 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Wm</span> {
-		<span class="ident">Wm</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">UPDATE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,

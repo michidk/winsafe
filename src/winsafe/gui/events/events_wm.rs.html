@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\events\msg_events.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>msg_events.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\events\events_wm.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>events_wm.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
@@ -1043,6 +1043,8 @@
 <span id="1040">1040</span>
 <span id="1041">1041</span>
 <span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
@@ -1050,7 +1052,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">func_store</span>::<span class="ident">FuncStore</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDC</span>, <span class="ident">HICON</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MessageHandleable</span>, <span class="ident">wm</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
@@ -1066,12 +1068,12 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// window.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MsgEvents</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowEvents</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
-<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of MsgEvents</span>
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of WindowEvents</span>
 	<span class="ident">msgs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// ordinary WM messages</span>
 		<span class="ident">co</span>::<span class="ident">WM</span>,
-		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Wm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
+		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
 	<span class="op">&gt;</span>,
 	<span class="ident">tmrs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// WM_TIMER messages</span>
 		<span class="ident">u32</span>,
@@ -1123,8 +1125,8 @@
 	};
 }
 
-<span class="kw">impl</span> <span class="ident">MsgEvents</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MsgEvents</span> {
+<span class="kw">impl</span> <span class="ident">WindowEvents</span> {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowEvents</span> {
 		<span class="self">Self</span>(
 			<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
@@ -1147,7 +1149,7 @@
 
 	<span class="doccomment">/// Searches for the last added user function for the given message, and runs</span>
 	<span class="doccomment">/// if it exists, returning the result.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_effective_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">wm</span>::<span class="ident">Wm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span> {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_effective_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span> {
 		<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
 			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Notify</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
@@ -1199,7 +1201,7 @@
 
 	<span class="doccomment">/// Searches for all user functions for the given message, and runs all of</span>
 	<span class="doccomment">/// them, discarding the results.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_all_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">wm</span>::<span class="ident">Wm</span>) {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_all_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) {
 		<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
 			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Notify</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
@@ -1231,7 +1233,7 @@
 
 	<span class="doccomment">/// Raw add message.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co</span>::<span class="ident">WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Wm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">msgs</span>.<span class="ident">insert</span>(<span class="ident">ident</span>, <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 	}
@@ -1271,7 +1273,7 @@
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co</span>::<span class="ident">WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Wm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">ident</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
@@ -1451,7 +1453,8 @@
 
 	<span class="doccomment">/// [`WM_CREATE`](crate::msg::wm::Create) message, sent only to non-dialog</span>
 	<span class="doccomment">/// windows. Dialog windows receive</span>
-	<span class="doccomment">/// [`WM_INITDIALOG`](crate::gui::events::MsgEvents::wm_init_dialog) instead.</span>
+	<span class="doccomment">/// [`WM_INITDIALOG`](crate::gui::events::WindowEvents::wm_init_dialog)</span>
+	<span class="doccomment">/// instead.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Sent when an application requests that a window be created by calling the</span>
 	<span class="doccomment">/// [`CreateWindowEx`](crate::HWND::CreateWindowEx) function. The message is</span>
@@ -1612,7 +1615,7 @@
 		<span class="doccomment">/// [`WM_ENDSESSION`](crate::msg::wm::EndSession) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to an application after the system processes the results of the</span>
-		<span class="doccomment">/// [`WM_QUERYENDSESSION`](crate::gui::events::MsgEvents) message. The</span>
+		<span class="doccomment">/// [`WM_QUERYENDSESSION`](crate::gui::events::WindowEvents) message. The</span>
 		<span class="doccomment">/// `WM_ENDSESSION` message informs the application whether the session is ending.</span>
 	}
 
@@ -1632,7 +1635,7 @@
 		<span class="doccomment">/// loop. The window enters the moving or sizing modal loop when the user</span>
 		<span class="doccomment">/// clicks the window&#39;s title bar or sizing border, or when the window</span>
 		<span class="doccomment">/// passes the</span>
-		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::events::MsgEvents::wm_sys_command)</span>
+		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::events::WindowEvents::wm_sys_command)</span>
 		<span class="doccomment">/// message to the `DefWindowProc` function and the `wParam` parameter of</span>
 		<span class="doccomment">/// the message specifies the [`SC_MOVE`](crate::co::SC::MOVE) or</span>
 		<span class="doccomment">/// [`SC_SIZE`](crate::co::SC::SIZE) value. The operation is complete when</span>
@@ -1663,7 +1666,7 @@
 		<span class="doccomment">/// modal loop. The window enters the moving or sizing modal loop when the</span>
 		<span class="doccomment">/// user clicks the window&#39;s title bar or sizing border, or when the</span>
 		<span class="doccomment">/// window passes the</span>
-		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::events::MsgEvents::wm_sys_command)</span>
+		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::events::WindowEvents::wm_sys_command)</span>
 		<span class="doccomment">/// message to the `DefWindowProc` function and the `wParam` parameter of</span>
 		<span class="doccomment">/// the message specifies the [`SC_MOVE`](crate::co::SC::MOVE) or</span>
 		<span class="doccomment">/// [`SC_SIZE`](crate::co::SC::SIZE) value. The operation is complete when</span>
@@ -1687,7 +1690,7 @@
 
 	<span class="doccomment">/// [`WM_INITDIALOG`](crate::msg::wm::InitDialog) message, sent only to dialog</span>
 	<span class="doccomment">/// windows. Non-dialog windows receive</span>
-	<span class="doccomment">/// [`WM_CREATE`](crate::gui::events::MsgEvents::wm_create) instead.</span>
+	<span class="doccomment">/// [`WM_CREATE`](crate::gui::events::WindowEvents::wm_create) instead.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Sent to the dialog box procedure immediately before a dialog box is</span>
 	<span class="doccomment">/// displayed. Dialog box procedures typically use this message to initialize</span>
@@ -1814,8 +1817,9 @@
 
 	<span class="doccomment">/// [`WM_NCCREATE`](crate::msg::wm::NcCreate) message.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Sent prior to the [`WM_CREATE`](crate::gui::events::MsgEvents::wm_create)</span>
-	<span class="doccomment">/// message when a window is first created.</span>
+	<span class="doccomment">/// Sent prior to the</span>
+	<span class="doccomment">/// [`WM_CREATE`](crate::gui::events::WindowEvents::wm_create) message when a</span>
+	<span class="doccomment">/// window is first created.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_nc_create</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">NcCreate</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -1831,7 +1835,7 @@
 		<span class="doccomment">/// Notifies a window that its nonclient area is being destroyed. The</span>
 		<span class="doccomment">/// [`DestroyWindow`](crate::HWND::DestroyWindow) function sends the</span>
 		<span class="doccomment">/// message to the window following the</span>
-		<span class="doccomment">/// [`WM_DESTROY`](crate::gui::events::MsgEvents::wm_destroy) message.</span>
+		<span class="doccomment">/// [`WM_DESTROY`](crate::gui::events::WindowEvents::wm_destroy) message.</span>
 		<span class="doccomment">/// `WM_DESTROY` is used to free the allocated memory object associated</span>
 		<span class="doccomment">/// with the window.</span>
 		<span class="doccomment">///</span>
