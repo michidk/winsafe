@@ -1083,8 +1083,6 @@
 <span id="1080">1080</span>
 <span id="1081">1081</span>
 <span id="1082">1082</span>
-<span id="1083">1083</span>
-<span id="1084">1084</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1102,7 +1100,6 @@
 <span class="macro">handle_type</span><span class="macro">!</span> {
 	<span class="doccomment">/// Handle to a</span>
 	<span class="doccomment">/// [window](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hwnd).</span>
-	<span class="doccomment">/// Exposes methods.</span>
 	<span class="ident">HWND</span>
 }
 
@@ -1597,7 +1594,7 @@
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::HWND;</span>
+	<span class="doccomment">/// use winsafe::{HWND, WString};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_hwnd: HWND; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
@@ -1778,7 +1775,7 @@
 	<span class="doccomment">/// A modal message box, which blocks its parent:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::HWND;</span>
+	<span class="doccomment">/// use winsafe::{co, HWND};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_hwnd: HWND; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
@@ -1850,11 +1847,11 @@
 	<span class="doccomment">/// Programatically closing a window:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{HWND, msg::WmClose};</span>
+	<span class="doccomment">/// use winsafe::{HWND, msg::wm};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_hwnd: HWND; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// my_hwnd.PostMessage(WmClose {}).unwrap();</span>
+	<span class="doccomment">/// my_hwnd.PostMessage(wm::Close {}).unwrap();</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">uMsg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
@@ -1958,8 +1955,7 @@
 	<span class="doccomment">/// which demands a reference to an [`LVITEM`](crate::LVITEM) object:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{co, msg};</span>
-	<span class="doccomment">/// use winsafe::{LVITEM, HWND};</span>
+	<span class="doccomment">/// use winsafe::{co, HWND, LVITEM, msg::lvm};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_hwnd: HWND; // initialize it somewhere...</span>
 	<span class="doccomment">///</span>
@@ -1967,7 +1963,7 @@
 	<span class="doccomment">/// lvi.mask = co::LVIF::IMAGE;</span>
 	<span class="doccomment">/// lvi.iImage = 3;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// my_hwnd.SendMessage(msg::lvm::SetItem {</span>
+	<span class="doccomment">/// my_hwnd.SendMessage(lvm::SetItem {</span>
 	<span class="doccomment">///     lvitem: &amp;lvi,</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
