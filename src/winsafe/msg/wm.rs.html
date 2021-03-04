@@ -1549,22 +1549,6 @@
 <span id="1546">1546</span>
 <span id="1547">1547</span>
 <span id="1548">1548</span>
-<span id="1549">1549</span>
-<span id="1550">1550</span>
-<span id="1551">1551</span>
-<span id="1552">1552</span>
-<span id="1553">1553</span>
-<span id="1554">1554</span>
-<span id="1555">1555</span>
-<span id="1556">1556</span>
-<span id="1557">1557</span>
-<span id="1558">1558</span>
-<span id="1559">1559</span>
-<span id="1560">1560</span>
-<span id="1561">1561</span>
-<span id="1562">1562</span>
-<span id="1563">1563</span>
-<span id="1564">1564</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -1573,7 +1557,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">TIMERPROC</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPointId</span>, <span class="ident">NccspRect</span>, <span class="ident">WsWsex</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIBYTE</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>, <span class="ident">MAKEWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HDC</span>, <span class="ident">HDROP</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">macros</span>::{<span class="ident">lp_to_point</span>, <span class="ident">point_to_lp</span>};
@@ -1705,23 +1689,18 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">CancelMode</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CANCELMODE</span>,
 	<span class="doccomment">/// [`WM_CANCELMODE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-cancelmode)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">ChildActivate</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CHILDACTIVATE</span>,
 	<span class="doccomment">/// [`WM_CHILDACTIVATE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-childactivate)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">Close</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CLOSE</span>,
 	<span class="doccomment">/// [`WM_CLOSE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-close)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
+}
+
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">Char</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CHAR</span>,
+	<span class="doccomment">/// [`WM_CHAR`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-char)</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -1845,53 +1824,34 @@
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorBtn</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORBTN</span>,
 	<span class="doccomment">/// [`WM_CTLCOLORBTN`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-ctlcolorbtn)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorDlg</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORDLG</span>,
 	<span class="doccomment">/// [`WM_CTLCOLORDLG`](https://docs.microsoft.com/en-us/windows/win32/dlgbox/wm-ctlcolordlg)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorEdit</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLOREDIT</span>,
 	<span class="doccomment">/// [`WM_CTLCOLOREDIT`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-ctlcoloredit)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorListBox</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORLISTBOX</span>,
 	<span class="doccomment">/// [`WM_CTLCOLORLISTBOX`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-ctlcolorlistbox)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorScrollBar</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSCROLLBAR</span>,
 	<span class="doccomment">/// [`WM_CTLCOLORSCROLLBAR`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-ctlcolorscrollbar)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
 <span class="macro">ctl_color_msg</span><span class="macro">!</span> { <span class="ident">CtlColorStatic</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSTATIC</span>,
 	<span class="doccomment">/// [`WM_CTLCOLORSTATIC`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-ctlcolorstatic)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `HBRUSH`.</span>
 }
 
-<span class="comment">//------------------------------------------------------------------------------</span>
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">DeadChar</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">DEADCHAR</span>,
+	<span class="doccomment">/// [`WM_DEADCHAR`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-deadchar)</span>
+}
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">Destroy</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">DESTROY</span>,
 	<span class="doccomment">/// [`WM_DESTROY`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-destroy)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2042,9 +2002,6 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">EnterSizeMove</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENTERSIZEMOVE</span>,
 	<span class="doccomment">/// [`WM_ENTERSIZEMOVE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-entersizemove)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2085,9 +2042,6 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">ExitSizeMove</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">EXITSIZEMOVE</span>,
 	<span class="doccomment">/// [`WM_EXITSIZEMOVE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-exitsizemove)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2234,60 +2188,86 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">KeyDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KEYDOWN</span>,
+	<span class="doccomment">/// [`WM_KEYDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown)</span>
+}
+
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">KeyUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KEYUP</span>,
+	<span class="doccomment">/// [`WM_KEYUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keyup)</span>
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="doccomment">/// [`WM_KILLFOCUS`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-killfocus)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `()`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KillFocus</span> {
+	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">KillFocus</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		()
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KILLFOCUS</span>,
+			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span> {
+				<span class="prelude-val">Some</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">usize</span>,
+				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+			},
+			<span class="ident">lparam</span>: <span class="number">0</span>,
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">KillFocus</span> {
+	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span> {
+			<span class="ident">hwnd</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">wparam</span> {
+				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }),
+			},
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">LButtonDblClk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONDBLCLK</span>,
 	<span class="doccomment">/// [`WM_LBUTTONDBLCLK`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondblclk)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">LButtonDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONDOWN</span>,
 	<span class="doccomment">/// [`WM_LBUTTONDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondown)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">LButtonUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONUP</span>,
 	<span class="doccomment">/// [`WM_LBUTTONUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttonup)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">MButtonDblClk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONDBLCLK</span>,
 	<span class="doccomment">/// [`WM_MBUTTONDBLCLK`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondblclk)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">MButtonDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONDOWN</span>,
 	<span class="doccomment">/// [`WM_MBUTTONDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondown)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">MButtonUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONUP</span>,
 	<span class="doccomment">/// [`WM_MBUTTONUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttonup)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">MouseHover</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOUSEHOVER</span>,
 	<span class="doccomment">/// [`WM_MOUSEHOVER`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousehover)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">MouseMove</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOUSEMOVE</span>,
 	<span class="doccomment">/// [`WM_MOUSEMOVE`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousemove)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2439,9 +2419,6 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">NcDestroy</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCDESTROY</span>,
 	<span class="doccomment">/// [`WM_NCDESTROY`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncdestroy)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2482,9 +2459,6 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">Null</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NULL</span>,
 	<span class="doccomment">/// [`WM_NULL`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-null)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2544,9 +2518,6 @@
 
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">Paint</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">PAINT</span>,
 	<span class="doccomment">/// [`WM_PAINT`](https://docs.microsoft.com/en-us/windows/win32/gdi/wm-paint)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2626,23 +2597,14 @@
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">RButtonDblClk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONDBLCLK</span>,
 	<span class="doccomment">/// [`WM_RBUTTONDBLCLK`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondblclk)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">RButtonDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONDOWN</span>,
 	<span class="doccomment">/// [`WM_RBUTTONDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondown)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">RButtonUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONUP</span>,
 	<span class="doccomment">/// [`WM_RBUTTONUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttonup)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -2955,6 +2917,12 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">SysChar</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSCHAR</span>,
+	<span class="doccomment">/// [`WM_SYSCHAR`](https://docs.microsoft.com/en-us/windows/win32/menurc/wm-syschar)</span>
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
 <span class="doccomment">/// [`WM_SYSCOMMAND`](https://docs.microsoft.com/en-us/windows/win32/menurc/wm-syscommand)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
@@ -2991,11 +2959,20 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">SysDeadChar</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSDEADCHAR</span>,
+	<span class="doccomment">/// [`WM_SYSDEADCHAR`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-sysdeadchar)</span>
+}
+
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">SysKeyDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSKEYDOWN</span>,
+	<span class="doccomment">/// [`WM_SYSKEYDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-syskeydown)</span>
+}
+
+<span class="macro">char_msg</span><span class="macro">!</span> { <span class="ident">SysKeyUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSKEYUP</span>,
+	<span class="doccomment">/// [`WM_SYSKEYUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-syskeyup)</span>
+}
+
 <span class="macro">empty_msg_handleable</span><span class="macro">!</span> { <span class="ident">ThemeChanged</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">THEMECHANGED</span>,
 	<span class="doccomment">/// [`WM_THEMECHANGED`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-themechanged)</span>
-	<span class="doccomment">/// message, which has no parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -3112,23 +3089,14 @@
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">XButtonDblClk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONDBLCLK</span>,
 	<span class="doccomment">/// [`WM_XBUTTONDBLCLK`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondblclk)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">XButtonDown</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONDOWN</span>,
 	<span class="doccomment">/// [`WM_XBUTTONDOWN`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 
 <span class="macro">button_msg</span><span class="macro">!</span> { <span class="ident">XButtonUp</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONUP</span>,
 	<span class="doccomment">/// [`WM_XBUTTONUP`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttonup)</span>
-	<span class="doccomment">/// message parameters.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Return type: `()`.</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "winsafe";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
