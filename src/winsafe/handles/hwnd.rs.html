@@ -1083,6 +1083,13 @@
 <span id="1080">1080</span>
 <span id="1081">1081</span>
 <span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1932,14 +1939,22 @@
 	<span class="doccomment">/// [`ScreenToClient`](crate::HWND::ScreenToClient) method for a</span>
 	<span class="doccomment">/// [`RECT`](crate::RECT).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ScreenToClientRc</span>(<span class="self">self</span>, <span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">user32</span>::<span class="ident">ScreenToClient</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-				)
-			},
-		)
+		<span class="kw">match</span> <span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">ScreenToClient</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			)
+		} {
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">bool_to_winresult</span>(
+				<span class="kw">unsafe</span> {
+					<span class="ident">user32</span>::<span class="ident">ScreenToClient</span>(
+						<span class="self">self</span>.<span class="ident">ptr</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+					)
+				},
+			),
+		}
 	}
 
 	<span class="doccomment">/// [`SendMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagew)</span>
@@ -2033,15 +2048,14 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowPos</span>(<span class="self">self</span>,
 		<span class="ident">hWndInsertAfter</span>: <span class="ident">HwndPlace</span>,
-		<span class="ident">X</span>: <span class="ident">i32</span>, <span class="ident">Y</span>: <span class="ident">i32</span>, <span class="ident">cx</span>: <span class="ident">u32</span>, <span class="ident">cy</span>: <span class="ident">u32</span>, <span class="ident">uFlags</span>: <span class="ident">co</span>::<span class="ident">SWP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">uFlags</span>: <span class="ident">co</span>::<span class="ident">SWP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32</span>::<span class="ident">SetWindowPos</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">hWndInsertAfter</span>.<span class="ident">as_ptr</span>(),
-					<span class="ident">X</span>, <span class="ident">Y</span>,
-					<span class="ident">cx</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">cy</span> <span class="kw">as</span> <span class="ident">i32</span>,
+					<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">cx</span>, <span class="ident">cy</span>,
 					<span class="ident">uFlags</span>.<span class="number">0</span>,
 				)
 			},
