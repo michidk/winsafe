@@ -217,297 +217,221 @@
 <span id="214">214</span>
 <span id="215">215</span>
 <span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
-
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">IdIdcStr</span>, <span class="ident">IdMenu</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">AdjustWindowRectEx</span>, <span class="ident">GetSystemMetrics</span>, <span class="ident">PostQuitMessage</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">base</span>::<span class="ident">Base</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">InitCommonControls</span>, <span class="ident">IsWindowsVistaOrGreater</span>, <span class="ident">SetProcessDPIAware</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">dlg_main</span>::<span class="ident">DlgMain</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">WindowEvents</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::<span class="ident">multiply_dpi</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">create_ui_font</span>, <span class="ident">delete_ui_font</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">raw_main</span>::{<span class="ident">WindowMainOpts</span>, <span class="ident">RawMain</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::<span class="ident">Parent</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">window_base</span>::<span class="ident">WindowBase</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowMain</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
-
-<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of WindowMain</span>
-	<span class="ident">base</span>: <span class="ident">WindowBase</span>,
-	<span class="ident">opts</span>: <span class="ident">CustomMainOpts</span>,
-	<span class="ident">hchild_prev_focus</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>, <span class="comment">// WM_ACTIVATE woes</span>
-}
-
-<span class="kw">impl</span> <span class="ident">Parent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>()
-	}
-
-	<span class="kw">fn</span> <span class="ident">user_events_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">user_events_ref</span>()
-	}
-
-	<span class="kw">fn</span> <span class="ident">privileged_events_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">privileged_events_ref</span>()
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">WindowMain</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">opts</span>: <span class="ident">CustomMainOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowMain</span> {
-		<span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
-				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">WindowBase</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>), <span class="comment">// no parent</span>
-					<span class="ident">opts</span>,
-					<span class="ident">hchild_prev_focus</span>: <span class="prelude-val">None</span>,
-				},
-			)),
-		);
-		<span class="ident">wnd</span>.<span class="ident">default_message_handlers</span>();
-		<span class="ident">wnd</span>
-	}
-
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_main</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts</span>;
-
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wcx</span> <span class="op">=</span> <span class="ident">WNDCLASSEX</span>::<span class="ident">default</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">class_name_buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">default</span>();
-		<span class="ident">opts</span>.<span class="ident">generate_wndclassex</span>(
-			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_hinstance</span>()<span class="question-mark">?</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wcx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">class_name_buf</span>)<span class="question-mark">?</span>;
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">register_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wcx</span>)<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wnd_sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
-		<span class="ident">multiply_dpi</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wnd_sz</span>))<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">screen_sz</span> <span class="op">=</span> <span class="ident">SIZE</span> {
-			<span class="ident">cx</span>: <span class="ident">GetSystemMetrics</span>(<span class="ident">co</span>::<span class="ident">SM</span>::<span class="ident">CXSCREEN</span>),
-			<span class="ident">cy</span>: <span class="ident">GetSystemMetrics</span>(<span class="ident">co</span>::<span class="ident">SM</span>::<span class="ident">CYSCREEN</span>),
-		};
-
-		<span class="kw">let</span> <span class="ident">wnd_pos</span> <span class="op">=</span> <span class="ident">POINT</span> {
-			<span class="ident">x</span>: <span class="ident">screen_sz</span>.<span class="ident">cx</span> <span class="op">/</span> <span class="number">2</span> <span class="op">-</span> <span class="ident">wnd_sz</span>.<span class="ident">cx</span> <span class="op">/</span> <span class="number">2</span>, <span class="comment">// center on screen</span>
-			<span class="ident">y</span>: <span class="ident">screen_sz</span>.<span class="ident">cy</span> <span class="op">/</span> <span class="number">2</span> <span class="op">-</span> <span class="ident">wnd_sz</span>.<span class="ident">cy</span> <span class="op">/</span> <span class="number">2</span>,
-		};
-
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wnd_rc</span> <span class="op">=</span> <span class="ident">RECT</span> { <span class="comment">// client area, will be adjusted to size with title bar and borders</span>
-			<span class="ident">left</span>: <span class="ident">wnd_pos</span>.<span class="ident">x</span>,
-			<span class="ident">top</span>: <span class="ident">wnd_pos</span>.<span class="ident">y</span>,
-			<span class="ident">right</span>: <span class="ident">wnd_pos</span>.<span class="ident">x</span> <span class="op">+</span> <span class="ident">wnd_sz</span>.<span class="ident">cx</span>,
-			<span class="ident">bottom</span>: <span class="ident">wnd_pos</span>.<span class="ident">y</span> <span class="op">+</span> <span class="ident">wnd_sz</span>.<span class="ident">cy</span>,
-		};
-		<span class="ident">AdjustWindowRectEx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wnd_rc</span>, <span class="ident">opts</span>.<span class="ident">style</span>,
-			<span class="op">!</span><span class="ident">opts</span>.<span class="ident">menu</span>.<span class="ident">is_null</span>(), <span class="ident">opts</span>.<span class="ident">ex_style</span>)<span class="question-mark">?</span>;
-		<span class="ident">wnd_sz</span>.<span class="ident">cx</span> <span class="op">=</span> <span class="ident">wnd_rc</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">wnd_rc</span>.<span class="ident">left</span>;
-		<span class="ident">wnd_sz</span>.<span class="ident">cy</span> <span class="op">=</span> <span class="ident">wnd_rc</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">wnd_rc</span>.<span class="ident">top</span>;
-
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
-			<span class="kw-2">&amp;</span><span class="ident">class_name_buf</span>.<span class="ident">to_string</span>(),
-			<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">title</span>),
-			<span class="ident">IdMenu</span>::<span class="prelude-val">None</span>,
-			<span class="ident">POINT</span>::<span class="ident">new</span>(<span class="ident">wnd_rc</span>.<span class="ident">left</span>, <span class="ident">wnd_rc</span>.<span class="ident">top</span>), <span class="ident">wnd_sz</span>,
-			<span class="ident">opts</span>.<span class="ident">ex_style</span>, <span class="ident">opts</span>.<span class="ident">style</span>,
-		)<span class="question-mark">?</span>;
-
-		<span class="self">self</span>.<span class="ident">hwnd_ref</span>().<span class="ident">ShowWindow</span>(<span class="ident">cmd_show</span>.<span class="ident">unwrap_or</span>(<span class="ident">co</span>::<span class="ident">SW</span>::<span class="ident">SHOW</span>));
-		<span class="self">self</span>.<span class="ident">hwnd_ref</span>().<span class="ident">UpdateWindow</span>()<span class="question-mark">?</span>;
-
-		<span class="ident">Base</span>::<span class="ident">run_main_loop</span>(<span class="ident">opts</span>.<span class="ident">accel_table</span>.<span class="ident">as_opt</span>()) <span class="comment">// blocks until window is closed</span>
-	}
-
-	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">user_events_ref</span>().<span class="ident">wm_activate</span>({
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
-				<span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">is_minimized</span> {
-					<span class="kw">if</span> <span class="ident">p</span>.<span class="ident">event</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">WA</span>::<span class="ident">INACTIVE</span> {
-						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>) <span class="op">=</span> <span class="ident">HWND</span>::<span class="ident">GetFocus</span>() {
-							<span class="kw">if</span> <span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">IsChild</span>(<span class="ident">hwnd_cur_focus</span>) {
-								<span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">hchild_prev_focus</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>); <span class="comment">// save previously focused control</span>
-							}
-						}
-					} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_prev_focus</span>) <span class="op">=</span> <span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">hchild_prev_focus</span> {
-						<span class="ident">hwnd_prev_focus</span>.<span class="ident">SetFocus</span>(); <span class="comment">// put focus back</span>
-					}
-				}
-			}
-		});
-
-		<span class="self">self</span>.<span class="ident">user_events_ref</span>().<span class="ident">wm_set_focus</span>({
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>) <span class="op">=</span> <span class="ident">HWND</span>::<span class="ident">GetFocus</span>() {
-					<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">self2</span>.<span class="ident">hwnd_ref</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">hwnd_cur_focus</span> {
-						<span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">focus_first_child</span>(); <span class="comment">// if window receives focus, delegate to first child</span>
-					}
-				}
-			}
-		});
-
-		<span class="self">self</span>.<span class="ident">user_events_ref</span>().<span class="ident">wm_nc_destroy</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="ident">PostQuitMessage</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">SUCCESS</span>);
-		});
-	}
+<span class="kw">enum</span> <span class="ident">RawDlg</span> {
+	<span class="ident">Raw</span>(<span class="ident">RawMain</span>),
+	<span class="ident">Dlg</span>(<span class="ident">DlgMain</span>),
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="doccomment">/// Options to create a [`CustomMain`](crate::gui::CustomMain) programatically</span>
-<span class="doccomment">/// with [`CustomMain::new`](crate::gui::CustomMain::new).</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CustomMainOpts</span> {
-	<span class="doccomment">/// Window class name to be</span>
-	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to an auto-generated string.</span>
-	<span class="kw">pub</span> <span class="ident">class_name</span>: <span class="ident">String</span>,
-	<span class="doccomment">/// Window class styles to be</span>
-	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `co::CS::DBLCLKS`.</span>
-	<span class="kw">pub</span> <span class="ident">class_style</span>: <span class="ident">co</span>::<span class="ident">CS</span>,
-	<span class="doccomment">/// Window main icon to be</span>
-	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to none.</span>
-	<span class="kw">pub</span> <span class="ident">class_icon</span>: <span class="ident">HICON</span>,
-	<span class="doccomment">/// Window cursor to be</span>
-	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `co::IDC::ARROW`.</span>
-	<span class="kw">pub</span> <span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
-	<span class="doccomment">/// Window background brush to be</span>
-	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `co::COLOR::BTNFACE`.</span>
-	<span class="kw">pub</span> <span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>,
+<span class="doccomment">/// An user main window, which can handle events. Usually, this is the first</span>
+<span class="doccomment">/// window of your application, launched directly from the `main` function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// A `WindowMain` window can be programatically created or load a dialog</span>
+<span class="doccomment">/// resource from a `.rc` script.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ## Programmaticaly creating a window</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Below is a full application based on a non-dialog `WindowMain`, whose</span>
+<span class="doccomment">/// instance is kept within `MyMain` struct. This is not necessary, but is</span>
+<span class="doccomment">/// highly recommended, because it makes it easier to manage the window</span>
+<span class="doccomment">/// contents.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The `main` function instantiates `MyMain` by calling `MyMain::new`, which</span>
+<span class="doccomment">/// then calls `WindowMain::new`. Note how it receives a `WindowMainOpts`</span>
+<span class="doccomment">/// argument, who defines all the options.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The window is handling the</span>
+<span class="doccomment">/// [mouse click event](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondown)</span>
+<span class="doccomment">/// with a closure, and it displays the clicked coordinates in the</span>
+<span class="doccomment">/// [title bar](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowtextw).</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// use winsafe::{gui, WinResult};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// fn main() {</span>
+<span class="doccomment">///     let my_main = MyMain::new();</span>
+<span class="doccomment">///     if let Err(e) = my_main.wnd.run_main(None) {</span>
+<span class="doccomment">///         eprintln!(&quot;{}&quot;, e);</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// pub struct MyMain {</span>
+<span class="doccomment">///     wnd: gui::WindowMain,</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// impl MyMain {</span>
+<span class="doccomment">///     pub fn new() -&gt; MyMain {</span>
+<span class="doccomment">///         let wnd = gui::WindowMain::new(</span>
+<span class="doccomment">///             gui::WindowMainOpts {</span>
+<span class="doccomment">///                 title: &quot;My window&quot;.to_owned(),</span>
+<span class="doccomment">///                 ..Default::default()</span>
+<span class="doccomment">///             },</span>
+<span class="doccomment">///         );</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///         let new_self = Self { wnd };</span>
+<span class="doccomment">///         new_self.events();</span>
+<span class="doccomment">///         new_self</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     fn events(&amp;self) {</span>
+<span class="doccomment">///         let wnd = self.wnd.clone(); // clone so it can be passed into the closure</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///         self.wnd.on().wm_l_button_down(move |params| {</span>
+<span class="doccomment">///             let txt = &amp;format!(&quot;Coords {} x {}&quot;, params.coords.x, params.coords.y);</span>
+<span class="doccomment">///             wnd.hwnd().SetWindowText(txt).unwrap();</span>
+<span class="doccomment">///         });</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ## Loading a window resource from a `.rc` file</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// A window can also be loaded from a Win32 resource file (usually an `.rc`</span>
+<span class="doccomment">/// file). Below, a full aplication where `WindowMain` loads a window resource,</span>
+<span class="doccomment">/// instead of creating the window programatically. Note how</span>
+<span class="doccomment">/// `WindowMain::new_dlg` instead of `WindowMain::new`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// use winsafe::{gui, WinResult};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// fn main() {</span>
+<span class="doccomment">///     let my_main = MyDlg::new();</span>
+<span class="doccomment">///     if let Err(e) = my_main.dlg.run_main(None) {</span>
+<span class="doccomment">///         eprintln!(&quot;{}&quot;, e);</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// pub struct MyDlg {</span>
+<span class="doccomment">///     dlg: gui::WindowMain,</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// impl MyDlg {</span>
+<span class="doccomment">///     pub fn new() -&gt; MyDlg {</span>
+<span class="doccomment">///         // 101 is the ID of the dialog resource in the .rc file</span>
+<span class="doccomment">///         let dlg = gui::WindowMain::new_dlg(101, None, None);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///         let new_self = Self { dlg };</span>
+<span class="doccomment">///         new_self.events();</span>
+<span class="doccomment">///         new_self</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     fn events(&amp;self) {</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowMain</span>(<span class="ident">RawDlg</span>);
 
-	<span class="doccomment">/// Window title to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to empty string.</span>
-	<span class="kw">pub</span> <span class="ident">title</span>: <span class="ident">String</span>,
-	<span class="doccomment">/// Size of window client area, in pixels, to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">/// Does not include title bar or borders.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to 600 x 500.</span>
-	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">SIZE</span>,
-	<span class="doccomment">/// Window styles to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `WS::CAPTION | WS::SYSMENU | WS::CLIPCHILDREN | WS::BORDER | WS::VISIBLE`.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Suggestions:</span>
-	<span class="doccomment">/// * `WS::SIZEBOX` to make the window resizable;</span>
-	<span class="doccomment">/// * `WS::MINIMIZEBOX` to have a minimize button;</span>
-	<span class="doccomment">/// * `WS::MAXIMIZEBOX` to have a maximize button.</span>
-	<span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
-	<span class="doccomment">/// Extended window styles to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `WS_EX::LEFT`.</span>
-	<span class="kw">pub</span> <span class="ident">ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
-	<span class="doccomment">/// Main menu of the window to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This menu is not shared, the window will own it, and destroy it when the</span>
-	<span class="doccomment">/// window is destroyed.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to none.</span>
-	<span class="kw">pub</span> <span class="ident">menu</span>: <span class="ident">HMENU</span>,
-	<span class="doccomment">/// Main accelerator table of the window to be</span>
-	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to none.</span>
-	<span class="kw">pub</span> <span class="ident">accel_table</span>: <span class="ident">HACCEL</span>,
-}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">CustomMainOpts</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">class_name</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
-			<span class="ident">class_style</span>: <span class="ident">co</span>::<span class="ident">CS</span>::<span class="ident">DBLCLKS</span>,
-			<span class="ident">class_icon</span>: <span class="kw">unsafe</span> { <span class="ident">HICON</span>::<span class="ident">null_handle</span>() },
-			<span class="ident">class_cursor</span>: <span class="kw">unsafe</span> { <span class="ident">HCURSOR</span>::<span class="ident">null_handle</span>() },
-			<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>::<span class="ident">from_sys_color</span>(<span class="ident">co</span>::<span class="ident">COLOR</span>::<span class="ident">BTNFACE</span>),
-			<span class="ident">title</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
-			<span class="ident">size</span>: <span class="ident">SIZE</span> { <span class="ident">cx</span>: <span class="number">600</span>, <span class="ident">cy</span>: <span class="number">500</span> },
-			<span class="ident">style</span>: <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">CAPTION</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">SYSMENU</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">CLIPCHILDREN</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">BORDER</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">VISIBLE</span>,
-			<span class="ident">ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">LEFT</span>,
-			<span class="ident">menu</span>: <span class="kw">unsafe</span> { <span class="ident">HMENU</span>::<span class="ident">null_handle</span>() },
-			<span class="ident">accel_table</span>: <span class="kw">unsafe</span> { <span class="ident">HACCEL</span>::<span class="ident">null_handle</span>() },
+<span class="kw">impl</span> <span class="ident">Parent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+	<span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">RawDlg</span>::<span class="ident">Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">hwnd_ref</span>(),
+			<span class="ident">RawDlg</span>::<span class="ident">Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">hwnd_ref</span>(),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">user_events_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">RawDlg</span>::<span class="ident">Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">user_events_ref</span>(),
+			<span class="ident">RawDlg</span>::<span class="ident">Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">user_events_ref</span>(),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">privileged_events_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">RawDlg</span>::<span class="ident">Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">privileged_events_ref</span>(),
+			<span class="ident">RawDlg</span>::<span class="ident">Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">privileged_events_ref</span>(),
 		}
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">CustomMainOpts</span> {
-	<span class="kw">fn</span> <span class="ident">generate_wndclassex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>( <span class="comment">// https://stackoverflow.com/q/65481548/6923555</span>
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>,
-		<span class="ident">wcx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-		<span class="ident">class_name_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">impl</span> <span class="ident">WindowMain</span> {
+	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be created with</span>
+	<span class="doccomment">/// [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">opts</span>: <span class="ident">WindowMainOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowMain</span> {
+		<span class="self">Self</span>(
+			<span class="ident">RawDlg</span>::<span class="ident">Raw</span>(
+				<span class="ident">RawMain</span>::<span class="ident">new</span>(<span class="ident">opts</span>),
+			),
+		)
+	}
+
+	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be loaded from a dialog</span>
+	<span class="doccomment">/// resource with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
+		<span class="ident">dialog_id</span>: <span class="ident">i32</span>,
+		<span class="ident">icon_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
+		<span class="ident">accel_table_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowMain</span>
 	{
-		<span class="ident">wcx</span>.<span class="ident">hInstance</span> <span class="op">=</span> <span class="ident">hinst</span>;
-		<span class="ident">wcx</span>.<span class="ident">style</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">class_style</span>;
-		<span class="ident">wcx</span>.<span class="ident">hIcon</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">class_icon</span>;
-		<span class="ident">wcx</span>.<span class="ident">hIconSm</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">class_icon</span>;
-		<span class="ident">wcx</span>.<span class="ident">hbrBackground</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">class_bg_brush</span>;
+		<span class="self">Self</span>(
+			<span class="ident">RawDlg</span>::<span class="ident">Dlg</span>(
+				<span class="ident">DlgMain</span>::<span class="ident">new</span>(<span class="ident">dialog_id</span>, <span class="ident">icon_id</span>, <span class="ident">accel_table_id</span>),
+			),
+		)
+	}
 
-		<span class="ident">wcx</span>.<span class="ident">hCursor</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">class_cursor</span>.<span class="ident">as_opt</span>() {
-			<span class="prelude-val">Some</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HINSTANCE</span>::<span class="ident">oem</span>().<span class="ident">LoadCursor</span>(<span class="ident">IdIdcStr</span>::<span class="ident">Idc</span>(<span class="ident">co</span>::<span class="ident">IDC</span>::<span class="ident">ARROW</span>))<span class="question-mark">?</span>,
-		};
+	<span class="doccomment">/// Returns the underlying handle for this window.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Note that the handle is initially null, receiving an actual value only</span>
+	<span class="doccomment">/// after the control is created.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
+		<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd_ref</span>()
+	}
 
-		<span class="kw">if</span> <span class="ident">wcx</span>.<span class="ident">lpszClassName</span>().<span class="ident">is_empty</span>() {
-			<span class="kw-2">*</span><span class="ident">class_name_buf</span> <span class="op">=</span> <span class="ident">WindowBase</span>::<span class="ident">generate_wcx_class_name_hash</span>(<span class="kw-2">&amp;</span><span class="ident">wcx</span>);
-			<span class="ident">wcx</span>.<span class="ident">set_lpszClassName</span>(<span class="ident">class_name_buf</span>);
+	<span class="doccomment">/// Exposes the window events.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if the window is already created. Events must be set before window</span>
+	<span class="doccomment">/// creation.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
+		<span class="self">self</span>.<span class="ident">user_events_ref</span>()
+	}
+
+	<span class="doccomment">/// Physically creates the window, then runs the main application loop. This</span>
+	<span class="doccomment">/// method will block until the window is closed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if the window is already created.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_main</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="ident">IsWindowsVistaOrGreater</span>()<span class="question-mark">?</span> {
+			<span class="ident">SetProcessDPIAware</span>()<span class="question-mark">?</span>;
 		}
 
-		<span class="prelude-val">Ok</span>(())
+		<span class="ident">InitCommonControls</span>();
+		<span class="ident">create_ui_font</span>()<span class="question-mark">?</span>;
+
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">RawDlg</span>::<span class="ident">Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>)<span class="question-mark">?</span>,
+			<span class="ident">RawDlg</span>::<span class="ident">Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>)<span class="question-mark">?</span>,
+		}
+
+		<span class="ident">delete_ui_font</span>() <span class="comment">// cleanup</span>
 	}
 }
 </pre></div>
