@@ -203,6 +203,9 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -318,19 +321,22 @@
 
 	<span class="macro">hwnd_ctrlid_on_onsubclass</span><span class="macro">!</span>(<span class="ident">ButtonEvents</span>);
 
-	<span class="doccomment">/// Tells if this check box is currently checked.</span>
+	<span class="doccomment">/// Tells if this check box is currently checked by sending a</span>
+	<span class="doccomment">/// [`BM_GETCHECK`](crate::msg::bm::GetCheck) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm</span>::<span class="ident">GetCheck</span> {}) <span class="op">=</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">BST</span>::<span class="ident">CHECKED</span>
 	}
 
-	<span class="doccomment">/// Sets the current check state.</span>
+	<span class="doccomment">/// Sets the current check state by sending a</span>
+	<span class="doccomment">/// [`BM_SETCHECK`](crate::msg::bm::SetCheck) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">checked</span>: <span class="ident">bool</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm</span>::<span class="ident">SetCheck</span> {
 			<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">checked</span> { <span class="ident">co</span>::<span class="ident">BST</span>::<span class="ident">CHECKED</span> } <span class="kw">else</span> { <span class="ident">co</span>::<span class="ident">BST</span>::<span class="ident">UNCHECKED</span> },
 		});
 	}
 
-	<span class="doccomment">/// Fires the click event for the radio button. The event is asynchronous,</span>
+	<span class="doccomment">/// Fires the click event for the check box by posting a</span>
+	<span class="doccomment">/// [`BM_CLICK`](crate::msg::bm::Click) message. The event is asynchronous,</span>
 	<span class="doccomment">/// the method returns immediately.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trigger_click</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">PostMessage</span>(<span class="ident">bm</span>::<span class="ident">Click</span> {})

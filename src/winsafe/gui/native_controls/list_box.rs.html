@@ -190,6 +190,8 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -303,7 +305,8 @@
 
 	<span class="macro">hwnd_ctrlid_on_onsubclass</span><span class="macro">!</span>(<span class="ident">ListBoxEvents</span>);
 
-	<span class="doccomment">/// Adds new texts.</span>
+	<span class="doccomment">/// Adds new texts by sending an [`LB_ADDSTRING`](crate::msg::lb::AddString)</span>
+	<span class="doccomment">/// message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">str</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">for</span> <span class="ident">text</span> <span class="kw">in</span> <span class="ident">items</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lb</span>::<span class="ident">AddString</span> { <span class="ident">text</span> })<span class="question-mark">?</span>;
@@ -311,7 +314,8 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="doccomment">/// Deletes the item at the given index.</span>
+	<span class="doccomment">/// Deletes the item at the given index by sending an</span>
+	<span class="doccomment">/// [`LB_DELETESTRING`](crate::msg::lb::DeleteString) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lb</span>::<span class="ident">DeleteString</span> { <span class="ident">index</span> })
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())

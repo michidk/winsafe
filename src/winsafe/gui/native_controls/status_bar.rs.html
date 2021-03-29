@@ -202,6 +202,9 @@
 <span id="199">199</span>
 <span id="200">200</span>
 <span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -354,12 +357,14 @@
 
 	<span class="macro">hwnd_on_onsubclass</span><span class="macro">!</span>(<span class="ident">StatusBarEvents</span>);
 
-	<span class="doccomment">/// Retrieves the number of parts.</span>
+	<span class="doccomment">/// Retrieves the number of parts by sending an</span>
+	<span class="doccomment">/// [`SB_GETPARTS`](crate::msg::sb::GetParts) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">part_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">GetParts</span> { <span class="ident">right_edges</span>: <span class="prelude-val">None</span> })
 	}
 
-	<span class="doccomment">/// Retrieves the text or a part.</span>
+	<span class="doccomment">/// Retrieves the text of a part by sending an</span>
+	<span class="doccomment">/// [`SB_GETTEXT`](crate::msg::sb::GetText) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">part_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">part_index</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
 		<span class="kw">let</span> (<span class="ident">len</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">GetTextLength</span> { <span class="ident">part_index</span> });
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">new_alloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
@@ -371,7 +376,8 @@
 		<span class="ident">buf</span>.<span class="ident">to_string</span>()
 	}
 
-	<span class="doccomment">/// Sets the text of a part.</span>
+	<span class="doccomment">/// Sets the text of a part by sending an</span>
+	<span class="doccomment">/// [`SB_SETTEXT`](crate::msg::sb::SetText) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_part_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">part_index</span>: <span class="ident">u8</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">SetText</span> {
 			<span class="ident">part_index</span>,
