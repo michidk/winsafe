@@ -195,7 +195,15 @@
 <span id="192">192</span>
 <span id="193">193</span>
 <span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
@@ -205,7 +213,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::<span class="ident">NativeControlBase</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">sb</span>, <span class="ident">wm</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -214,12 +222,15 @@
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [status bar](https://docs.microsoft.com/en-us/windows/win32/controls/status-bars)</span>
 <span class="doccomment">/// control, which has one or more parts.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Implements [`Child`](crate::gui::Child) trait.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusBar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of StatusBar</span>
-	<span class="ident">base</span>: <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">StatusBarEvents</span><span class="op">&gt;</span>,
+	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+	<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>,
 	<span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusBarPart</span><span class="op">&gt;</span>,
 	<span class="ident">right_edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="comment">// buffer to speed up resize calls</span>
 }
@@ -228,8 +239,8 @@
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">StatusBar</span> {}
 
 <span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">StatusBar</span> {
-	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
@@ -237,28 +248,30 @@
 	<span class="doccomment">/// Instantiates a new `StatusBar` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">parts</span>: <span class="kw-2">&amp;</span>[<span class="ident">StatusBarPart</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StatusBar</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">auto_ctrl_id</span>();
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-						<span class="ident">parent</span>,
-						<span class="ident">StatusBarEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
-					),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">ctrl_id</span>,
+					<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 					<span class="ident">parts</span>: <span class="ident">parts</span>.<span class="ident">to_vec</span>(),
 					<span class="ident">right_edges</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">parts</span>.<span class="ident">len</span>()],
 				},
 			)),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">create_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_size</span>({
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_size</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">me</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>)
 		});
+
 		<span class="ident">new_self</span>
 	}
 
@@ -272,8 +285,9 @@
 				}
 			}
 
+			<span class="kw">let</span> <span class="ident">hparent</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>();
 			<span class="kw">let</span> <span class="ident">parent_style</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">WS</span>(
-				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_hwnd</span>().<span class="ident">GetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">STYLE</span>) <span class="kw">as</span> <span class="ident">u32</span>,
+				<span class="ident">hparent</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">STYLE</span>) <span class="kw">as</span> <span class="ident">u32</span>,
 			);
 			<span class="kw">let</span> <span class="ident">is_parent_resizable</span> <span class="op">=</span> <span class="ident">parent_style</span>.<span class="ident">has</span>(<span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">MAXIMIZEBOX</span>)
 				<span class="op">|</span><span class="op">|</span> <span class="ident">parent_style</span>.<span class="ident">has</span>(<span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">SIZEBOX</span>);
@@ -292,7 +306,7 @@
 			)<span class="question-mark">?</span>;
 
 			<span class="comment">// Force first resizing, so the panels are created.</span>
-			<span class="kw">let</span> <span class="ident">parent_rc</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_hwnd</span>().<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">parent_rc</span> <span class="op">=</span> <span class="ident">hparent</span>.<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>;
 			<span class="self">self</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">wm</span>::<span class="ident">Size</span> {
 				<span class="ident">client_area</span>: <span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="ident">parent_rc</span>.<span class="ident">right</span>, <span class="ident">parent_rc</span>.<span class="ident">bottom</span>),
 				<span class="ident">request</span>: <span class="ident">co</span>::<span class="ident">SIZE_R</span>::<span class="ident">RESTORED</span>,
@@ -391,4 +405,5 @@
 	<span class="ident">Proportional</span>(<span class="ident">u8</span>),
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

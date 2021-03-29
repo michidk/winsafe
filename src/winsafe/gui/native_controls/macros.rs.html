@@ -59,10 +59,23 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Implements methods common to controls.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hwnd_on_onsubclass</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">base_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">NativeControlBase</span> {
+			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>
+		}
+
 		<span class="doccomment">/// Returns the underlying handle for this control.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// **Note:** the handle is initially null, receiving an actual value only</span>
@@ -71,7 +84,7 @@
 		<span class="doccomment">/// [`WM_INITDIALOG`](crate::gui::events::WindowEvents::wm_init_dialog)</span>
 		<span class="doccomment">/// events.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
-			<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hctrl_ref</span>()
+			<span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>()
 		}
 
 		<span class="doccomment">/// Exposes the control events.</span>
@@ -85,7 +98,12 @@
 		<span class="doccomment">/// Panics if the control or the parent window are already created. Events</span>
 		<span class="doccomment">/// must be set before control and parent window creation.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span> {
-			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">on</span>()
+			<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
+				<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
+				<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
+			}
+			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">events</span>
 		}
 
 		<span class="doccomment">/// Exposes the subclass events. If at least one event exists, the control</span>
@@ -119,4 +137,5 @@
 	};
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

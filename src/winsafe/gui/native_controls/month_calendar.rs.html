@@ -166,7 +166,17 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
@@ -176,7 +186,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">MonthCalendarEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">mcm</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
@@ -184,20 +194,23 @@
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [month calendar](https://docs.microsoft.com/en-us/windows/win32/controls/month-calendar-controls)</span>
 <span class="doccomment">/// control.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Implements [`Child`](crate::gui::Child) trait.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MonthCalendar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of MonthCalendar</span>
-	<span class="ident">base</span>: <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">MonthCalendarEvents</span><span class="op">&gt;</span>,
+	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">MonthCalendarOpts</span><span class="op">&gt;</span>,
+	<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>,
 }
 
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">MonthCalendar</span> {}
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">MonthCalendar</span> {}
 
 <span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">MonthCalendar</span> {
-	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
@@ -205,43 +218,48 @@
 	<span class="doccomment">/// Instantiates a new `MonthCalendar` object, to be created on the parent</span>
 	<span class="doccomment">/// window with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">MonthCalendarOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">MonthCalendarOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
+		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-						<span class="ident">parent</span>,
-						<span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">opts</span>.<span class="ident">ctrl_id</span>),
-					),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
+					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">create_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
+
 		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `MonthCalendar` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-						<span class="ident">parent</span>,
-						<span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
-					),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
+
 		<span class="ident">new_self</span>
 	}
 
@@ -333,4 +351,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

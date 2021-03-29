@@ -173,28 +173,20 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">IdMenu</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">base</span>::<span class="ident">Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::<span class="ident">Child</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">WndMsg</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">WC_DIALOG</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -213,54 +205,45 @@
 <span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Base to all native child controls.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NativeControlBase</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
-<span class="kw">struct</span> <span class="ident">Obj</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> { <span class="comment">// actual fields of NativeControlBase</span>
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of NativeControlBase</span>
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
-	<span class="ident">parent_events</span>: <span class="ident">Ev</span>, <span class="comment">// specific control events, which delegate to parent events</span>
+	<span class="ident">ptr_parent</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">Base</span><span class="op">&gt;</span>,
 	<span class="ident">subclass_events</span>: <span class="ident">WindowEvents</span>, <span class="comment">// for control subclassing</span>
-	<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>, <span class="comment">// used only in control creation</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>
+<span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">NativeControlBase</span> {
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">parent_events</span>: <span class="ident">Ev</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">Ev</span><span class="op">&gt;</span>
-	{
+<span class="kw">impl</span> <span class="ident">NativeControlBase</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent_ref</span>: <span class="kw-2">&amp;</span><span class="ident">Base</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NativeControlBase</span> {
 		<span class="self">Self</span>(
 			<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">hwnd</span>: <span class="kw">unsafe</span> { <span class="ident">HWND</span>::<span class="ident">null_handle</span>() },
-					<span class="ident">parent_events</span>,
+					<span class="ident">ptr_parent</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">parent_ref</span>), <span class="comment">// ref implicitly converted to pointer</span>
 					<span class="ident">subclass_events</span>: <span class="ident">WindowEvents</span>::<span class="ident">new</span>(),
-					<span class="ident">ptr_parent_hwnd</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()), <span class="comment">// ref implicitly converted to pointer</span>
 				},
 			),
 		)
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parent_hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ptr_parent_hwnd</span>.<span class="ident">as_ref</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Ev</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hctrl_ref</span>().<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
-		}
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_events</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parent_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Base</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ptr_parent</span>.<span class="ident">as_ref</span>() }
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add subclass events after the control is created.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add subclass events after the parent window is created.&quot;</span>);
 		}
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">subclass_events</span>
@@ -275,22 +258,22 @@
 		<span class="ident">ex_styles</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
 		<span class="ident">styles</span>: <span class="ident">co</span>::<span class="ident">WS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
+		<span class="kw">let</span> <span class="ident">hparent</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>();
+
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control twice.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">hparent</span>.<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control before parent window is created.&quot;</span>);
 		}
-
-		<span class="kw">let</span> <span class="ident">parent_hwnd</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ptr_parent_hwnd</span>.<span class="ident">as_ref</span>() };
 
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">hwnd</span> <span class="op">=</span> <span class="ident">HWND</span>::<span class="ident">CreateWindowEx</span>(
 			<span class="ident">ex_styles</span>,
 			<span class="ident">AtomStr</span>::<span class="ident">Str</span>(<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">class_name</span>)),
 			<span class="ident">title</span>, <span class="ident">styles</span>,
 			<span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>,
-			<span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">parent_hwnd</span>),
+			<span class="prelude-val">Some</span>(<span class="ident">hparent</span>),
 			<span class="ident">IdMenu</span>::<span class="ident">Id</span>(<span class="ident">ctrl_id</span>),
-			<span class="ident">parent_hwnd</span>.<span class="ident">hinstance</span>(),
+			<span class="ident">hparent</span>.<span class="ident">hinstance</span>(),
 			<span class="prelude-val">None</span>,
 		)<span class="question-mark">?</span>;
 
@@ -299,20 +282,19 @@
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_dlg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control twice.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">parent_hwnd</span>().<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control before parent window is created.&quot;</span>);
-		}
-
-		<span class="kw">let</span> <span class="ident">parent_hwnd</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ptr_parent_hwnd</span>.<span class="ident">as_ref</span>() };
-
-		<span class="kw">let</span> <span class="ident">parent_atom</span> <span class="op">=</span> <span class="ident">parent_hwnd</span>.<span class="ident">GetClassLongPtr</span>(<span class="ident">co</span>::<span class="ident">GCLP</span>::<span class="ident">ATOM</span>);
-		<span class="kw">if</span> <span class="ident">parent_atom</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">!</span><span class="op">=</span> <span class="ident">WC_DIALOG</span> { <span class="comment">// https://stackoverflow.com/a/64437627/6923555</span>
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">parent_ref</span>().<span class="ident">create_wm</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">INITDIALOG</span> {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Parent window is not a dialog, cannot create control.&quot;</span>);
 		}
 
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">hwnd</span> <span class="op">=</span> <span class="ident">parent_hwnd</span>.<span class="ident">GetDlgItem</span>(<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="ident">i32</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">hparent</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>();
+
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
+			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control twice.&quot;</span>);
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">hparent</span>.<span class="ident">is_null</span>() {
+			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot create control before parent window is created.&quot;</span>);
+		}
+
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">hwnd</span> <span class="op">=</span> <span class="ident">hparent</span>.<span class="ident">GetDlgItem</span>(<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="ident">i32</span>)<span class="question-mark">?</span>;
 		<span class="self">self</span>.<span class="ident">install_subclass_if_needed</span>()<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">hwnd</span>)
 	}
@@ -365,4 +347,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

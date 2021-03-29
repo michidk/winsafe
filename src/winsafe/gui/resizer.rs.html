@@ -187,6 +187,15 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -196,7 +205,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">HwndPlace</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">hwndref_from_child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDWP</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">wm</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">RECT</span>, <span class="ident">SIZE</span>};
@@ -216,7 +225,7 @@
 }
 
 <span class="kw">struct</span> <span class="ident">Ctrl</span> {
-	<span class="ident">hctrl</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+	<span class="ident">hwnd_ptr</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
 	<span class="ident">rc_orig</span>: <span class="ident">RECT</span>, <span class="comment">// original coordinates relative to parent</span>
 	<span class="ident">horz</span>: <span class="ident">Resz</span>,
 	<span class="ident">vert</span>: <span class="ident">Resz</span>,
@@ -238,6 +247,8 @@
 <span class="kw">impl</span> <span class="ident">Resizer</span> {
 	<span class="doccomment">/// Instantiates a new `Resizer`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Resizer</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+
 		<span class="kw">let</span> <span class="ident">resz</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
@@ -247,10 +258,12 @@
 				}
 			)),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_size</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_size</span>({
 			<span class="kw">let</span> <span class="ident">resz</span> <span class="op">=</span> <span class="ident">resz</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">resz</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
 		});
+
 		<span class="ident">resz</span>
 	}
 
@@ -298,7 +311,10 @@
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;No children being added to Resizer.&quot;</span>);
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">resize_called</span> {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add children after Resizer started working.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">children</span>[<span class="number">0</span>].<span class="ident">hctrl_ref</span>().<span class="ident">is_null</span>() {
+		}
+
+		<span class="kw">let</span> <span class="ident">first_child_hwnd_ref</span> <span class="op">=</span> <span class="ident">hwndref_from_child</span>(<span class="ident">children</span>[<span class="number">0</span>]);
+		<span class="kw">if</span> <span class="ident">first_child_hwnd_ref</span>.<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add a child control to Resizer before it&#39;s created.&quot;</span>);
 		}
 
@@ -306,18 +322,19 @@
 			<span class="kw">let</span> <span class="ident">ctrls</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">ctrls</span>;
 			<span class="ident">ctrls</span>.<span class="ident">reserve</span>(<span class="ident">children</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">children</span>.<span class="ident">len</span>());
 
-			<span class="kw">let</span> <span class="ident">hparent</span> <span class="op">=</span> <span class="ident">children</span>[<span class="number">0</span>].<span class="ident">hctrl_ref</span>().<span class="ident">GetParent</span>()<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">hparent</span> <span class="op">=</span> <span class="ident">first_child_hwnd_ref</span>.<span class="ident">GetParent</span>()<span class="question-mark">?</span>;
 			<span class="kw">if</span> <span class="ident">ctrls</span>.<span class="ident">is_empty</span>() { <span class="comment">// first call to add()</span>
 				<span class="kw">let</span> <span class="ident">rc_parent</span> <span class="op">=</span> <span class="ident">hparent</span>.<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>;
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">sz_parent_orig</span> <span class="op">=</span> <span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="ident">rc_parent</span>.<span class="ident">right</span>, <span class="ident">rc_parent</span>.<span class="ident">bottom</span>); <span class="comment">// save original parent size</span>
 			}
 
 			<span class="kw">for</span> <span class="ident">child</span> <span class="kw">in</span> <span class="ident">children</span>.<span class="ident">iter</span>() {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_orig</span> <span class="op">=</span> <span class="ident">child</span>.<span class="ident">hctrl_ref</span>().<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">child_hwnd_ref</span> <span class="op">=</span> <span class="ident">hwndref_from_child</span>(<span class="kw-2">*</span><span class="ident">child</span>);
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_orig</span> <span class="op">=</span> <span class="ident">child_hwnd_ref</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
 				<span class="ident">hparent</span>.<span class="ident">ScreenToClientRc</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc_orig</span>)<span class="question-mark">?</span>; <span class="comment">// client coordinates relative to parent</span>
 
 				<span class="ident">ctrls</span>.<span class="ident">push</span>(<span class="ident">Ctrl</span> {
-					<span class="ident">hctrl</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">child</span>.<span class="ident">hctrl_ref</span>()), <span class="comment">// ref implicitly converted to pointer</span>
+					<span class="ident">hwnd_ptr</span>: <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">child_hwnd_ref</span>), <span class="comment">// ref implicitly converted to pointer</span>
 					<span class="ident">rc_orig</span>,
 					<span class="ident">horz</span>,
 					<span class="ident">vert</span>,
@@ -349,7 +366,7 @@
 			}
 
 			<span class="ident">hdwp</span>.<span class="ident">DeferWindowPos</span>(
-				<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">ctrl</span>.<span class="ident">hctrl</span>.<span class="ident">as_ref</span>() },
+				<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">ctrl</span>.<span class="ident">hwnd_ptr</span>.<span class="ident">as_ref</span>() },
 				<span class="ident">HwndPlace</span>::<span class="prelude-val">None</span>,
 				<span class="kw">match</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> {
 					<span class="ident">Resz</span>::<span class="ident">Repos</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parent_cx</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cx</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span>,
@@ -371,8 +388,10 @@
 			)<span class="question-mark">?</span>;
 		}
 
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">resize_called</span> <span class="op">=</span> <span class="bool-val">true</span>;
 		<span class="ident">hdwp</span>.<span class="ident">EndDeferWindowPos</span>()
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "winsafe";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

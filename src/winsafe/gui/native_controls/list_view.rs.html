@@ -429,16 +429,26 @@
 <span id="426">426</span>
 <span id="427">427</span>
 <span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetAsyncKeyState</span>, <span class="ident">PostQuitMessage</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">base</span>::<span class="ident">Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ListViewEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">hdm</span>, <span class="ident">lvm</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">LVCOLUMN</span>, <span class="ident">LVITEM</span>, <span class="ident">NMLVKEYDOWN</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -446,23 +456,25 @@
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [list view](https://docs.microsoft.com/en-us/windows/win32/controls/list-view-controls-overview)</span>
+<span class="doccomment">/// control. Not to be confused with the simpler [list box](crate::gui::ListBox)</span>
 <span class="doccomment">/// control.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Not to be confused with the simpler [list box](crate::gui::ListBox) control.</span>
+<span class="doccomment">/// Implements [`Child`](crate::gui::Child) trait.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListView</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of ListView</span>
-	<span class="ident">base</span>: <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">ListViewEvents</span><span class="op">&gt;</span>,
+	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">ListViewOpts</span><span class="op">&gt;</span>,
+	<span class="ident">events</span>: <span class="ident">ListViewEvents</span>,
 }
 
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">ListView</span> {}
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">ListView</span> {}
 
 <span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">ListView</span> {
-	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
@@ -470,46 +482,50 @@
 	<span class="doccomment">/// Instantiates a new `ListView` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">ListViewOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListView</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ListViewOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-						<span class="ident">parent</span>,
-						<span class="ident">ListViewEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">opts</span>.<span class="ident">ctrl_id</span>),
-					),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
+					<span class="ident">events</span>: <span class="ident">ListViewEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_create</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">create_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
-		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>);
+
+		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>);
 		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `ListView` object, to be loaded from a dialog resource</span>
 	<span class="doccomment">/// with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListView</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-						<span class="ident">parent</span>,
-						<span class="ident">ListViewEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
-					),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">ListViewEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
+
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
-		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>);
+
+		<span class="ident">new_self</span>.<span class="ident">handled_events</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>);
 		<span class="ident">new_self</span>
 	}
 
@@ -538,8 +554,8 @@
 		}().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
 	}
 
-	<span class="kw">fn</span> <span class="ident">handled_events</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) {
-		<span class="ident">parent</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">add_nfy</span>(<span class="ident">ctrl_id</span>, <span class="ident">co</span>::<span class="ident">LVN</span>::<span class="ident">KEYDOWN</span>.<span class="ident">into</span>(), {
+	<span class="kw">fn</span> <span class="ident">handled_events</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent_ref</span>: <span class="kw-2">&amp;</span><span class="ident">Base</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) {
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">add_nfy</span>(<span class="ident">ctrl_id</span>, <span class="ident">co</span>::<span class="ident">LVN</span>::<span class="ident">KEYDOWN</span>.<span class="ident">into</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">lvnk</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="ident">NMLVKEYDOWN</span><span class="op">&gt;</span>() };
@@ -859,4 +875,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

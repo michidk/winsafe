@@ -194,60 +194,64 @@
 <span id="191">191</span>
 <span id="192">192</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
+
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ButtonEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>, <span class="ident">multiply_dpi</span>, <span class="ident">ui_font</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">bm</span>, <span class="ident">wm</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">POINT</span>;
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [radio button](https://docs.microsoft.com/en-us/windows/win32/controls/button-types-and-styles#radio-buttons)</span>
-<span class="doccomment">/// control.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The radion button is actually a variation of the ordinary</span>
+<span class="doccomment">/// control, actually a variation of the ordinary</span>
 <span class="doccomment">/// [`Button`](crate::gui::Button): just a button with a specific style.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Implements [`Child`](crate::gui::Child) trait.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, you must use</span>
 <span class="doccomment">/// [`RadioGroup`](crate::gui::RadioGroup).</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RadioButton</span>(<span class="ident">Obj</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of RadioButton</span>
-	<span class="ident">base</span>: <span class="ident">NativeControlBase</span><span class="op">&lt;</span><span class="ident">ButtonEvents</span><span class="op">&gt;</span>,
+	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">RadioButtonOpts</span><span class="op">&gt;</span>,
+	<span class="ident">events</span>: <span class="ident">ButtonEvents</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">RadioButton</span> {
-	<span class="kw">fn</span> <span class="ident">hctrl_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hctrl_ref</span>()
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">RadioButton</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">RadioButtonOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">RadioButtonOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
+		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
+
 		<span class="self">Self</span>(
 			<span class="ident">Obj</span> {
-				<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-					<span class="ident">parent</span>,
-					<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">opts</span>.<span class="ident">ctrl_id</span>),
-				),
+				<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 				<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
+				<span class="ident">events</span>: <span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 			},
 		)
 	}
 
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+
 		<span class="self">Self</span>(
 			<span class="ident">Obj</span> {
-				<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(
-					<span class="ident">parent</span>,
-					<span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">ctrl_id</span>),
-				),
+				<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 				<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
+				<span class="ident">events</span>: <span class="ident">ButtonEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
 			},
 		)
 	}
@@ -277,10 +281,6 @@
 
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm</span>::<span class="ident">SetDontClick</span> { <span class="ident">dont_click</span>: <span class="bool-val">true</span> });
 		<span class="prelude-val">Ok</span>(())
-	}
-
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parent_hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_hwnd</span>()
 	}
 
 	<span class="macro">hwnd_ctrlid_on_onsubclass</span><span class="macro">!</span>(<span class="ident">ButtonEvents</span>);
@@ -387,4 +387,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

@@ -1132,6 +1132,9 @@
 <span id="1129">1129</span>
 <span id="1130">1130</span>
 <span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
@@ -1143,9 +1146,12 @@
 
 <span class="doccomment">/// The result of processing a message.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
-	<span class="ident">NotHandled</span>,            <span class="comment">// message was not handler because no such handler is stored</span>
-	<span class="ident">HandledWithRet</span>(<span class="ident">isize</span>), <span class="comment">// return value is meaningful</span>
-	<span class="ident">HandledWithoutRet</span>,     <span class="comment">// return value is not meaningful, whatever default value</span>
+	<span class="doccomment">/// Message was not handled because no function was found.</span>
+	<span class="ident">NotHandled</span>,
+	<span class="doccomment">/// Message handled, and return value is meaningful.</span>
+	<span class="ident">HandledWithRet</span>(<span class="ident">isize</span>),
+	<span class="doccomment">/// Message handled, but you should return the default value (0 or FALSE).</span>
+	<span class="ident">HandledWithoutRet</span>,
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
@@ -1174,42 +1180,6 @@
 		(<span class="ident">u16</span>, <span class="ident">co</span>::<span class="ident">NM</span>), <span class="comment">// idFrom, code</span>
 		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
 	<span class="op">&gt;</span>,
-}
-
-<span class="doccomment">/// A message which has no parameters and returns zero.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">wm_empty</span> {
-	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>,
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-	) <span class="op">=</span><span class="op">&gt;</span> {
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-		{
-			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
-			});
-		}
-	};
-}
-
-<span class="doccomment">/// A message with parameters which returns zero.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">wm_ret_none</span> {
-	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>:<span class="ident">ty</span>,
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-	) <span class="op">=</span><span class="op">&gt;</span> {
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-		{
-			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
-			});
-		}
-	};
 }
 
 <span class="kw">impl</span> <span class="ident">WindowEvents</span> {
@@ -1331,6 +1301,42 @@
 	{
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">insert</span>((<span class="ident">id_from</span>, <span class="ident">code</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 	}
+}
+
+<span class="doccomment">/// A message which has no parameters and returns zero.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">wm_empty</span> {
+	(
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>,
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		{
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
+			});
+		}
+	};
+}
+
+<span class="doccomment">/// A message with parameters which returns zero.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">wm_ret_none</span> {
+	(
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>:<span class="ident">ty</span>,
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		{
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
+			});
+		}
+	};
 }
 
 <span class="kw">impl</span> <span class="ident">WindowEvents</span> {
@@ -2265,4 +2271,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "winsafe";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
