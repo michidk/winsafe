@@ -204,8 +204,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">HwndPlace</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">hwndref_from_child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDWP</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">wm</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">RECT</span>, <span class="ident">SIZE</span>};
@@ -236,7 +236,7 @@
 <span class="doccomment">/// When the parent window is resized, automatically adjusts position and size</span>
 <span class="doccomment">/// of child controls.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resizer</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resizer</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of Resizer</span>
 	<span class="ident">ctrls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ctrl</span><span class="op">&gt;</span>,
@@ -250,7 +250,7 @@
 		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 
 		<span class="kw">let</span> <span class="ident">resz</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
+			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">ctrls</span>: <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">16</span>), <span class="comment">// arbitrary, prealloc for speed</span>
 					<span class="ident">sz_parent_orig</span>: <span class="ident">SIZE</span>::<span class="ident">default</span>(),

@@ -1140,12 +1140,12 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">func_store</span>::<span class="ident">FuncStore</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDC</span>, <span class="ident">HICON</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
 	<span class="doccomment">/// Message was not handled because no function was found.</span>
 	<span class="ident">NotHandled</span>,
 	<span class="doccomment">/// Message handled, and return value is meaningful.</span>
@@ -1161,7 +1161,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// window.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowEvents</span>(<span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowEvents</span>(<span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of WindowEvents</span>
 	<span class="ident">msgs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// ordinary WM messages</span>
@@ -1185,7 +1185,7 @@
 <span class="kw">impl</span> <span class="ident">WindowEvents</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowEvents</span> {
 		<span class="self">Self</span>(
-			<span class="ident">Immut</span>::<span class="ident">new</span>(
+			<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">msgs</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
 					<span class="ident">tmrs</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
@@ -1427,7 +1427,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command_accel_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 
 		<span class="self">self</span>.<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Menu</span>, <span class="ident">ctrl_id</span>, {
 			<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();

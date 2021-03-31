@@ -136,7 +136,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">base</span>::<span class="ident">Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">WindowEvents</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
 
 <span class="doccomment">/// Exposes button control</span>
 <span class="doccomment">/// [notifications](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-button-control-reference-notifications)</span>
@@ -189,7 +189,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_clicked</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">BN</span>::<span class="ident">CLICKED</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span>, {
@@ -210,7 +210,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_dbl_clk</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">BN</span>::<span class="ident">DBLCLK</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span>, {
@@ -229,7 +229,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_kill_focus</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">BN</span>::<span class="ident">KILLFOCUS</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span>, {
@@ -248,7 +248,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_set_focus</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">BN</span>::<span class="ident">SETFOCUS</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span>, {

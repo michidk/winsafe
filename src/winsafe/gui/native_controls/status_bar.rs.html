@@ -213,10 +213,10 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">StatusBarEvents</span>, <span class="ident">WindowEvents</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">immut</span>::<span class="ident">Immut</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::<span class="ident">NativeControlBase</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">sb</span>, <span class="ident">wm</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -228,13 +228,13 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Implements [`Child`](crate::gui::Child) trait.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusBar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Immut</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusBar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of StatusBar</span>
 	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 	<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>,
-	<span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusBarPart</span><span class="op">&gt;</span>,
+	<span class="ident">parts_info</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusBarPart</span><span class="op">&gt;</span>,
 	<span class="ident">right_edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="comment">// buffer to speed up resize calls</span>
 }
 
@@ -255,12 +255,12 @@
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">auto_ctrl_id</span>();
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Immut</span>::<span class="ident">new</span>(
+			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">ctrl_id</span>,
 					<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
-					<span class="ident">parts</span>: <span class="ident">parts</span>.<span class="ident">to_vec</span>(),
+					<span class="ident">parts_info</span>: <span class="ident">parts</span>.<span class="ident">to_vec</span>(),
 					<span class="ident">right_edges</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">parts</span>.<span class="ident">len</span>()],
 				},
 			)),
@@ -280,8 +280,8 @@
 
 	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-			<span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">parts</span>.<span class="ident">iter_mut</span>() {
-				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">StatusBarPart</span>::<span class="ident">Fixed</span>(<span class="ident">width</span>) <span class="op">=</span> <span class="ident">part</span> {
+			<span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">parts_info</span>.<span class="ident">iter_mut</span>() {
+				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">StatusBarPart</span>::<span class="ident">Fixed</span>(<span class="ident">width</span>) <span class="op">=</span> <span class="ident">part</span> { <span class="comment">// adjust fixed-width parts to DPI</span>
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">col_cx</span> <span class="op">=</span> <span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">width</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="number">0</span>);
 					<span class="ident">multiply_dpi</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">col_cx</span>))<span class="question-mark">?</span>;
 					<span class="kw-2">*</span><span class="ident">width</span> <span class="op">=</span> <span class="ident">col_cx</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="ident">u32</span>;
@@ -326,13 +326,13 @@
 				<span class="kw">return</span> <span class="prelude-val">Ok</span>(()); <span class="comment">// nothing to do</span>
 			}
 
-			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">p</span>.<span class="ident">as_generic_wm</span>()); <span class="comment">// tell status bar to fit parent</span>
+			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">p</span>.<span class="ident">as_generic_wm</span>()); <span class="comment">// send WM_SIZE to status bar, so it resizes itself to fit parent</span>
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total_proportions</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cx_available</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="ident">u32</span>;
 
-			<span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts</span>.<span class="ident">iter</span>() {
-				<span class="kw">match</span> <span class="ident">part</span> {
+			<span class="kw">for</span> <span class="ident">part_info</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts_info</span>.<span class="ident">iter</span>() {
+				<span class="kw">match</span> <span class="ident">part_info</span> {
 					<span class="ident">StatusBarPart</span>::<span class="ident">Fixed</span>(<span class="ident">pixels</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cx_available</span> <span class="op">-</span><span class="op">=</span> <span class="ident">pixels</span>,
 					<span class="ident">StatusBarPart</span>::<span class="ident">Proportional</span>(<span class="ident">prop</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">total_proportions</span> <span class="op">+</span><span class="op">=</span> <span class="ident">prop</span>,
 				}
@@ -341,9 +341,9 @@
 			<span class="kw">let</span> <span class="ident">right_edges</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">right_edges</span>;
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total_cx</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="ident">u32</span>;
 
-			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">part</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>() {
-				<span class="ident">right_edges</span>[<span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">idx</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">total_cx</span> <span class="kw">as</span> <span class="ident">i32</span>;
-				<span class="ident">total_cx</span> <span class="op">-</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">part</span> {
+			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">part_info</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts_info</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>() {
+				<span class="ident">right_edges</span>[<span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts_info</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">idx</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">total_cx</span> <span class="kw">as</span> <span class="ident">i32</span>;
+				<span class="ident">total_cx</span> <span class="op">-</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">part_info</span> {
 					<span class="ident">StatusBarPart</span>::<span class="ident">Fixed</span>(<span class="ident">pixels</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">pixels</span>,
 					<span class="ident">StatusBarPart</span>::<span class="ident">Proportional</span>(<span class="ident">pp</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">cx_available</span> <span class="op">/</span> <span class="ident">total_proportions</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">*</span> (<span class="kw-2">*</span><span class="ident">pp</span> <span class="kw">as</span> <span class="ident">u32</span>),
 				};
