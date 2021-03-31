@@ -50,6 +50,9 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Parameters of</span>
 <span class="doccomment">//! [window messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues).</span>
@@ -62,11 +65,13 @@
 <span class="doccomment">//! # Examples</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! We want to delete the 3rd element of a [`ListView`](crate::gui::ListView)</span>
-<span class="doccomment">//! control. This can be done by sending it a</span>
-<span class="doccomment">//! [`LVM_DELETEITEM`](crate::msg::lvm::DeleteItem) message. Note how the</span>
-<span class="doccomment">//! `index` parameter is set when initializing the message struct, and how</span>
-<span class="doccomment">//! [`SendMessage`](crate::HWND::SendMessage) returns a</span>
-<span class="doccomment">//! [`WinResult`](crate::WinResult).</span>
+<span class="doccomment">//! control. This can be done by sending it an</span>
+<span class="doccomment">//! [`LVM_DELETEITEM`](crate::msg::lvm::DeleteItem) message via</span>
+<span class="doccomment">//! [`SendMessage`](crate::HWND::SendMessage). The message itself is a struct,</span>
+<span class="doccomment">//! which is initialized with the specific message parameters.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The message struct also defines the data type returned by `SendMessage`. In</span>
+<span class="doccomment">//! the example below, `LVM_DELETEITEM` returns `WinResult&lt;()&gt;`.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust,ignore</span>
 <span class="doccomment">//! use winsafe::{HWND, msg::lvm};</span>
@@ -80,8 +85,9 @@
 <span class="doccomment">//! }).expect(&quot;Failed to delete item 2.&quot;);</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Each message has its own set of parameters. Also, each message has its own</span>
-<span class="doccomment">//! result type, which will be returned by `SendMessage`.</span>
+<span class="doccomment">//! Messages are organized into modules according to their prefixes:</span>
+<span class="doccomment">//! [`wm`](crate::msg::wm) (window messages), [`lvm`](crate::msg::lvm) (list</span>
+<span class="doccomment">//! view messages), and so on.</span>
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">macros</span>;
