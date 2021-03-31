@@ -738,6 +738,51 @@
 <span id="735">735</span>
 <span id="736">736</span>
 <span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -894,6 +939,15 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpszClass</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">WString</span>) {
 		<span class="self">self</span>.<span class="ident">lpszClass</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() };
 	}
+}
+
+<span class="doccomment">/// [`FILETIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FILETIME</span> {
+	<span class="kw">pub</span> <span class="ident">dwLowDateTime</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">dwHighDateTime</span>: <span class="ident">u32</span>,
 }
 
 <span class="doccomment">/// [`HELPINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-helpinfo)</span>
@@ -1322,6 +1376,42 @@
 	<span class="kw">pub</span> <span class="ident">tmStruckOut</span>: <span class="ident">u8</span>,
 	<span class="kw">pub</span> <span class="ident">tmPitchAndFamily</span>: <span class="ident">u8</span>,
 	<span class="kw">pub</span> <span class="ident">tmCharSet</span>: <span class="ident">u8</span>,
+}
+
+<span class="doccomment">/// [`TIME_ZONE_INFORMATION`](https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TIME_ZONE_INFORMATION</span> {
+	<span class="kw">pub</span> <span class="ident">bias</span>: <span class="ident">i32</span>,
+	<span class="ident">standardName</span>: [<span class="ident">u16</span>; <span class="number">32</span>],
+	<span class="kw">pub</span> <span class="ident">standardDate</span>: <span class="ident">SYSTEMTIME</span>,
+	<span class="kw">pub</span> <span class="ident">standardBias</span>: <span class="ident">i32</span>,
+	<span class="ident">daylightName</span>: [<span class="ident">u16</span>; <span class="number">32</span>],
+	<span class="kw">pub</span> <span class="ident">daylightDate</span>: <span class="ident">SYSTEMTIME</span>,
+	<span class="kw">pub</span> <span class="ident">daylightBias</span>: <span class="ident">i32</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">TIME_ZONE_INFORMATION</span> {
+	<span class="doccomment">/// Returns the `standardName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">standardName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="ident">WString</span>::<span class="ident">from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">standardName</span>).<span class="ident">to_string</span>()
+	}
+
+	<span class="doccomment">/// Sets the `standardName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_standardName</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+		<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">standardName</span>);
+	}
+
+	<span class="doccomment">/// Returns the `daylightName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">daylightName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="ident">WString</span>::<span class="ident">from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">daylightName</span>).<span class="ident">to_string</span>()
+	}
+
+	<span class="doccomment">/// Sets the `daylightName` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_daylightName</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+		<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">daylightName</span>);
+	}
 }
 
 <span class="doccomment">/// [`TRACKMOUSEEVENT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-trackmouseevent)</span>

@@ -31,10 +31,10 @@ winsafe = &quot;0.0.2&quot;
 </ul>
 <p>And additionally:</p>
 <ul>
-<li><a href="../winsafe/shell/index.html"><code>shell</code></a> – Win32 shell COM interfaces.</li>
+<li><a href="../winsafe/shell/index.html"><code>shell</code></a> – Win32 Shell COM interfaces.</li>
 </ul>
-<p>Other modules are planned to be added in the future, featuring more COM
-interfaces.</p>
+<p>The COM implementation is still <em>very</em> experimental. Other COM modules are
+planned to be added in the future.</p>
 <h1 id="native-function-calls" class="section-header"><a href="#native-function-calls">Native function calls</a></h1>
 <p>The best way to understand the idea behind WinSafe bindings is comparing
 them to the correspondent C code.</p>
@@ -103,7 +103,7 @@ functions that can return errors, will return
 <p>WinSafe implements native Win32 structs in a very restricted way. First off,
 fields which control the size of the struct – often named <code>cbSize</code> – are
 <em>private</em> and automatically set when the struct is instantiated.</p>
-<p>Pointer fields are also private, and they can be set and retrieved only
+<p>Pointer fields are also private, and they can be set and retrieved <em>only</em>
 through getter and setter methods. In particular, when setting a string
 pointer field, you need to pass a reference to a <a href="../winsafe/struct.WString.html"><code>WString</code></a>
 buffer, which will keep the actual string contents.</p>
@@ -132,7 +132,7 @@ if (RegisterClassEx(&amp;wcx) == 0) {
 }</pre></div>
 <p>Note how you <em>don't need</em> to call
 <a href="../winsafe/fn.GetLastError.html"><code>GetLastError</code></a> to retrieve the error code: it's
-returned by the method itself.</p>
+returned by the method itself in the <a href="../winsafe/type.WinResult.html"><code>WinResult</code></a>.</p>
 <h1 id="text-encoding" class="section-header"><a href="#text-encoding">Text encoding</a></h1>
 <p>Windows natively uses
 <a href="https://docs.microsoft.com/en-us/windows/win32/learnwin32/working-with-strings">Unicode UTF-16</a>.</p>
@@ -174,6 +174,8 @@ struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.CREATESTRUCT.html" title="winsafe::CREATESTRUCT struct">CREATESTRUCT</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-createstructw"><code>CREATESTRUCT</code></a>
 struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.DATETIMEPICKERINFO.html" title="winsafe::DATETIMEPICKERINFO struct">DATETIMEPICKERINFO</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-datetimepickerinfo"><code>DATETIMEPICKERINFO</code></a>
+struct.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.FILETIME.html" title="winsafe::FILETIME struct">FILETIME</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime"><code>FILETIME</code></a>
 struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.GUID.html" title="winsafe::GUID struct">GUID</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid"><code>GUID</code></a>
 struct.</p>
@@ -329,6 +331,8 @@ struct for <a href="../winsafe/co/struct.WS_EX.html"><code>WS_EX</code></a>.</p>
 struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.TEXTMETRIC.html" title="winsafe::TEXTMETRIC struct">TEXTMETRIC</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-textmetricw"><code>TEXTMETRIC</code></a>
 struct.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.TIME_ZONE_INFORMATION.html" title="winsafe::TIME_ZONE_INFORMATION struct">TIME_ZONE_INFORMATION</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information"><code>TIME_ZONE_INFORMATION</code></a>
+struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.TRACKMOUSEEVENT.html" title="winsafe::TRACKMOUSEEVENT struct">TRACKMOUSEEVENT</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-trackmouseevent"><code>TRACKMOUSEEVENT</code></a>
 struct.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.WINDOWINFO.html" title="winsafe::WINDOWINFO struct">WINDOWINFO</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowinfo"><code>WINDOWINFO</code></a>
@@ -375,6 +379,8 @@ function. Returns some error codes as success status.</p>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.DispatchMessage.html" title="winsafe::DispatchMessage fn">DispatchMessage</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-dispatchmessagew"><code>DispatchMessage</code></a>
 function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.FileTimeToSystemTime.html" title="winsafe::FileTimeToSystemTime fn">FileTimeToSystemTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-filetimetosystemtime"><code>FileTimeToSystemTime</code></a>
+function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.GetAsyncKeyState.html" title="winsafe::GetAsyncKeyState fn">GetAsyncKeyState</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate"><code>GetAsyncKeyState</code></a>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.GetDialogBaseUnits.html" title="winsafe::GetDialogBaseUnits fn">GetDialogBaseUnits</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits"><code>GetDialogBaseUnits</code></a>
@@ -392,6 +398,14 @@ function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.GetSysColor.html" title="winsafe::GetSysColor fn">GetSysColor</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor"><code>GetSysColor</code></a>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.GetSystemMetrics.html" title="winsafe::GetSystemMetrics fn">GetSystemMetrics</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics"><code>GetSystemMetrics</code></a>
+function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.GetSystemTime.html" title="winsafe::GetSystemTime fn">GetSystemTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime"><code>GetSystemTime</code></a>
+function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.GetSystemTimeAsFileTime.html" title="winsafe::GetSystemTimeAsFileTime fn">GetSystemTimeAsFileTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime"><code>GetSystemTimeAsFileTime</code></a>
+function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.GetSystemTimePreciseAsFileTime.html" title="winsafe::GetSystemTimePreciseAsFileTime fn">GetSystemTimePreciseAsFileTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime"><code>GetSystemTimePreciseAsFileTime</code></a>
+function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.GetTickCount64.html" title="winsafe::GetTickCount64 fn">GetTickCount64</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount64"><code>GetTickCount64</code></a>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.HIBYTE.html" title="winsafe::HIBYTE fn">HIBYTE</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632656(v=vs.85)"><code>HIBYTE</code></a>
 function. Originally a macro.</p>
@@ -461,6 +475,10 @@ function.</p>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.SystemParametersInfo.html" title="winsafe::SystemParametersInfo fn">SystemParametersInfo</a><a title="unsafe function" href="#"><sup>⚠</sup></a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfow"><code>SystemParametersInfo</code></a>
 function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.SystemTimeToFileTime.html" title="winsafe::SystemTimeToFileTime fn">SystemTimeToFileTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-systemtimetofiletime"><code>SystemTimeToFileTime</code></a>
+function.</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.SystemTimeToTzSpecificLocalTime.html" title="winsafe::SystemTimeToTzSpecificLocalTime fn">SystemTimeToTzSpecificLocalTime</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-systemtimetotzspecificlocaltime"><code>SystemTimeToTzSpecificLocalTime</code></a>
+function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.TrackMouseEvent.html" title="winsafe::TrackMouseEvent fn">TrackMouseEvent</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackmouseevent"><code>TrackMouseEvent</code></a>
 function.</p>
 </td></tr><tr class="module-item"><td><a class="fn" href="fn.TranslateMessage.html" title="winsafe::TranslateMessage fn">TranslateMessage</a></td><td class="docblock-short"><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-translatemessage"><code>TranslateMessage</code></a>
@@ -495,7 +513,8 @@ callbak function.</p>
 </td></tr><tr class="module-item"><td><a class="type" href="type.WNDPROC.html" title="winsafe::WNDPROC type">WNDPROC</a></td><td class="docblock-short"><p>Type alias to
 <a href="https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v=vs.85)"><code>WNDPROC</code></a>
 callback function.</p>
-</td></tr><tr class="module-item"><td><a class="type" href="type.WinResult.html" title="winsafe::WinResult type">WinResult</a></td><td class="docblock-short"><p>A specialized <code>Result</code> for Win32 operations, which return an
-<a href="../winsafe/co/struct.ERROR.html"><code>ERROR</code></a> on failure.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WinResult.html" title="winsafe::WinResult type">WinResult</a></td><td class="docblock-short"><p>A specialized
+<a href="https://doc.rust-lang.org/std/result/enum.Result.html"><code>Result</code></a> for Win32
+operations, which return a <a href="../winsafe/co/struct.ERROR.html"><code>ERROR</code></a> on failure.</p>
 </td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="winsafe"></div>
     <script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
