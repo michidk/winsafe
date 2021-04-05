@@ -68,10 +68,32 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">/// Implements methods common to controls.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hwnd_on_onsubclass</span> {
-	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+<span class="doccomment">/// Implements methods common to controls:</span>
+<span class="doccomment">/// * base_ref;</span>
+<span class="doccomment">/// * hwnd;</span>
+<span class="doccomment">/// * on_subclass.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hwnd_onsubclass</span> {
+	() <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">base_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">NativeControlBase</span> {
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>
 		}
@@ -86,6 +108,31 @@
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
 			<span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>()
 		}
+
+		<span class="doccomment">/// Exposes the subclass events. If at least one event exists, the control</span>
+		<span class="doccomment">/// will be</span>
+		<span class="doccomment">/// [subclassed](https://docs.microsoft.com/en-us/windows/win32/controls/subclassing-overview).</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// **Note:** Subclassing may impact performance, use with care.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// # Panics</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Panics if the control or the parent window are already created. Events</span>
+		<span class="doccomment">/// must be set before control and parent window creation.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
+			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">on_subclass</span>()
+		}
+	};
+}
+
+<span class="doccomment">/// Implements methods common to controls:</span>
+<span class="doccomment">/// * base_ref;</span>
+<span class="doccomment">/// * hwnd;</span>
+<span class="doccomment">/// * on;</span>
+<span class="doccomment">/// * on_subclass.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hwnd_on_onsubclass</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="macro">hwnd_onsubclass</span><span class="macro">!</span>();
 
 		<span class="doccomment">/// Exposes the control events.</span>
 		<span class="doccomment">///</span>
@@ -105,25 +152,16 @@
 			}
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">events</span>
 		}
-
-		<span class="doccomment">/// Exposes the subclass events. If at least one event exists, the control</span>
-		<span class="doccomment">/// will be</span>
-		<span class="doccomment">/// [subclassed](https://docs.microsoft.com/en-us/windows/win32/controls/subclassing-overview).</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// **Note:** Subclassing may impact performance, use with care.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// # Panics</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Panics if the control or the parent window are already created. Events</span>
-		<span class="doccomment">/// must be set before control and parent window creation.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
-			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">on_subclass</span>()
-		}
 	};
 }
 
-<span class="doccomment">/// Implements methods common to controls, plus `ctrl_id`.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hwnd_ctrlid_on_onsubclass</span> {
+<span class="doccomment">/// Implements methods common to controls:</span>
+<span class="doccomment">/// * base_ref;</span>
+<span class="doccomment">/// * ctrl_id;</span>
+<span class="doccomment">/// * hwnd;</span>
+<span class="doccomment">/// * on;</span>
+<span class="doccomment">/// * on_subclass.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">ctrlid_hwnd_on_onsubclass</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span>: <span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">hwnd_on_onsubclass</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">evstruc</span>);
 
