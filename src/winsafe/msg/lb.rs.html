@@ -764,6 +764,7 @@
 <span id="761">761</span>
 <span id="762">762</span>
 <span id="763">763</span>
+<span id="764">764</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! List box control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-box-control-reference-messages),</span>
@@ -1364,6 +1365,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InsertString</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">insertion_index</span>: <span class="ident">IndexAll</span>,
 	<span class="kw">pub</span> <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>,
 }
 
@@ -1380,7 +1382,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LB</span>::<span class="ident">INSERTSTRING</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="number">0</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">insertion_index</span>.<span class="ident">into</span>(),
 			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="self">self</span>.<span class="ident">text</span>).<span class="ident">as_ptr</span>() } <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
