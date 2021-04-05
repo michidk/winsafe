@@ -835,8 +835,11 @@
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`LVM`](crate::co::LVM) prefix.</span>
 
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
+
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">IndexAll</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
@@ -941,7 +944,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DeleteItem</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">DeleteItem</span> {
@@ -968,7 +971,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EnsureVisible</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">entirely_visible</span>: <span class="ident">bool</span>,
 }
 
@@ -996,7 +999,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FindItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">IndexAll</span>,
 	<span class="kw">pub</span> <span class="ident">lvfindinfo</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVFINDINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1013,10 +1016,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">FINDITEM</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">index</span> {
-				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
-				<span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">num</span> <span class="kw">as</span> <span class="ident">isize</span>,
-			} <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">into</span>(),
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvfindinfo</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
@@ -1049,7 +1049,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1077,7 +1077,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetColumnWidth</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetColumnWidth</span> {
@@ -1151,7 +1151,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `Option&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetNextItem</span> {
-	<span class="kw">pub</span> <span class="ident">initial_index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">initial_index</span>: <span class="ident">IndexAll</span>,
 	<span class="kw">pub</span> <span class="ident">relationship</span>: <span class="ident">co</span>::<span class="ident">LVNI</span>,
 }
 
@@ -1168,7 +1168,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETNEXTITEM</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span> <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span>.<span class="ident">into</span>(),
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">relationship</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
@@ -1201,7 +1201,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `LVIS`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetItemState</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">co</span>::<span class="ident">LVIS</span>,
 }
 
@@ -1226,7 +1226,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `u32`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1295,7 +1295,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InsertColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1372,7 +1372,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `bool`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IsItemVisible</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">IsItemVisible</span> {
@@ -1452,7 +1452,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1532,7 +1532,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetItemState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">IndexAll</span>,
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1549,7 +1549,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETITEMSTATE</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">into</span>(),
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">isize</span>,
 		}
 	}
@@ -1560,7 +1560,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetItemText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1639,7 +1639,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Update</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Update</span> {
