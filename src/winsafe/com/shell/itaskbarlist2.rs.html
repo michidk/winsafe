@@ -85,8 +85,9 @@
 <span class="doccomment">/// * [`ITaskbarList`](crate::shell::ITaskbarList);</span>
 <span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls [`IUnknown::Release`](crate::IUnknown::Release) when the</span>
-<span class="doccomment">/// object goes out of scope.</span>
+<span class="doccomment">/// Automatically calls</span>
+<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+<span class="doccomment">/// when the object goes out of scope.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Examples</span>
 <span class="doccomment">///</span>
@@ -102,8 +103,7 @@
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList2</span> {
-	<span class="doccomment">/// Methods of base interface</span>
-	<span class="doccomment">/// [`ITaskbarList`](crate::shell::ITaskbarList).</span>
+	<span class="doccomment">/// Methods of base interface [`ITaskbarList`](crate::shell::ITaskbarList).</span>
 	<span class="kw">pub</span> <span class="ident">ITaskbarList</span>: <span class="ident">ITaskbarList</span>,
 }
 
@@ -125,13 +125,13 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MarkFullscreenWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">fFullscreen</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">unsafe</span> {
-			<span class="ident">hr_to_winresult</span>(
+		<span class="ident">hr_to_winresult</span>(
+			<span class="kw">unsafe</span> {
 				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">MarkFullscreenWindow</span>)(
 					<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">fFullscreen</span> <span class="kw">as</span> <span class="ident">i32</span>,
-				),
-			)
-		}
+				)
+			},
+		)
 	}
 }
 </pre></div>

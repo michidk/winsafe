@@ -62,10 +62,6 @@
 <span id="59">59</span>
 <span id="60">60</span>
 <span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -84,12 +80,12 @@
 <span class="doccomment">/// * [`IModalWindow`](crate::shell::IModalWindow);</span>
 <span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls [`IUnknown::Release`](crate::IUnknown::Release) when the</span>
-<span class="doccomment">/// object goes out of scope.</span>
+<span class="doccomment">/// Automatically calls</span>
+<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+<span class="doccomment">/// when the object goes out of scope.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileDialog</span> {
-	<span class="doccomment">/// Methods of base interface</span>
-	<span class="doccomment">/// [`IModalWindow`](crate::shell::IModalWindow).</span>
+	<span class="doccomment">/// Methods of base interface [`IModalWindow`](crate::shell::IModalWindow).</span>
 	<span class="kw">pub</span> <span class="ident">IModalWindow</span>: <span class="ident">IModalWindow</span>,
 }
 
@@ -109,27 +105,23 @@
 	<span class="doccomment">/// [`IFileDialog::ClearClientData`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-clearclientdata)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClearClientData</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> {
-			<span class="ident">hr_to_winresult</span>( ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">ClearClientData</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) )
-		}
+		<span class="ident">hr_to_winresult</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">ClearClientData</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) })
 	}
 
 	<span class="doccomment">/// [`IFileDialog::Close`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-close)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hr</span>: <span class="ident">co</span>::<span class="ident">ERROR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> {
-			<span class="ident">hr_to_winresult</span>( ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">Close</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hr</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) )
-		}
+		<span class="ident">hr_to_winresult</span>(
+			<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">Close</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hr</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) },
+		)
 	}
 
 	<span class="doccomment">/// [`IFileDialog::SetFileTypeIndex`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfiletypeindex)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetFileTypeIndex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iFileType</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> {
-			<span class="ident">hr_to_winresult</span>(
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetFileTypeIndex</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">iFileType</span>),
-			)
-		}
+		<span class="ident">hr_to_winresult</span>(
+			<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetFileTypeIndex</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">iFileType</span>) },
+		)
 	}
 }
 </pre></div>
