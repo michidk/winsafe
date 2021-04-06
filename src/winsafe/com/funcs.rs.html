@@ -89,6 +89,14 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 COM free functions.</span>
 
@@ -98,9 +106,17 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">PPVtbl</span>, <span class="ident">Vtbl</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">PPComVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">ole32</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">HRESULT_FROM_WIN32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">CLSID</span>, <span class="ident">GUID</span>};
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hr_to_winresult</span>(<span class="ident">hresult</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="ident">HRESULT_FROM_WIN32</span>(<span class="ident">hresult</span>) {
+		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">hresult</span> <span class="kw">as</span> <span class="ident">u32</span>)),
+	}
+}
 
 <span class="doccomment">/// [`CoCreateInstance`](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance)</span>
 <span class="doccomment">/// function.</span>
@@ -119,12 +135,12 @@
 <span class="doccomment">///     co::CLSCTX::INPROC_SERVER,</span>
 <span class="doccomment">/// ).unwrap();</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoCreateInstance</span><span class="op">&lt;</span><span class="ident">VT</span>: <span class="ident">Vtbl</span>, <span class="ident">RetInterf</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoCreateInstance</span><span class="op">&lt;</span><span class="ident">VT</span>: <span class="ident">ComVT</span>, <span class="ident">RetInterf</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(
 	<span class="ident">rclsid</span>: <span class="kw-2">&amp;</span><span class="ident">CLSID</span>,
 	<span class="ident">pUnkOuter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span><span class="op">&gt;</span>,
 	<span class="ident">dwClsContext</span>: <span class="ident">co</span>::<span class="ident">CLSCTX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RetInterf</span><span class="op">&gt;</span>
 {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span>: <span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
 
 	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
 		<span class="kw">unsafe</span> {
@@ -134,7 +150,7 @@
 				<span class="ident">dwClsContext</span>.<span class="number">0</span>,
 				<span class="ident">VT</span>::<span class="ident">IID</span>().<span class="ident">as_ref</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">GUID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
 				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv</span>
-					<span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span>
+					<span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span>
 					<span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
 			)
 		}

@@ -67,35 +67,15 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">ERROR</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">PPVtbl</span>, <span class="ident">Vtbl</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::{<span class="ident">ITaskbarList</span>, <span class="ident">ITaskbarListVtbl</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HANDLE</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">funcs</span>::<span class="ident">hr_to_winresult</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">PPComVT</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">ITaskbarList</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::{<span class="ident">ITaskbarListVT</span>, <span class="ident">ITaskbarList2VT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">IID</span>;
-
-<span class="doccomment">/// [`ITaskbarList2`](crate::shell::ITaskbarList2) virtual table.</span>
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList2Vtbl</span> {
-	<span class="ident">iTaskbarListVtbl</span>: <span class="ident">ITaskbarListVtbl</span>,
-
-	<span class="ident">MarkFullscreenWindow</span>: <span class="kw">fn</span>(<span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">HANDLE</span>, <span class="ident">BOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
-}
-
-<span class="macro">impl_iid</span><span class="macro">!</span>(<span class="ident">ITaskbarList2Vtbl</span>, <span class="number">0x602d4995</span>, <span class="number">0xb13a</span>, <span class="number">0x429b</span>, <span class="number">0xa66e</span>, <span class="number">0x1935e44f4317</span>);
-
-<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// [`ITaskbarList2`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist2)</span>
 <span class="doccomment">/// COM interface.</span>
@@ -113,37 +93,43 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// use winsafe::{co, CoCreateInstance, shell};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let mut obj: shell::ITaskbarList2 = CoCreateInstance(</span>
+<span class="doccomment">/// let obj: shell::ITaskbarList2 = CoCreateInstance(</span>
 <span class="doccomment">///     &amp;shell::clsid::TaskbarList,</span>
 <span class="doccomment">///     None,</span>
 <span class="doccomment">///     co::CLSCTX::INPROC_SERVER,</span>
 <span class="doccomment">/// ).unwrap();</span>
 <span class="doccomment">/// ```</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList2</span> {
 	<span class="doccomment">/// Methods of base interface</span>
 	<span class="doccomment">/// [`ITaskbarList`](crate::shell::ITaskbarList).</span>
 	<span class="kw">pub</span> <span class="ident">ITaskbarList</span>: <span class="ident">ITaskbarList</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">ITaskbarList2Vtbl</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ITaskbarList2</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList2VT</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ITaskbarList2</span> {
 	<span class="doccomment">/// Creates a new object from a pointer to a pointer to its virtual table.</span>
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">ITaskbarList2Vtbl</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList2VT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">ITaskbarList</span>: <span class="ident">ITaskbarList</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPVtbl</span><span class="op">&lt;</span><span class="ident">ITaskbarListVtbl</span><span class="op">&gt;</span>),
+			<span class="ident">ITaskbarList</span>: <span class="ident">ITaskbarList</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarListVT</span><span class="op">&gt;</span>),
 		}
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">ITaskbarList2</span> {
+	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ppv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList2VT</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">ITaskbarList</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList2VT</span><span class="op">&gt;</span>()
+	}
+
 	<span class="doccomment">/// [`ITaskbarList2::MarkFullscreenWindow`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist2-markfullscreenwindow)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MarkFullscreenWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">fFullscreen</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="kw">let</span> <span class="ident">ppv</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ITaskbarList</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList2Vtbl</span><span class="op">&gt;</span>();
-			<span class="macro">into_result</span><span class="macro">!</span>(
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppv</span>).<span class="ident">MarkFullscreenWindow</span>)(<span class="ident">ppv</span>, <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">fFullscreen</span> <span class="kw">as</span> <span class="ident">i32</span>)
+			<span class="ident">hr_to_winresult</span>(
+				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">MarkFullscreenWindow</span>)(
+					<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">fFullscreen</span> <span class="kw">as</span> <span class="ident">i32</span>,
+				),
 			)
 		}
 	}

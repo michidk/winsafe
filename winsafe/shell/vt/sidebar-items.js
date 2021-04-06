@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IModalWindowVT","`IModalWindow` virtual table."],["ITaskbarList2VT","`ITaskbarList2` virtual table."],["ITaskbarList3VT","`ITaskbarList3` virtual table."],["ITaskbarListVT","`ITaskbarList` virtual table."]]});
