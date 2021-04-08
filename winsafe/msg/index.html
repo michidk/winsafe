@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `msg` mod in crate `winsafe`."><meta name="keywords" content="rust, rustlang, rust-lang, msg"><title>winsafe::msg - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a><p class="location">Module msg</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"><a href="../index.html">winsafe</a></p><div id="sidebar-vars" data-name="msg" data-ty="mod" data-relpath="../"></div><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Module <a href="../index.html">winsafe</a>::<wbr><a class="mod" href="">msg</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../../src/winsafe/msg/mod.rs.html#1-53" title="goto source code">[src]</a></span></h1><div class="docblock"><p>Parameters of
+<a href="https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues">window messages</a>.</p>
+<p><a href="../../winsafe/msg/struct.WndMsg.html"><code>WndMsg</code></a> is the generic message, with <code>WPARAM</code> and
+<code>LPARAM</code> fields. Other messages belong to a module according to its prefix,
+for example, <a href="../../winsafe/msg/bm/struct.Click.html"><code>BM_CLICK</code></a> can be found in
+<a href="../../winsafe/msg/bm/index.html"><code>bm</code></a> module.</p>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
+<p>We want to delete the 3rd element of a <a href="../../winsafe/gui/struct.ListView.html"><code>ListView</code></a>
+control. This can be done by sending it an
+<a href="../../winsafe/msg/lvm/struct.DeleteItem.html"><code>LVM_DELETEITEM</code></a> message via
+<a href="../../winsafe/struct.HWND.html#method.SendMessage"><code>SendMessage</code></a>. The message itself is a struct,
+which is initialized with the specific message parameters.</p>
+<p>The message struct also defines the data type returned by <code>SendMessage</code>. In
+the example below, <code>LVM_DELETEITEM</code> returns <code>WinResult&lt;()&gt;</code>.</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">HWND</span>, <span class="ident">msg</span>::<span class="ident">lvm</span>};
+
+<span class="kw">let</span> <span class="ident">hlistview</span>: <span class="ident">HWND</span>; <span class="comment">// initialize it somewhere...</span>
+
+<span class="ident">hlistview</span>.<span class="ident">SendMessage</span>({
+    <span class="ident">lvm</span>::<span class="ident">DeleteItem</span> {
+        <span class="ident">index</span>: <span class="number">2</span>,
+    },
+}).<span class="ident">expect</span>(<span class="string">&quot;Failed to delete item 2.&quot;</span>);</pre></div>
+<p>Messages are organized into modules according to their prefixes:
+<a href="../../winsafe/msg/wm/index.html"><code>wm</code></a> (window messages), <a href="../../winsafe/msg/lvm/index.html"><code>lvm</code></a> (list
+view messages), and so on.</p>
+</div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="bm/index.html" title="winsafe::msg::bm mod">bm</a></td><td class="docblock-short"><p>Button control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-button-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.BM.html"><code>BM</code> and <code>BCM</code></a> prefixes.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="cb/index.html" title="winsafe::msg::cb mod">cb</a></td><td class="docblock-short"><p>Combo box control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-combobox-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.CB.html"><code>CB</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="dtm/index.html" title="winsafe::msg::dtm mod">dtm</a></td><td class="docblock-short"><p>Date and time picker control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-date-and-time-picker-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.DTM.html"><code>DTM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="em/index.html" title="winsafe::msg::em mod">em</a></td><td class="docblock-short"><p>Edit control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-edit-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.EM.html"><code>EM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="hdm/index.html" title="winsafe::msg::hdm mod">hdm</a></td><td class="docblock-short"><p>Header control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-header-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.HDM.html"><code>HDM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="lb/index.html" title="winsafe::msg::lb mod">lb</a></td><td class="docblock-short"><p>List box control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-box-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.LB.html"><code>LB</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="lvm/index.html" title="winsafe::msg::lvm mod">lvm</a></td><td class="docblock-short"><p>List view control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.LVM.html"><code>LVM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="mcm/index.html" title="winsafe::msg::mcm mod">mcm</a></td><td class="docblock-short"><p>Month calendar control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-month-calendar-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.MCM.html"><code>MCM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="pbm/index.html" title="winsafe::msg::pbm mod">pbm</a></td><td class="docblock-short"><p>Progress bar control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-progress-bar-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.PBM.html"><code>PBM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="sb/index.html" title="winsafe::msg::sb mod">sb</a></td><td class="docblock-short"><p>Status bar control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-status-bars-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.SB.html"><code>SB</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="stm/index.html" title="winsafe::msg::stm mod">stm</a></td><td class="docblock-short"><p>Static control
+<a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-static-control-reference-messages">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.STM.html"><code>STM</code></a> prefix.</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="wm/index.html" title="winsafe::msg::wm mod">wm</a></td><td class="docblock-short"><p>Generic window
+<a href="https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues">messages</a>,
+whose constants have <a href="../../winsafe/co/struct.WM.html"><code>WM</code></a> prefix.</p>
+</td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.WndMsg.html" title="winsafe::msg::WndMsg struct">WndMsg</a></td><td class="docblock-short"><p>Generic
+<a href="https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues">window message</a>
+parameters: <code>WPARAM</code> and <code>LPARAM</code>.</p>
+</td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
+<table><tr class="module-item"><td><a class="trait" href="trait.MsgSend.html" title="winsafe::msg::MsgSend trait">MsgSend</a></td><td class="docblock-short"><p>Trait to the parameters of a message that can be sent. Implemented by <a href="../../winsafe/msg/index.html">all
+messages</a>.</p>
+</td></tr><tr class="module-item"><td><a class="trait" href="trait.MsgSendRecv.html" title="winsafe::msg::MsgSendRecv trait">MsgSendRecv</a></td><td class="docblock-short"><p>Trait to the parameters of a message that can be sent and handled.
+Implemented by <a href="../../winsafe/msg/struct.WndMsg.html">WndMsg</a> and all
+<a href="../../winsafe/msg/wm/index.html">msg::wm</a> messages.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="winsafe"></div>
+    <script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["GetCurSel","`MCM_GETCURSEL` message parameters."],["GetMinReqRect","`MCM_GETMINREQRECT` message parameters."],["GetMonthDelta","`MCM_GETMONTHDELTA` message, which has no parameters."],["SetCurSel","`MCM_SETCURSEL` message parameters."],["SetCurrentView","`MCM_SETCURRENTVIEW` message parameters."],["SetToday","`MCM_SETTODAY` message parameters."]]});

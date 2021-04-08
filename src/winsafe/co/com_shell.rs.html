@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\co\com_shell.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>com_shell.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="macro">const_type</span><span class="macro">!</span> { <span class="ident">DROPEFFECT</span>, <span class="ident">u32</span>,
+	<span class="doccomment">/// [`DROPEFFECT`](https://docs.microsoft.com/en-us/windows/win32/com/dropeffect-constants)</span>
+	<span class="doccomment">/// constants (`u32`).</span>
+	<span class="op">-</span><span class="op">&gt;</span>
+	<span class="ident">NONE</span>, <span class="number">0</span>
+	<span class="ident">COPY</span>, <span class="number">1</span>
+	<span class="ident">MOVE</span>, <span class="number">2</span>
+	<span class="ident">LINK</span>, <span class="number">4</span>
+	<span class="ident">SCROLL</span>, <span class="number">0x80000000</span>
+}
+
+<span class="macro">const_type</span><span class="macro">!</span> { <span class="ident">FOS</span>, <span class="ident">u32</span>,
+	<span class="doccomment">/// [`_FILEOPENDIALOGOPTIONS`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-_fileopendialogoptions)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	<span class="op">-</span><span class="op">&gt;</span>
+	<span class="ident">OVERWRITEPROMPT</span>, <span class="number">0x2</span>
+	<span class="ident">STRICTFILETYPES</span>, <span class="number">0x4</span>
+	<span class="ident">NOCHANGEDIR</span>, <span class="number">0x8</span>
+	<span class="ident">PICKFOLDERS</span>, <span class="number">0x20</span>
+	<span class="ident">FORCEFILESYSTEM</span>, <span class="number">0x40</span>
+	<span class="ident">ALLNONSTORAGEITEMS</span>, <span class="number">0x80</span>
+	<span class="ident">NOVALIDATE</span>, <span class="number">0x100</span>
+	<span class="ident">ALLOWMULTISELECT</span>, <span class="number">0x200</span>
+	<span class="ident">PATHMUSTEXIST</span>, <span class="number">0x800</span>
+	<span class="ident">FILEMUSTEXIST</span>, <span class="number">0x1000</span>
+	<span class="ident">CREATEPROMPT</span>, <span class="number">0x2000</span>
+	<span class="ident">SHAREAWARE</span>, <span class="number">0x4000</span>
+	<span class="ident">NOREADONLYRETURN</span>, <span class="number">0x8000</span>
+	<span class="ident">NOTESTFILECREATE</span>, <span class="number">0x10000</span>
+	<span class="ident">HIDEMRUPLACES</span>, <span class="number">0x20000</span>
+	<span class="ident">HIDEPINNEDPLACES</span>, <span class="number">0x40000</span>
+	<span class="ident">NODEREFERENCELINKS</span>, <span class="number">0x100000</span>
+	<span class="ident">OKBUTTONNEEDSINTERACTION</span>, <span class="number">0x200000</span>
+	<span class="ident">DONTADDTORECENT</span>, <span class="number">0x2000000</span>
+	<span class="ident">FORCESHOWHIDDEN</span>, <span class="number">0x10000000</span>
+	<span class="ident">DEFAULTNOMINIMODE</span>, <span class="number">0x20000000</span>
+	<span class="ident">FORCEPREVIEWPANEON</span>, <span class="number">0x40000000</span>
+	<span class="ident">SUPPORTSTREAMABLEITEMS</span>, <span class="number">0x80000000</span>
+}
+
+<span class="macro">const_type</span><span class="macro">!</span> { <span class="ident">SFGAO</span>, <span class="ident">u32</span>,
+	<span class="doccomment">/// [`SFGAO`](https://docs.microsoft.com/en-us/windows/win32/shell/sfgao)</span>
+	<span class="doccomment">/// constants (`u32`).</span>
+	<span class="op">-</span><span class="op">&gt;</span>
+	<span class="ident">CANCOPY</span>, <span class="ident">DROPEFFECT</span>::<span class="ident">COPY</span>.<span class="number">0</span>
+	<span class="ident">CANMOVE</span>, <span class="ident">DROPEFFECT</span>::<span class="ident">MOVE</span>.<span class="number">0</span>
+	<span class="ident">CANLINK</span>, <span class="ident">DROPEFFECT</span>::<span class="ident">LINK</span>.<span class="number">0</span>
+	<span class="ident">STORAGE</span>, <span class="number">0x00000008</span>
+	<span class="ident">CANRENAME</span>, <span class="number">0x00000010</span>
+	<span class="ident">CANDELETE</span>, <span class="number">0x00000020</span>
+	<span class="ident">HASPROPSHEET</span>, <span class="number">0x00000040</span>
+	<span class="ident">DROPTARGET</span>, <span class="number">0x00000100</span>
+	<span class="ident">CAPABILITYMASK</span>, <span class="number">0x00000177</span>
+	<span class="ident">SYSTEM</span>, <span class="number">0x00001000</span>
+	<span class="ident">ENCRYPTED</span>, <span class="number">0x00002000</span>
+	<span class="ident">ISSLOW</span>, <span class="number">0x00004000</span>
+	<span class="ident">GHOSTED</span>, <span class="number">0x00008000</span>
+	<span class="ident">LINK</span>, <span class="number">0x00010000</span>
+	<span class="ident">SHARE</span>, <span class="number">0x00020000</span>
+	<span class="ident">READONLY</span>, <span class="number">0x00040000</span>
+	<span class="ident">HIDDEN</span>, <span class="number">0x00080000</span>
+	<span class="ident">FILESYSANCESTOR</span>, <span class="number">0x10000000</span>
+	<span class="ident">FOLDER</span>, <span class="number">0x20000000</span>
+	<span class="ident">FILESYSTEM</span>, <span class="number">0x40000000</span>
+	<span class="ident">HASSUBFOLDER</span>, <span class="number">0x80000000</span>
+	<span class="ident">CONTENTSMASK</span>, <span class="number">0x80000000</span>
+	<span class="ident">VALIDATE</span>, <span class="number">0x01000000</span>
+	<span class="ident">REMOVABLE</span>, <span class="number">0x02000000</span>
+	<span class="ident">COMPRESSED</span>, <span class="number">0x04000000</span>
+	<span class="ident">BROWSABLE</span>, <span class="number">0x08000000</span>
+	<span class="ident">NONENUMERATED</span>, <span class="number">0x00100000</span>
+	<span class="ident">NEWCONTENT</span>, <span class="number">0x00200000</span>
+	<span class="ident">CANMONIKER</span>, <span class="number">0x00400000</span>
+	<span class="ident">HASSTORAGE</span>, <span class="number">0x00400000</span>
+	<span class="ident">STREAM</span>, <span class="number">0x00400000</span>
+	<span class="ident">STORAGEANCESTOR</span>, <span class="number">0x00800000</span>
+	<span class="ident">STORAGECAPMASK</span>, <span class="number">0x70c50008</span>
+	<span class="ident">PKEYSFGAOMASK</span>, <span class="number">0x81044000</span>
+}
+
+<span class="macro">const_type</span><span class="macro">!</span> { <span class="ident">SIGDN</span>, <span class="ident">u32</span>,
+	<span class="doccomment">/// [`SIGDN`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-sigdn)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	<span class="op">-</span><span class="op">&gt;</span>
+	<span class="ident">NORMALDISPLAY</span>, <span class="number">0</span>
+	<span class="ident">PARENTRELATIVEPARSING</span>, <span class="number">0x80018001</span>
+	<span class="ident">DESKTOPABSOLUTEPARSING</span>, <span class="number">0x80028000</span>
+	<span class="ident">PARENTRELATIVEEDITING</span>, <span class="number">0x80031001</span>
+	<span class="ident">DESKTOPABSOLUTEEDITING</span>, <span class="number">0x8004c000</span>
+	<span class="ident">FILESYSPATH</span>, <span class="number">0x80058000</span>
+	<span class="ident">URL</span>, <span class="number">0x80068000</span>
+	<span class="ident">PARENTRELATIVEFORADDRESSBAR</span>, <span class="number">0x8007c001</span>
+	<span class="ident">PARENTRELATIVE</span>, <span class="number">0x80080001</span>
+	<span class="ident">PARENTRELATIVEFORUI</span>, <span class="number">0x80094001</span>
+}
+
+<span class="macro">const_type</span><span class="macro">!</span> { <span class="ident">TBPF</span>, <span class="ident">u32</span>,
+	<span class="doccomment">/// [`ITaskbarList3::SetProgressState`](crate::shell::ITaskbarList3::SetProgressState)</span>
+	<span class="doccomment">/// `tbpFlags` (`u32`).</span>
+	<span class="op">-</span><span class="op">&gt;</span>
+	<span class="ident">NOPROGRESS</span>, <span class="number">0</span>
+	<span class="ident">INDETERMINATE</span>, <span class="number">0x1</span>
+	<span class="ident">NORMAL</span>, <span class="number">0x2</span>
+	<span class="ident">ERROR</span>, <span class="number">0x4</span>
+	<span class="ident">PAUSED</span>, <span class="number">0x8</span>
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

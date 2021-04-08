@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["GetItemCount","`HDM_GETITEMCOUNT` message, which has no parameters."],["GetItemDropDownRect","`HDM_GETITEMDROPDOWNRECT` message parameters."],["GetItemRect","`HDM_GETITEMRECT` message parameters."],["GetOrderArray","`HDM_GETORDERARRAY` message parameters."],["GetOverflowRect","`HDM_GETOVERFLOWRECT` message parameters."]]});
