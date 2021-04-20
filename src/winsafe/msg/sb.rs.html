@@ -269,9 +269,6 @@
 <span id="266">266</span>
 <span id="267">267</span>
 <span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Status bar control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-status-bars-reference-messages),</span>
@@ -436,10 +433,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">SB</span>::<span class="ident">SETICON</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="ident">usize</span>,
-			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hicon</span> {
-				<span class="prelude-val">Some</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>,
-				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-			},
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hicon</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>).<span class="ident">unwrap_or_default</span>(),
 		}
 	}
 }
