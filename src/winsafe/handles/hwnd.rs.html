@@ -1199,13 +1199,18 @@
 <span id="1196">1196</span>
 <span id="1197">1197</span>
 <span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
+<span id="1201">1201</span>
+<span id="1202">1202</span>
+<span id="1203">1203</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">SUBCLASSPROC</span>, <span class="ident">TIMERPROC</span>, <span class="ident">WinResult</span>, <span class="ident">WNDENUMPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">HwndPlace</span>, <span class="ident">IdMenu</span>, <span class="ident">IdPos</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">comctl32</span>, <span class="ident">user32</span>, <span class="ident">uxtheme</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">user32</span>, <span class="ident">uxtheme</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">SetLastError</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HDC</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HTHEME</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">MsgSend</span>;
@@ -1389,7 +1394,7 @@
 	<span class="doccomment">/// [`EnableWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablewindow)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableWindow</span>(<span class="self">self</span>, <span class="ident">bEnable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">EnableWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bEnable</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">EnableWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bEnable</span> <span class="kw">as</span> <span class="ident">BOOL</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`EndDialog`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enddialog)</span>
@@ -1441,11 +1446,11 @@
 		<span class="ident">hchildren</span>
 	}
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildWindowsVecProc</span>(
-		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>
+		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
 	{
 		<span class="kw">let</span> <span class="ident">hchildren</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span>(<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>) }; <span class="comment">// retrieve pointer to Vec</span>
 		<span class="ident">hchildren</span>.<span class="ident">push</span>(<span class="ident">hchild</span>);
-		<span class="bool-val">true</span> <span class="kw">as</span> <span class="ident">i32</span>
+		<span class="bool-val">true</span> <span class="kw">as</span> <span class="ident">BOOL</span>
 	}
 
 	<span class="doccomment">/// [`FindWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindoww)</span>
@@ -1567,7 +1572,7 @@
 	{
 		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32</span>::<span class="ident">GetNextDlgGroupItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="ident">i32</span>)
+				<span class="ident">user32</span>::<span class="ident">GetNextDlgGroupItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
 			},
 		) {
 			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">ptr</span> }),
@@ -1582,7 +1587,7 @@
 	{
 		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32</span>::<span class="ident">GetNextDlgTabItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="ident">i32</span>)
+				<span class="ident">user32</span>::<span class="ident">GetNextDlgTabItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
 			},
 		) {
 			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">ptr</span> }),
@@ -1627,7 +1632,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetUpdateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">REGION</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">GetUpdateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">i32</span>)
+			<span class="ident">user32</span>::<span class="ident">GetUpdateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ret</span>)),
@@ -1845,7 +1850,7 @@
 						<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(),
 						<span class="op">|</span><span class="ident">lpRect</span><span class="op">|</span> <span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
 					),
-					<span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">i32</span>,
+					<span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
 				)
 			},
 		)
@@ -1854,7 +1859,7 @@
 	<span class="doccomment">/// [`InvalidateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-invalidatergn)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InvalidateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) {
-		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">InvalidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">i32</span>); }
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">InvalidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="ident">BOOL</span>); }
 	}
 
 	<span class="doccomment">/// [`IsChild`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-ischild)</span>
@@ -1969,7 +1974,12 @@
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32</span>::<span class="ident">MoveWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">nWidth</span>, <span class="ident">nHeight</span>, <span class="ident">bRepaint</span> <span class="kw">as</span> <span class="ident">i32</span>)
+				<span class="ident">user32</span>::<span class="ident">MoveWindow</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">x</span>, <span class="ident">y</span>,
+					<span class="ident">nWidth</span>, <span class="ident">nHeight</span>,
+					<span class="ident">bRepaint</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
+				)
 			},
 		)
 	}
@@ -2177,7 +2187,7 @@
 				<span class="self">self</span>.<span class="ident">ptr</span>,
 				<span class="ident">nBar</span>.<span class="number">0</span>,
 				<span class="ident">lpsi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-				<span class="ident">redraw</span> <span class="kw">as</span> <span class="ident">i32</span>,
+				<span class="ident">redraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
 			)
 		}
 	}
@@ -2188,7 +2198,7 @@
 		<span class="ident">nBar</span>: <span class="ident">co</span>::<span class="ident">SBB</span>, <span class="ident">nPos</span>: <span class="ident">i32</span>, <span class="ident">bRedraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">SetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nBar</span>.<span class="number">0</span>, <span class="ident">nPos</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">i32</span>)
+			<span class="ident">user32</span>::<span class="ident">SetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nBar</span>.<span class="number">0</span>, <span class="ident">nPos</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>), <span class="comment">// actual zero position</span>
@@ -2210,7 +2220,7 @@
 					<span class="ident">nBar</span>.<span class="number">0</span>,
 					<span class="ident">nMinPos</span>,
 					<span class="ident">nMaxPos</span>,
-					<span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">i32</span>,
+					<span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
 				)
 			},
 		)
@@ -2284,7 +2294,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bRedraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">i32</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>) },
 		)
 	}
 
