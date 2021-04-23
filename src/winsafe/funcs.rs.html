@@ -631,6 +631,79 @@
 <span id="628">628</span>
 <span id="629">629</span>
 <span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -641,7 +714,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">BroadNull</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">comctl32</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">comctl32</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">MsgSend</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">parse_multi_z_str</span>, <span class="ident">ptr_as_opt</span>};
@@ -677,10 +750,68 @@
 	)
 }
 
+<span class="doccomment">/// [`CopyFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CopyFileW</span>(
+	<span class="ident">lpExistingFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpNewFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+	<span class="ident">bFailIfExists</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+{
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">kernel32</span>::<span class="ident">CopyFileW</span>(
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpExistingFileName</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpNewFileName</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">bFailIfExists</span> <span class="kw">as</span> <span class="ident">i32</span>,
+			)
+		},
+	)
+}
+
+<span class="doccomment">/// [`DecryptFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-decryptfilew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DecryptFile</span>(<span class="ident">lpFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">advapi32</span>::<span class="ident">DecryptFileW</span>(<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpFileName</span>).<span class="ident">as_ptr</span>(), <span class="number">0</span>)
+		},
+	)
+}
+
+<span class="doccomment">/// [`DeleteFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DeleteFile</span>(<span class="ident">lpFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">DeleteFileW</span>(<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpFileName</span>).<span class="ident">as_ptr</span>()) },
+	)
+}
+
 <span class="doccomment">/// [`DispatchMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-dispatchmessagew)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DispatchMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
 	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">DispatchMessageW</span>(<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }
+}
+
+<span class="doccomment">/// [`EncryptFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-encryptfilew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EncryptFile</span>(<span class="ident">lpFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">advapi32</span>::<span class="ident">EncryptFileW</span>(<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpFileName</span>).<span class="ident">as_ptr</span>())
+		},
+	)
+}
+
+<span class="doccomment">/// [`EncryptionDisable`](https://docs.microsoft.com/en-us/windows/win32/api/winefs/nf-winefs-encryptiondisable)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EncryptionDisable</span>(<span class="ident">DirPath</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">Disable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">advapi32</span>::<span class="ident">EncryptionDisable</span>(
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">DirPath</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">Disable</span> <span class="kw">as</span> <span class="ident">i32</span>,
+			)
+		},
+	)
 }
 
 <span class="doccomment">/// [`ExpandEnvironmentStrings`](https://docs.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-expandenvironmentstringsw)</span>
@@ -1028,6 +1159,21 @@
 <span class="doccomment">/// function. Originally a macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MAKEWORD</span>(<span class="ident">lo</span>: <span class="ident">u8</span>, <span class="ident">hi</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
 	(<span class="ident">lo</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="op">|</span> ((<span class="ident">hi</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>) <span class="kw">as</span> <span class="ident">u16</span>
+}
+
+<span class="doccomment">/// [`MoveFile`]()</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MoveFile</span>(
+	<span class="ident">lpExistingFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpNewFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+{
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">kernel32</span>::<span class="ident">MoveFileW</span>(
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpExistingFileName</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpNewFileName</span>).<span class="ident">as_ptr</span>(),
+			)
+		},
+	)
 }
 
 <span class="doccomment">/// [`MulDiv`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-muldiv)</span>

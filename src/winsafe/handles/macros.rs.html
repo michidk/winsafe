@@ -102,6 +102,18 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Declares the type of a handle.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">handle_type</span> {
@@ -148,6 +160,8 @@
 
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="doccomment">/// Creates a new handle instance by wrapping a pointer.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all handle types.</span>
 			<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_ptr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 				<span class="self">Self</span> {
 					<span class="ident">ptr</span>: <span class="ident">p</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>,
@@ -155,6 +169,8 @@
 			}
 
 			<span class="doccomment">/// Creates a null, invalid handle.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all handle types.</span>
 			<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">null_handle</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 				<span class="self">Self</span> {
 					<span class="ident">ptr</span>: <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
@@ -162,17 +178,23 @@
 			}
 
 			<span class="doccomment">/// Consumes the handle returning the underlying raw pointer.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all handle types.</span>
 			<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span> {
 				<span class="self">self</span>.<span class="ident">ptr</span>
 			}
 
 			<span class="doccomment">/// Tells if the handle is invalid (null).</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all handle types.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_null</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 				<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>()
 			}
 
 			<span class="doccomment">/// Consumes the handle into an option, which is `None` if the handle</span>
 			<span class="doccomment">/// pointer is null.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all handle types.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_opt</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&gt;</span> {
 				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>() {
 					<span class="prelude-val">None</span>
@@ -198,6 +220,8 @@
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="doccomment">/// [`DeleteObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-deleteobject)</span>
 			<span class="doccomment">/// method.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// This method is common to all GDI handle types.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DeleteObject</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 				<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">DeleteObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
 			}

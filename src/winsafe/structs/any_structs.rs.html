@@ -783,6 +783,31 @@
 <span id="780">780</span>
 <span id="781">781</span>
 <span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -807,6 +832,18 @@
 	<span class="kw">pub</span> <span class="ident">fVirt</span>: <span class="ident">co</span>::<span class="ident">ACCELF</span>,
 	<span class="kw">pub</span> <span class="ident">key</span>: <span class="ident">co</span>::<span class="ident">VK</span>,
 	<span class="kw">pub</span> <span class="ident">cmd</span>: <span class="ident">u16</span>,
+}
+
+<span class="doccomment">/// [`ACL`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-acl)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ACL</span> {
+	<span class="kw">pub</span> <span class="ident">AclRevision</span>: <span class="ident">u8</span>,
+	<span class="kw">pub</span> <span class="ident">Sbz1</span>: <span class="ident">u8</span>,
+	<span class="kw">pub</span> <span class="ident">AclSize</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">AceCount</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">Sbz2</span>: <span class="ident">u16</span>,
 }
 
 <span class="doccomment">/// [`ATOM`](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#atom)</span>
@@ -1286,7 +1323,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SECURITY_ATTRIBUTES</span> {
 	<span class="ident">nLength</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">lpSecurityDescriptor</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+	<span class="kw">pub</span> <span class="ident">lpSecurityDescriptor</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">SECURITY_DESCRIPTOR</span>,
 	<span class="kw">pub</span> <span class="ident">bInheritHandle</span>: <span class="ident">u32</span>,
 }
 
@@ -1296,6 +1333,19 @@
 		<span class="ident">obj</span>.<span class="ident">nLength</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="ident">obj</span>
 	}
+}
+
+<span class="doccomment">/// [`SECURITY_DESCRIPTOR`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-security_descriptor)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SECURITY_DESCRIPTOR</span> {
+	<span class="kw">pub</span> <span class="ident">Revision</span>: <span class="ident">u8</span>,
+   <span class="kw">pub</span> <span class="ident">Sbz1</span>: <span class="ident">u8</span>,
+   <span class="kw">pub</span> <span class="ident">Control</span>: <span class="ident">u16</span>,
+   <span class="kw">pub</span> <span class="ident">Owner</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+   <span class="kw">pub</span> <span class="ident">Group</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+   <span class="kw">pub</span> <span class="ident">Sacl</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ACL</span>,
+   <span class="kw">pub</span> <span class="ident">Dacl</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ACL</span>,
 }
 
 <span class="doccomment">/// [`SIZE`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-size)</span>
