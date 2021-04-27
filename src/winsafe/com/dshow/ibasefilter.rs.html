@@ -72,16 +72,15 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">dshow</span>::{<span class="ident">IFilterGraph</span>, <span class="ident">IMediaFilter</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">dshow</span>::<span class="ident">vt</span>::{<span class="ident">IBaseFilterVT</span>, <span class="ident">IMediaFilterVT</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">funcs</span>::{<span class="ident">CoTaskMemFree</span>, <span class="ident">hr_to_winresult</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">funcs</span>::<span class="ident">CoTaskMemFree</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">PPComVT</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">hr_to_winresult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// [`IBaseFilter`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ibasefilter)</span>
@@ -125,10 +124,7 @@
 			<span class="kw">unsafe</span> {
 				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">JoinFilterGraph</span>)(
 					<span class="self">self</span>.<span class="ident">ppv</span>(),
-					<span class="kw">match</span> <span class="ident">graph</span> {
-						<span class="prelude-val">Some</span>(<span class="ident">graph</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">graph</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>(),
-						<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
-					},
+					<span class="ident">graph</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>()),
 					<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">name</span>).<span class="ident">as_ptr</span>(),
 				)
 			},

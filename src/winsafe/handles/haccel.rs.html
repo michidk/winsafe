@@ -35,16 +35,13 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">user32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">ptr_as_opt</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">ptr_as_opt</span>, <span class="ident">ref_as_pvoid</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">ACCEL</span>;
 
 <span class="macro">handle_type</span><span class="macro">!</span> {
@@ -57,17 +54,14 @@
 	<span class="doccomment">/// [`CreateAcceleratorTable`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createacceleratortablew)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateAcceleratorTable</span>(<span class="ident">paccel</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ACCEL</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(
+		<span class="ident">ptr_as_opt</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32</span>::<span class="ident">CreateAcceleratorTableW</span>(
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">paccel</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-					<span class="ident">paccel</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>,
+					<span class="ident">ref_as_pvoid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">paccel</span>[<span class="number">0</span>]),
+					<span class="ident">paccel</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
-		) {
-			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">ptr</span> }),
-			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-		}
+		).<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`DestroyAcceleratorTable`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroyacceleratortable)</span>

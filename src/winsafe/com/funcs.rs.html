@@ -101,53 +101,17 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
-<span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 COM free functions.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>;
-
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">PPComVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">ole32</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">CLSID</span>, <span class="ident">GUID</span>};
-
-<span class="doccomment">/// Converts a native `HRESULT` to `WinResult`, `S_OK` yielding `Ok` and</span>
-<span class="doccomment">/// anything else yielding `Err`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hr_to_winresult</span>(<span class="ident">hresult</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">hresult</span> <span class="kw">as</span> <span class="ident">u32</span>) {
-		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-	}
-}
-
-<span class="doccomment">/// Converts a native `HRESULT` to `WinResult`, `S_OK` yielding `Ok(true)`,</span>
-<span class="doccomment">/// `S_FALSE` yielding `Ok(false)` and anything else yielding `Err`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hr_to_winresult_bool</span>(<span class="ident">hresult</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">hresult</span> <span class="kw">as</span> <span class="ident">u32</span>) {
-		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
-		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
-		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-	}
-}
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">ref_as_pcvoid</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">CLSID</span>;
 
 <span class="doccomment">/// [`CoCreateInstance`](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance)</span>
 <span class="doccomment">/// function.</span>
@@ -169,25 +133,29 @@
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoCreateInstance</span><span class="op">&lt;</span><span class="ident">VT</span>: <span class="ident">ComVT</span>, <span class="ident">RetInterf</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(
 	<span class="ident">rclsid</span>: <span class="kw-2">&amp;</span><span class="ident">CLSID</span>,
-	<span class="ident">pUnkOuter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span><span class="op">&gt;</span>,
+	<span class="ident">pUnkOuter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">IUnknown</span><span class="op">&gt;</span>,
 	<span class="ident">dwClsContext</span>: <span class="ident">co</span>::<span class="ident">CLSCTX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RetInterf</span><span class="op">&gt;</span>
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">VT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvOuter</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IUnknownVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
 
-	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
+	<span class="ident">hr_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">ole32</span>::<span class="ident">CoCreateInstance</span>(
-				<span class="ident">rclsid</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-				<span class="ident">pUnkOuter</span>.<span class="ident">unwrap_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>()),
+				<span class="ident">ref_as_pcvoid</span>(<span class="ident">rclsid</span>),
+				<span class="ident">pUnkOuter</span>.<span class="ident">as_ref</span>()
+					.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvOuter</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>),
 				<span class="ident">dwClsContext</span>.<span class="number">0</span>,
-				<span class="ident">VT</span>::<span class="ident">IID</span>().<span class="ident">as_ref</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">GUID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
+				<span class="ident">ref_as_pcvoid</span>(<span class="kw-2">&amp;</span><span class="ident">VT</span>::<span class="ident">IID</span>()),
 				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
 			)
+		},
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">iunkOuter</span>) <span class="op">=</span> <span class="ident">pUnkOuter</span> {
+			<span class="kw-2">*</span><span class="ident">iunkOuter</span> <span class="op">=</span> <span class="ident">IUnknown</span>::<span class="ident">from</span>(<span class="ident">ppvOuter</span>);
 		}
-	) {
-		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RetInterf</span>::<span class="ident">from</span>(<span class="ident">ppv</span>)),
-		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-	}
+		<span class="ident">RetInterf</span>::<span class="ident">from</span>(<span class="ident">ppv</span>)
+	})
 }
 
 <span class="doccomment">/// [`CoInitializeEx`](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex)</span>
@@ -208,13 +176,13 @@
 <span class="doccomment">/// CoUninitialize().</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoInitializeEx</span>(<span class="ident">dwCoInit</span>: <span class="ident">co</span>::<span class="ident">COINIT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">ERROR</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
-		<span class="kw">unsafe</span> { <span class="ident">ole32</span>::<span class="ident">CoInitializeEx</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">dwCoInit</span>.<span class="number">0</span>) }
+	<span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
+		<span class="kw">unsafe</span> { <span class="ident">ole32</span>::<span class="ident">CoInitializeEx</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">dwCoInit</span>.<span class="number">0</span>) } <span class="kw">as</span> <span class="kw">_</span>
 	);
-	<span class="kw">match</span> <span class="ident">err</span> {
+	<span class="kw">match</span> <span class="ident">code</span> {
 		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span>
 			<span class="op">|</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_FALSE</span>
-			<span class="op">|</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">RPC_E_CHANGED_MODE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">err</span>),
+			<span class="op">|</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">RPC_E_CHANGED_MODE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">code</span>),
 		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 	}
 }

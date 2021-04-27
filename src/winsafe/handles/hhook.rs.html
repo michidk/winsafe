@@ -34,9 +34,6 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -59,7 +56,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowsHookEx</span>(<span class="ident">idHook</span>: <span class="ident">co</span>::<span class="ident">WH</span>, <span class="ident">lpfn</span>: <span class="ident">HOOKPROC</span>,
 		<span class="ident">hmod</span>: <span class="ident">HINSTANCE</span>, <span class="ident">dwThreadId</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HHOOK</span><span class="op">&gt;</span>
 	{
-		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(
+		<span class="ident">ptr_as_opt</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32</span>::<span class="ident">SetWindowsHookExW</span>(
 					<span class="ident">idHook</span>.<span class="number">0</span>,
@@ -68,10 +65,7 @@
 					<span class="ident">dwThreadId</span>,
 				)
 			},
-		) {
-			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">ptr</span> }),
-			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-		}
+		).<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 }
 </pre></div>

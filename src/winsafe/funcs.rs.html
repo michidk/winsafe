@@ -744,6 +744,19 @@
 <span id="741">741</span>
 <span id="742">742</span>
 <span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -754,13 +767,16 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">BroadNull</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">comctl32</span>, <span class="ident">HRESULT</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">MsgSend</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
 	<span class="ident">INVALID_FILE_ATTRIBUTES</span>,
-	<span class="ident">parse_multi_z_str</span>, <span class="ident">ptr_as_opt</span>,
+	<span class="ident">parse_multi_z_str</span>,
+	<span class="ident">ptr_as_opt</span>,
+	<span class="ident">ref_as_pcvoid</span>,
+	<span class="ident">ref_as_pvoid</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
 	<span class="ident">ATOM</span>,
@@ -785,9 +801,9 @@
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">AdjustWindowRectEx</span>(
-				<span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpRect</span>),
 				<span class="ident">dwStyle</span>.<span class="number">0</span>,
-				<span class="ident">bMenu</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
+				<span class="ident">bMenu</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">dwExStyle</span>.<span class="number">0</span>,
 			)
 		},
@@ -805,7 +821,7 @@
 			<span class="ident">kernel32</span>::<span class="ident">CopyFileW</span>(
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpExistingFileName</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpNewFileName</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">bFailIfExists</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
+				<span class="ident">bFailIfExists</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		},
 	)
@@ -832,7 +848,7 @@
 <span class="doccomment">/// [`DispatchMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-dispatchmessagew)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DispatchMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">DispatchMessageW</span>(<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">DispatchMessageW</span>(<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpMsg</span>)) }
 }
 
 <span class="doccomment">/// [`EncryptFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-encryptfilew)</span>
@@ -852,7 +868,7 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">advapi32</span>::<span class="ident">EncryptionDisable</span>(
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">DirPath</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">Disable</span> <span class="kw">as</span> <span class="ident">BOOL</span>,
+				<span class="ident">Disable</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		},
 	)
@@ -891,8 +907,8 @@
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">FileTimeToSystemTime</span>(
-				<span class="ident">lpFileTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-				<span class="ident">lpSystemTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+				<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpFileTime</span>),
+				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpSystemTime</span>),
 			)
 		}
 	)
@@ -901,7 +917,7 @@
 <span class="doccomment">/// [`GetAsyncKeyState`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>: <span class="ident">co</span>::<span class="ident">VK</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 }
 
 <span class="doccomment">/// [`GetDialogBaseUnits`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits)</span>
@@ -936,20 +952,19 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetEnvironmentStrings</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetEnvironmentStringsW</span>() }) {
-		<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-		<span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
-			<span class="kw">let</span> <span class="ident">vecEnvStrs</span> <span class="op">=</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>);
-			<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">FreeEnvironmentStringsW</span>(<span class="ident">p</span>); }
+	<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetEnvironmentStringsW</span>() })
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> {
+			<span class="kw">let</span> <span class="ident">vecEnvStrs</span> <span class="op">=</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>);
+			<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">FreeEnvironmentStringsW</span>(<span class="ident">ptr</span>); }
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">with_capacity</span>(<span class="ident">vecEnvStrs</span>.<span class="ident">len</span>());
 			<span class="kw">for</span> <span class="ident">envStr</span> <span class="kw">in</span> <span class="ident">vecEnvStrs</span> {
 				<span class="kw">let</span> <span class="ident">pair</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">envStr</span>.<span class="ident">split</span>(<span class="string">&quot;=&quot;</span>).<span class="ident">collect</span>();
 				<span class="ident">map</span>.<span class="ident">insert</span>(<span class="ident">pair</span>[<span class="number">0</span>].<span class="ident">to_owned</span>(), <span class="ident">pair</span>[<span class="number">1</span>].<span class="ident">to_owned</span>());
 			}
-			<span class="prelude-val">Ok</span>(<span class="ident">map</span>)
-		},
-	}
+			<span class="ident">map</span>
+		})
+		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 }
 
 <span class="doccomment">/// [`GetFileAttributes`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesw)</span>
@@ -998,6 +1013,26 @@
 	<span class="kw">unsafe</span> { <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">kernel32</span>::<span class="ident">GetLastError</span>()) }
 }
 
+<span class="doccomment">/// [`GetLogicalDriveStrings`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getlogicaldrivestringsw)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetLogicalDriveStrings</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="kw">unsafe</span> {
+		<span class="ident">kernel32</span>::<span class="ident">GetLogicalDriveStringsW</span>(<span class="number">0</span>, <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>())
+	} {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="ident">len</span> <span class="op">=</span><span class="op">&gt;</span> {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">new_alloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
+
+			<span class="kw">match</span> <span class="kw">unsafe</span> {
+				<span class="ident">kernel32</span>::<span class="ident">GetLogicalDriveStringsW</span>(<span class="ident">len</span>, <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>())
+			} {
+				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">parse_multi_z_str</span>(<span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() })),
+			}
+		},
+	}
+}
+
 <span class="doccomment">/// [`GetMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>, <span class="ident">hWnd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
@@ -1005,11 +1040,8 @@
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">GetMessageW</span>(
-			<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-			<span class="kw">match</span> <span class="ident">hWnd</span> {
-				<span class="prelude-val">Some</span>(<span class="ident">hWnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hWnd</span>.<span class="ident">ptr</span>,
-				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
-			},
+			<span class="ident">ref_as_pvoid</span>(<span class="ident">lpMsg</span>),
+			<span class="ident">hWnd</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
 			<span class="ident">wMsgFilterMin</span>, <span class="ident">wMsgFilterMax</span>,
 		)
 	} {
@@ -1028,7 +1060,7 @@
 <span class="doccomment">/// [`GetSysColor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">COLORREF</span> {
-	<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) })
+	<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) })
 }
 
 <span class="doccomment">/// [`GetSystemMetrics`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)</span>
@@ -1040,16 +1072,14 @@
 <span class="doccomment">/// [`GetSystemTime`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemTime</span>(<span class="ident">lpSystemTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SYSTEMTIME</span>) {
-	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetSystemTime</span>(<span class="ident">lpSystemTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) }
+	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetSystemTime</span>(<span class="ident">ref_as_pvoid</span>(<span class="ident">lpSystemTime</span>)) }
 }
 
 <span class="doccomment">/// [`GetSystemTimeAsFileTime`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemTimeAsFileTime</span>(<span class="ident">lpSystemTimeAsFileTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) {
 	<span class="kw">unsafe</span> {
-		<span class="ident">kernel32</span>::<span class="ident">GetSystemTimeAsFileTime</span>(
-			<span class="ident">lpSystemTimeAsFileTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
-		)
+		<span class="ident">kernel32</span>::<span class="ident">GetSystemTimeAsFileTime</span>(<span class="ident">ref_as_pvoid</span>(<span class="ident">lpSystemTimeAsFileTime</span>))
 	}
 }
 
@@ -1058,7 +1088,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemTimePreciseAsFileTime</span>(<span class="ident">lpSystemTimeAsFileTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) {
 	<span class="kw">unsafe</span> {
 		<span class="ident">kernel32</span>::<span class="ident">GetSystemTimePreciseAsFileTime</span>(
-			<span class="ident">lpSystemTimeAsFileTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			<span class="ident">ref_as_pvoid</span>(<span class="ident">lpSystemTimeAsFileTime</span>),
 		)
 	}
 }
@@ -1072,23 +1102,23 @@
 <span class="doccomment">/// [`HIBYTE`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632656(v=vs.85))</span>
 <span class="doccomment">/// function. Originally a macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HIBYTE</span>(<span class="ident">v</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
-	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="kw">as</span> <span class="ident">u8</span>
+	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// Returns the high-order `u32` of an `u64`.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HIDWORD</span>(<span class="ident">v</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">32</span> <span class="op">&amp;</span> <span class="number">0xffff_ffff</span>) <span class="kw">as</span> <span class="ident">u32</span>
+	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">32</span> <span class="op">&amp;</span> <span class="number">0xffff_ffff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// [`HIWORD`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632657(v=vs.85))</span>
 <span class="doccomment">/// function. Originally a macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HIWORD</span>(<span class="ident">v</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
-	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="ident">u16</span>
+	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// [`HRESULT_FROM_WIN32`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_from_win32)</span>
 <span class="doccomment">/// function. Originally a macro.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HRESULT_FROM_WIN32</span>(<span class="ident">hresult</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">ERROR</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HRESULT_FROM_WIN32</span>(<span class="ident">hresult</span>: <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">ERROR</span> {
 	<span class="ident">co</span>::<span class="ident">ERROR</span>((<span class="ident">hresult</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&amp;</span> <span class="number">0xffff</span>)
 }
 
@@ -1101,12 +1131,12 @@
 <span class="doccomment">/// [`IsGUIThread`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-isguithread)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsGUIThread</span>(<span class="ident">bConvert</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">IsGUIThread</span>(<span class="ident">bConvert</span> <span class="kw">as</span> <span class="ident">BOOL</span>) };
+	<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">IsGUIThread</span>(<span class="ident">bConvert</span> <span class="kw">as</span> <span class="kw">_</span>) };
 	<span class="kw">if</span> <span class="ident">bConvert</span> {
 		<span class="kw">match</span> <span class="ident">r</span> {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
 			<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
-			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">err</span> <span class="kw">as</span> <span class="ident">u32</span>)),
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">err</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	} <span class="kw">else</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">r</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
@@ -1117,8 +1147,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows10OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINTHRESHOLD</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -1127,8 +1157,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows7OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN7</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -1137,8 +1167,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows8OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WIN8</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -1147,8 +1177,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindows8Point1OrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_WINBLUE</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -1194,8 +1224,8 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWindowsVistaOrGreater</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="ident">IsWindowsVersionOrGreater</span>(
-		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
-		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u16</span>,
+		<span class="ident">HIBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+		<span class="ident">LOBYTE</span>(<span class="ident">co</span>::<span class="ident">WIN32</span>::<span class="ident">WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
 }
@@ -1203,7 +1233,7 @@
 <span class="doccomment">/// [`LOBYTE`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632658(v=vs.85))</span>
 <span class="doccomment">/// function. Originally a macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LOBYTE</span>(<span class="ident">v</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
-	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="kw">as</span> <span class="ident">u8</span>
+	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// [`LockSetForegroundWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-locksetforegroundwindow)</span>
@@ -1216,13 +1246,13 @@
 
 <span class="doccomment">/// Returns the low-order `u32` of an `u64`.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LODWORD</span>(<span class="ident">v</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xffff_ffff</span>) <span class="kw">as</span> <span class="ident">u32</span>
+	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xffff_ffff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// [`LOWORD`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632659(v=vs.85))</span>
 <span class="doccomment">/// function. Originally a macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LOWORD</span>(<span class="ident">v</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
-	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="ident">u16</span>
+	(<span class="ident">v</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// Function that implements</span>
@@ -1232,7 +1262,7 @@
 <span class="doccomment">/// [`MAKELPARAM`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-makelparam)</span>
 <span class="doccomment">/// macros.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MAKEDWORD</span>(<span class="ident">lo</span>: <span class="ident">u16</span>, <span class="ident">hi</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-	((<span class="ident">lo</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="op">|</span> ((<span class="ident">hi</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>)) <span class="kw">as</span> <span class="ident">u32</span>
+	((<span class="ident">lo</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="op">|</span> ((<span class="ident">hi</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>)) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// [`MAKEWORD`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632663(v=vs.85))</span>
@@ -1277,7 +1307,7 @@
 {
 	<span class="kw">unsafe</span> {
 		<span class="ident">user32</span>::<span class="ident">PeekMessageW</span>(
-			<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			<span class="ident">ref_as_pvoid</span>(<span class="ident">lpMsg</span>),
 			<span class="ident">hWnd</span>.<span class="ident">ptr</span>,
 			<span class="ident">wMsgFilterMin</span>,
 			<span class="ident">wMsgFilterMax</span>,
@@ -1305,15 +1335,13 @@
 <span class="doccomment">/// [`PostQuitMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postquitmessage)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>: <span class="ident">co</span>::<span class="ident">ERROR</span>) {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span>) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) }
 }
 
 <span class="doccomment">/// [`RegisterClassEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegisterClassEx</span>(<span class="ident">lpwcx</span>: <span class="kw-2">&amp;</span><span class="ident">WNDCLASSEX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ATOM</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="kw">unsafe</span> {
-		<span class="ident">user32</span>::<span class="ident">RegisterClassExW</span>(<span class="ident">lpwcx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">WNDCLASSEX</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>)
-	} {
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">RegisterClassExW</span>(<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpwcx</span>)) } {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="ident">atom</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">ATOM</span>(<span class="ident">atom</span>)),
 	}
@@ -1354,7 +1382,7 @@
 <span class="doccomment">/// [`ShowCursor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ShowCursor</span>(<span class="ident">bShow</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
-	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">ShowCursor</span>(<span class="ident">bShow</span> <span class="kw">as</span> <span class="ident">BOOL</span>) }
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">ShowCursor</span>(<span class="ident">bShow</span> <span class="kw">as</span> <span class="kw">_</span>) }
 }
 
 <span class="doccomment">/// [`Sleep`](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep)</span>
@@ -1380,7 +1408,10 @@
 {
 	<span class="ident">bool_to_winresult</span>(
 		<span class="ident">user32</span>::<span class="ident">SystemParametersInfoW</span>(
-			<span class="ident">uiAction</span>.<span class="number">0</span>, <span class="ident">uiParam</span>, <span class="ident">pvParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">fWinIni</span>.<span class="number">0</span>,
+			<span class="ident">uiAction</span>.<span class="number">0</span>,
+			<span class="ident">uiParam</span>,
+			<span class="ident">ref_as_pvoid</span>(<span class="ident">pvParam</span>),
+			<span class="ident">fWinIni</span>.<span class="number">0</span>,
 		),
 	)
 }
@@ -1393,8 +1424,8 @@
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">SystemTimeToFileTime</span>(
-				<span class="ident">lpSystemTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-				<span class="ident">lpFileTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>  <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+				<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpSystemTime</span>),
+				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpFileTime</span>),
 			)
 		}
 	)
@@ -1410,12 +1441,9 @@
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">SystemTimeToTzSpecificLocalTime</span>(
-				<span class="kw">match</span> <span class="ident">lpTimeZoneInformation</span> {
-					<span class="prelude-val">Some</span>(<span class="ident">lp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(),
-				},
-				<span class="ident">lpUniversalTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-				<span class="ident">lpLocalTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+				<span class="ident">lpTimeZoneInformation</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pcvoid</span>(<span class="ident">lp</span>)),
+				<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpUniversalTime</span>),
+				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpLocalTime</span>),
 			)
 		}
 	)
@@ -1425,16 +1453,14 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TrackMouseEvent</span>(<span class="ident">lpEventTrack</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TRACKMOUSEEVENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="ident">bool_to_winresult</span>(
-		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">TrackMouseEvent</span>(<span class="ident">lpEventTrack</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) },
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">TrackMouseEvent</span>(<span class="ident">ref_as_pvoid</span>(<span class="ident">lpEventTrack</span>)) },
 	)
 }
 
 <span class="doccomment">/// [`TranslateMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-translatemessage)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TranslateMessage</span>(<span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-	<span class="kw">unsafe</span> {
-		<span class="ident">user32</span>::<span class="ident">TranslateMessage</span>(<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
-	}
+	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">TranslateMessage</span>(<span class="ident">ref_as_pcvoid</span>(<span class="ident">lpMsg</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 }
 
 <span class="doccomment">/// [`UnregisterClass`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-unregisterclassw)</span>
@@ -1460,7 +1486,7 @@
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">kernel32</span>::<span class="ident">VerifyVersionInfoW</span>(
-			<span class="ident">lpVersionInformation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+			<span class="ident">ref_as_pvoid</span>(<span class="ident">lpVersionInformation</span>),
 			<span class="ident">dwTypeMask</span>.<span class="number">0</span>,
 			<span class="ident">dwlConditionMask</span>,
 		)

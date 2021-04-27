@@ -152,9 +152,6 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
@@ -241,7 +238,7 @@
 			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()),
 			<span class="ident">hmenu</span>,
 			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_hinstance</span>()<span class="question-mark">?</span>,
-			<span class="prelude-val">Some</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="self">Self</span> <span class="kw">as</span> <span class="ident">isize</span>), <span class="comment">// pass pointer to self</span>
+			<span class="prelude-val">Some</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="self">Self</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// pass pointer to self</span>
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
@@ -252,10 +249,7 @@
 			<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(
 				<span class="string">&quot;WNDCLASS.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}.{:#x}&quot;</span>,
 				<span class="ident">wcx</span>.<span class="ident">style</span>,
-				<span class="kw">match</span> <span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span> {
-					<span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>,
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-				},
+				<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>),
 				<span class="ident">wcx</span>.<span class="ident">cbClsExtra</span>, <span class="ident">wcx</span>.<span class="ident">cbWndExtra</span>,
 				<span class="ident">wcx</span>.<span class="ident">hInstance</span>, <span class="ident">wcx</span>.<span class="ident">hIcon</span>, <span class="ident">wcx</span>.<span class="ident">hCursor</span>, <span class="ident">wcx</span>.<span class="ident">hbrBackground</span>,
 				<span class="ident">wcx</span>.<span class="ident">lpszMenuName</span>().<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">wcx</span>.<span class="ident">hIconSm</span>,
@@ -274,7 +268,7 @@
 				<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCCREATE</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// first message being handled</span>
 					<span class="kw">let</span> <span class="ident">wm_ncc</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">NcCreate</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
 					<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_ncc</span>.<span class="ident">createstruct</span>.<span class="ident">lpCreateParams</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
-					<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">USERDATA</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="ident">isize</span>); <span class="comment">// store</span>
+					<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">USERDATA</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// store</span>
 					<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
 					<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">hwnd</span>); <span class="comment">// store HWND in struct field</span>
 					<span class="ident">ptr_self</span>

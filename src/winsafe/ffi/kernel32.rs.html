@@ -36,6 +36,11 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Raw bindings to kernel32.lib functions.</span>
 
@@ -53,8 +58,11 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FreeEnvironmentStringsW</span>(<span class="ident">penv</span>: <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetEnvironmentStringsW</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HANDLE</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileAttributesW</span>(<span class="ident">lpFileName</span>: <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileInformationByHandle</span>(<span class="ident">hFile</span>: <span class="ident">HANDLE</span>, <span class="ident">lpFileInformation</span>: <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileSizeEx</span>(<span class="ident">hFile</span>: <span class="ident">HANDLE</span>, <span class="ident">lpFileSize</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileType</span>(<span class="ident">hFile</span>: <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetLastError</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetLogicalDriveStringsW</span>(<span class="ident">nBufferLength</span>: <span class="ident">u32</span>, <span class="ident">lpBuffer</span>: <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetModuleHandleW</span>(<span class="ident">lpModuleName</span>: <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HANDLE</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemTime</span>(<span class="ident">lpSystemTime</span>: <span class="ident">PVOID</span>);
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemTimeAsFileTime</span>(<span class="ident">lpSystemTimeAsFileTime</span>: <span class="ident">PVOID</span>);
@@ -65,12 +73,14 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MoveFileW</span>(<span class="ident">lpExistingFileName</span>: <span class="ident">PCSTR</span>, <span class="ident">lpNewFileName</span>: <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MulDiv</span>(<span class="ident">nNumber</span>: <span class="ident">i32</span>, <span class="ident">nNumerator</span>: <span class="ident">i32</span>, <span class="ident">nDenominator</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OutputDebugStringW</span>(<span class="ident">lpOutputString</span>: <span class="ident">PCSTR</span>);
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ReadFile</span>(<span class="ident">hFile</span>: <span class="ident">HANDLE</span>, <span class="ident">lpBuffer</span>: <span class="ident">PVOID</span>, <span class="ident">nNumberOfBytesToRead</span>: <span class="ident">u32</span>, <span class="ident">lpNumberOfBytesRead</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>, <span class="ident">lpOverlapped</span>: <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetLastError</span>(<span class="ident">dwErrorCode</span>: <span class="ident">u32</span>);
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Sleep</span>(<span class="ident">dwMilliseconds</span>: <span class="ident">u32</span>);
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SystemTimeToFileTime</span>(<span class="ident">lpSystemTime</span>: <span class="ident">PCVOID</span>, <span class="ident">lpFileTime</span>: <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SystemTimeToTzSpecificLocalTime</span>(<span class="ident">lpTimeZoneInformation</span>: <span class="ident">PCVOID</span>, <span class="ident">lpUniversalTime</span>: <span class="ident">PCVOID</span>, <span class="ident">lpLocalTime</span>: <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">VerifyVersionInfoW</span>(<span class="ident">lpVersionInformation</span>: <span class="ident">PVOID</span>, <span class="ident">dwTypeMask</span>: <span class="ident">u32</span>, <span class="ident">dwlConditionMask</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">VerSetConditionMask</span>(<span class="ident">ConditionMask</span>: <span class="ident">u64</span>, <span class="ident">TypeMask</span>: <span class="ident">u32</span>, <span class="ident">Condition</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WriteFile</span>(<span class="ident">hFile</span>: <span class="ident">HANDLE</span>, <span class="ident">lpBuffer</span>: <span class="ident">PCVOID</span>, <span class="ident">nNumberOfBytesToWrite</span>: <span class="ident">u32</span>, <span class="ident">lpNumberOfBytesWritten</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>, <span class="ident">lpOverlapped</span>: <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe"></div>
