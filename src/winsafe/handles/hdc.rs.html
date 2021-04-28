@@ -279,7 +279,6 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
-<span id="279">279</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -291,7 +290,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
 	<span class="ident">GDI_ERROR</span>,
-	<span class="ident">ptr_as_opt</span>,
 	<span class="ident">ref_as_pcvoid</span>,
 	<span class="ident">ref_as_pvoid</span>,
 };
@@ -310,7 +308,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with a [`DeleteDC`](crate::HDC::DeleteDC) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateCompatibleDC</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">CreateCompatibleDC</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">CreateCompatibleDC</span>(<span class="self">self</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -495,36 +493,36 @@
 	<span class="doccomment">/// [`SelectObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-selectobject)</span>
 	<span class="doccomment">/// method for [`HBITMAP`](crate::HBITMAP).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SelectObjectBitmap</span>(<span class="self">self</span>, <span class="ident">h</span>: <span class="ident">HBITMAP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>) })
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBITMAP</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`SelectObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-selectobject)</span>
 	<span class="doccomment">/// method for [`HBRUSH`](crate::HBRUSH).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SelectObjectBrush</span>(<span class="self">self</span>, <span class="ident">h</span>: <span class="ident">HBRUSH</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>) })
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBRUSH</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`SelectObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-selectobject)</span>
 	<span class="doccomment">/// method for [`HFONT`](crate::HFONT).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SelectObjectFont</span>(<span class="self">self</span>, <span class="ident">h</span>: <span class="ident">HFONT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFONT</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>) })
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFONT</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`SelectObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-selectobject)</span>
 	<span class="doccomment">/// method for [`HPEN`](crate::HPEN).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SelectObjectPen</span>(<span class="self">self</span>, <span class="ident">h</span>: <span class="ident">HPEN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>) })
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HPEN</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`SelectObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-selectobject)</span>
 	<span class="doccomment">/// method for [`HRGN`](crate::HRGN).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SelectObjectRgn</span>(<span class="self">self</span>, <span class="ident">h</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">REGION</span><span class="op">&gt;</span> {
-		<span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>) })
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">i32</span>)).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+		<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">SelectObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">h</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">co</span>::<span class="ident">REGION</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`SetBkMode`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-setbkmode)</span>

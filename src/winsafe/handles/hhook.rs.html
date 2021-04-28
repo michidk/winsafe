@@ -31,9 +31,6 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -42,7 +39,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">user32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HINSTANCE</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">ptr_as_opt</span>;
 
 <span class="macro">handle_type</span><span class="macro">!</span> {
 	<span class="doccomment">/// Handle to a</span>
@@ -56,16 +52,14 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowsHookEx</span>(<span class="ident">idHook</span>: <span class="ident">co</span>::<span class="ident">WH</span>, <span class="ident">lpfn</span>: <span class="ident">HOOKPROC</span>,
 		<span class="ident">hmod</span>: <span class="ident">HINSTANCE</span>, <span class="ident">dwThreadId</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HHOOK</span><span class="op">&gt;</span>
 	{
-		<span class="ident">ptr_as_opt</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">user32</span>::<span class="ident">SetWindowsHookExW</span>(
-					<span class="ident">idHook</span>.<span class="number">0</span>,
-					<span class="ident">lpfn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
-					<span class="ident">hmod</span>.<span class="ident">ptr</span>,
-					<span class="ident">dwThreadId</span>,
-				)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+		<span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">SetWindowsHookExW</span>(
+				<span class="ident">idHook</span>.<span class="number">0</span>,
+				<span class="ident">lpfn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>,
+				<span class="ident">hmod</span>.<span class="ident">ptr</span>,
+				<span class="ident">dwThreadId</span>,
+			).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 }
 </pre></div>

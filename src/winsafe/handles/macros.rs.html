@@ -114,6 +114,8 @@
 <span id="111">111</span>
 <span id="112">112</span>
 <span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Declares the type of a handle.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">handle_type</span> {
@@ -222,8 +224,10 @@
 			<span class="doccomment">/// method.</span>
 			<span class="doccomment">///</span>
 			<span class="doccomment">/// This method is common to all GDI handle types.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DeleteObject</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-				<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32</span>::<span class="ident">DeleteObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DeleteObject</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+				<span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">bool_to_winresult</span>(
+					<span class="kw">unsafe</span> { <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">gdi32</span>::<span class="ident">DeleteObject</span>(<span class="self">self</span>.<span class="ident">ptr</span>) },
+				)
 			}
 		}
 	};

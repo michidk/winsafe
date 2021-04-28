@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["FILTER_STATE","`FILTER_STATE` enumeration (`u32`)."],["MFVideoARMode","`MFVideoAspectRatioMode` enumeration (`u32`)."],["SEEKING_FLAGS","`IMediaSeeking::SetPositions` flags (`u32`). Originally AM_SEEKING_SeekingFlags enum."]]});

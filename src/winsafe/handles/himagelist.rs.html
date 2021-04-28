@@ -168,8 +168,6 @@
 <span id="165">165</span>
 <span id="166">166</span>
 <span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -178,7 +176,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">comctl32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HICON</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">ptr_as_opt</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">bool_to_winresult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">COLORREF</span>;
 
 <span class="macro">handle_type</span><span class="macro">!</span> {
@@ -255,11 +253,9 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ImageList_Create</span>(<span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>,
 		<span class="ident">flags</span>: <span class="ident">co</span>::<span class="ident">ILS</span>, <span class="ident">cInitial</span>: <span class="ident">i32</span>, <span class="ident">cGrow</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HIMAGELIST</span><span class="op">&gt;</span>
 	{
-		<span class="ident">ptr_as_opt</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">comctl32</span>::<span class="ident">ImageList_Create</span>(<span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">flags</span>.<span class="number">0</span>, <span class="ident">cInitial</span>, <span class="ident">cGrow</span>)
-			}
-		).<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+		<span class="kw">unsafe</span> {
+			<span class="ident">comctl32</span>::<span class="ident">ImageList_Create</span>(<span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">flags</span>.<span class="number">0</span>, <span class="ident">cInitial</span>, <span class="ident">cGrow</span>).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`ImageList_Destroy`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_destroy)</span>

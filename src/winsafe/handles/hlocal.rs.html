@@ -21,16 +21,12 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">kernel32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">ptr_as_opt</span>;
 
 <span class="macro">handle_type</span><span class="macro">!</span> {
 	<span class="doccomment">/// Handle to a</span>
@@ -42,10 +38,8 @@
 	<span class="doccomment">/// [`LocalFree`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-localfree)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LocalFree</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">ptr_as_opt</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">LocalFree</span>(<span class="self">self</span>.<span class="ident">ptr</span>) }) {
-			<span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		}
+		<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">LocalFree</span>(<span class="self">self</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 }
 </pre></div>
