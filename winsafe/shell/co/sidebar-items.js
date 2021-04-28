@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["DROPEFFECT","`DROPEFFECT` constants (`u32`)."],["FOS","`_FILEOPENDIALOGOPTIONS` enumeration (`u32`)."],["SFGAO","`SFGAO` constants (`u32`)."],["SIGDN","`SIGDN` enumeration (`u32`)."],["TBPF","`ITaskbarList3::SetProgressState` `tbpFlags` (`u32`)."]]});
