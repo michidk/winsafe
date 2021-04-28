@@ -137,11 +137,11 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
-	<span class="doccomment">/// [`UnmapViewOfFile`](crate::HFILEMAPADDR::UnmapViewOfFile) call.</span>
+	<span class="doccomment">/// [`UnmapViewOfFile`](crate::HFILEMAPVIEW::UnmapViewOfFile) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MapViewOfFile</span>(<span class="self">self</span>,
 		<span class="ident">desiredAccess</span>: <span class="ident">co</span>::<span class="ident">FILE_MAP</span>,
 		<span class="ident">offset</span>: <span class="ident">u64</span>,
-		<span class="ident">numberOfBytesToMap</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFILEMAPADDR</span><span class="op">&gt;</span>
+		<span class="ident">numberOfBytesToMap</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFILEMAPVIEW</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">MapViewOfFile</span>(
@@ -151,7 +151,7 @@
 				<span class="ident">LODWORD</span>(<span class="ident">offset</span>),
 				<span class="ident">numberOfBytesToMap</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFILEMAPADDR</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFILEMAPVIEW</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 }
 
@@ -161,10 +161,10 @@
 	<span class="doccomment">/// Address of a</span>
 	<span class="doccomment">/// [mapped view](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile).</span>
 	<span class="doccomment">/// Originally just an `LPVOID`.</span>
-	<span class="ident">HFILEMAPADDR</span>
+	<span class="ident">HFILEMAPVIEW</span>
 }
 
-<span class="kw">impl</span> <span class="ident">HFILEMAPADDR</span> {
+<span class="kw">impl</span> <span class="ident">HFILEMAPVIEW</span> {
 	<span class="doccomment">/// [`UnmapViewOfFile`](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-unmapviewoffile)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">UnmapViewOfFile</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {

@@ -1156,6 +1156,12 @@
 <span id="1153">1153</span>
 <span id="1154">1154</span>
 <span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
+<span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
+<span id="1161">1161</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1188,7 +1194,7 @@
 	<span class="doccomment">/// [`GetWindowLongPtr`](crate::HWND::GetWindowLongPtr) wrapper to retrieve</span>
 	<span class="doccomment">/// the window [`HINSTANCE`](crate::HINSTANCE).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hinstance</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HINSTANCE</span> {
-		<span class="ident">HINSTANCE</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">HINSTANCE</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> }
+		<span class="ident">HINSTANCE</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co</span>::<span class="ident">GWLP</span>::<span class="ident">HINSTANCE</span>) <span class="kw">as</span> <span class="kw">_</span> }
 	}
 
 	<span class="doccomment">/// [`ArrangeIconicWindows`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-arrangeiconicwindows)</span>
@@ -1286,7 +1292,7 @@
 				<span class="ident">hWndParent</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
 				<span class="ident">hMenu</span>.<span class="ident">as_ptr</span>(),
 				<span class="ident">hInstance</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpParam</span>.<span class="ident">unwrap_or_default</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>,
+				<span class="ident">lpParam</span>.<span class="ident">unwrap_or_default</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> }).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -1358,7 +1364,7 @@
 	<span class="doccomment">/// inconvenient of the manual function pointer.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumChildWindows</span>(<span class="self">self</span>, <span class="ident">lpEnumFunc</span>: <span class="ident">WNDENUMPROC</span>, <span class="ident">lParam</span>: <span class="ident">isize</span>) {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">EnumChildWindows</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpEnumFunc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>, <span class="ident">lParam</span>);
+			<span class="ident">user32</span>::<span class="ident">EnumChildWindows</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpEnumFunc</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">lParam</span>);
 		}
 	}
 
@@ -1656,7 +1662,8 @@
 	<span class="doccomment">/// This method can be more performant than</span>
 	<span class="doccomment">/// [`GetWindowTextStr`](crate::HWND::GetWindowTextStr) because the buffer</span>
 	<span class="doccomment">/// can be reused, avoiding multiple allocations. However, it has the</span>
-	<span class="doccomment">/// inconvenient of the manual conversion from `WString` to `String`.</span>
+	<span class="doccomment">/// inconvenient of the manual conversion from [`WString`](crate::WString)</span>
+	<span class="doccomment">/// to `String`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
@@ -1709,7 +1716,7 @@
 	}
 
 	<span class="doccomment">/// A more convenient [`GetWindowText`](crate::HWND::GetWindowText), which</span>
-	<span class="doccomment">/// returns a `String` instead of requiring an external buffer.</span>
+	<span class="doccomment">/// directly returns a `String` instead of requiring an external buffer.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
@@ -1985,7 +1992,9 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32</span>::<span class="ident">RemoveWindowSubclass</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>, <span class="ident">uIdSubclass</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">uIdSubclass</span>,
 				)
 			},
 		)
@@ -2144,7 +2153,7 @@
 				<span class="self">self</span>.<span class="ident">ptr</span>,
 				<span class="ident">nIDEvent</span>,
 				<span class="ident">uElapse</span>,
-				<span class="ident">lpTimerFunc</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>),
+				<span class="ident">lpTimerFunc</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>),
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -2211,7 +2220,10 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32</span>::<span class="ident">SetWindowSubclass</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>, <span class="ident">uIdSubclass</span>, <span class="ident">dwRefData</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">uIdSubclass</span>,
+					<span class="ident">dwRefData</span>,
 				)
 			},
 		)
