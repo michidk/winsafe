@@ -126,121 +126,121 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">PPComVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">ITaskbarList2</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::{<span class="ident">ITaskbarList2VT</span>, <span class="ident">ITaskbarList3VT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::{<span class="ident">ITaskbarListVT</span>, <span class="ident">ITaskbarList2VT</span>, <span class="ident">ITaskbarList3VT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">hr_to_winresult</span>;
 
-<span class="doccomment">/// [`ITaskbarList3`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist3)</span>
-<span class="doccomment">/// COM interface.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Virtual table: [`ITaskbarList3VT`](crate::shell::vt::ITaskbarList3VT).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Inherits from:</span>
-<span class="doccomment">/// * [`ITaskbarList2`](crate::shell::ITaskbarList2);</span>
-<span class="doccomment">/// * [`ITaskbarList`](crate::shell::ITaskbarList);</span>
-<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls</span>
-<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-<span class="doccomment">/// when the object goes out of scope.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Examples</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```rust,ignore</span>
-<span class="doccomment">/// use winsafe::{co, CoCreateInstance, shell};</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// let obj: shell::ITaskbarList3 = CoCreateInstance(</span>
-<span class="doccomment">///     &amp;shell::clsid::TaskbarList,</span>
-<span class="doccomment">///     None,</span>
-<span class="doccomment">///     co::CLSCTX::INPROC_SERVER,</span>
-<span class="doccomment">/// ).unwrap();</span>
-<span class="doccomment">/// ```</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList3</span> {
-	<span class="doccomment">/// Methods of base interface [`ITaskbarList2`](crate::shell::ITaskbarList2).</span>
-	<span class="kw">pub</span> <span class="ident">ITaskbarList2</span>: <span class="ident">ITaskbarList2</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ITaskbarList3</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">ITaskbarList2</span>: <span class="ident">ITaskbarList2</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList2VT</span><span class="op">&gt;</span>),
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">ITaskbarList3_impl</span> {
+	(
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ident</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="macro">ITaskbarList2_impl</span><span class="macro">!</span>{
+			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
 		}
-	}
+
+		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="doccomment">/// [`ITaskbarList3::RegisterTab`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-registertab)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegisterTab</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndMDI</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">RegisterTab</span>)(<span class="ident">ppvt</span>, <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndMDI</span>.<span class="ident">ptr</span>)
+					},
+				)
+			}
+
+			<span class="doccomment">/// [`ITaskbarList3::SetProgressState`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setprogressstate)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetProgressState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">tbpfFlags</span>: <span class="ident">co</span>::<span class="ident">TBPF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">SetProgressState</span>)(<span class="ident">ppvt</span>, <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">tbpfFlags</span>.<span class="number">0</span>)
+					},
+				)
+			}
+
+			<span class="doccomment">/// [`ITaskbarList3::SetProgressValue`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setprogressvalue)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetProgressValue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">ullCompleted</span>: <span class="ident">u64</span>, <span class="ident">ullTotal</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">SetProgressValue</span>)(
+							<span class="ident">ppvt</span>, <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">ullCompleted</span>, <span class="ident">ullTotal</span>,
+						)
+					},
+				)
+			}
+
+			<span class="doccomment">/// [`ITaskbarList3::SetTabActive`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settabactive)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTabActive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndMDI</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">SetTabActive</span>)(<span class="ident">ppvt</span>, <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndMDI</span>.<span class="ident">ptr</span>, <span class="number">0</span>)
+					},
+				)
+			}
+
+			<span class="doccomment">/// [`ITaskbarList3::SetTabOrder`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settaborder)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTabOrder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndInsertBefore</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">SetTabOrder</span>)(
+							<span class="ident">ppvt</span>, <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndInsertBefore</span>.<span class="ident">ptr</span>,
+						)
+					},
+				)
+			}
+		}
+	};
 }
 
-<span class="kw">impl</span> <span class="ident">ITaskbarList3</span> {
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ppv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">ITaskbarList2</span>.<span class="ident">ITaskbarList</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">ITaskbarList3VT</span><span class="op">&gt;</span>()
-	}
-
-	<span class="doccomment">/// [`ITaskbarList3::RegisterTab`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-registertab)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegisterTab</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndMDI</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">RegisterTab</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndMDI</span>.<span class="ident">ptr</span>)
-			},
-		)
-	}
-
-	<span class="doccomment">/// [`ITaskbarList3::SetProgressState`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setprogressstate)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetProgressState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">tbpfFlags</span>: <span class="ident">co</span>::<span class="ident">TBPF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetProgressState</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">tbpfFlags</span>.<span class="number">0</span>)
-			},
-		)
-	}
-
-	<span class="doccomment">/// [`ITaskbarList3::SetProgressValue`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setprogressvalue)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetProgressValue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">ullCompleted</span>: <span class="ident">u64</span>, <span class="ident">ullTotal</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetProgressValue</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwnd</span>.<span class="ident">ptr</span>, <span class="ident">ullCompleted</span>, <span class="ident">ullTotal</span>,
-				)
-			},
-		)
-	}
-
-	<span class="doccomment">/// [`ITaskbarList3::SetTabActive`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settabactive)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTabActive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndMDI</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetTabActive</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndMDI</span>.<span class="ident">ptr</span>, <span class="number">0</span>,
-				)
-			},
-		)
-	}
-
-	<span class="doccomment">/// [`ITaskbarList3::SetTabOrder`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settaborder)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTabOrder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwndTab</span>: <span class="ident">HWND</span>, <span class="ident">hwndInsertBefore</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">SetTabOrder</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">hwndTab</span>.<span class="ident">ptr</span>, <span class="ident">hwndInsertBefore</span>.<span class="ident">ptr</span>,
-				)
-			},
-		)
-	}
+<span class="macro">ITaskbarList3_impl</span><span class="macro">!</span> {
+	<span class="doccomment">/// [`ITaskbarList3`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist3)</span>
+	<span class="doccomment">/// COM interface.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Virtual table: [`ITaskbarList3VT`](crate::shell::vt::ITaskbarList3VT).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Inherits from:</span>
+	<span class="doccomment">/// * [`ITaskbarList2`](crate::shell::ITaskbarList2);</span>
+	<span class="doccomment">/// * [`ITaskbarList`](crate::shell::ITaskbarList);</span>
+	<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Automatically calls</span>
+	<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+	<span class="doccomment">/// when the object goes out of scope.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::{co, CoCreateInstance, shell};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let obj: shell::ITaskbarList3 = CoCreateInstance(</span>
+	<span class="doccomment">///     &amp;shell::clsid::TaskbarList,</span>
+	<span class="doccomment">///     None,</span>
+	<span class="doccomment">///     co::CLSCTX::INPROC_SERVER,</span>
+	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// ```</span>
+	<span class="ident">ITaskbarList3</span>, <span class="ident">ITaskbarList3VT</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>

@@ -54,17 +54,14 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">ref_as_pvoid</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">CLSID</span>, <span class="ident">IID</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">CLSID</span>;
 
 <span class="macro">com_virtual_table</span><span class="macro">!</span> { <span class="ident">IPersistVT</span>,
 	<span class="doccomment">/// [`IPersist`](crate::IPersist) virtual table.</span>
@@ -75,44 +72,41 @@
 	<span class="ident">GetClassID</span>, <span class="kw">fn</span>(<span class="ident">PPComVT</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>
 }
 
-<span class="doccomment">/// [`IPersist`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nn-objidl-ipersist)</span>
-<span class="doccomment">/// COM interface. Backed by [`IPersistVT`](crate::IPersistVT) virtual table.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Inherits from:</span>
-<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls</span>
-<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-<span class="doccomment">/// when the object goes out of scope.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IPersist</span> {
-	<span class="doccomment">/// Methods of base interface [`IUnknown`](crate::IUnknown).</span>
-	<span class="kw">pub</span> <span class="ident">IUnknown</span>: <span class="ident">IUnknown</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IPersistVT</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IPersist</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IPersistVT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">IUnknown</span>: <span class="ident">IUnknown</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IUnknownVT</span><span class="op">&gt;</span>)
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">IPersist_impl</span> {
+	(
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ident</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="macro">IUnknown_impl</span><span class="macro">!</span> {
+			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
 		}
-	}
+
+		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="doccomment">/// [`IPersist::GetClassID`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nf-objidl-ipersist-getclassid)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">CLSID</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IPersistVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="op">=</span> <span class="ident">CLSID</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">GetClassID</span>)(<span class="ident">ppvt</span>, <span class="ident">ref_as_pvoid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">clsid</span>)) },
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">clsid</span>)
+			}
+		}
+	};
 }
 
-<span class="kw">impl</span> <span class="ident">IPersist</span> {
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ppv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IPersistVT</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">IPersistVT</span><span class="op">&gt;</span>()
-	}
-
-	<span class="doccomment">/// [`IPersist::GetClassID`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nf-objidl-ipersist-getclassid)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">CLSID</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="op">=</span> <span class="ident">CLSID</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">GetClassID</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">ref_as_pvoid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">clsid</span>))
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">clsid</span>)
-	}
+<span class="macro">IPersist_impl</span><span class="macro">!</span> {
+	<span class="doccomment">/// [`IPersist`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nn-objidl-ipersist)</span>
+	<span class="doccomment">/// COM interface. Backed by [`IPersistVT`](crate::IPersistVT) virtual table.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Inherits from:</span>
+	<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Automatically calls</span>
+	<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+	<span class="doccomment">/// when the object goes out of scope.</span>
+	<span class="ident">IPersist</span>, <span class="ident">IPersistVT</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe"></div>

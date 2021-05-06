@@ -136,131 +136,131 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">ComVT</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">funcs</span>::<span class="ident">CoTaskMemFree</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::<span class="ident">IShellItemVT</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">shell32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">ref_as_pcvoid</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
-<span class="doccomment">/// [`IShellItem`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ishellitem)</span>
-<span class="doccomment">/// COM interface.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Virtual table: [`IShellItemVT`](crate::shell::vt::IShellItemVT).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Inherits from:</span>
-<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls</span>
-<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-<span class="doccomment">/// when the object goes out of scope.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IShellItem</span> {
-	<span class="doccomment">/// Methods of base interface [`IUnknown`](crate::IUnknown).</span>
-	<span class="kw">pub</span> <span class="ident">IUnknown</span>: <span class="ident">IUnknown</span>,
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">IShellItem_impl</span> {
+	(
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ident</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="macro">IUnknown_impl</span><span class="macro">!</span> {
+			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
+		}
+
+		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="doccomment">/// Calls</span>
+			<span class="doccomment">/// [`SHCreateItemFromParsingName`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-shcreateitemfromparsingname)</span>
+			<span class="doccomment">/// function to create a new shell item, using the given folder or file path.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// # Examples</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// ```rust,ignore</span>
+			<span class="doccomment">/// use winsafe::shell;</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// let shi = shell::IShellItem::from_path(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
+			<span class="doccomment">/// ```</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_path</span>(<span class="ident">file_or_folder_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						<span class="ident">shell32</span>::<span class="ident">SHCreateItemFromParsingName</span>(
+							<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">file_or_folder_path</span>).<span class="ident">as_ptr</span>(),
+							<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
+							<span class="ident">ref_as_pcvoid</span>(<span class="kw-2">&amp;</span><span class="ident">IShellItemVT</span>::<span class="ident">IID</span>()),
+							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						)
+					},
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
+			}
+
+			<span class="doccomment">/// [`IShellItem::GetAttributes`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getattributes)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAttributes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">sfgaoMask</span>: <span class="ident">co</span>::<span class="ident">SFGAO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">SFGAO</span><span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attrs</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">GetAttributes</span>)(<span class="ident">ppvt</span>, <span class="ident">sfgaoMask</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">attrs</span>)
+					} <span class="kw">as</span> <span class="kw">_</span>,
+				) {
+					<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">SFGAO</span>(<span class="ident">attrs</span>)),
+					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+				}
+			}
+
+			<span class="doccomment">/// [`IShellItem::GetDisplayName`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// # Examples</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// ```rust,ignore</span>
+			<span class="doccomment">/// use winsafe::{co, shell};</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// let shi = shell::IShellItem::new(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
+			<span class="doccomment">/// let full_path = shi.GetDisplayName(co::SIGDN::FILESYSPATH).unwrap();</span>
+			<span class="doccomment">/// println!(&quot;{}&quot;, full_path);</span>
+			<span class="doccomment">/// ```</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDisplayName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sigdnName</span>: <span class="ident">co</span>::<span class="ident">SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pstr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">GetDisplayName</span>)(<span class="ident">ppvt</span>, <span class="ident">sigdnName</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pstr</span>)
+					},
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+					<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">pstr</span>);
+					<span class="ident">CoTaskMemFree</span>(<span class="ident">pstr</span>);
+					<span class="ident">name</span>.<span class="ident">to_string</span>()
+				})
+			}
+
+			<span class="doccomment">/// [`IShellItem::GetParent`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getparent)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// # Examples</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// ```rust,ignore</span>
+			<span class="doccomment">/// use winsafe::{co, shell};</span>
+			<span class="doccomment">///</span>
+			<span class="doccomment">/// let shi = shell::IShellItem::new(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
+			<span class="doccomment">/// let parent_shi = shi.GetParent().unwrap();</span>
+			<span class="doccomment">/// let full_path = parent_shi.GetDisplayName(co::SIGDN::FILESYSPATH).unwrap();</span>
+			<span class="doccomment">/// println!(&quot;{}&quot;, full_path);</span>
+			<span class="doccomment">/// ```</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetParent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">GetParent</span>)(<span class="ident">ppvt</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+					},
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
+			}
+		}
+	};
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IShellItem</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">IUnknown</span>: <span class="ident">IUnknown</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IUnknownVT</span><span class="op">&gt;</span>)
-		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">IShellItem</span> {
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ppv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span>()
-	}
-
-	<span class="doccomment">/// Calls</span>
-	<span class="doccomment">/// [`SHCreateItemFromParsingName`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-shcreateitemfromparsingname)</span>
-	<span class="doccomment">/// function to create a new shell item, using the given folder or file path.</span>
+<span class="macro">IShellItem_impl</span><span class="macro">!</span> {
+	<span class="doccomment">/// [`IShellItem`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ishellitem)</span>
+	<span class="doccomment">/// COM interface.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// Virtual table: [`IShellItemVT`](crate::shell::vt::IShellItemVT).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::shell;</span>
+	<span class="doccomment">/// Inherits from:</span>
+	<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let shi = shell::IShellItem::from_path(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
-	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_path</span>(<span class="ident">file_or_folder_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">shell32</span>::<span class="ident">SHCreateItemFromParsingName</span>(
-					<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">file_or_folder_path</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
-					<span class="ident">ref_as_pcvoid</span>(<span class="kw-2">&amp;</span><span class="ident">IShellItemVT</span>::<span class="ident">IID</span>()),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
-	}
-
-	<span class="doccomment">/// [`IShellItem::GetAttributes`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getattributes)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAttributes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sfgaoMask</span>: <span class="ident">co</span>::<span class="ident">SFGAO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">SFGAO</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attrs</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">GetAttributes</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">sfgaoMask</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">attrs</span>)
-			} <span class="kw">as</span> <span class="kw">_</span>,
-		) {
-			<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co</span>::<span class="ident">SFGAO</span>(<span class="ident">attrs</span>)),
-			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-		}
-	}
-
-	<span class="doccomment">/// [`IShellItem::GetDisplayName`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{co, shell};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let shi = shell::IShellItem::new(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
-	<span class="doccomment">/// let full_path = shi.GetDisplayName(co::SIGDN::FILESYSPATH).unwrap();</span>
-	<span class="doccomment">/// println!(&quot;{}&quot;, full_path);</span>
-	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDisplayName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sigdnName</span>: <span class="ident">co</span>::<span class="ident">SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pstr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">GetDisplayName</span>)(<span class="self">self</span>.<span class="ident">ppv</span>(), <span class="ident">sigdnName</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pstr</span>)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">pstr</span>);
-			<span class="ident">CoTaskMemFree</span>(<span class="ident">pstr</span>);
-			<span class="ident">name</span>.<span class="ident">to_string</span>()
-		})
-	}
-
-	<span class="doccomment">/// [`IShellItem::GetParent`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getparent)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{co, shell};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let shi = shell::IShellItem::new(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
-	<span class="doccomment">/// let parent_shi = shi.GetParent().unwrap();</span>
-	<span class="doccomment">/// let full_path = parent_shi.GetDisplayName(co::SIGDN::FILESYSPATH).unwrap();</span>
-	<span class="doccomment">/// println!(&quot;{}&quot;, full_path);</span>
-	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetParent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IShellItemVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">GetParent</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
-	}
+	<span class="doccomment">/// Automatically calls</span>
+	<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+	<span class="doccomment">/// when the object goes out of scope.</span>
+	<span class="ident">IShellItem</span>, <span class="ident">IShellItemVT</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>

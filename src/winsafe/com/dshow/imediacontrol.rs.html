@@ -112,117 +112,123 @@
 <span id="109">109</span>
 <span id="110">110</span>
 <span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">IDispatch</span>, <span class="ident">IDispatchVT</span>, <span class="ident">PPComVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">IDispatch</span>, <span class="ident">IDispatchVT</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">dshow</span>::<span class="ident">vt</span>::<span class="ident">IMediaControlVT</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">hr_to_winresult_bool</span>, <span class="ident">INFINITE</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
-<span class="doccomment">/// [`IMediaControl`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ibasefilter)</span>
-<span class="doccomment">/// COM interface.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Virtual table: [`IMediaControlVT`](crate::dshow::vt::IMediaControlVT).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Inherits from:</span>
-<span class="doccomment">/// * [`IDispatch`](crate::IDispatch);</span>
-<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Automatically calls</span>
-<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-<span class="doccomment">/// when the object goes out of scope.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMediaControl</span> {
-	<span class="doccomment">/// Methods of base interface [`IDispatch`](crate::IDispatch).</span>
-	<span class="kw">pub</span> <span class="ident">IDispatch</span>: <span class="ident">IDispatch</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IMediaControl</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppv</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">IDispatch</span>: <span class="ident">IDispatch</span>::<span class="ident">from</span>(<span class="ident">ppv</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IDispatchVT</span><span class="op">&gt;</span>)
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">IMediaControl_impl</span> {
+	(
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ident</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="macro">IDispatch_impl</span><span class="macro">!</span> {
+			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
 		}
-	}
+
+		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="doccomment">/// [`IMediaControl::AddSourceFilter`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-addsourcefilter)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AddSourceFilter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IDispatch</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IDispatchVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">AddSourceFilter</span>)(
+							<span class="ident">ppvt</span>,
+							<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>(), <span class="comment">// BSTR</span>
+							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						)
+					},
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IDispatch</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
+			}
+
+			<span class="doccomment">/// [`IMediaControl::GetState`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-getstate)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">msTimeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">FILTER_STATE</span><span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">FILTER_STATE</span>::<span class="ident">Stopped</span>;
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">GetState</span>)(
+							<span class="ident">ppvt</span>,
+							<span class="ident">msTimeout</span>.<span class="ident">unwrap_or</span>(<span class="ident">INFINITE</span> <span class="kw">as</span> <span class="kw">_</span>),
+							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>.<span class="number">0</span>,
+						)
+					},
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">state</span>)
+			}
+
+			<span class="doccomment">/// [`IMediaControl::Pause`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-pause)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Pause</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult_bool</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">Pause</span>)(<span class="ident">ppvt</span>) })
+			}
+
+			<span class="doccomment">/// [`IMediaControl::RenderFile`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-renderfile)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RenderFile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(
+					<span class="kw">unsafe</span> {
+						((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">RenderFile</span>)(
+							<span class="ident">ppvt</span>,
+							<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>(), <span class="comment">// BSTR</span>
+						)
+					},
+				)
+			}
+
+			<span class="doccomment">/// [`IMediaControl::Run`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-run)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult_bool</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">Run</span>)(<span class="ident">ppvt</span>) })
+			}
+
+			<span class="doccomment">/// [`IMediaControl::Stop`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-stop)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">Stop</span>)(<span class="ident">ppvt</span>) })
+			}
+
+			<span class="doccomment">/// [`IMediaControl::StopWhenReady`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-stopwhenready)</span>
+			<span class="doccomment">/// method.</span>
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">StopWhenReady</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>() };
+				<span class="ident">hr_to_winresult_bool</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">StopWhenReady</span>)(<span class="ident">ppvt</span>) })
+			}
+		}
+	};
 }
 
-<span class="kw">impl</span> <span class="ident">IMediaControl</span> {
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ppv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">IDispatch</span>.<span class="ident">IUnknown</span>.<span class="ident">ppv</span>::<span class="op">&lt;</span><span class="ident">IMediaControlVT</span><span class="op">&gt;</span>()
-	}
-
-	<span class="doccomment">/// [`IMediaControl::AddSourceFilter`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-addsourcefilter)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AddSourceFilter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IDispatch</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">IDispatchVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">AddSourceFilter</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(),
-					<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>(), <span class="comment">// BSTR</span>
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IDispatch</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
-	}
-
-	<span class="doccomment">/// [`IMediaControl::GetState`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-getstate)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">msTimeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">FILTER_STATE</span><span class="op">&gt;</span>
-	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">FILTER_STATE</span>::<span class="ident">Stopped</span>;
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">GetState</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(),
-					<span class="ident">msTimeout</span>.<span class="ident">unwrap_or</span>(<span class="ident">INFINITE</span> <span class="kw">as</span> <span class="kw">_</span>),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>.<span class="number">0</span>,
-				)
-			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">state</span>)
-	}
-
-	<span class="doccomment">/// [`IMediaControl::Pause`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-pause)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Pause</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult_bool</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">Pause</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) })
-	}
-
-	<span class="doccomment">/// [`IMediaControl::RenderFile`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-renderfile)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RenderFile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">RenderFile</span>)(
-					<span class="self">self</span>.<span class="ident">ppv</span>(),
-					<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>(), <span class="comment">// BSTR</span>
-				)
-			},
-		)
-	}
-
-	<span class="doccomment">/// [`IMediaControl::Run`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-run)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult_bool</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">Run</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) })
-	}
-
-	<span class="doccomment">/// [`IMediaControl::Stop`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-stop)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult</span>(<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">Stop</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) })
-	}
-
-	<span class="doccomment">/// [`IMediaControl::StopWhenReady`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-stopwhenready)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">StopWhenReady</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult_bool</span>(
-			<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppv</span>()).<span class="ident">StopWhenReady</span>)(<span class="self">self</span>.<span class="ident">ppv</span>()) },
-		)
-	}
+<span class="macro">IMediaControl_impl</span><span class="macro">!</span> {
+	<span class="doccomment">/// [`IMediaControl`](https://docs.microsoft.com/en-us/windows/win32/api/control/nn-control-imediacontrol)</span>
+	<span class="doccomment">/// COM interface.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Virtual table: [`IMediaControlVT`](crate::dshow::vt::IMediaControlVT).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Inherits from:</span>
+	<span class="doccomment">/// * [`IDispatch`](crate::IDispatch);</span>
+	<span class="doccomment">/// * [`IUnknown`](crate::IUnknown).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Automatically calls</span>
+	<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+	<span class="doccomment">/// when the object goes out of scope.</span>
+	<span class="ident">IMediaControl</span>, <span class="ident">IMediaControlVT</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
