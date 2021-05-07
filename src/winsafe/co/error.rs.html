@@ -5697,17 +5697,17 @@
 				<span class="number">0</span>,
 				<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(),
 			) {
-				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>( <span class="comment">// never fails</span>
+				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>( <span class="comment">// never fails, returns a message instead</span>
 					<span class="string">&quot;FormatMessage failed to format error {:#06x}: error {:#06x}.&quot;</span>,
-					<span class="self">self</span>, <span class="ident">GetLastError</span>(),
+					<span class="self">self</span>.<span class="number">0</span>, <span class="ident">GetLastError</span>(),
 				),
 				<span class="ident">nchars</span> <span class="op">=</span><span class="op">&gt;</span> {
-					<span class="kw">let</span> <span class="ident">final_str</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">from_wchars_count</span>(<span class="ident">ptr_buf</span>, <span class="ident">nchars</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">to_string</span>();
+					<span class="kw">let</span> <span class="ident">final_str</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">from_wchars_count</span>(<span class="ident">ptr_buf</span>, <span class="ident">nchars</span> <span class="kw">as</span> <span class="kw">_</span>);
 					<span class="kw">match</span> (<span class="ident">HLOCAL</span> { <span class="ident">ptr</span>: <span class="ident">ptr_buf</span> <span class="kw">as</span> <span class="kw">_</span> }).<span class="ident">LocalFree</span>() {
-						<span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">final_str</span>,
+						<span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">final_str</span>.<span class="ident">to_string</span>(),
 						<span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(
 							<span class="string">&quot;LocalFree failed after formatting error {:#06x}: error {:#06x}.&quot;</span>,
-							<span class="self">self</span>, <span class="ident">err</span>),
+							<span class="self">self</span>.<span class="number">0</span>, <span class="ident">err</span>.<span class="number">0</span>),
 					}
 				},
 			}
