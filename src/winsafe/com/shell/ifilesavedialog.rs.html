@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\com\shell\ifilesavedialog.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ifilesavedialog.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\com\shell\ifilesavedialog.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ifilesavedialog.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -54,57 +54,29 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
-<span id="67">67</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">funcs</span>::<span class="ident">CoTaskMemFree</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::{<span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::{<span class="ident">COMDLG_FILTERSPEC</span>, <span class="ident">IShellItem</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::{
-	<span class="ident">IFileDialogVT</span>,
-	<span class="ident">IFileSaveDialogVT</span>,
-	<span class="ident">IModalWindowVT</span>,
-	<span class="ident">IShellItemVT</span>,
-};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">HRESULT_FROM_WIN32</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">ref_as_pcvoid</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">GUID</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">IFileSaveDialog_impl</span> {
 	(
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ident</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::<span class="ident">IFileSaveDialogVT</span>;
+
 		<span class="macro">IFileDialog_impl</span><span class="macro">!</span> {
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
 		}
 
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="macro">ppvt_conv</span><span class="macro">!</span>(<span class="ident">ifilesavedialog_vt</span>, <span class="ident">IFileSaveDialogVT</span>);
+
 			<span class="doccomment">/// [`IFileSaveDialog::SetSaveAsItem`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifilesavedialog-setsaveasitem)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetSaveAsItem</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">psi</span>: <span class="ident">IShellItem</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">ppvt</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ppvt</span>::<span class="op">&lt;</span><span class="ident">IFileSaveDialogVT</span><span class="op">&gt;</span>() };
 				<span class="ident">hr_to_winresult</span>(
-					<span class="kw">unsafe</span> { ((<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">ppvt</span>).<span class="ident">SetSaveAsItem</span>)(<span class="ident">ppvt</span>, <span class="ident">psi</span>.<span class="ident">ppvt</span>()) },
+					(<span class="self">self</span>.<span class="ident">ifilesavedialog_vt</span>().<span class="ident">SetSaveAsItem</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>, <span class="ident">psi</span>.<span class="ident">ppvt</span>),
 				)
 			}
 		}
@@ -134,8 +106,8 @@
 	<span class="doccomment">///     co::CLSCTX::INPROC_SERVER,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="ident">IFileSaveDialog</span>, <span class="ident">IFileSaveDialogVT</span>
+	<span class="ident">IFileSaveDialog</span>, <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">shell</span>::<span class="ident">vt</span>::<span class="ident">IFileSaveDialogVT</span>
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-js="../../../../search-index.js"></div>
+    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>
