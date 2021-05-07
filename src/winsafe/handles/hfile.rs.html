@@ -261,6 +261,8 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -269,7 +271,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">kernel32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">HIDWORD</span>, <span class="ident">LODWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HFILEMAP</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">ref_as_pvoid</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INVALID_HANDLE_VALUE</span>, <span class="ident">ref_as_pvoid</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
 	<span class="ident">BY_HANDLE_FILE_INFORMATION</span>,
 	<span class="ident">OVERLAPPED</span>,
@@ -304,7 +306,7 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HFILE};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hfile = HFILE::CreateFile(</span>
+	<span class="doccomment">/// let (hfile, status) = HFILE::CreateFile(</span>
 	<span class="doccomment">///     &quot;C:\\Temp\\test.txt&quot;,</span>
 	<span class="doccomment">///     co::GENERIC::READ,</span>
 	<span class="doccomment">///     co::FILE_SHARE::READ,</span>
@@ -322,7 +324,7 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HFILE};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hfile = w::HFILE::CreateFile(</span>
+	<span class="doccomment">/// let (hfile, status) = w::HFILE::CreateFile(</span>
 	<span class="doccomment">///     &quot;C:\\Temp\\test.txt&quot;,</span>
 	<span class="doccomment">///     co::GENERIC::READ | co::GENERIC::WRITE,</span>
 	<span class="doccomment">///     co::FILE_SHARE::NONE,</span>
@@ -341,9 +343,9 @@
 		<span class="ident">lpSecurityAttributes</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
 		<span class="ident">dwCreationDisposition</span>: <span class="ident">co</span>::<span class="ident">DISPOSITION</span>,
 		<span class="ident">dwFlagsAndAttributes</span>: <span class="ident">co</span>::<span class="ident">FILE_ATTRIBUTE</span>,
-		<span class="ident">hTemplateFile</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HFILE</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFILE</span><span class="op">&gt;</span>
+		<span class="ident">hTemplateFile</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HFILE</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">HFILE</span>, <span class="ident">co</span>::<span class="ident">ERROR</span>)<span class="op">&gt;</span>
 	{
-		<span class="kw">unsafe</span> {
+		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">CreateFileW</span>(
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpFileName</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">dwDesiredAccess</span>.<span class="number">0</span>,
@@ -352,9 +354,11 @@
 				<span class="ident">dwCreationDisposition</span>.<span class="number">0</span>,
 				<span class="ident">dwFlagsAndAttributes</span>.<span class="number">0</span>,
 				<span class="ident">hTemplateFile</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+			) <span class="kw">as</span> <span class="ident">isize</span>
+		} {
+			<span class="ident">INVALID_HANDLE_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }, <span class="ident">GetLastError</span>())),
+		}
 	}
 
 	<span class="doccomment">/// [`CreateFileMapping`](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-createfilemappingw)</span>
