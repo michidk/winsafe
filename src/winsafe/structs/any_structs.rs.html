@@ -794,6 +794,58 @@
 <span id="791">791</span>
 <span id="792">792</span>
 <span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -809,6 +861,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HDC</span>, <span class="ident">HEVENT</span>, <span class="ident">HICON</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">LF_FACESIZE</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">ATOM</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unions</span>::{<span class="ident">ColorrefDib</span>, <span class="ident">ColorrefHbitmap</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// [`ACCEL`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-accel)</span>
@@ -854,6 +907,14 @@
 		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
 		<span class="ident">obj</span>
 	}
+}
+
+<span class="doccomment">/// [`BITMAPINFO`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfo)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BITMAPINFO</span> {
+	<span class="kw">pub</span> <span class="ident">bmiHeader</span>: <span class="ident">BITMAPINFOHEADER</span>,
+	<span class="kw">pub</span> <span class="ident">bmiColors</span>: [<span class="ident">RGBQUAD</span>; <span class="number">1</span>],
 }
 
 <span class="doccomment">/// [`BITMAPINFOHEADER`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)</span>
@@ -972,6 +1033,15 @@
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span>::<span class="ident">Hmenu</span>(<span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span> }),
 		}
 	}
+}
+
+<span class="doccomment">/// [`LOGBRUSH`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-logbrush)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LOGBRUSH</span> {
+	<span class="kw">pub</span> <span class="ident">lbStyle</span>: <span class="ident">co</span>::<span class="ident">BSS</span>,
+	<span class="kw">pub</span> <span class="ident">lbColor</span>: <span class="ident">ColorrefDib</span>,
+	<span class="kw">pub</span> <span class="ident">lbHatch</span>: <span class="ident">ColorrefHbitmap</span>,
 }
 
 <span class="doccomment">/// [`LOGFONT`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-logfontw)</span>
@@ -1268,6 +1338,23 @@
 	}
 }
 
+<span class="doccomment">/// [`RGBQUAD`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-rgbquad)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RGBQUAD</span> {
+	<span class="kw">pub</span> <span class="ident">rgbBlue</span>: <span class="ident">u8</span>,
+	<span class="kw">pub</span> <span class="ident">rgbGreen</span>: <span class="ident">u8</span>,
+	<span class="kw">pub</span> <span class="ident">rgbRed</span>: <span class="ident">u8</span>,
+	<span class="ident">rgbReserved</span>: <span class="ident">u8</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">RGBQUAD</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() }
+	}
+}
+
 <span class="doccomment">/// [`SCROLLINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-scrollinfo)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
@@ -1343,19 +1430,36 @@
 }
 
 <span class="doccomment">/// [`STYLESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-stylestruct)</span>
-<span class="doccomment">/// struct for [`WS`](crate::co::WS).</span>
+<span class="doccomment">/// struct.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STYLESTRUCT_WS</span> {
-	<span class="kw">pub</span> <span class="ident">styleOld</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
-	<span class="kw">pub</span> <span class="ident">styleNew</span>: <span class="ident">co</span>::<span class="ident">WS</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STYLESTRUCT</span> {
+	<span class="ident">styleOld</span>: <span class="ident">u32</span>, <span class="comment">// both fields contain WS and WS_EX mixed</span>
+	<span class="ident">styleNew</span>: <span class="ident">u32</span>,
 }
 
-<span class="doccomment">/// [`STYLESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-stylestruct)</span>
-<span class="doccomment">/// struct for [`WS_EX`](crate::co::WS_EX).</span>
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STYLESTRUCT_WS_EX</span> {
-	<span class="kw">pub</span> <span class="ident">styleOld</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
-	<span class="kw">pub</span> <span class="ident">styleNew</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
+<span class="kw">impl</span> <span class="ident">STYLESTRUCT</span> {
+	<span class="doccomment">/// Returns the [`WS`](crate::co::WS) of `styleOld` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">WS</span> {
+		<span class="ident">co</span>::<span class="ident">WS</span>(<span class="self">self</span>.<span class="ident">styleOld</span>)
+	}
+
+	<span class="doccomment">/// Returns the [`WS_EX`](crate::co::WS_EX) of `styleOld` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">WS_EX</span> {
+		<span class="ident">co</span>::<span class="ident">WS_EX</span>(<span class="self">self</span>.<span class="ident">styleOld</span>)
+	}
+
+	<span class="doccomment">/// Returns the [`WS`](crate::co::WS) of `styleNew` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">WS</span> {
+		<span class="ident">co</span>::<span class="ident">WS</span>(<span class="self">self</span>.<span class="ident">styleNew</span>)
+	}
+
+	<span class="doccomment">/// Returns the [`WS_EX`](crate::co::WS_EX) of `styleNew` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">WS_EX</span> {
+		<span class="ident">co</span>::<span class="ident">WS_EX</span>(<span class="self">self</span>.<span class="ident">styleNew</span>)
+	}
 }
 
 <span class="doccomment">/// [`SYSTEMTIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime)</span>

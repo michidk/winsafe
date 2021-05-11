@@ -1590,17 +1590,6 @@
 <span id="1587">1587</span>
 <span id="1588">1588</span>
 <span id="1589">1589</span>
-<span id="1590">1590</span>
-<span id="1591">1591</span>
-<span id="1592">1592</span>
-<span id="1593">1593</span>
-<span id="1594">1594</span>
-<span id="1595">1595</span>
-<span id="1596">1596</span>
-<span id="1597">1597</span>
-<span id="1598">1598</span>
-<span id="1599">1599</span>
-<span id="1600">1600</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -1608,7 +1597,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">TIMERPROC</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndFocus</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPointId</span>, <span class="ident">NccspRect</span>, <span class="ident">WsWsex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndFocus</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPointId</span>, <span class="ident">NccspRect</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIBYTE</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>, <span class="ident">MAKEWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HDC</span>, <span class="ident">HDROP</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">WndMsg</span>};
@@ -1622,6 +1611,7 @@
 	<span class="ident">POINT</span>,
 	<span class="ident">RECT</span>,
 	<span class="ident">SIZE</span>,
+	<span class="ident">STYLESTRUCT</span>,
 	<span class="ident">WINDOWPOS</span>,
 };
 
@@ -2918,7 +2908,7 @@
 <span class="doccomment">/// Return type: `()`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StyleChanged</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">change</span>: <span class="ident">co</span>::<span class="ident">GWL_C</span>,
-	<span class="kw">pub</span> <span class="ident">stylestruct</span>: <span class="ident">WsWsex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">stylestruct</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">STYLESTRUCT</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">StyleChanged</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -2932,10 +2922,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">STYLECHANGED</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">change</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stylestruct</span> {
-				<span class="ident">WsWsex</span>::<span class="ident">Ws</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ws</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">WsWsex</span>::<span class="ident">Wsex</span>(<span class="ident">wsx</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">wsx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-			},
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">stylestruct</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -2945,10 +2932,7 @@
 		<span class="kw">let</span> <span class="ident">change</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">GWL_C</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>);
 		<span class="self">Self</span> {
 			<span class="ident">change</span>,
-			<span class="ident">stylestruct</span>: <span class="kw">match</span> <span class="ident">change</span> {
-				<span class="ident">co</span>::<span class="ident">GWL_C</span>::<span class="ident">STYLE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Ws</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Wsex</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
-			},
+			<span class="ident">stylestruct</span>: <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) },
 		}
 	}
 }
@@ -2959,7 +2943,7 @@
 <span class="doccomment">/// Return type: `()`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StyleChanging</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">change</span>: <span class="ident">co</span>::<span class="ident">GWL_C</span>,
-	<span class="kw">pub</span> <span class="ident">stylestruct</span>: <span class="ident">WsWsex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">stylestruct</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">STYLESTRUCT</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">StyleChanging</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -2973,10 +2957,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">STYLECHANGING</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">change</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stylestruct</span> {
-				<span class="ident">WsWsex</span>::<span class="ident">Ws</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ws</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">WsWsex</span>::<span class="ident">Wsex</span>(<span class="ident">wsx</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">wsx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-			},
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">stylestruct</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -2986,10 +2967,7 @@
 		<span class="kw">let</span> <span class="ident">change</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">GWL_C</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>);
 		<span class="self">Self</span> {
 			<span class="ident">change</span>,
-			<span class="ident">stylestruct</span>: <span class="kw">match</span> <span class="ident">change</span> {
-				<span class="ident">co</span>::<span class="ident">GWL_C</span>::<span class="ident">STYLE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Ws</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WsWsex</span>::<span class="ident">Wsex</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) }),
-			},
+			<span class="ident">stylestruct</span>: <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>) },
 		}
 	}
 }
