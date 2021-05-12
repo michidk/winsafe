@@ -607,6 +607,21 @@
 <span id="604">604</span>
 <span id="605">605</span>
 <span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs used by common controls.</span>
 
@@ -694,8 +709,6 @@
 
 <span class="doccomment">/// [`LITEM`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-litem)</span>
 <span class="doccomment">/// struct.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LITEM</span> {
 	<span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">co</span>::<span class="ident">LIF</span>,
@@ -705,6 +718,8 @@
 	<span class="ident">szID</span>: [<span class="ident">u16</span>; <span class="ident">MAX_LINKID_TEXT</span>],
 	<span class="ident">szUrl</span>: [<span class="ident">u16</span>; <span class="ident">L_MAX_URL_LENGTH</span>],
 }
+
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">LITEM</span>);
 
 <span class="kw">impl</span> <span class="ident">LITEM</span> {
 	<span class="doccomment">/// Returns the `szID` field.</span>
@@ -750,8 +765,9 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `pszText` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszText</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszText</span>).<span class="ident">to_string</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszText</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pszText</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
 	}
 
 	<span class="doccomment">/// Sets the `pszText` field.</span>
@@ -766,7 +782,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LVFINDINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">flags</span>: <span class="ident">co</span>::<span class="ident">LVFI</span>,
-	<span class="ident">psz</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">psz</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">lParam</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">pt</span>: <span class="ident">POINT</span>,
 	<span class="kw">pub</span> <span class="ident">vkDirection</span>: <span class="ident">co</span>::<span class="ident">VK_DIR</span>,
@@ -777,13 +793,14 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LVFINDINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `psz` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">psz</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">psz</span>).<span class="ident">to_string</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">psz</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">psz</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
 	}
 
 	<span class="doccomment">/// Sets the `psz` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_psz</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">WString</span>) {
-		<span class="self">self</span>.<span class="ident">psz</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() };
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_psz</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
+		<span class="self">self</span>.<span class="ident">psz</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
 	}
 }
 
@@ -813,8 +830,9 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `pszText` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszText</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszText</span>).<span class="ident">to_string</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszText</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pszText</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
 	}
 
 	<span class="doccomment">/// Sets the `pszText` field.</span>
@@ -874,21 +892,28 @@
 
 <span class="doccomment">/// [`NMDATETIMEFORMAT`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmdatetimeformatw)</span>
 <span class="doccomment">/// struct.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEFORMAT</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEFORMAT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">nmhdr</span>: <span class="ident">NMHDR</span>,
-	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">st</span>: <span class="ident">SYSTEMTIME</span>,
-	<span class="ident">pszDisplay</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">pszDisplay</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">szDisplay</span>: [<span class="ident">u16</span>; <span class="number">64</span>], <span class="comment">// used as a buffer to pszDisplay</span>
+	<span class="ident">m_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">NMDATETIMEFORMAT</span> {
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NMDATETIMEFORMAT</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NMDATETIMEFORMAT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `pszFormat` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszFormat</span>).<span class="ident">to_string</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pszFormat</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
+	}
+
+	<span class="doccomment">/// Sets the `pszFormat` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszFormat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
+		<span class="self">self</span>.<span class="ident">pszFormat</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
 	}
 
 	<span class="doccomment">/// Returns the `pszDisplay` field.</span>
@@ -904,19 +929,26 @@
 
 <span class="doccomment">/// [`NMDATETIMEFORMATQUERY`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmdatetimeformatqueryw)</span>
 <span class="doccomment">/// struct.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEFORMATQUERY</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEFORMATQUERY</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">nmhdr</span>: <span class="ident">NMHDR</span>,
-	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">szMax</span>: <span class="ident">SIZE</span>,
+	<span class="ident">m_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">NMDATETIMEFORMATQUERY</span> {
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NMDATETIMEFORMATQUERY</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NMDATETIMEFORMATQUERY</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `pszFormat` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszFormat</span>).<span class="ident">to_string</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pszFormat</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
+	}
+
+	<span class="doccomment">/// Sets the `pszFormat` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszFormat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
+		<span class="self">self</span>.<span class="ident">pszFormat</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
 	}
 }
 
@@ -925,37 +957,35 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMESTRING</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMESTRING</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">nmhdr</span>: <span class="ident">NMHDR</span>,
-	<span class="ident">pszUserString</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">pszUserString</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">st</span>: <span class="ident">SYSTEMTIME</span>,
 	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co</span>::<span class="ident">GDT</span>,
+	<span class="ident">m_pszUserString</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">NMDATETIMESTRING</span> {
-	<span class="doccomment">/// Returns the `pszUserString` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszUserString</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszUserString</span>).<span class="ident">to_string</span>()
-	}
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NMDATETIMESTRING</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NMDATETIMESTRING</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="macro">string_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszUserString</span>, <span class="ident">set_pszUserString</span>);
 }
 
 <span class="doccomment">/// [`NMDATETIMEWMKEYDOWN`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmdatetimewmkeydownw)</span>
 <span class="doccomment">/// struct.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEWMKEYDOWN</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMDATETIMEWMKEYDOWN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">nmhdr</span>: <span class="ident">NMHDR</span>,
 	<span class="kw">pub</span> <span class="ident">nVirtKey</span>: <span class="ident">i32</span>,
-	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
+	<span class="ident">pszFormat</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">st</span>: <span class="ident">SYSTEMTIME</span>,
+	<span class="ident">m_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">NMDATETIMEWMKEYDOWN</span> {
-	<span class="doccomment">/// Returns the `pszFormat` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszFormat</span>).<span class="ident">to_string</span>()
-	}
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NMDATETIMEWMKEYDOWN</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NMDATETIMEWMKEYDOWN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="macro">string_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszFormat</span>, <span class="ident">set_pszFormat</span>);
 }
 
 <span class="doccomment">/// [`NMDAYSTATE`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmdaystate)</span>

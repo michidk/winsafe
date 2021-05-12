@@ -856,6 +856,49 @@
 <span id="853">853</span>
 <span id="854">854</span>
 <span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -866,7 +909,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">BroadNull</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">HRESULT</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">comdlg32</span>, <span class="ident">HRESULT</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">MsgSend</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{
@@ -879,6 +922,7 @@
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
 	<span class="ident">ATOM</span>,
+	<span class="ident">CHOOSECOLOR</span>,
 	<span class="ident">COLORREF</span>,
 	<span class="ident">FILETIME</span>,
 	<span class="ident">MSG</span>,
@@ -907,6 +951,48 @@
 			)
 		},
 	)
+}
+
+<span class="doccomment">/// [`ChooseColor`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms646912(v=vs.85))</span>
+<span class="doccomment">/// function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// use winsafe::{co, ChooseColor, CHOOSECOLOR};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let parent_hwnd: HWND; // initialize it somewhere...</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let mut cc = CHOOSECOLOR::default();</span>
+<span class="doccomment">/// let mut custom_colors = [COLORREF::new(255, 255, 255); 16];</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// cc.hwndOwner = parent_hwnd;</span>
+<span class="doccomment">/// cc.Flags = co::CC::ANYCOLOR | co::CC::FULLOPEN | co::CC::RGBINIT;</span>
+<span class="doccomment">/// cc.rgbResult = COLORREF::new(255, 0, 0); // color initially chosen</span>
+<span class="doccomment">/// cc.set_lpCustColors(&amp;mut custom_colors);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// if ChooseColor(&amp;mut cc).unwrap() {</span>
+<span class="doccomment">///     println!(&quot;The color: {} {} {}&quot;,</span>
+<span class="doccomment">///         cc.rgbResult.GetRValue(),</span>
+<span class="doccomment">///         cc.rgbResult.GetGValue(),</span>
+<span class="doccomment">///         cc.rgbResult.GetBValue(),</span>
+<span class="doccomment">///     );</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ChooseColor</span>(<span class="ident">lpcc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">CHOOSECOLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">comdlg32</span>::<span class="ident">ChooseColorW</span>(<span class="ident">ref_as_pvoid</span>(<span class="ident">lpcc</span>)) } {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">CommDlgExtendedError</span>() {
+			<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		},
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
+	}
+}
+
+<span class="doccomment">/// [`CommDlgExtendedError`](https://docs.microsoft.com/en-us/windows/win32/api/commdlg/nf-commdlg-commdlgextendederror)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CommDlgExtendedError</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">ERROR</span> {
+	<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">comdlg32</span>::<span class="ident">CommDlgExtendedError</span>() })
 }
 
 <span class="doccomment">/// [`CopyFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew)</span>
@@ -1109,7 +1195,7 @@
 <span class="doccomment">/// [`WinResult`](crate::WinResult) evaluates to `Err`, so it&#39;s unlikely that</span>
 <span class="doccomment">/// you ever need to call it.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetLastError</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">ERROR</span> {
-	<span class="kw">unsafe</span> { <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">kernel32</span>::<span class="ident">GetLastError</span>()) }
+	<span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetLastError</span>() })
 }
 
 <span class="doccomment">/// [`GetLogicalDriveStrings`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getlogicaldrivestringsw)</span>

@@ -11,6 +11,22 @@
 <span id="8"> 8</span>
 <span id="9"> 9</span>
 <span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Implements `Default` trait by zeroing all members.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_default_zero</span> {
@@ -19,6 +35,22 @@
 			<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 				<span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() }
 			}
+		}
+	};
+}
+
+<span class="doccomment">/// Implements getter and setter methods for the given `*mut u16` member.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">string_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the string field, if any.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
+		}
+
+		<span class="doccomment">/// Sets the string field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
 		}
 	};
 }

@@ -152,6 +152,7 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
+<span id="152">152</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
@@ -207,7 +208,7 @@
 						<span class="comment">// https://devblogs.microsoft.com/oldnewthing/20041011-00/?p=37603</span>
 						<span class="comment">// Retrieve ATOM of existing window class.</span>
 						<span class="kw">let</span> <span class="ident">hinst</span> <span class="op">=</span> <span class="ident">wcx</span>.<span class="ident">hInstance</span>;
-						<span class="ident">hinst</span>.<span class="ident">GetClassInfoEx</span>(<span class="kw-2">&amp;</span><span class="ident">wcx</span>.<span class="ident">lpszClassName</span>(), <span class="ident">wcx</span>)
+						<span class="ident">hinst</span>.<span class="ident">GetClassInfoEx</span>(<span class="kw-2">&amp;</span><span class="ident">wcx</span>.<span class="ident">lpszClassName</span>().<span class="ident">unwrap</span>(), <span class="ident">wcx</span>)
 					},
 					<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>), <span class="comment">// any other error will bubble up</span>
 				}
@@ -252,7 +253,8 @@
 				<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>),
 				<span class="ident">wcx</span>.<span class="ident">cbClsExtra</span>, <span class="ident">wcx</span>.<span class="ident">cbWndExtra</span>,
 				<span class="ident">wcx</span>.<span class="ident">hInstance</span>, <span class="ident">wcx</span>.<span class="ident">hIcon</span>, <span class="ident">wcx</span>.<span class="ident">hCursor</span>, <span class="ident">wcx</span>.<span class="ident">hbrBackground</span>,
-				<span class="ident">wcx</span>.<span class="ident">lpszMenuName</span>().<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">wcx</span>.<span class="ident">hIconSm</span>,
+				<span class="ident">wcx</span>.<span class="ident">lpszMenuName</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">lpsz</span><span class="op">|</span> <span class="ident">lpsz</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="ident">usize</span>),
+				<span class="ident">wcx</span>.<span class="ident">hIconSm</span>,
 			),
 		)
 	}
