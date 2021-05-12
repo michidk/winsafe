@@ -814,67 +814,6 @@
 <span id="811">811</span>
 <span id="812">812</span>
 <span id="813">813</span>
-<span id="814">814</span>
-<span id="815">815</span>
-<span id="816">816</span>
-<span id="817">817</span>
-<span id="818">818</span>
-<span id="819">819</span>
-<span id="820">820</span>
-<span id="821">821</span>
-<span id="822">822</span>
-<span id="823">823</span>
-<span id="824">824</span>
-<span id="825">825</span>
-<span id="826">826</span>
-<span id="827">827</span>
-<span id="828">828</span>
-<span id="829">829</span>
-<span id="830">830</span>
-<span id="831">831</span>
-<span id="832">832</span>
-<span id="833">833</span>
-<span id="834">834</span>
-<span id="835">835</span>
-<span id="836">836</span>
-<span id="837">837</span>
-<span id="838">838</span>
-<span id="839">839</span>
-<span id="840">840</span>
-<span id="841">841</span>
-<span id="842">842</span>
-<span id="843">843</span>
-<span id="844">844</span>
-<span id="845">845</span>
-<span id="846">846</span>
-<span id="847">847</span>
-<span id="848">848</span>
-<span id="849">849</span>
-<span id="850">850</span>
-<span id="851">851</span>
-<span id="852">852</span>
-<span id="853">853</span>
-<span id="854">854</span>
-<span id="855">855</span>
-<span id="856">856</span>
-<span id="857">857</span>
-<span id="858">858</span>
-<span id="859">859</span>
-<span id="860">860</span>
-<span id="861">861</span>
-<span id="862">862</span>
-<span id="863">863</span>
-<span id="864">864</span>
-<span id="865">865</span>
-<span id="866">866</span>
-<span id="867">867</span>
-<span id="868">868</span>
-<span id="869">869</span>
-<span id="870">870</span>
-<span id="871">871</span>
-<span id="872">872</span>
-<span id="873">873</span>
-<span id="874">874</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -930,13 +869,7 @@
 	<span class="kw">pub</span> <span class="ident">ptStart</span>: <span class="ident">POINT</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ALTTABINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">ALTTABINFO</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`BITMAPINFO`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfo)</span>
 <span class="doccomment">/// struct.</span>
@@ -963,13 +896,7 @@
 	<span class="kw">pub</span> <span class="ident">biClrImportant</span>: <span class="ident">u32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">BITMAPINFOHEADER</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">biSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">BITMAPINFOHEADER</span>, <span class="ident">biSize</span>);
 
 <span class="doccomment">/// [`BY_HANDLE_FILE_INFORMATION`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/ns-fileapi-by_handle_file_information)</span>
 <span class="doccomment">/// method.</span>
@@ -1005,13 +932,7 @@
 	<span class="ident">m_lpTemplateName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">lStructSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">CHOOSECOLOR</span>, <span class="ident">lStructSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpCustColors` field.</span>
@@ -1128,6 +1049,23 @@
 	}
 }
 
+<span class="doccomment">/// [`MEMORYSTATUSEX`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MEMORYSTATUSEX</span> {
+	<span class="ident">dwLength</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">dwMemoryLoad</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">ullTotalPhys</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullAvailPhys</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullTotalPageFile</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullAvailPageFile</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullTotalVirtual</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullAvailVirtual</span>: <span class="ident">u64</span>,
+	<span class="kw">pub</span> <span class="ident">ullAvailExtendedVirtual</span>: <span class="ident">u64</span>,
+}
+
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">MEMORYSTATUSEX</span>, <span class="ident">dwLength</span>);
+
 <span class="doccomment">/// [`MENUINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuinfo)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
@@ -1141,13 +1079,7 @@
 	<span class="kw">pub</span> <span class="ident">dwMenuData</span>: <span class="ident">usize</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MENUINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">MENUINFO</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`MENUITEMINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuiteminfow)</span>
 <span class="doccomment">/// struct.</span>
@@ -1167,13 +1099,7 @@
 	<span class="kw">pub</span> <span class="ident">hbmpItem</span>: <span class="ident">HBITMAP</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MENUITEMINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">MENUITEMINFO</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`MINMAXINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo)</span>
 <span class="doccomment">/// struct.</span>
@@ -1296,13 +1222,7 @@
 	<span class="ident">wReserved</span>: <span class="ident">u8</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">OSVERSIONINFOEX</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">dwOSVersionInfoSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">OSVERSIONINFOEX</span>, <span class="ident">dwOSVersionInfoSize</span>);
 
 <span class="kw">impl</span> <span class="ident">OSVERSIONINFOEX</span> {
 	<span class="doccomment">/// Returns the `szCSDVersion` field.</span>
@@ -1392,18 +1312,12 @@
 <span class="doccomment">/// [`RGBQUAD`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-rgbquad)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RGBQUAD</span> {
 	<span class="kw">pub</span> <span class="ident">rgbBlue</span>: <span class="ident">u8</span>,
 	<span class="kw">pub</span> <span class="ident">rgbGreen</span>: <span class="ident">u8</span>,
 	<span class="kw">pub</span> <span class="ident">rgbRed</span>: <span class="ident">u8</span>,
 	<span class="ident">rgbReserved</span>: <span class="ident">u8</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">RGBQUAD</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() }
-	}
 }
 
 <span class="doccomment">/// [`SCROLLINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-scrollinfo)</span>
@@ -1420,13 +1334,7 @@
 	<span class="kw">pub</span> <span class="ident">nTrackPos</span>: <span class="ident">i32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SCROLLINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">SCROLLINFO</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`SECURITY_ATTRIBUTES`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa379560(v=vs.85))</span>
 <span class="doccomment">/// struct.</span>
@@ -1438,13 +1346,7 @@
 	<span class="ident">m_lpSecurityDescriptor</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SECURITY_DESCRIPTOR</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">nLength</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">SECURITY_ATTRIBUTES</span>, <span class="ident">nLength</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpSecurityDescriptor` field.</span>
@@ -1614,13 +1516,7 @@
 	<span class="kw">pub</span> <span class="ident">dwHoverTime</span>: <span class="ident">u32</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">TRACKMOUSEEVENT</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">TRACKMOUSEEVENT</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`WINDOWINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowinfo)</span>
 <span class="doccomment">/// struct.</span>
@@ -1638,13 +1534,7 @@
 	<span class="kw">pub</span> <span class="ident">wCreatorVersion</span>: <span class="ident">u16</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">WINDOWINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">WINDOWINFO</span>, <span class="ident">cbSize</span>);
 
 <span class="doccomment">/// [`WINDOWPLACEMENT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowplacement)</span>
 <span class="doccomment">/// struct.</span>
@@ -1659,13 +1549,7 @@
 	<span class="kw">pub</span> <span class="ident">rcDevice</span>: <span class="ident">RECT</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">WINDOWPLACEMENT</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">length</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">WINDOWPLACEMENT</span>, <span class="ident">length</span>);
 
 <span class="doccomment">/// [`WINDOWPOS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowpos)</span>
 <span class="doccomment">/// struct.</span>
@@ -1721,13 +1605,7 @@
 	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
-		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
-		<span class="ident">obj</span>
-	}
-}
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">WNDCLASSEX</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpszMenuName` field.</span>
