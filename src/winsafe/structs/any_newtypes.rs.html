@@ -135,6 +135,34 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -181,8 +209,36 @@
 
 <span class="kw">impl</span> <span class="ident">COLORREF</span> {
 	<span class="doccomment">/// Creates a new `COLORREF` object with the given color intensities.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::COLORREF;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let color = COLORREF::new(0xff, 0x80, 0x00);</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">red</span>: <span class="ident">u8</span>, <span class="ident">green</span>: <span class="ident">u8</span>, <span class="ident">blue</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">COLORREF</span> {
 		<span class="self">Self</span>(<span class="ident">red</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">|</span> ((<span class="ident">green</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>) <span class="op">|</span> ((<span class="ident">blue</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>))
+	}
+
+	<span class="doccomment">/// Creates an array of `COLORREF` objects with the given color intensities.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::COLORREF;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let colors: [COLORREF; 2] = COLORREF::new_array(&amp;[</span>
+	<span class="doccomment">///     (0xff, 0xb2, 0x80),</span>
+	<span class="doccomment">///     (0x00, 0xa0, 0x40),</span>
+	<span class="doccomment">/// ]);</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_array</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">rgbs</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u8</span>, <span class="ident">u8</span>, <span class="ident">u8</span>); <span class="ident">N</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">COLORREF</span>; <span class="ident">N</span>] {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> [<span class="self">Self</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="ident">N</span>];
+		<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">rgb</span>) <span class="kw">in</span> <span class="ident">rgbs</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+			<span class="ident">arr</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">rgb</span>.<span class="number">0</span>, <span class="ident">rgb</span>.<span class="number">1</span>, <span class="ident">rgb</span>.<span class="number">2</span>);
+		}
+		<span class="ident">arr</span>
 	}
 
 	<span class="doccomment">/// Retrieves the red intensity. Originally</span>

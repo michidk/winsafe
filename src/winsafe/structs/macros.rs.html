@@ -41,6 +41,21 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Implements `Default` trait by zeroing all members.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_default_zero</span> {
@@ -68,7 +83,7 @@
 }
 
 <span class="doccomment">/// Implements getter and setter methods for the given `*mut u16` member.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">string_get_set</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_string_ptr_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// Returns the string field, if any.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
@@ -79,6 +94,21 @@
 		<span class="doccomment">/// Sets the string field.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
 			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
+		}
+	};
+}
+
+<span class="doccomment">/// Implements getter and setter methods for the given `[u16; N]` member.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_string_arr_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the string field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+			<span class="ident">WString</span>::<span class="ident">from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>).<span class="ident">to_string</span>()
+		}
+
+		<span class="doccomment">/// Sets the string field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+			<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>);
 		}
 	};
 }

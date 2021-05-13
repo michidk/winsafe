@@ -257,12 +257,6 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -279,7 +273,7 @@
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
-<span class="macro">handle_type</span><span class="macro">!</span> {
+<span class="macro">pub_struct_handle_closeable</span><span class="macro">!</span> {
 	<span class="doccomment">/// Handle to a</span>
 	<span class="doccomment">/// [file](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hfile).</span>
 	<span class="doccomment">/// Originally just a `HANDLE`.</span>
@@ -287,12 +281,6 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HFILE</span> {
-	<span class="doccomment">/// [`CloseHandle`](https://docs.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-closehandle)</span>
-	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseHandle</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">CloseHandle</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
-	}
-
 	<span class="doccomment">/// [`CreateFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="doccomment">///</span>
@@ -354,7 +342,7 @@
 				<span class="ident">dwCreationDisposition</span>.<span class="number">0</span>,
 				<span class="ident">dwFlagsAndAttributes</span>.<span class="number">0</span>,
 				<span class="ident">hTemplateFile</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-			) <span class="kw">as</span> <span class="ident">isize</span>
+			) <span class="kw">as</span> <span class="kw">_</span>
 		} {
 			<span class="ident">INVALID_HANDLE_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }, <span class="ident">GetLastError</span>())),
