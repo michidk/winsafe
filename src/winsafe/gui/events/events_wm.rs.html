@@ -1179,13 +1179,35 @@
 <span id="1176">1176</span>
 <span id="1177">1177</span>
 <span id="1178">1178</span>
+<span id="1179">1179</span>
+<span id="1180">1180</span>
+<span id="1181">1181</span>
+<span id="1182">1182</span>
+<span id="1183">1183</span>
+<span id="1184">1184</span>
+<span id="1185">1185</span>
+<span id="1186">1186</span>
+<span id="1187">1187</span>
+<span id="1188">1188</span>
+<span id="1189">1189</span>
+<span id="1190">1190</span>
+<span id="1191">1191</span>
+<span id="1192">1192</span>
+<span id="1193">1193</span>
+<span id="1194">1194</span>
+<span id="1195">1195</span>
+<span id="1196">1196</span>
+<span id="1197">1197</span>
+<span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">func_store</span>::<span class="ident">FuncStore</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDC</span>, <span class="ident">HICON</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDC</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
@@ -1541,7 +1563,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">APPCOMMAND</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">AppCommand</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">Some</span>(<span class="bool-val">true</span> <span class="kw">as</span> <span class="ident">isize</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">AppCommand</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">Some</span>(<span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span>) }
 		});
 	}
 
@@ -1632,7 +1654,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CREATE</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">Create</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">Create</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1647,7 +1669,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORBTN</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorBtn</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorBtn</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1661,7 +1683,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORDLG</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorDlg</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorDlg</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1676,7 +1698,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLOREDIT</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorEdit</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorEdit</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1691,7 +1713,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORLISTBOX</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorListBox</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorListBox</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1706,7 +1728,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSCROLLBAR</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorScrollBar</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorScrollBar</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1722,7 +1744,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSTATIC</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorStatic</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorStatic</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1816,7 +1838,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ERASEBKGND</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">EraseBkgnd</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">EraseBkgnd</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1827,7 +1849,7 @@
 		<span class="doccomment">/// loop has been exited.</span>
 	}
 
-	<span class="macro">wm_ret_none</span><span class="macro">!</span> { <span class="ident">wm_exit_size_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">EXITSIZEMOVE</span>, <span class="ident">wm</span>::<span class="ident">ExitSizeMove</span>,
+	<span class="macro">wm_empty</span><span class="macro">!</span> { <span class="ident">wm_exit_size_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">EXITSIZEMOVE</span>,
 		<span class="doccomment">/// [`WM_EXITSIZEMOVE`](crate::msg::wm::ExitSizeMove) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent one time to a window, after it has exited the moving or sizing</span>
@@ -1839,6 +1861,30 @@
 		<span class="doccomment">/// of the message specifies the [`SC_MOVE`](crate::co::SC::MOVE) or</span>
 		<span class="doccomment">/// [`SC_SIZE`](crate::co::SC::SIZE) value. The operation is complete</span>
 		<span class="doccomment">/// when `DefWindowProc` returns.</span>
+	}
+
+	<span class="doccomment">/// [`WM_GETFONT`](crate::msg::wm::GetFont) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Retrieves the font with which the control is currently drawing its text.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_font</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HFONT</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	{
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">GETFONT</span>, {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>())
+		});
+	}
+
+	<span class="doccomment">/// [`MN_GETHMENU`](crate::msg::wm::GetHMenu) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Retrieves the menu handle for the current window.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_h_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
+	{
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MN_GETHMENU</span>, {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>())
+		});
 	}
 
 	<span class="macro">wm_ret_none</span><span class="macro">!</span> { <span class="ident">wm_get_min_max_info</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">GETMINMAXINFO</span>, <span class="ident">wm</span>::<span class="ident">GetMinMaxInfo</span>,
@@ -1878,7 +1924,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">INITDIALOG</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">InitDialog</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">InitDialog</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -2019,7 +2065,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCCALCSIZE</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcCalcSize</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcCalcSize</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -2033,7 +2079,7 @@
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCCREATE</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcCreate</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcCreate</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -2111,11 +2157,11 @@
 	<span class="doccomment">/// Sent to an icon when the user requests that the window be restored to</span>
 	<span class="doccomment">/// its previous size and position.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_query_open</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">QueryOpen</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">QUERYOPEN</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">QueryOpen</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="ident">isize</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>() <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -2178,10 +2224,8 @@
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SETICON</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(
-				<span class="kw">match</span> <span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">SetIcon</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) {
-					<span class="prelude-val">Some</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="ident">isize</span>,
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-				},
+				<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">SetIcon</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>))
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
 			)
 		});
 	}
@@ -2293,7 +2337,7 @@
 		<span class="doccomment">/// contexts by checking the context code in the lParam parameter.</span>
 	}
 
-	<span class="macro">wm_ret_none</span><span class="macro">!</span> { <span class="ident">wm_theme_changed</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">THEMECHANGED</span>, <span class="ident">wm</span>::<span class="ident">ThemeChanged</span>,
+	<span class="macro">wm_empty</span><span class="macro">!</span> { <span class="ident">wm_theme_changed</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">THEMECHANGED</span>,
 		<span class="doccomment">/// [`WM_THEMECHANGED`](crate::msg::wm::ThemeChanged) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Broadcast to every window following a theme change event. Examples</span>

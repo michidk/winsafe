@@ -39,6 +39,14 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -56,17 +64,25 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HHOOK</span> {
+	<span class="doccomment">/// [`CallNextHookEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-callnexthookex)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CallNextHookEx</span>(<span class="self">self</span>,
+		<span class="ident">nCode</span>: <span class="ident">co</span>::<span class="ident">WH</span>, <span class="ident">wParam</span>: <span class="ident">usize</span>, <span class="ident">lParam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span>
+	{
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">CallNextHookEx</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nCode</span>.<span class="number">0</span>, <span class="ident">wParam</span>, <span class="ident">lParam</span>) }
+	}
+
 	<span class="doccomment">/// [`SetWindowsHookEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexw)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowsHookEx</span>(<span class="ident">idHook</span>: <span class="ident">co</span>::<span class="ident">WH</span>, <span class="ident">lpfn</span>: <span class="ident">HOOKPROC</span>,
-		<span class="ident">hmod</span>: <span class="ident">HINSTANCE</span>, <span class="ident">dwThreadId</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HHOOK</span><span class="op">&gt;</span>
+		<span class="ident">hmod</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span>, <span class="ident">dwThreadId</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HHOOK</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">SetWindowsHookExW</span>(
 				<span class="ident">idHook</span>.<span class="number">0</span>,
 				<span class="ident">lpfn</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">hmod</span>.<span class="ident">ptr</span>,
-				<span class="ident">dwThreadId</span>,
+				<span class="ident">hmod</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">dwThreadId</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
