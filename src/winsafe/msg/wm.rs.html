@@ -1684,6 +1684,40 @@
 <span id="1681">1681</span>
 <span id="1682">1682</span>
 <span id="1683">1683</span>
+<span id="1684">1684</span>
+<span id="1685">1685</span>
+<span id="1686">1686</span>
+<span id="1687">1687</span>
+<span id="1688">1688</span>
+<span id="1689">1689</span>
+<span id="1690">1690</span>
+<span id="1691">1691</span>
+<span id="1692">1692</span>
+<span id="1693">1693</span>
+<span id="1694">1694</span>
+<span id="1695">1695</span>
+<span id="1696">1696</span>
+<span id="1697">1697</span>
+<span id="1698">1698</span>
+<span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
+<span id="1702">1702</span>
+<span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
+<span id="1710">1710</span>
+<span id="1711">1711</span>
+<span id="1712">1712</span>
+<span id="1713">1713</span>
+<span id="1714">1714</span>
+<span id="1715">1715</span>
+<span id="1716">1716</span>
+<span id="1717">1717</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -2525,6 +2559,40 @@
 	<span class="doccomment">/// [`WM_MOUSEMOVE`](https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousemove)</span>
 }
 
+<span class="doccomment">/// [`WM_MENUDRAG`](https://docs.microsoft.com/en-us/windows/win32/menurc/wm-menudrag)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `co::MND`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MenuDrag</span> {
+	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">hmenu</span>: <span class="ident">HMENU</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">MenuDrag</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">co</span>::<span class="ident">MND</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		<span class="ident">co</span>::<span class="ident">MND</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MENUDRAG</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">MenuDrag</span> {
+	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span> {
+			<span class="ident">position</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+		}
+	}
+}
+
 <span class="doccomment">/// [`WM_MOVE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-move)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
@@ -2592,7 +2660,7 @@
 <span class="doccomment">/// [`WM_NCCALCSIZE`](https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-nccalcsize)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Return type: `WVR`.</span>
+<span class="doccomment">/// Return type: `co::WVR`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NcCalcSize</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">NccspRect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>,
 }

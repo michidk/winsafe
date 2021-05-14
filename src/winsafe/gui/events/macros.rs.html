@@ -141,7 +141,83 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">/// Declares a method for an ordinary message notification, which has no</span>
+<span class="doccomment">/// parameters and returns zero (or a non-meaningful value).</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_wm_ret0</span> {
+	(
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>,
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		{
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
+			});
+		}
+	};
+}
+
+<span class="doccomment">/// Declares a method for an ordinary message notification, which carries an</span>
+<span class="doccomment">/// object with its parameters, and returns zero (or a non-meaningful value).</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_wm_ret0_param</span> {
+	(
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>:<span class="ident">ty</span>,
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
+	) <span class="op">=</span><span class="op">&gt;</span> {
+		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		{
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
+			});
+		}
+	};
+}
+
 <span class="doccomment">/// Declares a struct of control events, which is just a proxy to parent events.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_struct_ctrl_events_proxy</span> {
 	(
@@ -170,7 +246,7 @@
 }
 
 <span class="doccomment">/// Declares a method for a `WM_COMMAND` notification.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_cmd_event</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_cmd_ret0</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>:<span class="ident">expr</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -190,7 +266,7 @@
 <span class="doccomment">/// Declares a method for a `WM_NOTIFY` notification which receives a NMHDR</span>
 <span class="doccomment">/// parameter, which is not passed because it carries no useful data, and whose</span>
 <span class="doccomment">/// callback has no return.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_event</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_ret0</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>:<span class="ident">expr</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -209,7 +285,7 @@
 
 <span class="doccomment">/// Declares a method for a `WM_NOTIFY` notification which receives a parameter,</span>
 <span class="doccomment">/// and whose callback has no return.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_event_param</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_ret0_param</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">ty</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -228,7 +304,7 @@
 
 <span class="doccomment">/// Declares a method for a `WM_NOTIFY` notification which receives a mutable</span>
 <span class="doccomment">/// parameter, and whose callback has no return.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_event_mutparam</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_ret0_mutparam</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">ty</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -247,7 +323,7 @@
 
 <span class="doccomment">/// Declares a method for a `WM_NOTIFY` notification which receives a parameter,</span>
 <span class="doccomment">/// and whose callback returns bool.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_event_param_retbool</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_retbool_param</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">ty</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
@@ -266,7 +342,7 @@
 
 <span class="doccomment">/// Declares a method for a `WM_NOTIFY` notification which receives a mutable</span>
 <span class="doccomment">/// parameter, and whose callback returns bool.</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_event_mutparam_retbool</span> {
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_nfy_retbool_mutparam</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">ty</span>,
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
