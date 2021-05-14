@@ -932,53 +932,6 @@
 <span id="929">929</span>
 <span id="930">930</span>
 <span id="931">931</span>
-<span id="932">932</span>
-<span id="933">933</span>
-<span id="934">934</span>
-<span id="935">935</span>
-<span id="936">936</span>
-<span id="937">937</span>
-<span id="938">938</span>
-<span id="939">939</span>
-<span id="940">940</span>
-<span id="941">941</span>
-<span id="942">942</span>
-<span id="943">943</span>
-<span id="944">944</span>
-<span id="945">945</span>
-<span id="946">946</span>
-<span id="947">947</span>
-<span id="948">948</span>
-<span id="949">949</span>
-<span id="950">950</span>
-<span id="951">951</span>
-<span id="952">952</span>
-<span id="953">953</span>
-<span id="954">954</span>
-<span id="955">955</span>
-<span id="956">956</span>
-<span id="957">957</span>
-<span id="958">958</span>
-<span id="959">959</span>
-<span id="960">960</span>
-<span id="961">961</span>
-<span id="962">962</span>
-<span id="963">963</span>
-<span id="964">964</span>
-<span id="965">965</span>
-<span id="966">966</span>
-<span id="967">967</span>
-<span id="968">968</span>
-<span id="969">969</span>
-<span id="970">970</span>
-<span id="971">971</span>
-<span id="972">972</span>
-<span id="973">973</span>
-<span id="974">974</span>
-<span id="975">975</span>
-<span id="976">976</span>
-<span id="977">977</span>
-<span id="978">978</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -989,7 +942,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">comdlg32</span>, <span class="ident">HRESULT</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HPROCESS</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
 	<span class="ident">INVALID_FILE_ATTRIBUTES</span>,
@@ -1007,10 +960,7 @@
 	<span class="ident">MSG</span>,
 	<span class="ident">OSVERSIONINFOEX</span>,
 	<span class="ident">POINT</span>,
-	<span class="ident">PROCESS_INFORMATION</span>,
 	<span class="ident">RECT</span>,
-	<span class="ident">SECURITY_ATTRIBUTES</span>,
-	<span class="ident">STARTUPINFO</span>,
 	<span class="ident">SYSTEMTIME</span>,
 	<span class="ident">TIME_ZONE_INFORMATION</span>,
 	<span class="ident">TRACKMOUSEEVENT</span>,
@@ -1105,39 +1055,6 @@
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpExistingFileName</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpNewFileName</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">bFailIfExists</span> <span class="kw">as</span> <span class="kw">_</span>,
-			)
-		},
-	)
-}
-
-<span class="doccomment">/// [`CreateProcess`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)</span>
-<span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateProcess</span>(
-	<span class="ident">lpApplicationName</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-	<span class="ident">lpCommandLine</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-	<span class="ident">lpProcessAttributes</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
-	<span class="ident">lpThreadAttributes</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
-	<span class="ident">nInheritHandles</span>: <span class="ident">bool</span>,
-	<span class="ident">dwCreationFlags</span>: <span class="ident">co</span>::<span class="ident">CREATE</span>,
-	<span class="ident">lpEnvironment</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
-	<span class="ident">lpCurrentDirectory</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-	<span class="ident">lpStartupInfo</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">STARTUPINFO</span>,
-	<span class="ident">lpProcessInformation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESS_INFORMATION</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-{
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bufCommandLine</span> <span class="op">=</span> <span class="ident">lpCommandLine</span>.<span class="ident">map_or</span>(<span class="ident">WString</span>::<span class="ident">default</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lp</span>));
-	<span class="ident">bool_to_winresult</span>(
-		<span class="kw">unsafe</span> {
-			<span class="ident">kernel32</span>::<span class="ident">CreateProcessW</span>(
-				<span class="ident">lpApplicationName</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
-				<span class="ident">bufCommandLine</span>.<span class="ident">as_mut_ptr</span>(),
-				<span class="ident">lpProcessAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
-				<span class="ident">lpThreadAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
-				<span class="ident">nInheritHandles</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">dwCreationFlags</span>.<span class="number">0</span>,
-				<span class="ident">lpEnvironment</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">lpCurrentDirectory</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
-				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpStartupInfo</span>),
-				<span class="ident">ref_as_pvoid</span>(<span class="ident">lpProcessInformation</span>),
 			)
 		},
 	)
@@ -1293,17 +1210,6 @@
 			<span class="ident">map</span>
 		})
 		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
-}
-
-<span class="doccomment">/// [`GetExitCodeProcess`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodeprocess)</span>
-<span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetExitCodeProcess</span>(<span class="ident">hProcess</span>: <span class="ident">HPROCESS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpExitCode</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-	<span class="ident">bool_to_winresult</span>(
-		<span class="kw">unsafe</span> {
-			<span class="ident">kernel32</span>::<span class="ident">GetExitCodeProcess</span>(<span class="ident">hProcess</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpExitCode</span>)
-		},
-	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">lpExitCode</span>)
 }
 
 <span class="doccomment">/// [`GetFileAttributes`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesw)</span>
