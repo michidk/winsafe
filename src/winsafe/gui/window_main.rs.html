@@ -207,6 +207,7 @@
 <span id="204">204</span>
 <span id="205">205</span>
 <span id="206">206</span>
+<span id="207">207</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 
@@ -251,7 +252,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// use winsafe::{gui, WinResult};</span>
+<span class="doccomment">/// use winsafe::{gui, msg, WinResult};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// fn main() {</span>
 <span class="doccomment">///     let my_main = MyMain::new();</span>
@@ -279,11 +280,12 @@
 <span class="doccomment">///     }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">///     fn events(&amp;self) {</span>
-<span class="doccomment">///         let wnd = self.wnd.clone(); // clone so it can be passed into the closure</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///         self.wnd.on().wm_l_button_down(move |params| {</span>
-<span class="doccomment">///             let txt = &amp;format!(&quot;Coords {} x {}&quot;, params.coords.x, params.coords.y);</span>
-<span class="doccomment">///             wnd.hwnd().SetWindowText(txt).unwrap();</span>
+<span class="doccomment">///         self.wnd.on().wm_l_button_down({</span>
+<span class="doccomment">///             let wnd = self.wnd.clone(); // clone to pass it to the closure</span>
+<span class="doccomment">///             move |p: msg::wm::LButtonDown| {</span>
+<span class="doccomment">///                 let txt = &amp;format!(&quot;Coords {} x {}&quot;, p.coords.x, p.coords.y);</span>
+<span class="doccomment">///                 wnd.hwnd().SetWindowText(txt).unwrap();</span>
+<span class="doccomment">///             }</span>
 <span class="doccomment">///         });</span>
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
