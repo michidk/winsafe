@@ -74,32 +74,12 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
-<span id="88">88</span>
-<span id="89">89</span>
-<span id="90">90</span>
-<span id="91">91</span>
-<span id="92">92</span>
-<span id="93">93</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Internal definitions used by the library.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HRESULT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -121,18 +101,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">MAX_LINKID_TEXT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">48</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">MAX_PATH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">260</span>;
 
-<span class="doccomment">/// Converts a const reference to `ffi::PCVOID`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">ref_as_pcvoid</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">r</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PCVOID</span> {
-	<span class="ident">r</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>
-}
-
-<span class="doccomment">/// Converts a mut reference to `ffi::PVOID`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">ref_as_pvoid</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">r</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PVOID</span> {
-	<span class="ident">r</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>
-}
-
-<span class="doccomment">/// Converts a `BOOL` value to a `WinResult`. `TRUE` is `Ok(())`, `FALSE` is</span>
-<span class="doccomment">/// `Err(GetLastError())`.</span>
+<span class="doccomment">/// If value is FALSE, yields `Err(GetLastError)`, otherwise `Ok()`.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bool_to_winresult</span>(<span class="ident">expr</span>: <span class="ident">BOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">match</span> <span class="ident">expr</span> {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -140,30 +109,21 @@
 	}
 }
 
-<span class="doccomment">/// Converts a native `HRESULT` to `WinResult`, `S_OK` yielding `Ok` and</span>
-<span class="doccomment">/// anything else yielding `Err`.</span>
+<span class="doccomment">/// If value is `S_OK` yields `Ok()`, othersize `Err(hresult)`.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hr_to_winresult</span>(<span class="ident">hresult</span>: <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">hresult</span> <span class="kw">as</span> <span class="kw">_</span>) {
 		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		<span class="ident">hresult</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">hresult</span>),
 	}
 }
 
-<span class="doccomment">/// Converts a native `HRESULT` to `WinResult`, `S_OK` yielding `Ok(true)`,</span>
-<span class="doccomment">/// `S_FALSE` yielding `Ok(false)` and anything else yielding `Err`.</span>
+<span class="doccomment">/// If value is `S_OK` yields `Ok(true)`, if `S_FALSE` yields `Ok(false)`</span>
+<span class="doccomment">/// othersize `Err(hresult)`.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hr_to_winresult_bool</span>(<span class="ident">hresult</span>: <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 	<span class="kw">match</span> <span class="ident">co</span>::<span class="ident">ERROR</span>(<span class="ident">hresult</span> <span class="kw">as</span> <span class="kw">_</span>) {
 		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
 		<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
-		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-	}
-}
-
-<span class="doccomment">/// If number is zero, yields `Err(GetLastError)`, otherwise `Ok(expr)`.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">nonzero_to_winresult</span>(<span class="ident">expr</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">expr</span> {
-		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-		<span class="ident">val</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">val</span>),
+		<span class="ident">hresult</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">hresult</span>),
 	}
 }
 

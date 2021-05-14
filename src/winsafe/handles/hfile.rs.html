@@ -265,7 +265,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">kernel32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">HIDWORD</span>, <span class="ident">LODWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HFILEMAP</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INVALID_HANDLE_VALUE</span>, <span class="ident">ref_as_pvoid</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INVALID_HANDLE_VALUE</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
 	<span class="ident">BY_HANDLE_FILE_INFORMATION</span>,
 	<span class="ident">OVERLAPPED</span>,
@@ -338,7 +338,7 @@
 				<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">lpFileName</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">dwDesiredAccess</span>.<span class="number">0</span>,
 				<span class="ident">dwShareMode</span>.<span class="number">0</span>,
-				<span class="ident">lpSecurityAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
+				<span class="ident">lpSecurityAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				<span class="ident">dwCreationDisposition</span>.<span class="number">0</span>,
 				<span class="ident">dwFlagsAndAttributes</span>.<span class="number">0</span>,
 				<span class="ident">hTemplateFile</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
@@ -363,7 +363,7 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32</span>::<span class="ident">CreateFileMappingW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpFileMappingAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
+				<span class="ident">lpFileMappingAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				<span class="ident">flProtect</span>.<span class="number">0</span>,
 				<span class="ident">maximumSize</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">HIDWORD</span>(<span class="ident">n</span>)),
 				<span class="ident">maximumSize</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">LODWORD</span>(<span class="ident">n</span>)),
@@ -382,7 +382,7 @@
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32</span>::<span class="ident">GetFileInformationByHandle</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">ref_as_pvoid</span>(<span class="ident">lpFileInformation</span>),
+					<span class="ident">lpFileInformation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -445,7 +445,7 @@
 					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">numBytesToRead</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytesRead</span>,
-					<span class="ident">lpOverlapped</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
+					<span class="ident">lpOverlapped</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				)
 			},
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>)
@@ -508,7 +508,7 @@
 					<span class="ident">buffer</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytesWritten</span>,
-					<span class="ident">lpOverlapped</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">ref_as_pvoid</span>(<span class="ident">lp</span>)),
+					<span class="ident">lpOverlapped</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				)
 			},
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">bytesWritten</span>)

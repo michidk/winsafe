@@ -91,7 +91,7 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 		<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">com</span>::<span class="ident">vt</span>::{<span class="ident">ComVT</span>, <span class="ident">IUnknownVT</span>, <span class="ident">PPComVT</span>};
-		<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">ref_as_pcvoid</span>};
+		<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">hr_to_winresult</span>;
 
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
@@ -137,7 +137,7 @@
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">ppvt</span>).<span class="ident">QueryInterface</span> })(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="ident">ref_as_pcvoid</span>(<span class="kw-2">&amp;</span><span class="ident">VT</span>::<span class="ident">IID</span>()),
+						<span class="kw-2">&amp;</span><span class="ident">VT</span>::<span class="ident">IID</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">RetInterf</span>::<span class="ident">from</span>(<span class="ident">ppvQueried</span>))
