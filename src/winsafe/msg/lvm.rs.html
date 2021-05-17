@@ -828,6 +828,33 @@
 <span id="825">825</span>
 <span id="826">826</span>
 <span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! List view control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-messages),</span>
@@ -835,7 +862,6 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::<span class="ident">IndexAll</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
@@ -995,7 +1021,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FindItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">IndexAll</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">lvfindinfo</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVFINDINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1012,7 +1038,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">FINDITEM</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">unwrap_or</span>(<span class="op">-</span><span class="number">1</span>) <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvfindinfo</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -1043,19 +1069,19 @@
 <span class="doccomment">/// [`LVM_GETCOLUMN`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-getcolumn)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Return type: `WinResult&lt;u32&gt;`.</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">LVCOLUMN</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetColumn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
 		<span class="kw">match</span> <span class="ident">v</span> {
-			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
-			<span class="ident">i</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 		}
 	}
 
@@ -1142,34 +1168,6 @@
 	}
 }
 
-<span class="doccomment">/// [`LVM_GETNEXTITEM`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-getnextitem)</span>
-<span class="doccomment">/// message parameters.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Return type: `Option&lt;u32&gt;`.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetNextItem</span> {
-	<span class="kw">pub</span> <span class="ident">initial_index</span>: <span class="ident">IndexAll</span>,
-	<span class="kw">pub</span> <span class="ident">relationship</span>: <span class="ident">co</span>::<span class="ident">LVNI</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetNextItem</span> {
-	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
-
-	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="kw">match</span> <span class="ident">v</span> {
-			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-			<span class="ident">idx</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="kw">_</span>),
-		}
-	}
-
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
-		<span class="ident">WndMsg</span> {
-			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETNEXTITEM</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span>.<span class="ident">into</span>(),
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">relationship</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-		}
-	}
-}
-
 <span class="doccomment">/// [`LVM_GETITEMCOUNT`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-getitemcount)</span>
 <span class="doccomment">/// message, which has no parameters.</span>
 <span class="doccomment">///</span>
@@ -1238,6 +1236,34 @@
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETITEMTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// [`LVM_GETNEXTITEM`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-getnextitem)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `Option&lt;u32&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetNextItem</span> {
+	<span class="kw">pub</span> <span class="ident">initial_index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">relationship</span>: <span class="ident">co</span>::<span class="ident">LVNI</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetNextItem</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		<span class="kw">match</span> <span class="ident">v</span> {
+			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+			<span class="ident">idx</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="kw">_</span>),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETNEXTITEM</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">initial_index</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">unwrap_or</span>(<span class="op">-</span><span class="number">1</span>) <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">relationship</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -1471,6 +1497,34 @@
 	}
 }
 
+<span class="doccomment">/// [`LVM_SETCOLUMNWIDTH`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-setcolumnwidth)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetColumnWidth</span> {
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">width</span>: <span class="ident">u32</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetColumnWidth</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
+		<span class="kw">match</span> <span class="ident">v</span> {
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETCOLUMNWIDTH</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">width</span> <span class="kw">as</span> <span class="kw">_</span>,
+		}
+	}
+}
+
 <span class="doccomment">/// [`LVM_SETEXTENDEDLISTVIEWSTYLE`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-setextendedlistviewstyle)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
@@ -1528,7 +1582,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetItemState</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">IndexAll</span>,
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">LVITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
@@ -1545,7 +1599,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETITEMSTATE</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">unwrap_or</span>(<span class="op">-</span><span class="number">1</span>) <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">lvitem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
