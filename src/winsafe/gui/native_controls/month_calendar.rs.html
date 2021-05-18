@@ -230,21 +230,21 @@
 	<span class="doccomment">/// Instantiates a new `MonthCalendar` object, to be created on the parent</span>
 	<span class="doccomment">/// window with [`CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">MonthCalendarOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
-		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">MonthCalendarOpts</span>::<span class="ident">define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Wnd</span>(<span class="ident">opts</span>),
-					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
 
-		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">create_wm</span>(), {
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
@@ -255,19 +255,19 @@
 	<span class="doccomment">/// Instantiates a new `MonthCalendar` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with [`GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
-		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>),
+					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId</span>::<span class="ident">Dlg</span>(<span class="ident">ctrl_id</span>),
-					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">MonthCalendarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
 
-		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});

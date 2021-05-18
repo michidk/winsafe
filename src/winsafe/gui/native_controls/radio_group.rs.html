@@ -214,7 +214,7 @@
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
 
-		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
 
@@ -233,12 +233,12 @@
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
-					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_ids</span>),
+					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>),
 				},
 			)),
 		);
 
-		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">create_wm</span>(), {
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
 		});
@@ -257,7 +257,7 @@
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
 
-		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
+		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">ctrl_ids</span>.<span class="ident">len</span>());
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
@@ -268,12 +268,12 @@
 			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
-					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_ids</span>.<span class="ident">to_vec</span>()),
+					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>.<span class="ident">to_vec</span>()),
 				},
 			)),
 		);
 
-		<span class="ident">parent_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
 		});
@@ -303,7 +303,7 @@
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">base_ref</span>().<span class="ident">parent_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">base_ref</span>().<span class="ident">parent_base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
 		}
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_events</span>
