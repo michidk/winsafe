@@ -382,6 +382,25 @@
 <span id="379">379</span>
 <span id="380">380</span>
 <span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -391,8 +410,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">user32</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::<span class="ident">bool_to_winresult</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">MENUINFO</span>, <span class="ident">MENUITEMINFO</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">MENUINFO</span>, <span class="ident">MENUITEMINFO</span>, <span class="ident">POINT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="macro">pub_struct_handle</span><span class="macro">!</span> {
@@ -738,7 +758,10 @@
 	}
 
 	<span class="doccomment">/// [`TrackPopupMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenu)</span>
-	<span class="doccomment">/// method</span>
+	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** If you just want to display a popup menu, consider the simpler</span>
+	<span class="doccomment">/// [`TrackPopupMenuAtPoint`](crate::HMENU::TrackPopupMenuAtPoint).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TrackPopupMenu</span>(<span class="self">self</span>, <span class="ident">uFlags</span>: <span class="ident">co</span>::<span class="ident">TPM</span>,
 		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>, <span class="ident">hWnd</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span><span class="op">&gt;</span>
 	{
@@ -762,6 +785,21 @@
 				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
 			}
 		}
+	}
+
+	<span class="doccomment">/// Shows the popup menu anchored at the given coordinates using</span>
+	<span class="doccomment">/// [`TrackPopupMenu`](crate::HMENU::TrackPopupMenu), and performs other</span>
+	<span class="doccomment">/// needed operations.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This method will block until the menu disappears.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TrackPopupMenuAtPoint</span>(<span class="self">self</span>,
+		<span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">POINT</span>, <span class="ident">hParent</span>: <span class="ident">HWND</span>, <span class="ident">hCoordsRelativeTo</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
+		<span class="ident">hCoordsRelativeTo</span>.<span class="ident">ClientToScreen</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>)<span class="question-mark">?</span>; <span class="comment">// now relative to screen</span>
+		<span class="ident">hParent</span>.<span class="ident">SetForegroundWindow</span>();
+		<span class="self">self</span>.<span class="ident">TrackPopupMenu</span>(<span class="ident">co</span>::<span class="ident">TPM</span>::<span class="ident">LEFTBUTTON</span>, <span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>, <span class="ident">hParent</span>)<span class="question-mark">?</span>;
+		<span class="ident">hParent</span>.<span class="ident">PostMessage</span>(<span class="ident">msg</span>::<span class="ident">wm</span>::<span class="ident">Null</span> {})<span class="question-mark">?</span>; <span class="comment">// necessary according to TrackPopupMenu docs</span>
+		<span class="prelude-val">Ok</span>(())
 	}
 }
 </pre></div>

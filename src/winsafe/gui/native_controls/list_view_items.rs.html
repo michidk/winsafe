@@ -270,6 +270,24 @@
 <span id="267">267</span>
 <span id="268">268</span>
 <span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
@@ -278,7 +296,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">lvm</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::<span class="ident">LVITEM</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">LVHITTESTINFO</span>, <span class="ident">LVITEM</span>, <span class="ident">RECT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// Exposes item methods of a [`ListView`](crate::gui::ListView) control.</span>
@@ -357,12 +375,18 @@
 	}
 
 	<span class="doccomment">/// Retrieves the index of the focused item by sending an</span>
-	<span class="doccomment">/// [`LVM_GETNEXTITEM`](crate::msg::lvm::GetNextItem) message</span>
+	<span class="doccomment">/// [`LVM_GETNEXTITEM`](crate::msg::lvm::GetNextItem) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">focused</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">GetNextItem</span> {
 			<span class="ident">initial_index</span>: <span class="prelude-val">None</span>,
 			<span class="ident">relationship</span>: <span class="ident">co</span>::<span class="ident">LVNI</span>::<span class="ident">FOCUSED</span>,
 		})
+	}
+
+	<span class="doccomment">/// Retrieves the item at the specified position by sending an</span>
+	<span class="doccomment">/// [`LVM_HITTEST`](crate::msg::lvm::HitTest) message</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hit_test</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LVHITTESTINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">HitTest</span> { <span class="ident">info</span> })
 	}
 
 	<span class="doccomment">/// Tells if the item is the focused one by sending an</span>
@@ -387,6 +411,18 @@
 	<span class="doccomment">/// [`LVM_ISITEMVISIBLE`](crate::msg::lvm::IsItemVisible) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_visible</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">IsItemVisible</span> { <span class="ident">index</span>: <span class="ident">item_index</span> })
+	}
+
+	<span class="doccomment">/// Retrieves the bound rectangle of item by sending an</span>
+	<span class="doccomment">/// [`LVM_GETITEMRECT`](crate::msg::lvm::GetItemRect) message.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>, <span class="ident">portion</span>: <span class="ident">co</span>::<span class="ident">LVIR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc</span> <span class="op">=</span> <span class="ident">RECT</span>::<span class="ident">default</span>();
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">GetItemRect</span> {
+			<span class="ident">index</span>: <span class="ident">item_index</span>,
+			<span class="ident">rect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>,
+			<span class="ident">portion</span>,
+		})<span class="question-mark">?</span>;
+		<span class="prelude-val">Ok</span>(<span class="ident">rc</span>)
 	}
 
 	<span class="doccomment">/// Retrieves the indexes of the selected items by sending</span>
