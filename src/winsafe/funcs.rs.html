@@ -933,6 +933,27 @@
 <span id="930">930</span>
 <span id="931">931</span>
 <span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1019,6 +1040,18 @@
 		},
 		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
 	}
+}
+
+<span class="doccomment">/// [`ClipCursor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clipcursor)</span>
+<span class="doccomment">/// method.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClipCursor</span>(<span class="ident">lpRect</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RECT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">ClipCursor</span>(
+				<span class="ident">lpRect</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+			)
+		},
+	)
 }
 
 <span class="doccomment">/// [`CloseClipboard`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-closeclipboard)</span>
@@ -1158,10 +1191,19 @@
 	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetAsyncKeyState</span>(<span class="ident">vKey</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 }
 
+<span class="doccomment">/// [`GetClipCursor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclipcursor)</span>
+<span class="doccomment">/// method.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetClipCursor</span>(<span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetClipCursor</span>(<span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) })
+}
+
 <span class="doccomment">/// [`GetCursorPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcursorpos)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCursorPos</span>(<span class="ident">lpPoint</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetCursorPos</span>(<span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) })
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCursorPos</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">POINT</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpPoint</span> <span class="op">=</span> <span class="ident">POINT</span>::<span class="ident">default</span>();
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetCursorPos</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">lpPoint</span>)
 }
 
 <span class="doccomment">/// [`GetDialogBaseUnits`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits)</span>
@@ -1541,7 +1583,7 @@
 	(<span class="ident">lo</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="op">|</span> ((<span class="ident">hi</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>) <span class="kw">as</span> <span class="ident">u16</span>
 }
 
-<span class="doccomment">/// [`MoveFile`]()</span>
+<span class="doccomment">/// [`MoveFile`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefilew)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MoveFile</span>(
 	<span class="ident">lpExistingFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpNewFileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
