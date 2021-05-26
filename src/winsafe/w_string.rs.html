@@ -248,6 +248,29 @@
 <span id="245">245</span>
 <span id="246">246</span>
 <span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">kernel32</span>;
 
@@ -452,7 +475,13 @@
 		}
 	}
 
-	<span class="doccomment">/// Returns true if the internal buffer is storing a null string pointer.</span>
+	<span class="doccomment">/// Tells whether the internal buffer is storing a null string pointer, or</span>
+	<span class="doccomment">/// if it&#39;s holding a string with a length of zero.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span>
+	}
+
+	<span class="doccomment">/// Tells whether the internal buffer is storing a null string pointer.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_null</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">vec_u16</span>.<span class="ident">is_none</span>()
 	}
@@ -488,11 +517,28 @@
 
 	<span class="doccomment">/// Converts into `String`. An internal null pointer will simply be converted</span>
 	<span class="doccomment">/// into an empty string.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if any invalid character is found.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// If you&#39;re parsing raw data which may contain errors, prefer using</span>
+ 	<span class="doccomment">/// [`to_string_checked`](crate::WString::to_string_checked) instead.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="self">self</span>.<span class="ident">to_string_checked</span>().<span class="ident">unwrap</span>()
+	}
+
+	<span class="doccomment">/// Converts into `String` by calling `String::from_utf16`. An internal null</span>
+	<span class="doccomment">/// pointer will simply be converted into an empty string.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This method is useful if you&#39;re parsing raw data which may contain</span>
+	<span class="doccomment">/// invalid characters. If you&#39;re dealing with a string known to be valid,</span>
+	<span class="doccomment">/// [`to_string`](crate::WString::to_string) is more practical.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_string_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">FromUtf16Error</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">vec_u16</span>.<span class="ident">as_ref</span>()
 			.<span class="ident">map_or</span>(
-				<span class="ident">String</span>::<span class="ident">default</span>(),
-				<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">String</span>::<span class="ident">from_utf16</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>[..<span class="self">self</span>.<span class="ident">len</span>()]).<span class="ident">unwrap</span>(), <span class="comment">// without terminating null</span>
+				<span class="prelude-val">Ok</span>(<span class="ident">String</span>::<span class="ident">default</span>()),
+				<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">String</span>::<span class="ident">from_utf16</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>[..<span class="self">self</span>.<span class="ident">len</span>()]), <span class="comment">// without terminating null</span>
 			)
 	}
 }

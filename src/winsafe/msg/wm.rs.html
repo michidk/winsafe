@@ -1851,6 +1851,21 @@
 <span id="1848">1848</span>
 <span id="1849">1849</span>
 <span id="1850">1850</span>
+<span id="1851">1851</span>
+<span id="1852">1852</span>
+<span id="1853">1853</span>
+<span id="1854">1854</span>
+<span id="1855">1855</span>
+<span id="1856">1856</span>
+<span id="1857">1857</span>
+<span id="1858">1858</span>
+<span id="1859">1859</span>
+<span id="1860">1860</span>
+<span id="1861">1861</span>
+<span id="1862">1862</span>
+<span id="1863">1863</span>
+<span id="1864">1864</span>
+<span id="1865">1865</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -1858,7 +1873,14 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">TIMERPROC</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndFocus</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPointId</span>, <span class="ident">NccspRect</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{
+	<span class="ident">AccelMenuCtrl</span>,
+	<span class="ident">AccelMenuCtrlData</span>,
+	<span class="ident">HwndFocus</span>,
+	<span class="ident">HwndHmenu</span>,
+	<span class="ident">HwndPointId</span>,
+	<span class="ident">NccspRect</span>,
+};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIBYTE</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>, <span class="ident">MAKEWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HDC</span>, <span class="ident">HDROP</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">WndMsg</span>};
@@ -2005,13 +2027,8 @@
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `()`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You&#39;ll normally want to match against `code` and `ctrl_id` to identify the</span>
-<span class="doccomment">/// event.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Command</span> {
-	<span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>,
-	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
-	<span class="kw">pub</span> <span class="ident">ctrl_hwnd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">event</span>: <span class="ident">AccelMenuCtrl</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Command</span> {
@@ -2024,8 +2041,16 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">COMMAND</span>,
-			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span>, <span class="self">self</span>.<span class="ident">code</span>.<span class="ident">into</span>()) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">ctrl_hwnd</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">event</span> {
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Accel</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEDWORD</span>(<span class="ident">id</span>, <span class="number">1</span>) <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Menu</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEDWORD</span>(<span class="ident">id</span>, <span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEDWORD</span>(<span class="ident">data</span>.<span class="ident">ctrl_id</span>, <span class="ident">data</span>.<span class="ident">notif_code</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+			},
+			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">event</span> {
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Accel</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Accelerator</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Menu</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Menu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">AccelMenuCtrl</span>::<span class="ident">Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>.<span class="ident">ctrl_hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			},
 		}
 	}
 }
@@ -2033,11 +2058,16 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">Command</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>(<span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
-			<span class="ident">ctrl_id</span>: <span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">ctrl_hwnd</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">lparam</span> {
-				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }),
+			<span class="ident">event</span>: <span class="kw">match</span> <span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>) {
+				<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">AccelMenuCtrl</span>::<span class="ident">Accel</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
+				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">AccelMenuCtrl</span>::<span class="ident">Menu</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
+				<span class="ident">code</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">AccelMenuCtrl</span>::<span class="ident">Ctrl</span>(
+					<span class="ident">AccelMenuCtrlData</span> {
+						<span class="ident">notif_code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>(<span class="ident">code</span>),
+						<span class="ident">ctrl_id</span>: <span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
+						<span class="ident">ctrl_hwnd</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+					},
+				),
 			},
 		}
 	}

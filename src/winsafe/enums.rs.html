@@ -362,6 +362,41 @@
 <span id="359">359</span>
 <span id="360">360</span>
 <span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -372,6 +407,37 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">NCCALCSIZE_PARAMS</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
+
+<span class="doccomment">/// Variant parameters of a [`WM_COMMAND`](crate::msg::wm::Command) message.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">AccelMenuCtrl</span> {
+	<span class="doccomment">/// Accelerator event. Contains the accelerator command ID.</span>
+	<span class="ident">Accel</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// Menu item click event. Contains the menu item command ID.</span>
+	<span class="ident">Menu</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// Some child control event. Contains</span>
+	<span class="doccomment">/// [`AccelMenuCtrlData`](crate::AccelMenuCtrlData) data.</span>
+	<span class="ident">Ctrl</span>(<span class="ident">AccelMenuCtrlData</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">AccelMenuCtrl</span> {
+	<span class="doccomment">/// Returns the notification code and the control ID pair.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">co</span>::<span class="ident">CMD</span>, <span class="ident">u16</span>) {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">AccelMenuCtrl</span>::<span class="ident">Accel</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Accelerator</span>, <span class="kw-2">*</span><span class="ident">id</span>),
+			<span class="ident">AccelMenuCtrl</span>::<span class="ident">Menu</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Menu</span>, <span class="kw-2">*</span><span class="ident">id</span>),
+			<span class="ident">AccelMenuCtrl</span>::<span class="ident">Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">data</span>.<span class="ident">notif_code</span>, <span class="ident">data</span>.<span class="ident">ctrl_id</span>),
+		}
+	}
+}
+
+<span class="doccomment">/// The data of the [`AccelMenuCtrl`](crate::AccelMenuCtrl) `Ctrl` option.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AccelMenuCtrlData</span> {
+	<span class="kw">pub</span> <span class="ident">notif_code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>,
+	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">ctrl_hwnd</span>: <span class="ident">HWND</span>,
+}
 
 <span class="doccomment">/// Variant parameter used in</span>
 <span class="doccomment">/// [window class](https://docs.microsoft.com/en-us/windows/win32/winmsg/window-classes)</span>
@@ -606,12 +672,13 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// A command ID.</span>
-	<span class="ident">Id</span>(<span class="ident">u16</span>),
+	<span class="ident">Id</span>(<span class="ident">i32</span>),
 	<span class="doccomment">/// Zero-based position.</span>
 	<span class="ident">Pos</span>(<span class="ident">u32</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">IdPos</span> {
+	<span class="doccomment">/// Returns whether value is `Pos`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_by_pos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
@@ -619,6 +686,7 @@
 		}
 	}
 
+	<span class="doccomment">/// Returns the ID or the position as a plain `u32`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_or_pos_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -626,6 +694,8 @@
 		}
 	}
 
+	<span class="doccomment">/// Returns [`MF::BYCOMMAND`](crate::co::MF::BYCOMMAND) or</span>
+	<span class="doccomment">/// [`MF::BYPOSITION`](crate::co::MF::BYPOSITION).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mf_flag</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos</span>::<span class="ident">Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>,

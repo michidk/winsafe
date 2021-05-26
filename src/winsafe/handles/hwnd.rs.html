@@ -1244,6 +1244,16 @@
 <span id="1241">1241</span>
 <span id="1242">1242</span>
 <span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
+<span id="1248">1248</span>
+<span id="1249">1249</span>
+<span id="1250">1250</span>
+<span id="1251">1251</span>
+<span id="1252">1252</span>
+<span id="1253">1253</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1472,7 +1482,7 @@
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumChildWindowsVec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hchildren</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hchildren</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">default</span>();
 		<span class="self">self</span>.<span class="ident">EnumChildWindows</span>(
 			<span class="self">Self</span>::<span class="ident">EnumChildWindowsVecProc</span>,
 			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hchildren</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// pass pointer to Vec</span>
@@ -2222,6 +2232,16 @@
 				)
 			},
 		)
+	}
+
+	<span class="doccomment">/// [`SetCapture`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcapture)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** Must be paired with a</span>
+	<span class="doccomment">/// [`ReleaseCapture`](crate::ReleaseCapture) call.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetCapture</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetCapture</span>(<span class="self">self</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
 	<span class="doccomment">/// [`SetFocus`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setfocus)</span>

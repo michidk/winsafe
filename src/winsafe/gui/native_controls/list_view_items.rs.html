@@ -303,6 +303,19 @@
 <span id="300">300</span>
 <span id="301">301</span>
 <span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
@@ -364,8 +377,11 @@
 
 	<span class="doccomment">/// Deletes the items at the given indexes by sending an</span>
 	<span class="doccomment">/// [`LVM_DELETEITEM`](crate::msg::lvm::DeleteItem) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The indexes are iterated backwards, so the last item will be deleted</span>
+	<span class="doccomment">/// first.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_indexes</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="ident">item_indexes</span>.<span class="ident">iter</span>() {
+		<span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="ident">item_indexes</span>.<span class="ident">iter</span>().<span class="ident">rev</span>() {
 			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">DeleteItem</span> {
 				<span class="ident">index</span>: <span class="kw-2">*</span><span class="ident">idx</span>,
 			})<span class="question-mark">?</span>;
@@ -585,12 +601,12 @@
 			<span class="ident">buf</span>.<span class="ident">realloc_buffer</span>(<span class="ident">buf_sz</span>);
 			<span class="ident">lvi</span>.<span class="ident">set_pszText</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
 
-			<span class="kw">let</span> <span class="ident">nchars</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">GetItemText</span> {
+			<span class="kw">let</span> <span class="ident">nchars</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm</span>::<span class="ident">GetItemText</span> { <span class="comment">// char count without terminating null</span>
 				<span class="ident">index</span>: <span class="ident">item_index</span>,
 				<span class="ident">lvitem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lvi</span>,
 			});
 
-			<span class="kw">if</span> (<span class="ident">nchars</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;</span> <span class="ident">buf_sz</span> { <span class="comment">// to break, must have at least 1 char gap</span>
+			<span class="kw">if</span> (<span class="ident">nchars</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">+</span> <span class="number">1</span> <span class="op">&lt;</span> <span class="ident">buf_sz</span> { <span class="comment">// to break, must have at least 1 char gap</span>
 				<span class="kw">break</span>;
 			}
 
@@ -600,6 +616,16 @@
 
 	<span class="doccomment">/// A more convenient [`text`](crate::gui::ListViewItems::text), which</span>
 	<span class="doccomment">/// directly returns a `String` instead of requiring an external buffer.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// println!(&quot;Text: {}&quot;, my_list.items().text(0, 2)); // 1st item, 3rd column</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">default</span>();
 		<span class="self">self</span>.<span class="ident">text</span>(<span class="ident">item_index</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);

@@ -398,9 +398,6 @@
 <span id="395">395</span>
 <span id="396">396</span>
 <span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -605,17 +602,14 @@
 	<span class="doccomment">/// [`MF::BYPOSITION`](crate::co::MF::BYPOSITION) flags, they are inferred</span>
 	<span class="doccomment">/// by [`IdPos`](crate::IdPos).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableMenuItem</span>(<span class="self">self</span>,
-		<span class="ident">uIDEnableItem</span>: <span class="ident">IdPos</span>, <span class="ident">uEnable</span>: <span class="ident">co</span>::<span class="ident">MF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">MF</span><span class="op">&gt;</span>
+		<span class="ident">uIDEnableItem</span>: <span class="ident">IdPos</span>, <span class="ident">uEnable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co</span>::<span class="ident">MF</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">uEnable</span>;
-		<span class="ident">flags</span> <span class="op">&amp;=</span> <span class="op">!</span>(<span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYPOSITION</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">BYCOMMAND</span>); <span class="comment">// remove if set</span>
-		<span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">uIDEnableItem</span>.<span class="ident">mf_flag</span>(); <span class="comment">// set correctly</span>
-
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">EnableMenuItem</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
 				<span class="ident">uIDEnableItem</span>.<span class="ident">id_or_pos_u32</span>(),
-				<span class="ident">flags</span>.<span class="number">0</span>,
+				(<span class="ident">uIDEnableItem</span>.<span class="ident">mf_flag</span>()
+					<span class="op">|</span> <span class="kw">if</span> <span class="ident">uEnable</span> { <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">ENABLED</span> } <span class="kw">else</span> { <span class="ident">co</span>::<span class="ident">MF</span>::<span class="ident">DISABLED</span> }).<span class="number">0</span>,
 			)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
