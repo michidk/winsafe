@@ -1283,6 +1283,73 @@
 <span id="1280">1280</span>
 <span id="1281">1281</span>
 <span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
+<span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1336,6 +1403,30 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an [`EndPaint`](crate::HWND::EndPaint)</span>
 	<span class="doccomment">/// call.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// `BeginPaint` is usually called inside a</span>
+	<span class="doccomment">/// [`WM_PAINT`](crate::gui::events::WindowEvents::wm_paint) event to paint</span>
+	<span class="doccomment">/// the window client area:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::{gui, PAINTSTRUCT};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let my_main: gui::WindowMain; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// my_main.on().wm_paint({</span>
+	<span class="doccomment">///     let my_main = my_main.clone();</span>
+	<span class="doccomment">///     move || {</span>
+	<span class="doccomment">///         let mut ps = PAINTSTRUCT::default();</span>
+	<span class="doccomment">///         let hdc = my_main.hwnd().BeginPaint(&amp;mut ps).unwrap();</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">///         // paint the HDC...</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">///         my_main.hwnd().EndPaint(&amp;ps);</span>
+	<span class="doccomment">///     }</span>
+	<span class="doccomment">/// });</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">BeginPaint</span>(<span class="self">self</span>, <span class="ident">lpPaint</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PAINTSTRUCT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">BeginPaint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPaint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HDC</span> { <span class="ident">ptr</span> })
@@ -2030,6 +2121,9 @@
 	<span class="doccomment">/// [`MessageBox`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// Consider using the more modern [`TaskDialog`](crate::HWND::TaskDialog)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// A modal message box, which blocks its parent:</span>
@@ -2470,6 +2564,46 @@
 
 	<span class="doccomment">/// [`TaskDialog`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-taskdialog)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// An information message with just an OK button:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::{co, HWND, IdTdicon};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let my_hwnd: HWND; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// my_hwnd.TaskDialog(</span>
+	<span class="doccomment">///     None,</span>
+	<span class="doccomment">///     Some(&quot;My app name&quot;),</span>
+	<span class="doccomment">///     Some(&quot;Operation successful&quot;),</span>
+	<span class="doccomment">///     Some(&quot;The operation completed successfully.&quot;),</span>
+	<span class="doccomment">///     co::TDCBF::OK</span>
+	<span class="doccomment">///     IdTdicon::Tdicon(co::TD_ICON::INFORMATION),</span>
+	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Prompt the user to click OK or Cancel upon a question:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::{co, HWND, IdTdicon};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let my_hwnd: HWND; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let answer = my_hwnd.TaskDialog(</span>
+	<span class="doccomment">///     None,</span>
+	<span class="doccomment">///     Some(&quot;My app name&quot;),</span>
+	<span class="doccomment">///     Some(&quot;File modified&quot;),</span>
+	<span class="doccomment">///     Some(&quot;The file has been modified.\nProceed closing the application?&quot;),</span>
+	<span class="doccomment">///     co::TDCBF::OK | co::TDCBF::CANCEL,</span>
+	<span class="doccomment">///     IdTdicon::Tdicon(co::TD_ICON::WARNING),</span>
+	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// if answer == co::DLGID::OK {</span>
+	<span class="doccomment">///     println!(&quot;User clicked OK.&quot;);</span>
+	<span class="doccomment">/// }</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TaskDialog</span>(<span class="self">self</span>,
 		<span class="ident">hInstance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span>,
 		<span class="ident">pszWindowTitle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
