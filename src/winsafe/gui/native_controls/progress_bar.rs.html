@@ -226,26 +226,15 @@
 <span id="223">223</span>
 <span id="224">224</span>
 <span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">WindowEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">pbm</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">PBRANGE</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -263,14 +252,7 @@
 	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">ProgressBarOpts</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {}
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {}
-
-<span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {
-	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
-		<span class="self">self</span>
-	}
-}
+<span class="macro">impl_send_sync_child</span><span class="macro">!</span>(<span class="ident">ProgressBar</span>);
 
 <span class="kw">impl</span> <span class="ident">ProgressBar</span> {
 	<span class="doccomment">/// Instantiates a new `ProgressBar` object, to be created on the parent</span>
@@ -329,7 +311,7 @@
 					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
 						<span class="string">&quot;msctls_progress32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
 						<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
-						<span class="ident">opts</span>.<span class="ident">ex_window_style</span>,
+						<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
 						<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">progress_bar_style</span>.<span class="ident">into</span>(),
 					)<span class="question-mark">?</span>;
 
@@ -441,7 +423,7 @@
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to `WS_EX::LEFT`.</span>
-	<span class="kw">pub</span> <span class="ident">ex_window_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
+	<span class="kw">pub</span> <span class="ident">window_ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
 
 	<span class="doccomment">/// The control ID.</span>
 	<span class="doccomment">///</span>
@@ -456,7 +438,7 @@
 			<span class="ident">size</span>: <span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="number">120</span>, <span class="number">23</span>),
 			<span class="ident">progress_bar_style</span>: <span class="ident">co</span>::<span class="ident">PBS</span>::<span class="ident">SMOOTH</span>,
 			<span class="ident">window_style</span>: <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">CHILD</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">VISIBLE</span>,
-			<span class="ident">ex_window_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">LEFT</span>,
+			<span class="ident">window_ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">LEFT</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
 		}
 	}

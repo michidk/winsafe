@@ -334,28 +334,19 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">GetAsyncKeyState</span>, <span class="ident">GetCursorPos</span>, <span class="ident">PostQuitMessage</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">base</span>::<span class="ident">Base</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::{<span class="ident">ListViewEvents</span>, <span class="ident">WindowEvents</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">ListViewEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">list_view_columns</span>::<span class="ident">ListViewColumns</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">list_view_items</span>::<span class="ident">ListViewItems</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::{<span class="ident">NativeControlBase</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HMENU</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::<span class="ident">lvm</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">LVHITTESTINFO</span>, <span class="ident">NMITEMACTIVATE</span>, <span class="ident">NMLVKEYDOWN</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -378,14 +369,7 @@
 	<span class="ident">context_menu</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">ListView</span> {}
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">ListView</span> {}
-
-<span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">ListView</span> {
-	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
-		<span class="self">self</span>
-	}
-}
+<span class="macro">impl_send_sync_child</span><span class="macro">!</span>(<span class="ident">ListView</span>);
 
 <span class="kw">impl</span> <span class="ident">ListView</span> {
 	<span class="doccomment">/// Instantiates a new `ListView` object, to be created on the parent window</span>
@@ -468,12 +452,12 @@
 					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
 						<span class="string">&quot;SysListView32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
 						<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
-						<span class="ident">opts</span>.<span class="ident">ex_window_style</span>,
+						<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
 						<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">list_view_style</span>.<span class="ident">into</span>(),
 					)<span class="question-mark">?</span>;
 
-					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">ex_list_view_style</span> <span class="op">!</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">NONE</span> {
-						<span class="self">self</span>.<span class="ident">toggle_extended_style</span>(<span class="bool-val">true</span>, <span class="ident">opts</span>.<span class="ident">ex_list_view_style</span>);
+					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">list_view_ex_style</span> <span class="op">!</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">NONE</span> {
+						<span class="self">self</span>.<span class="ident">toggle_extended_style</span>(<span class="bool-val">true</span>, <span class="ident">opts</span>.<span class="ident">list_view_ex_style</span>);
 					}
 					<span class="prelude-val">Ok</span>(())
 				},
@@ -635,7 +619,7 @@
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to `LVS_EX::NONE`.</span>
-	<span class="kw">pub</span> <span class="ident">ex_list_view_style</span>: <span class="ident">co</span>::<span class="ident">LVS_EX</span>,
+	<span class="kw">pub</span> <span class="ident">list_view_ex_style</span>: <span class="ident">co</span>::<span class="ident">LVS_EX</span>,
 	<span class="doccomment">/// Window styles to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
@@ -645,7 +629,7 @@
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to `WS_EX::LEFT | WS_EX::CLIENTEDGE`.</span>
-	<span class="kw">pub</span> <span class="ident">ex_window_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
+	<span class="kw">pub</span> <span class="ident">window_ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>,
 
 	<span class="doccomment">/// The control ID.</span>
 	<span class="doccomment">///</span>
@@ -667,9 +651,9 @@
 			<span class="ident">position</span>: <span class="ident">POINT</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="number">0</span>),
 			<span class="ident">size</span>: <span class="ident">SIZE</span>::<span class="ident">new</span>(<span class="number">50</span>, <span class="number">50</span>),
 			<span class="ident">list_view_style</span>: <span class="ident">co</span>::<span class="ident">LVS</span>::<span class="ident">REPORT</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">LVS</span>::<span class="ident">NOSORTHEADER</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">LVS</span>::<span class="ident">SHOWSELALWAYS</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">LVS</span>::<span class="ident">SHAREIMAGELISTS</span>,
-			<span class="ident">ex_list_view_style</span>: <span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">NONE</span>,
+			<span class="ident">list_view_ex_style</span>: <span class="ident">co</span>::<span class="ident">LVS_EX</span>::<span class="ident">NONE</span>,
 			<span class="ident">window_style</span>: <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">CHILD</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">VISIBLE</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">TABSTOP</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">GROUP</span>,
-			<span class="ident">ex_window_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">LEFT</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">CLIENTEDGE</span>,
+			<span class="ident">window_ex_style</span>: <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">LEFT</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS_EX</span>::<span class="ident">CLIENTEDGE</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
 			<span class="ident">context_menu</span>: <span class="prelude-val">None</span>,
 		}

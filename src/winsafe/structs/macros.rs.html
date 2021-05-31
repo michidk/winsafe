@@ -56,6 +56,24 @@
 <span id="53">53</span>
 <span id="54">54</span>
 <span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Implements `Default` trait by zeroing all members.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_default_zero</span> {
@@ -109,6 +127,24 @@
 		<span class="doccomment">/// Sets the string field.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
 			<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">text</span>).<span class="ident">copy_to_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>);
+		}
+	};
+}
+
+<span class="doccomment">/// Implements getter and setter methods for the given `*mut 16` and `i32`</span>
+<span class="doccomment">/// members, setting buffer and its size.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">pub_fn_string_buf_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the string field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
+		}
+
+		<span class="doccomment">/// Sets the string field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) {
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() };
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>;
 		}
 	};
 }
