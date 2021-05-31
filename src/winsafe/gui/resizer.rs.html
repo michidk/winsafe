@@ -212,6 +212,7 @@
 <span id="209">209</span>
 <span id="210">210</span>
 <span id="211">211</span>
+<span id="212">212</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">NonNull</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
@@ -319,20 +320,21 @@
 				<span class="ident">Obj</span> {
 					<span class="ident">ctrls</span>: <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">16</span>), <span class="comment">// arbitrary, prealloc for speed</span>
 					<span class="ident">sz_parent_orig</span>: <span class="ident">SIZE</span>::<span class="ident">default</span>(),
-				}
+				},
 			)),
 		);
 
 		<span class="kw">let</span> <span class="ident">ptr_parent</span> <span class="op">=</span> <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">parent_base_ref</span>); <span class="comment">// ref implicitly converted to pointer</span>
 		<span class="kw">let</span> <span class="ident">rc_children</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(
-			<span class="ident">children</span>.<span class="ident">iter</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">ChildEntry</span> {
-				<span class="ident">horz</span>: <span class="ident">c</span>.<span class="number">0</span>,
-				<span class="ident">vert</span>: <span class="ident">c</span>.<span class="number">1</span>,
-				<span class="ident">children</span>: <span class="ident">c</span>.<span class="number">2</span>.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">dyn_child</span><span class="op">|</span> <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">hwndref_from_child</span>(<span class="kw-2">*</span><span class="ident">dyn_child</span>))) <span class="comment">// convert reference to pointer</span>
-					.<span class="ident">collect</span>()
-			}).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+			<span class="ident">children</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span>
+				<span class="ident">ChildEntry</span> {
+					<span class="ident">horz</span>: <span class="ident">c</span>.<span class="number">0</span>,
+					<span class="ident">vert</span>: <span class="ident">c</span>.<span class="number">1</span>,
+					<span class="ident">children</span>: <span class="ident">c</span>.<span class="number">2</span>.<span class="ident">iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">dyn_child</span><span class="op">|</span> <span class="ident">NonNull</span>::<span class="ident">from</span>(<span class="ident">hwndref_from_child</span>(<span class="kw-2">*</span><span class="ident">dyn_child</span>))) <span class="comment">// convert reference to pointer</span>
+						.<span class="ident">collect</span>(),
+				},
+			).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
 		);
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
