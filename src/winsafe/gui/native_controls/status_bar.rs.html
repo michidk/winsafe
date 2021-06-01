@@ -190,26 +190,6 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -218,6 +198,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">StatusBarEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">native_control_base</span>::<span class="ident">NativeControlBase</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">native_controls</span>::<span class="ident">status_bar_parts</span>::<span class="ident">StatusBarParts</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
@@ -238,6 +219,7 @@
 	<span class="ident">base</span>: <span class="ident">NativeControlBase</span>,
 	<span class="ident">ctrl_id</span>: <span class="ident">i32</span>,
 	<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>,
+	<span class="ident">parts</span>: <span class="ident">StatusBarParts</span>,
 	<span class="ident">parts_info</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusBarPart</span><span class="op">&gt;</span>,
 	<span class="ident">right_edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="comment">// buffer to speed up resize calls</span>
 }
@@ -271,11 +253,13 @@
 					<span class="ident">base</span>: <span class="ident">NativeControlBase</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>),
 					<span class="ident">ctrl_id</span>,
 					<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">parts</span>: <span class="ident">StatusBarParts</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>.<span class="ident">hwnd_ref</span>()), <span class="comment">// wrong HWND, just to construct the object</span>
 					<span class="ident">parts_info</span>: <span class="ident">parts</span>.<span class="ident">to_vec</span>(),
 					<span class="ident">right_edges</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">parts</span>.<span class="ident">len</span>()],
 				},
 			)),
 		);
+		<span class="ident">new_self</span>.<span class="number">0</span>.<span class="ident">parts</span>.<span class="ident">set_hwnd_ref</span>(<span class="ident">new_self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>()); <span class="comment">// correct HWND</span>
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
@@ -368,33 +352,9 @@
 
 	<span class="macro">pub_fn_hwnd_on_onsubclass</span><span class="macro">!</span>(<span class="ident">StatusBarEvents</span>);
 
-	<span class="doccomment">/// Retrieves the number of parts by sending an</span>
-	<span class="doccomment">/// [`SB_GETPARTS`](crate::msg::sb::GetParts) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">part_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">GetParts</span> { <span class="ident">right_edges</span>: <span class="prelude-val">None</span> })
-	}
-
-	<span class="doccomment">/// Retrieves the text of a part by sending an</span>
-	<span class="doccomment">/// [`SB_GETTEXT`](crate::msg::sb::GetText) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">part_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">part_index</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="kw">let</span> (<span class="ident">len</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">GetTextLength</span> { <span class="ident">part_index</span> });
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString</span>::<span class="ident">new_alloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
-
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">GetText</span> {
-			<span class="ident">part_index</span>,
-			<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>,
-		});
-		<span class="ident">buf</span>.<span class="ident">to_string</span>()
-	}
-
-	<span class="doccomment">/// Sets the text of a part by sending an</span>
-	<span class="doccomment">/// [`SB_SETTEXT`](crate::msg::sb::SetText) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_part_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">part_index</span>: <span class="ident">u8</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">sb</span>::<span class="ident">SetText</span> {
-			<span class="ident">part_index</span>,
-			<span class="ident">drawing_operation</span>: <span class="ident">co</span>::<span class="ident">SBT</span>::<span class="ident">NONE</span>,
-			<span class="ident">text</span>,
-		})
+	<span class="doccomment">/// Exposes the part methods.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">StatusBarParts</span> {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts</span>
 	}
 }
 
@@ -405,7 +365,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusBarPart</span> {
 	<span class="doccomment">/// A part that has a fixed size, in pixels.</span>
-	<span class="comment">//</span>
+	<span class="doccomment">///</span>
 	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
 	<span class="ident">Fixed</span>(<span class="ident">u32</span>),
 	<span class="doccomment">/// A part that will resize when the parent window resizes, filling the</span>
