@@ -1340,20 +1340,10 @@
 <span id="1337">1337</span>
 <span id="1338">1338</span>
 <span id="1339">1339</span>
-<span id="1340">1340</span>
-<span id="1341">1341</span>
-<span id="1342">1342</span>
-<span id="1343">1343</span>
-<span id="1344">1344</span>
-<span id="1345">1345</span>
-<span id="1346">1346</span>
-<span id="1347">1347</span>
-<span id="1348">1348</span>
-<span id="1349">1349</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">SUBCLASSPROC</span>, <span class="ident">TIMERPROC</span>, <span class="ident">WinResult</span>, <span class="ident">WNDENUMPROC</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">SUBCLASSPROC</span>, <span class="ident">TIMERPROC</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">HwndPlace</span>, <span class="ident">IdMenu</span>, <span class="ident">IdPos</span>, <span class="ident">IdTdicon</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">user32</span>, <span class="ident">uxtheme</span>};
@@ -1576,20 +1566,6 @@
 	<span class="doccomment">/// [`EnumChildWindows`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumchildwindows)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// This method can be more performant than</span>
-	<span class="doccomment">/// [`EnumChildWindowsVec`](crate::HWND::EnumChildWindowsVec), which passes</span>
-	<span class="doccomment">/// through all children and allocates a `Vec`. However, it has the</span>
-	<span class="doccomment">/// inconvenient of the manual function pointer.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumChildWindows</span>(<span class="self">self</span>, <span class="ident">lpEnumFunc</span>: <span class="ident">WNDENUMPROC</span>, <span class="ident">lParam</span>: <span class="ident">isize</span>) {
-		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">EnumChildWindows</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpEnumFunc</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">lParam</span>);
-		}
-	}
-
-	<span class="doccomment">/// A more convenient [`EnumChildWindows`](crate::HWND::EnumChildWindows),</span>
-	<span class="doccomment">/// which returns a `Vec` with the handles of all child windows, instead of</span>
-	<span class="doccomment">/// taking a function pointer.</span>
-	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
@@ -1597,24 +1573,27 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_hwnd: HWND; // initialized somewhere</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for hchild in my_hwnd.EnumChildWindowsVec() {</span>
-	<span class="doccomment">///     println!(&quot;HWND: {}&quot;, hchild);</span>
-	<span class="doccomment">/// }</span>
+	<span class="doccomment">/// my_hwnd.EnumChildWindows(|hchild: HWND| -&gt; bool {</span>
+	<span class="doccomment">///     println!(&quot;Child HWND: {}&quot;, hchild);</span>
+	<span class="doccomment">///     true</span>
+	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumChildWindowsVec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hchildren</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">default</span>();
-		<span class="self">self</span>.<span class="ident">EnumChildWindows</span>(
-			<span class="self">Self</span>::<span class="ident">EnumChildWindowsVecProc</span>,
-			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hchildren</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// pass pointer to Vec</span>
-		);
-		<span class="ident">hchildren</span>
-	}
-	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildWindowsVecProc</span>(
-		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumChildWindows</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">hchildren</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span>(<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>) }; <span class="comment">// retrieve pointer to Vec</span>
-		<span class="ident">hchildren</span>.<span class="ident">push</span>(<span class="ident">hchild</span>);
-		<span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span>
+		<span class="kw">unsafe</span> {
+			<span class="ident">user32</span>::<span class="ident">EnumChildWindows</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">Self</span>::<span class="ident">EnumChildProc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// https://redd.it/npehj9</span>
+				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">func</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+			);
+		}
+	}
+	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildProc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">lParam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+	{
+		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span>(<span class="ident">lParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">F</span>) };
+		<span class="ident">func</span>(<span class="ident">hwnd</span>) <span class="kw">as</span> <span class="kw">_</span>
 	}
 
 	<span class="doccomment">/// [`FindWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindoww)</span>
@@ -2453,7 +2432,8 @@
 	<span class="doccomment">/// [`SetTimer`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-settimer)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTimer</span>(<span class="self">self</span>,
-		<span class="ident">nIDEvent</span>: <span class="ident">usize</span>, <span class="ident">uElapse</span>: <span class="ident">u32</span>,
+		<span class="ident">nIDEvent</span>: <span class="ident">usize</span>,
+		<span class="ident">uElapse</span>: <span class="ident">u32</span>,
 		<span class="ident">lpTimerFunc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TIMERPROC</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
