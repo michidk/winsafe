@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["EnhancedVideoRenderer",""],["FilterGraph",""]]});
+initSidebarItems({"constant":[["AviDest",""],["EnhancedVideoRenderer",""],["FileWriter",""],["FilterGraph",""],["NullRenderer",""]]});
