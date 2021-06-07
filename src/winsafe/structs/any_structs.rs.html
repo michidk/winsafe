@@ -938,6 +938,35 @@
 <span id="935">935</span>
 <span id="936">936</span>
 <span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -972,7 +1001,7 @@
 	<span class="ident">HWND</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">CCHILDREN_TITLEBAR</span>, <span class="ident">LF_FACESIZE</span>, <span class="ident">MAX_PATH</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">COLORREF</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">COLORREF</span>, <span class="ident">GUID</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unions</span>::{<span class="ident">ColorrefDibU</span>, <span class="ident">ColorrefHbitmapU</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -1368,6 +1397,35 @@
 		}
 		<span class="ident">obj</span>
 	}
+}
+
+<span class="doccomment">/// [`NOTIFYICONDATA`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-notifyicondataw)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NOTIFYICONDATA</span> {
+	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">hWnd</span>: <span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">uID</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">uFlags</span>: <span class="ident">co</span>::<span class="ident">NIF</span>,
+	<span class="kw">pub</span> <span class="ident">uCallbackMessage</span>: <span class="ident">co</span>::<span class="ident">WM</span>,
+	<span class="kw">pub</span> <span class="ident">hIcon</span>: <span class="ident">HICON</span>,
+	<span class="ident">szTip</span>: [<span class="ident">u16</span>; <span class="number">128</span>],
+	<span class="kw">pub</span> <span class="ident">dwState</span>: <span class="ident">co</span>::<span class="ident">NIS</span>,
+	<span class="kw">pub</span> <span class="ident">dwStateMask</span>: <span class="ident">co</span>::<span class="ident">NIS</span>,
+	<span class="ident">szInfo</span>: [<span class="ident">u16</span>; <span class="number">256</span>],
+	<span class="kw">pub</span> <span class="ident">uTimeoutVersion</span>: <span class="ident">u32</span>, <span class="comment">// union</span>
+	<span class="ident">szInfoTitle</span>: [<span class="ident">u16</span>; <span class="number">64</span>],
+	<span class="kw">pub</span> <span class="ident">dwInfoFlags</span>: <span class="ident">co</span>::<span class="ident">NIIF</span>,
+	<span class="kw">pub</span> <span class="ident">guidItem</span>: <span class="ident">GUID</span>,
+	<span class="kw">pub</span> <span class="ident">hBalloonIcon</span>: <span class="ident">HICON</span>,
+}
+
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">NOTIFYICONDATA</span>, <span class="ident">cbSize</span>);
+
+<span class="kw">impl</span> <span class="ident">NOTIFYICONDATA</span> {
+	<span class="macro">pub_fn_string_arr_get_set</span><span class="macro">!</span>(<span class="ident">szTip</span>, <span class="ident">set_szTip</span>);
+	<span class="macro">pub_fn_string_arr_get_set</span><span class="macro">!</span>(<span class="ident">szInfo</span>, <span class="ident">set_szInfo</span>);
+	<span class="macro">pub_fn_string_arr_get_set</span><span class="macro">!</span>(<span class="ident">szInfoTitle</span>, <span class="ident">set_szInfoTitle</span>);
 }
 
 <span class="doccomment">/// [`OSVERSIONINFOEX`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexw)</span>

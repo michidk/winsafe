@@ -979,6 +979,26 @@
 <span id="976">976</span>
 <span id="977">977</span>
 <span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
+<span id="985">985</span>
+<span id="986">986</span>
+<span id="987">987</span>
+<span id="988">988</span>
+<span id="989">989</span>
+<span id="990">990</span>
+<span id="991">991</span>
+<span id="992">992</span>
+<span id="993">993</span>
+<span id="994">994</span>
+<span id="995">995</span>
+<span id="996">996</span>
+<span id="997">997</span>
+<span id="998">998</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -988,7 +1008,16 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">advapi32</span>, <span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">comdlg32</span>, <span class="ident">HRESULT</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{
+	<span class="ident">advapi32</span>,
+	<span class="ident">BOOL</span>,
+	<span class="ident">comctl32</span>,
+	<span class="ident">comdlg32</span>,
+	<span class="ident">HRESULT</span>,
+	<span class="ident">kernel32</span>,
+	<span class="ident">shell32</span>,
+	<span class="ident">user32</span>,
+};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
@@ -1003,6 +1032,7 @@
 	<span class="ident">FILETIME</span>,
 	<span class="ident">MEMORYSTATUSEX</span>,
 	<span class="ident">MSG</span>,
+	<span class="ident">NOTIFYICONDATA</span>,
 	<span class="ident">OSVERSIONINFOEX</span>,
 	<span class="ident">POINT</span>,
 	<span class="ident">RECT</span>,
@@ -1768,6 +1798,16 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetProcessDPIAware</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">SetProcessDPIAware</span>() })
+}
+
+<span class="doccomment">/// [`Shell_NotifyIcon`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shell_notifyiconw)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Shell_NotifyIcon</span>(
+	<span class="ident">dwMessage</span>: <span class="ident">co</span>::<span class="ident">NIM</span>, <span class="ident">lpData</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">NOTIFYICONDATA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+{
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> { <span class="ident">shell32</span>::<span class="ident">Shell_NotifyIconW</span>(<span class="ident">dwMessage</span>.<span class="number">0</span>, <span class="ident">lpData</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+	)
 }
 
 <span class="doccomment">/// [`ShowCursor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor)</span>

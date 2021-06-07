@@ -162,18 +162,6 @@
 <span id="159">159</span>
 <span id="160">160</span>
 <span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Edit control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-edit-control-reference-messages),</span>
@@ -253,7 +241,7 @@
 <span class="doccomment">/// [`EM_GETRECT`](https://docs.microsoft.com/en-us/windows/win32/controls/em-getrect)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Return type: `RECT`.</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetRect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">rect</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RECT</span>,
 }
@@ -261,12 +249,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetRect</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
-	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="kw">match</span> <span class="ident">v</span> {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		}
-	}
+	<span class="macro">fn_convert_ret_winresult_void</span><span class="macro">!</span>();
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
@@ -289,9 +272,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetSel</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
 
-	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		()
-	}
+	<span class="macro">fn_convert_ret_void</span><span class="macro">!</span>();
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
@@ -333,12 +314,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">Undo</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
-	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">RetType</span> {
-		<span class="kw">match</span> <span class="ident">v</span> {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co</span>::<span class="ident">ERROR</span>::<span class="ident">BAD_ARGUMENTS</span>),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		}
-	}
+	<span class="macro">fn_convert_ret_winresult_void</span><span class="macro">!</span>();
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
