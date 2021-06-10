@@ -1012,6 +1012,24 @@
 <span id="1009">1009</span>
 <span id="1010">1010</span>
 <span id="1011">1011</span>
+<span id="1012">1012</span>
+<span id="1013">1013</span>
+<span id="1014">1014</span>
+<span id="1015">1015</span>
+<span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1769,6 +1787,24 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>: <span class="ident">co</span>::<span class="ident">ERROR</span>) {
 	<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">PostQuitMessage</span>(<span class="ident">nExitCode</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) }
+}
+
+<span class="doccomment">/// [`QueryPerformanceCounter`](https://docs.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryPerformanceCounter</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpPerformanceCount</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">QueryPerformanceCounter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpPerformanceCount</span>) },
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">lpPerformanceCount</span>)
+}
+
+<span class="doccomment">/// [`QueryPerformanceFrequency`](https://docs.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryPerformanceFrequency</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpFrequency</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">QueryPerformanceFrequency</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpFrequency</span>) },
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">lpFrequency</span>)
 }
 
 <span class="doccomment">/// [`RegisterClassEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw)</span>
