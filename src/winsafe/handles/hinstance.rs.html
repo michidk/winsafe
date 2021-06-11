@@ -245,7 +245,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">DLGPROC</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">IdIdcStr</span>, <span class="ident">IdIdiStr</span>, <span class="ident">IdStr</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">IdIdc</span>, <span class="ident">IdIdi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::{<span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">GetLastError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HBITMAP</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
@@ -265,7 +265,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateDialogParam</span>(
 		<span class="self">self</span>,
-		<span class="ident">lpTemplateName</span>: <span class="ident">IdStr</span>,
+		<span class="ident">lpTemplateName</span>: <span class="ident">u16</span>,
 		<span class="ident">hWndParent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
 		<span class="ident">lpDialogFunc</span>: <span class="ident">DLGPROC</span>,
 		<span class="ident">dwInitParam</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
@@ -273,7 +273,7 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">CreateDialogParamW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpTemplateName</span>.<span class="ident">as_ptr</span>(),
+				<span class="ident">lpTemplateName</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">hWndParent</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
 				<span class="ident">lpDialogFunc</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">dwInitParam</span>.<span class="ident">unwrap_or_default</span>(),
@@ -286,7 +286,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DialogBoxParam</span>(
 		<span class="self">self</span>,
-		<span class="ident">lpTemplateName</span>: <span class="ident">IdStr</span>,
+		<span class="ident">lpTemplateName</span>: <span class="ident">u16</span>,
 		<span class="ident">hWndParent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
 		<span class="ident">lpDialogFunc</span>: <span class="ident">DLGPROC</span>,
 		<span class="ident">dwInitParam</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
@@ -294,7 +294,7 @@
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32</span>::<span class="ident">DialogBoxParamW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpTemplateName</span>.<span class="ident">as_ptr</span>(),
+				<span class="ident">lpTemplateName</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">hWndParent</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
 				<span class="ident">lpDialogFunc</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">dwInitParam</span>.<span class="ident">unwrap_or_default</span>(),
@@ -377,9 +377,9 @@
 
 	<span class="doccomment">/// [`LoadAccelerators`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadacceleratorsw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadAccelerators</span>(<span class="self">self</span>, <span class="ident">lpTableName</span>: <span class="ident">IdStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadAccelerators</span>(<span class="self">self</span>, <span class="ident">lpTableName</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">LoadAcceleratorsW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpTableName</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
+			<span class="ident">user32</span>::<span class="ident">LoadAcceleratorsW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpTableName</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HACCEL</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -397,7 +397,7 @@
 	<span class="doccomment">///     .LoadCursor(IdIdcStr::Idc(co::IDC::ARROW))</span>
 	<span class="doccomment">///     .unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadCursor</span>(<span class="self">self</span>, <span class="ident">lpCursorName</span>: <span class="ident">IdIdcStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadCursor</span>(<span class="self">self</span>, <span class="ident">lpCursorName</span>: <span class="ident">IdIdc</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">LoadCursorW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpCursorName</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -416,7 +416,7 @@
 	<span class="doccomment">///     .LoadIcon(IdIdiStr::Idi(co::IDI::INFORMATION))</span>
 	<span class="doccomment">///     .unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadIcon</span>(<span class="self">self</span>, <span class="ident">lpIconName</span>: <span class="ident">IdIdiStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadIcon</span>(<span class="self">self</span>, <span class="ident">lpIconName</span>: <span class="ident">IdIdi</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">LoadIconW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpIconName</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -425,10 +425,10 @@
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HBITMAP`](crate::HBITMAP).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadImageBitmap</span>(<span class="self">self</span>,
-		<span class="ident">name</span>: <span class="ident">IdStr</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
+		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span>.<span class="ident">as_ptr</span>(), <span class="number">0</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
+			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
 				.<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBITMAP</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -437,10 +437,10 @@
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HCURSOR`](crate::HCURSOR).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadImageCursor</span>(<span class="self">self</span>,
-		<span class="ident">name</span>: <span class="ident">IdStr</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span>
+		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span>.<span class="ident">as_ptr</span>(), <span class="number">2</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
+			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">2</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
 				.<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -449,10 +449,10 @@
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HICON`](crate::HICON).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadImageIcon</span>(<span class="self">self</span>,
-		<span class="ident">name</span>: <span class="ident">IdStr</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span>
+		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">fuLoad</span>: <span class="ident">co</span>::<span class="ident">LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span>.<span class="ident">as_ptr</span>(), <span class="number">1</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
+			<span class="ident">user32</span>::<span class="ident">LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">1</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">fuLoad</span>.<span class="number">0</span>)
 				.<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -473,9 +473,9 @@
 
 	<span class="doccomment">/// [`LoadMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadmenuw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadMenu</span>(<span class="self">self</span>, <span class="ident">lpMenuName</span>: <span class="ident">IdStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadMenu</span>(<span class="self">self</span>, <span class="ident">lpMenuName</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32</span>::<span class="ident">LoadMenuW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpMenuName</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
+			<span class="ident">user32</span>::<span class="ident">LoadMenuW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpMenuName</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HMENU</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}

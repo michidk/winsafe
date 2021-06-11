@@ -421,43 +421,6 @@
 <span id="418">418</span>
 <span id="419">419</span>
 <span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -572,7 +535,7 @@
 <span class="doccomment">/// * [`AppendMenuEnum`](crate::HMENU::AppendMenuEnum) `entry`.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">EntrySeparatorSubmenu</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// A selectable entry item, with command ID and text.</span>
-	<span class="ident">Entry</span>(<span class="ident">i32</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>),
+	<span class="ident">Entry</span>(<span class="ident">u16</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>),
 	<span class="doccomment">/// A separator.</span>
 	<span class="ident">Separator</span>,
 	<span class="doccomment">/// A submenu, with its entry text.</span>
@@ -682,22 +645,19 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`LoadCursor`](crate::HINSTANCE::LoadCursor) `lpCursorName`.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdcStr</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdc</span> {
 	<span class="doccomment">/// A resource ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
 	<span class="doccomment">/// A [`co::IDC`](crate::co::IDC) constant for a stock system cursor.</span>
 	<span class="ident">Idc</span>(<span class="ident">co</span>::<span class="ident">IDC</span>),
-	<span class="doccomment">/// A resource identified by a string.</span>
-	<span class="ident">Str</span>(<span class="ident">WString</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">IdIdcStr</span> {
+<span class="kw">impl</span> <span class="ident">IdIdc</span> {
 	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span>::<span class="ident">Idc</span>(<span class="ident">idc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idc</span>.<span class="number">0</span>),
-			<span class="self">Self</span>::<span class="ident">Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -705,22 +665,19 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`LoadIcon`](crate::HINSTANCE::LoadIcon) `lpIconName`.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdiStr</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdi</span> {
 	<span class="doccomment">/// A resource ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
 	<span class="doccomment">/// A [`co::IDI`](crate::co::IDI) constant for a stock system icon.</span>
 	<span class="ident">Idi</span>(<span class="ident">co</span>::<span class="ident">IDI</span>),
-	<span class="doccomment">/// A resource identified by a string.</span>
-	<span class="ident">Str</span>(<span class="ident">WString</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">IdIdiStr</span> {
+<span class="kw">impl</span> <span class="ident">IdIdi</span> {
 	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span>::<span class="ident">Idi</span>(<span class="ident">idi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idi</span>.<span class="number">0</span>),
-			<span class="self">Self</span>::<span class="ident">Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -731,7 +688,7 @@
 <span class="doccomment">/// * [`CreateWindowEx`](crate::HWND::CreateWindowEx) `hMenu`.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdMenu</span> {
 	<span class="doccomment">/// A command ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
 	<span class="doccomment">/// An [`HMENU`](crate::HMENU).</span>
 	<span class="ident">Menu</span>(<span class="ident">HMENU</span>),
 	<span class="doccomment">/// Nothing.</span>
@@ -771,7 +728,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// A command ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
 	<span class="doccomment">/// Zero-based position.</span>
 	<span class="ident">Pos</span>(<span class="ident">u32</span>),
 }
@@ -805,43 +762,12 @@
 
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// * [`CreateWindowEx`](crate::HWND::CreateWindowEx) `lpTemplateName`;</span>
-<span class="doccomment">/// * [`LoadAccelerators`](crate::HINSTANCE::LoadAccelerators) `lpTableName`;</span>
-<span class="doccomment">/// * [`LoadMenu`](crate::HINSTANCE::LoadMenu) `lpMenuName`;</span>
-<span class="doccomment">/// * [`WNDCLASSEX`](crate::WNDCLASSEX) `lpszMenuName`.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdStr</span> {
-	<span class="doccomment">/// A resource ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
-	<span class="doccomment">/// A resource identified by a string.</span>
-	<span class="ident">Str</span>(<span class="ident">WString</span>),
-}
-
-<span class="kw">impl</span> <span class="ident">IdStr</span> {
-	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="self">Self</span>::<span class="ident">Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() },
-		}
-	}
-
-	<span class="doccomment">/// Converts the internal value to a `*mut u16`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_mut_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span>::<span class="ident">Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="self">Self</span>::<span class="ident">Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_mut_ptr</span>() },
-		}
-	}
-}
-
-<span class="doccomment">/// Variant parameter for:</span>
-<span class="doccomment">///</span>
 <span class="doccomment">/// * [`TaskDialog`](crate::HWND::TaskDialog) `pszIcon`.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdTdicon</span> {
 	<span class="doccomment">/// No icon.</span>
 	<span class="prelude-val">None</span>,
 	<span class="doccomment">/// A resource ID.</span>
-	<span class="ident">Id</span>(<span class="ident">i32</span>),
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
 	<span class="doccomment">/// A predefined icon.</span>
 	<span class="ident">Tdicon</span>(<span class="ident">co</span>::<span class="ident">TD_ICON</span>),
 }

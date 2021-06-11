@@ -950,22 +950,6 @@
 <span id="947">947</span>
 <span id="948">948</span>
 <span id="949">949</span>
-<span id="950">950</span>
-<span id="951">951</span>
-<span id="952">952</span>
-<span id="953">953</span>
-<span id="954">954</span>
-<span id="955">955</span>
-<span id="956">956</span>
-<span id="957">957</span>
-<span id="958">958</span>
-<span id="959">959</span>
-<span id="960">960</span>
-<span id="961">961</span>
-<span id="962">962</span>
-<span id="963">963</span>
-<span id="964">964</span>
-<span id="965">965</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -975,15 +959,8 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">WNDPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>, <span class="ident">IdStr</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{
-	<span class="ident">IsWindowsVistaOrGreater</span>,
-	<span class="ident">HIDWORD</span>,
-	<span class="ident">HIWORD</span>,
-	<span class="ident">LODWORD</span>,
-	<span class="ident">LOWORD</span>,
-	<span class="ident">MAKEQWORD</span>,
-};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">IsWindowsVistaOrGreater</span>, <span class="ident">MAKEQWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{
 	<span class="ident">HBITMAP</span>,
 	<span class="ident">HBRUSH</span>,
@@ -1000,7 +977,6 @@
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">CCHILDREN_TITLEBAR</span>, <span class="ident">LF_FACESIZE</span>, <span class="ident">MAX_PATH</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">COLORREF</span>, <span class="ident">GUID</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">unions</span>::{<span class="ident">ColorrefDibU</span>, <span class="ident">ColorrefHbitmapU</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
 <span class="doccomment">/// [`ACCEL`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-accel)</span>
@@ -1104,7 +1080,7 @@
 <span class="doccomment">/// [`CHOOSECOLOR`](https://docs.microsoft.com/en-us/windows/win32/api/commdlg/ns-commdlg-choosecolorw-r1)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">lStructSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">hwndOwner</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">HWND</span>,
@@ -1113,14 +1089,13 @@
 	<span class="kw">pub</span> <span class="ident">Flags</span>: <span class="ident">co</span>::<span class="ident">CC</span>,
 	<span class="kw">pub</span> <span class="ident">lCustData</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">lpfnHook</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CCHOOKPROC</span><span class="op">&gt;</span>,
-	<span class="ident">lpTemplateName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpTemplateName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// u16 resource ID</span>
 	<span class="ident">m_lpCustColors</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">COLORREF</span><span class="op">&gt;</span>,
-	<span class="ident">m_lpTemplateName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">CHOOSECOLOR</span>, <span class="ident">lStructSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">CHOOSECOLOR</span>, <span class="ident">lStructSize</span>, <span class="lifetime">&#39;a</span>);
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpCustColors` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpCustColors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lpCustColors</span>.<span class="ident">as_mut</span>() }
@@ -1131,7 +1106,7 @@
 		<span class="self">self</span>.<span class="ident">lpCustColors</span> <span class="op">=</span> <span class="ident">buf</span>;
 	}
 
-	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;b</span>, <span class="ident">lpTemplateName</span>, <span class="ident">set_lpTemplateName</span>);
+	<span class="macro">pub_fn_resource_id_get_set</span><span class="macro">!</span>(<span class="ident">lpTemplateName</span>, <span class="ident">set_lpTemplateName</span>);
 }
 
 <span class="doccomment">/// [`CREATESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-createstructw)</span>
@@ -1198,8 +1173,8 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LOGBRUSH</span> {
 	<span class="kw">pub</span> <span class="ident">lbStyle</span>: <span class="ident">co</span>::<span class="ident">BSS</span>,
-	<span class="kw">pub</span> <span class="ident">lbColor</span>: <span class="ident">ColorrefDibU</span>,
-	<span class="kw">pub</span> <span class="ident">lbHatch</span>: <span class="ident">ColorrefHbitmapU</span>,
+	<span class="kw">pub</span> <span class="ident">lbColor</span>: <span class="ident">COLORREF</span>,
+	<span class="kw">pub</span> <span class="ident">lbHatch</span>: <span class="ident">usize</span>, <span class="comment">// weird field</span>
 }
 
 <span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">LOGBRUSH</span>);
@@ -1351,14 +1326,25 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NMHDR</span> {
 	<span class="doccomment">/// A window handle to the control sending the message.</span>
 	<span class="kw">pub</span> <span class="ident">hwndFrom</span>: <span class="ident">HWND</span>,
-	<span class="doccomment">/// ID of the control sending the message.</span>
-	<span class="kw">pub</span> <span class="ident">idFrom</span>: <span class="ident">usize</span>,
+	<span class="ident">idFrom</span>: <span class="ident">usize</span>,
 	<span class="doccomment">/// Notification code sent in</span>
 	<span class="doccomment">/// [`WM_NOTIFY`](https://docs.microsoft.com/en-us/windows/win32/controls/wm-notify).</span>
 	<span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">NM</span>,
 }
 
 <span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">NMHDR</span>);
+
+<span class="kw">impl</span> <span class="ident">NMHDR</span> {
+	<span class="doccomment">/// `Returns the `idFrom` field, the ID of the control sending the message.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">idFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+		<span class="self">self</span>.<span class="ident">idFrom</span> <span class="kw">as</span> <span class="kw">_</span>
+	}
+
+	<span class="doccomment">/// Sets the `idFrom` field, the ID of the control sending the message.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_idFrom</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">u16</span>) {
+		<span class="self">self</span>.<span class="ident">idFrom</span> <span class="op">=</span> <span class="ident">val</span> <span class="kw">as</span> <span class="kw">_</span>
+	}
+}
 
 <span class="doccomment">/// [`NONCLIENTMETRICS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nonclientmetricsw)</span>
 <span class="doccomment">/// struct.</span>
@@ -1892,7 +1878,7 @@
 <span class="doccomment">/// [`WNDCLASSEX`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassexw)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">co</span>::<span class="ident">CS</span>,
 	<span class="kw">pub</span> <span class="ident">lpfnWndProc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WNDPROC</span><span class="op">&gt;</span>,
@@ -1902,35 +1888,17 @@
 	<span class="kw">pub</span> <span class="ident">hIcon</span>: <span class="ident">HICON</span>,
 	<span class="kw">pub</span> <span class="ident">hCursor</span>: <span class="ident">HCURSOR</span>,
 	<span class="kw">pub</span> <span class="ident">hbrBackground</span>: <span class="ident">HBRUSH</span>,
-	<span class="ident">lpszMenuName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpszMenuName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// u16 resource ID</span>
 	<span class="ident">lpszClassName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">hIconSm</span>: <span class="ident">HICON</span>,
-	<span class="ident">m_lpszMenuName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">WNDCLASSEX</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
+<span class="macro">impl_default_with_size</span><span class="macro">!</span>(<span class="ident">WNDCLASSEX</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>);
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Returns the `lpszMenuName` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpszMenuName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IdStr</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lpszMenuName</span>.<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">lp</span><span class="op">|</span> {
-				<span class="kw">let</span> <span class="ident">lp2</span> <span class="op">=</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>; <span class="comment">// https://stackoverflow.com/a/9806654/6923555</span>
-				<span class="kw">if</span> <span class="ident">HIDWORD</span>(<span class="ident">lp2</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">HIWORD</span>(<span class="ident">LODWORD</span>(<span class="ident">lp2</span> <span class="kw">as</span> <span class="kw">_</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-					<span class="ident">IdStr</span>::<span class="ident">Id</span>(<span class="ident">LOWORD</span>(<span class="ident">LODWORD</span>(<span class="ident">lp2</span> <span class="kw">as</span> <span class="kw">_</span>)) <span class="kw">as</span> <span class="kw">_</span>)
-				} <span class="kw">else</span> {
-					<span class="ident">IdStr</span>::<span class="ident">Str</span>(<span class="ident">WString</span>::<span class="ident">from_wchars_nullt</span>(<span class="ident">lp</span>))
-				}
-			})
-	}
-
-	<span class="doccomment">/// Sets the `lpszMenuName` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpszMenuName</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">menu_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">IdStr</span>) {
-		<span class="self">self</span>.<span class="ident">lpszMenuName</span> <span class="op">=</span> <span class="ident">menu_name</span>.<span class="ident">as_mut_ptr</span>();
-	}
-
-	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;b</span>, <span class="ident">lpszClassName</span>, <span class="ident">set_lpszClassName</span>);
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="macro">pub_fn_resource_id_get_set</span><span class="macro">!</span>(<span class="ident">lpszMenuName</span>, <span class="ident">set_lpszMenuName</span>);
+	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpszClassName</span>, <span class="ident">set_lpszClassName</span>);
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-js="../../../search-index.js"></div>
