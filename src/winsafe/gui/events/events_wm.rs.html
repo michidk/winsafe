@@ -1482,10 +1482,10 @@
 	<span class="doccomment">/// specific command notifications, which will give you the correct message</span>
 	<span class="doccomment">/// parameters. This generic method should be used when you have a custom,</span>
 	<span class="doccomment">/// non-standard window notification.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>, <span class="ident">ctrl_id</span>: <span class="ident">i32</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">insert</span>((<span class="ident">code</span>, <span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">insert</span>((<span class="ident">code</span>, <span class="ident">ctrl_id</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// [`WM_COMMAND`](crate::msg::wm::Command) message, handling both</span>
@@ -1510,7 +1510,7 @@
 	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command_accel_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">i32</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command_accel_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
