@@ -844,6 +844,51 @@
 <span id="841">841</span>
 <span id="842">842</span>
 <span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! List view control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-messages),</span>
@@ -852,7 +897,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::<span class="ident">WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::<span class="ident">HWND</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HIMAGELIST</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{
 	<span class="ident">COLORREF</span>,
@@ -1130,6 +1175,28 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETHEADER</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
+			<span class="ident">lparam</span>: <span class="number">0</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// [`LVM_GETIMAGELIST`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-getimagelist)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `Option&lt;HIMAGELIST&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetImageList</span> {
+	<span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">co</span>::<span class="ident">LVSIL</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetImageList</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HIMAGELIST</span><span class="op">&gt;</span>;
+
+	<span class="macro">fn_convert_ret_option_handle</span><span class="macro">!</span>(<span class="ident">HIMAGELIST</span>);
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">GETIMAGELIST</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">kind</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -1546,6 +1613,29 @@
 			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETEXTENDEDLISTVIEWSTYLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">style</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">mask</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// [`LVM_SETIMAGELIST`](https://docs.microsoft.com/en-us/windows/win32/controls/lvm-setimagelist)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `Option&lt;HIMAGELIST&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetImageList</span> {
+	<span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">co</span>::<span class="ident">LVSIL</span>,
+	<span class="kw">pub</span> <span class="ident">himagelist</span>: <span class="ident">HIMAGELIST</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetImageList</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HIMAGELIST</span><span class="op">&gt;</span>;
+
+	<span class="macro">fn_convert_ret_option_handle</span><span class="macro">!</span>(<span class="ident">HIMAGELIST</span>);
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co</span>::<span class="ident">LVM</span>::<span class="ident">SETIMAGELIST</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">kind</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">himagelist</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }

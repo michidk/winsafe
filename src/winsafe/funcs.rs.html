@@ -1046,6 +1046,31 @@
 <span id="1043">1043</span>
 <span id="1044">1044</span>
 <span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1083,6 +1108,7 @@
 	<span class="ident">OSVERSIONINFOEX</span>,
 	<span class="ident">POINT</span>,
 	<span class="ident">RECT</span>,
+	<span class="ident">SHFILEINFO</span>,
 	<span class="ident">SYSTEMTIME</span>,
 	<span class="ident">TIME_ZONE_INFORMATION</span>,
 	<span class="ident">TRACKMOUSEEVENT</span>,
@@ -1902,6 +1928,30 @@
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> { <span class="ident">shell32</span>::<span class="ident">Shell_NotifyIconW</span>(<span class="ident">dwMessage</span>.<span class="number">0</span>, <span class="ident">lpData</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 	)
+}
+
+<span class="doccomment">/// [`SHGetFileInfo`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetfileinfow)</span>
+<span class="doccomment">/// function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// **Note:** If you are returning an icon in the `hIcon` member of</span>
+<span class="doccomment">/// [`SHFILEINFO`](crate::SHFILEINFO), it must be paired with a</span>
+<span class="doccomment">/// [`DestroyIcon`](crate::HICON::DestroyIcon) call.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SHGetFileInfo</span>(
+	<span class="ident">pszPath</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">dwFileAttributes</span>: <span class="ident">co</span>::<span class="ident">FILE_ATTRIBUTE</span>,
+	<span class="ident">psfi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SHFILEINFO</span>, <span class="ident">uFlags</span>: <span class="ident">co</span>::<span class="ident">SHGFI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
+{
+	<span class="kw">match</span> <span class="kw">unsafe</span> {
+		<span class="ident">shell32</span>::<span class="ident">SHGetFileInfoW</span>(
+			<span class="ident">WString</span>::<span class="ident">from_str</span>(<span class="ident">pszPath</span>).<span class="ident">as_ptr</span>(),
+			<span class="ident">dwFileAttributes</span>.<span class="number">0</span>,
+			<span class="ident">psfi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">SHFILEINFO</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">uFlags</span>.<span class="number">0</span>,
+		)
+	} {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="ident">n</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>),
+	}
 }
 
 <span class="doccomment">/// [`ShowCursor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor)</span>
