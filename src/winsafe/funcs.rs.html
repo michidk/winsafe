@@ -1127,6 +1127,31 @@
 <span id="1124">1124</span>
 <span id="1125">1125</span>
 <span id="1126">1126</span>
+<span id="1127">1127</span>
+<span id="1128">1128</span>
+<span id="1129">1129</span>
+<span id="1130">1130</span>
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1166,6 +1191,8 @@
 	<span class="ident">POINT</span>,
 	<span class="ident">RECT</span>,
 	<span class="ident">SHFILEINFO</span>,
+	<span class="ident">SHFILEOPSTRUCT</span>,
+	<span class="ident">SYSTEM_INFO</span>,
 	<span class="ident">SYSTEMTIME</span>,
 	<span class="ident">TIME_ZONE_INFORMATION</span>,
 	<span class="ident">TRACKMOUSEEVENT</span>,
@@ -1591,6 +1618,12 @@
 	}
 }
 
+<span class="doccomment">/// [`GetNativeSystemInfo`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetNativeSystemInfo</span>(<span class="ident">lpSystemInfo</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SYSTEM_INFO</span>) {
+	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetNativeSystemInfo</span>(<span class="ident">lpSystemInfo</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) }
+}
+
 <span class="doccomment">/// [`GetQueueStatus`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getqueuestatus)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetQueueStatus</span>(<span class="ident">flags</span>: <span class="ident">co</span>::<span class="ident">QS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
@@ -1601,6 +1634,12 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>: <span class="ident">co</span>::<span class="ident">COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">COLORREF</span> {
 	<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32</span>::<span class="ident">GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span>) })
+}
+
+<span class="doccomment">/// [`GetSystemInfo`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemInfo</span>(<span class="ident">lpSystemInfo</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SYSTEM_INFO</span>) {
+	<span class="kw">unsafe</span> { <span class="ident">kernel32</span>::<span class="ident">GetSystemInfo</span>(<span class="ident">lpSystemInfo</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) }
 }
 
 <span class="doccomment">/// [`GetSystemMetrics`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics)</span>
@@ -2044,6 +2083,17 @@
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="ident">n</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>),
+	}
+}
+
+<span class="doccomment">/// [`SHFileOperation`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shfileoperationw)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SHFileOperation</span>(<span class="ident">lpFileOp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SHFILEOPSTRUCT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="kw">unsafe</span> {
+		<span class="ident">shell32</span>::<span class="ident">SHFileOperationW</span>(<span class="ident">lpFileOp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+	} {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 	}
 }
 

@@ -1040,6 +1040,89 @@
 <span id="1037">1037</span>
 <span id="1038">1038</span>
 <span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
+<span id="1109">1109</span>
+<span id="1110">1110</span>
+<span id="1111">1111</span>
+<span id="1112">1112</span>
+<span id="1113">1113</span>
+<span id="1114">1114</span>
+<span id="1115">1115</span>
+<span id="1116">1116</span>
+<span id="1117">1117</span>
+<span id="1118">1118</span>
+<span id="1119">1119</span>
+<span id="1120">1120</span>
+<span id="1121">1121</span>
+<span id="1122">1122</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -1050,6 +1133,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">WNDPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="ident">BOOL</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::{
 	<span class="ident">HIDWORD</span>,
 	<span class="ident">HIWORD</span>,
@@ -1073,7 +1157,7 @@
 	<span class="ident">HTHREAD</span>,
 	<span class="ident">HWND</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">CCHILDREN_TITLEBAR</span>, <span class="ident">LF_FACESIZE</span>, <span class="ident">MAX_PATH</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">privs</span>::{<span class="ident">CCHILDREN_TITLEBAR</span>, <span class="ident">LF_FACESIZE</span>, <span class="ident">MAX_PATH</span>, <span class="ident">parse_multi_z_str</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">ATOM</span>, <span class="ident">COLORREF</span>, <span class="ident">GUID</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">WString</span>;
 
@@ -1723,6 +1807,59 @@
 	<span class="macro">pub_fn_string_arr_get_set</span><span class="macro">!</span>(<span class="ident">szTypeName</span>, <span class="ident">set_szTypeName</span>);
 }
 
+<span class="doccomment">/// [`SHFILEOPSTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shfileopstructw)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SHFILEOPSTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">wFunc</span>: <span class="ident">co</span>::<span class="ident">FO</span>,
+	<span class="ident">pFrom</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// double-null terminated</span>
+	<span class="ident">pTo</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// double-null terminated</span>
+	<span class="kw">pub</span> <span class="ident">fFlags</span>: <span class="ident">co</span>::<span class="ident">FOF</span>,
+	<span class="ident">fAnyOperationsAborted</span>: <span class="ident">BOOL</span>,
+	<span class="ident">hNameMappings</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>, <span class="comment">// lots of stuff going here...</span>
+	<span class="ident">lpszProgressTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">m_pFrom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">m_pTo</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">m_lpszProgressTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">usize</span><span class="op">&gt;</span>,
+}
+
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">SHFILEOPSTRUCT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">SHFILEOPSTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
+	<span class="macro">pub_fn_bool_get_set</span><span class="macro">!</span>(<span class="ident">fAnyOperationsAborted</span>, <span class="ident">set_fAnyOperationsAborted</span>);
+
+	<span class="doccomment">/// Retrieves the `pFrom` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+ 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pFrom</span>.<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">p</span>))
+	}
+
+	<span class="doccomment">/// Sets the `pFrom` field.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** You must create the string with</span>
+	<span class="doccomment">/// [`WString::from_str_vec`](crate::WString::from_str_vec).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pFrom</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">pFrom</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">v</span>.<span class="ident">as_mut_ptr</span>() });
+	}
+
+	<span class="doccomment">/// Retrieves the `pTo` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pTo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pTo</span>.<span class="ident">as_mut</span>() }
+		  .<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">p</span>))
+	}
+
+	<span class="doccomment">/// Sets the `pTo` field.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** You must create the string with</span>
+	<span class="doccomment">/// [`WString::from_str_vec`](crate::WString::from_str_vec).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pTo</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">pTo</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">map_or</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">v</span>.<span class="ident">as_mut_ptr</span>() });
+	}
+
+	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;c</span>, <span class="ident">lpszProgressTitle</span>, <span class="ident">set_lpszProgressTitle</span>);
+}
+
 <span class="doccomment">/// [`SIZE`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-size)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
@@ -1751,8 +1888,8 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">STARTUPINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="ident">cb</span>: <span class="ident">u32</span>,
 	<span class="ident">lpReserved</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
-	<span class="kw">pub</span> <span class="ident">lpDesktop</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
-	<span class="kw">pub</span> <span class="ident">lpTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpDesktop</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">dwX</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwY</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwXSize</span>: <span class="ident">u32</span>,
@@ -1761,7 +1898,7 @@
 	<span class="kw">pub</span> <span class="ident">dwYCountChars</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwFillAttribute</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co</span>::<span class="ident">STARTF</span>,
-	<span class="kw">pub</span> <span class="ident">wShowWindow</span>: <span class="ident">u16</span>,
+	<span class="ident">wShowWindow</span>: <span class="ident">u16</span>, <span class="comment">// co::SW, should be 32-bit</span>
 	<span class="ident">cbReserved2</span>: <span class="ident">u16</span>,
 	<span class="ident">lpReserved2</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
 	<span class="kw">pub</span> <span class="ident">hStdInput</span>: <span class="ident">HPIPE</span>,
@@ -1776,6 +1913,16 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">STARTUPINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpDesktop</span>, <span class="ident">set_lpDesktop</span>);
 	<span class="macro">pub_fn_string_ptr_get_set</span><span class="macro">!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpTitle</span>, <span class="ident">set_lpTitle</span>);
+
+	<span class="doccomment">/// Returns the `wShowWindow` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wShowWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">SW</span> {
+		<span class="ident">co</span>::<span class="ident">SW</span>(<span class="self">self</span>.<span class="ident">wShowWindow</span> <span class="kw">as</span> <span class="kw">_</span>)
+	}
+
+	<span class="doccomment">/// Sets the `wShowWindow` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_wShowWindow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">co</span>::<span class="ident">SW</span>) {
+		<span class="self">self</span>.<span class="ident">wShowWindow</span> <span class="op">=</span> <span class="ident">val</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>;
+	}
 }
 
 <span class="doccomment">/// [`STYLESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-stylestruct)</span>
@@ -1810,6 +1957,25 @@
 		<span class="ident">co</span>::<span class="ident">WS_EX</span>(<span class="self">self</span>.<span class="ident">styleNew</span>)
 	}
 }
+
+<span class="doccomment">/// [`SYSTEM_INFO`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SYSTEM_INFO</span> {
+	<span class="kw">pub</span> <span class="ident">wProcessorArchitecture</span>: <span class="ident">co</span>::<span class="ident">PROCESSOR_ARCHITECTURE</span>,
+	<span class="ident">wReserved</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">dwPageSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">lpMinimumApplicationAddress</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>,
+	<span class="kw">pub</span> <span class="ident">lpMaximumApplicationAddress</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>,
+	<span class="kw">pub</span> <span class="ident">dwActiveProcessorMask</span>: <span class="ident">usize</span>,
+	<span class="kw">pub</span> <span class="ident">dwNumberOfProcessors</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">dwProcessorType</span>: <span class="ident">co</span>::<span class="ident">PROCESSOR</span>,
+	<span class="kw">pub</span> <span class="ident">dwAllocationGranularity</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">wProcessorLevel</span>: <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">wProcessorRevision</span>: <span class="ident">u16</span>,
+}
+
+<span class="macro">impl_default_zero</span><span class="macro">!</span>(<span class="ident">SYSTEM_INFO</span>);
 
 <span class="doccomment">/// [`SYSTEMTIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime)</span>
 <span class="doccomment">/// struct.</span>
