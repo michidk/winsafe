@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\events\events_wm.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>events_wm.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1260,13 +1260,13 @@
 <span id="1257">1257</span>
 <span id="1258">1258</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
+<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">func_store</span>::<span class="ident">FuncStore</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handles</span>::{<span class="ident">HDC</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::func_store::FuncStore</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HDC</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
@@ -1289,7 +1289,7 @@
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of WindowEvents</span>
 	<span class="ident">msgs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// ordinary WM messages</span>
-		<span class="ident">co</span>::<span class="ident">WM</span>,
+		<span class="ident">co::WM</span>,
 		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
 	<span class="op">&gt;</span>,
 	<span class="ident">tmrs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// WM_TIMER messages</span>
@@ -1297,24 +1297,24 @@
 		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>, <span class="comment">// return value is never meaningful</span>
 	<span class="op">&gt;</span>,
 	<span class="ident">cmds</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// WM_COMMAND notifications</span>
-		(<span class="ident">co</span>::<span class="ident">CMD</span>, <span class="ident">u16</span>), <span class="comment">// notif code, control ID</span>
+		(<span class="ident">co::CMD</span>, <span class="ident">u16</span>), <span class="comment">// notif code, control ID</span>
 		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>, <span class="comment">// return value is never meaningful</span>
 	<span class="op">&gt;</span>,
 	<span class="ident">nfys</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// WM_NOTIFY notifications</span>
-		(<span class="ident">u16</span>, <span class="ident">co</span>::<span class="ident">NM</span>), <span class="comment">// idFrom, code</span>
-		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
+		(<span class="ident">u16</span>, <span class="ident">co::NM</span>), <span class="comment">// idFrom, code</span>
+		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// return value may be meaningful</span>
 	<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">WindowEvents</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowEvents</span> {
 		<span class="self">Self</span>(
-			<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
+			<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">msgs</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
-					<span class="ident">tmrs</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
-					<span class="ident">cmds</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
-					<span class="ident">nfys</span>: <span class="ident">FuncStore</span>::<span class="ident">new</span>(),
+					<span class="ident">msgs</span>: <span class="ident">FuncStore::new</span>(),
+					<span class="ident">tmrs</span>: <span class="ident">FuncStore::new</span>(),
+					<span class="ident">cmds</span>: <span class="ident">FuncStore::new</span>(),
+					<span class="ident">nfys</span>: <span class="ident">FuncStore::new</span>(),
 				},
 			),
 		)
@@ -1332,49 +1332,49 @@
 	<span class="doccomment">/// runs if it exists, returning the result.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_effective_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span> {
 		<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Notify</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm::Notify::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> (<span class="ident">wm_nfy</span>.<span class="ident">nmhdr</span>.<span class="ident">idFrom</span>(), <span class="ident">wm_nfy</span>.<span class="ident">nmhdr</span>.<span class="ident">code</span>);
 				<span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">find</span>(<span class="ident">key</span>) {
 					<span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// we have a stored function to handle this WM_NOTIFY notification</span>
 						<span class="kw">match</span> <span class="ident">func</span>(<span class="ident">wm_nfy</span>) { <span class="comment">// execute user function</span>
-							<span class="prelude-val">Some</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">HandledWithRet</span>(<span class="ident">res</span>), <span class="comment">// meaningful return value</span>
-							<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">HandledWithoutRet</span>,
+							<span class="prelude-val">Some</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>), <span class="comment">// meaningful return value</span>
+							<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::HandledWithoutRet</span>,
 						}
 					},
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">NotHandled</span>, <span class="comment">// no stored WM_NOTIFY notification</span>
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::NotHandled</span>, <span class="comment">// no stored WM_NOTIFY notification</span>
 				}
 			},
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">COMMAND</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_cmd</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Command</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::COMMAND</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_cmd</span> <span class="op">=</span> <span class="ident">wm::Command::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">wm_cmd</span>.<span class="ident">event</span>.<span class="ident">code_id</span>();
 				<span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">find</span>(<span class="ident">key</span>) {
 					<span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// we have a stored function to handle this WM_COMMAND notification</span>
 						<span class="ident">func</span>(); <span class="comment">// execute user function</span>
-						<span class="ident">ProcessResult</span>::<span class="ident">HandledWithoutRet</span>
+						<span class="ident">ProcessResult::HandledWithoutRet</span>
 					},
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">NotHandled</span>, <span class="comment">// no stored WM_COMMAND notification</span>
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::NotHandled</span>, <span class="comment">// no stored WM_COMMAND notification</span>
 				}
 			},
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">TIMER</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_tmr</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Timer</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::TIMER</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_tmr</span> <span class="op">=</span> <span class="ident">wm::Timer::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">tmrs</span>.<span class="ident">find</span>(<span class="ident">wm_tmr</span>.<span class="ident">timer_id</span>) {
 					<span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// we have a stored function to handle this WM_TIMER message</span>
 						<span class="ident">func</span>(); <span class="comment">// execute user function</span>
-						<span class="ident">ProcessResult</span>::<span class="ident">HandledWithoutRet</span>
+						<span class="ident">ProcessResult::HandledWithoutRet</span>
 					},
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">NotHandled</span>, <span class="comment">// no stored WM_TIMER message</span>
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::NotHandled</span>, <span class="comment">// no stored WM_TIMER message</span>
 				}
 			}
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// any other message</span>
 				<span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">msgs</span>.<span class="ident">find</span>(<span class="ident">wm_any</span>.<span class="ident">msg_id</span>) {
 					<span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// we have a stored function to handle this message</span>
 						<span class="kw">match</span> <span class="ident">func</span>(<span class="ident">wm_any</span>) { <span class="comment">// execute user function</span>
-							<span class="prelude-val">Some</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">HandledWithRet</span>(<span class="ident">res</span>), <span class="comment">// meaningful return value</span>
-							<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">HandledWithoutRet</span>,
+							<span class="prelude-val">Some</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>), <span class="comment">// meaningful return value</span>
+							<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::HandledWithoutRet</span>,
 						}
 					},
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult</span>::<span class="ident">NotHandled</span>, <span class="comment">// no stored function</span>
+					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ProcessResult::NotHandled</span>, <span class="comment">// no stored function</span>
 				}
 			},
 		}
@@ -1384,22 +1384,22 @@
 	<span class="doccomment">/// them, discarding the results.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_all_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) {
 		<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Notify</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm::Notify::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> (<span class="ident">wm_nfy</span>.<span class="ident">nmhdr</span>.<span class="ident">idFrom</span>(), <span class="ident">wm_nfy</span>.<span class="ident">nmhdr</span>.<span class="ident">code</span>);
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">find_all</span>(<span class="ident">key</span>, <span class="op">|</span><span class="ident">func</span><span class="op">|</span> {
 					<span class="ident">func</span>(<span class="ident">wm_nfy</span>);
 				});
 			},
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">COMMAND</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_cmd</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Command</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::COMMAND</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_cmd</span> <span class="op">=</span> <span class="ident">wm::Command::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">wm_cmd</span>.<span class="ident">event</span>.<span class="ident">code_id</span>();
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">find_all</span>(<span class="ident">key</span>, <span class="op">|</span><span class="ident">func</span><span class="op">|</span> {
 					<span class="ident">func</span>();
 				});
 			},
-			<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">TIMER</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">wm_tmr</span> <span class="op">=</span> <span class="ident">wm</span>::<span class="ident">Timer</span>::<span class="ident">from_generic_wm</span>(<span class="ident">wm_any</span>);
+			<span class="ident">co::WM::TIMER</span> <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">wm_tmr</span> <span class="op">=</span> <span class="ident">wm::Timer::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">tmrs</span>.<span class="ident">find_all</span>(<span class="ident">wm_tmr</span>.<span class="ident">timer_id</span>, <span class="op">|</span><span class="ident">func</span><span class="op">|</span> {
 					<span class="ident">func</span>();
 				});
@@ -1413,17 +1413,17 @@
 	}
 
 	<span class="doccomment">/// Raw add message.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co</span>::<span class="ident">WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">msgs</span>.<span class="ident">insert</span>(<span class="ident">ident</span>, <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">msgs</span>.<span class="ident">insert</span>(<span class="ident">ident</span>, <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// Raw add notification.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">insert</span>((<span class="ident">id_from</span>, <span class="ident">code</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">insert</span>((<span class="ident">id_from</span>, <span class="ident">code</span>), <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// Event to any [window message](crate::co::WM).</span>
@@ -1452,7 +1452,7 @@
 	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co</span>::<span class="ident">WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">ident</span>, {
@@ -1468,7 +1468,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_timer</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">timer_id</span>: <span class="ident">u32</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">tmrs</span>.<span class="ident">insert</span>(<span class="ident">timer_id</span>, <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">tmrs</span>.<span class="ident">insert</span>(<span class="ident">timer_id</span>, <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// [`WM_COMMAND`](crate::msg::wm::Command) message, for specific code and</span>
@@ -1482,10 +1482,10 @@
 	<span class="doccomment">/// specific command notifications, which will give you the correct message</span>
 	<span class="doccomment">/// parameters. This generic method should be used when you have a custom,</span>
 	<span class="doccomment">/// non-standard window notification.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">CMD</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">co::CMD</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">insert</span>((<span class="ident">code</span>, <span class="ident">ctrl_id</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">cmds</span>.<span class="ident">insert</span>((<span class="ident">code</span>, <span class="ident">ctrl_id</span>), <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// [`WM_COMMAND`](crate::msg::wm::Command) message, handling both</span>
@@ -1513,14 +1513,14 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command_accel_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(<span class="ident">func</span>));
+		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(<span class="ident">func</span>));
 
-		<span class="self">self</span>.<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Menu</span>, <span class="ident">ctrl_id</span>, {
+		<span class="self">self</span>.<span class="ident">wm_command</span>(<span class="ident">co::CMD::Menu</span>, <span class="ident">ctrl_id</span>, {
 			<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
 		});
 
-		<span class="self">self</span>.<span class="ident">wm_command</span>(<span class="ident">co</span>::<span class="ident">CMD</span>::<span class="ident">Accelerator</span>, <span class="ident">ctrl_id</span>, {
+		<span class="self">self</span>.<span class="ident">wm_command</span>(<span class="ident">co::CMD::Accelerator</span>, <span class="ident">ctrl_id</span>, {
 			<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
 		});
@@ -1537,8 +1537,8 @@
 	<span class="doccomment">/// specific notifications, which will give you the correct notification</span>
 	<span class="doccomment">/// struct. This generic method should be used when you have a custom,</span>
 	<span class="doccomment">/// non-standard window notification.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_notify</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">i32</span>, <span class="ident">code</span>: <span class="ident">co</span>::<span class="ident">NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_notify</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">i32</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_nfy</span>(<span class="ident">id_from</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">code</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
@@ -1546,7 +1546,7 @@
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_activate</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ACTIVATE</span>, <span class="ident">wm</span>::<span class="ident">Activate</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_activate</span>, <span class="ident">co::WM::ACTIVATE</span>, <span class="ident">wm::Activate</span>,
 		<span class="doccomment">/// [`WM_ACTIVATE`](crate::msg::wm::Activate) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to both the window being activated and the window being</span>
@@ -1564,7 +1564,7 @@
 		<span class="doccomment">/// * non-dialog [`WindowMain`](crate::gui::WindowMain).</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_activate_app</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ACTIVATEAPP</span>, <span class="ident">wm</span>::<span class="ident">ActivateApp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_activate_app</span>, <span class="ident">co::WM::ACTIVATEAPP</span>, <span class="ident">wm::ActivateApp</span>,
 		<span class="doccomment">/// [`WM_ACTIVATEAPP`](crate::msg::wm::ActivateApp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when a window belonging to a different application than the</span>
@@ -1579,15 +1579,15 @@
 	<span class="doccomment">/// for example, by clicking an application command button using the mouse</span>
 	<span class="doccomment">/// or typing an application command key on the keyboard.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_app_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">AppCommand</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::AppCommand</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">APPCOMMAND</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::APPCOMMAND</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">AppCommand</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">Some</span>(<span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="ident">wm::AppCommand::from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">Some</span>(<span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span>) }
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_cancel_mode</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CANCELMODE</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_cancel_mode</span>, <span class="ident">co::WM::CANCELMODE</span>,
 		<span class="doccomment">/// [`WM_CANCELMODE`](crate::msg::wm::CancelMode) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to cancel certain modes, such as mouse capture. For example,</span>
@@ -1599,7 +1599,7 @@
 		<span class="doccomment">/// message when disabling the specified window.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_char</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CHAR</span>, <span class="ident">wm</span>::<span class="ident">Char</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_char</span>, <span class="ident">co::WM::CHAR</span>, <span class="ident">wm::Char</span>,
 		<span class="doccomment">/// [`WM_CHAR`](crate::msg::wm::Char) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when a</span>
@@ -1609,14 +1609,14 @@
 		<span class="doccomment">/// pressed.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_child_activate</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CHILDACTIVATE</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_child_activate</span>, <span class="ident">co::WM::CHILDACTIVATE</span>,
 		<span class="doccomment">/// [`WM_CHILDACTIVATE`](crate::msg::wm::ChildActivate) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a child window when the user clicks the window&#39;s title bar</span>
 		<span class="doccomment">/// or when the window is activated, moved, or sized.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_close</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CLOSE</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_close</span>, <span class="ident">co::WM::CLOSE</span>,
 		<span class="doccomment">/// [`WM_CLOSE`](crate::msg::wm::Close) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent as a signal that a window or an application should terminate.</span>
@@ -1630,7 +1630,7 @@
 		<span class="doccomment">/// * non-dialog [`WindowModal`](crate::gui::WindowModal).</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_context_menu</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CONTEXTMENU</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_context_menu</span>, <span class="ident">co::WM::CONTEXTMENU</span>,
 		<span class="doccomment">/// [`WM_CONTEXTMENU`](crate::msg::wm::ContextMenu) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Notifies a window that the user desires a context menu to appear.</span>
@@ -1670,11 +1670,11 @@
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_create</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">Create</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::Create</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CREATE</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CREATE</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">Create</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::Create::from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1685,11 +1685,11 @@
 	<span class="doccomment">/// However, only owner-drawn buttons respond to the parent window</span>
 	<span class="doccomment">/// processing this message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_btn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorBtn</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorBtn</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORBTN</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORBTN</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorBtn</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorBtn::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1699,11 +1699,11 @@
 	<span class="doccomment">/// responding to this message, the dialog box can set its text and</span>
 	<span class="doccomment">/// background colors using the specified display device context handle.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_dlg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorDlg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorDlg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORDLG</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORDLG</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorDlg</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorDlg::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1714,11 +1714,11 @@
 	<span class="doccomment">/// to this message, the parent window can use the specified device context</span>
 	<span class="doccomment">/// handle to set the text and background colors of the edit control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_edit</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorEdit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorEdit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLOREDIT</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLOREDIT</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorEdit</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorEdit::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1729,11 +1729,11 @@
 	<span class="doccomment">/// and background colors of the list box by using the specified display</span>
 	<span class="doccomment">/// device context handle.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_list_box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorListBox</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorListBox</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORLISTBOX</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORLISTBOX</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorListBox</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorListBox::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1744,11 +1744,11 @@
 	<span class="doccomment">/// use the display context handle to set the background color of the scroll</span>
 	<span class="doccomment">/// bar control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_scroll_bar</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorScrollBar</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorScrollBar</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSCROLLBAR</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORSCROLLBAR</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorScrollBar</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorScrollBar::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
@@ -1760,15 +1760,15 @@
 	<span class="doccomment">/// specified device context handle to set the text foreground and</span>
 	<span class="doccomment">/// background colors of the static control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_static</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">CtlColorStatic</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::CtlColorStatic</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">CTLCOLORSTATIC</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORSTATIC</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">CtlColorStatic</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorStatic::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_dead_char</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">DEADCHAR</span>, <span class="ident">wm</span>::<span class="ident">DeadChar</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_dead_char</span>, <span class="ident">co::WM::DEADCHAR</span>, <span class="ident">wm::DeadChar</span>,
 		<span class="doccomment">/// [`WM_DEADCHAR`](crate::msg::wm::DeadChar) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when a</span>
@@ -1782,7 +1782,7 @@
 		<span class="doccomment">/// typing the O key.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_destroy</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">DESTROY</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_destroy</span>, <span class="ident">co::WM::DESTROY</span>,
 		<span class="doccomment">/// [`WM_DESTROY`](crate::msg::wm::Destroy) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when a window is being destroyed. It is sent to the window</span>
@@ -1807,14 +1807,14 @@
 		<span class="doccomment">/// ```</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_drop_files</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">DROPFILES</span>, <span class="ident">wm</span>::<span class="ident">DropFiles</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_drop_files</span>, <span class="ident">co::WM::DROPFILES</span>, <span class="ident">wm::DropFiles</span>,
 		<span class="doccomment">/// [`WM_DROPFILES`](crate::msg::wm::DropFiles) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when the user drops a file on the window of an application that</span>
 		<span class="doccomment">/// has registered itself as a recipient of dropped files.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_enable</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENABLE</span>, <span class="ident">wm</span>::<span class="ident">Enable</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_enable</span>, <span class="ident">co::WM::ENABLE</span>, <span class="ident">wm::Enable</span>,
 		<span class="doccomment">/// [`WM_ENABLE`](crate::msg::wm::Enable) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when an application changes the enabled state of a window. It</span>
@@ -1825,7 +1825,7 @@
 		<span class="doccomment">/// has changed.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_end_session</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENDSESSION</span>, <span class="ident">wm</span>::<span class="ident">EndSession</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_end_session</span>, <span class="ident">co::WM::ENDSESSION</span>, <span class="ident">wm::EndSession</span>,
 		<span class="doccomment">/// [`WM_ENDSESSION`](crate::msg::wm::EndSession) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to an application after the system processes the results of the</span>
@@ -1834,7 +1834,7 @@
 		<span class="doccomment">/// session is ending.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_enter_idle</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENTERIDLE</span>, <span class="ident">wm</span>::<span class="ident">EnterIdle</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_enter_idle</span>, <span class="ident">co::WM::ENTERIDLE</span>, <span class="ident">wm::EnterIdle</span>,
 		<span class="doccomment">/// [`WM_ENTERIDLE`](crate::msg::wm::EnterIdle) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to the owner window of a modal dialog box or menu that is</span>
@@ -1843,14 +1843,14 @@
 		<span class="doccomment">/// processed one or more previous messages.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_enter_menu_loop</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENTERMENULOOP</span>, <span class="ident">wm</span>::<span class="ident">EnterMenuLoop</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_enter_menu_loop</span>, <span class="ident">co::WM::ENTERMENULOOP</span>, <span class="ident">wm::EnterMenuLoop</span>,
 		<span class="doccomment">/// [`WM_ENTERMENULOOP`](crate::msg::wm::EnterMenuLoop) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Notifies an application&#39;s main window procedure that a menu modal</span>
 		<span class="doccomment">/// loop has been entered.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_enter_size_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ENTERSIZEMOVE</span>, <span class="ident">wm</span>::<span class="ident">EnterSizeMove</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_enter_size_move</span>, <span class="ident">co::WM::ENTERSIZEMOVE</span>, <span class="ident">wm::EnterSizeMove</span>,
 		<span class="doccomment">/// [`WM_ENTERSIZEMOVE`](crate::msg::wm::EnterSizeMove) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent one time to a window after it enters the moving or sizing modal</span>
@@ -1873,22 +1873,22 @@
 	<span class="doccomment">/// window is resized). The message is sent to prepare an invalidated</span>
 	<span class="doccomment">/// portion of a window for painting.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_erase_bkgnd</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">EraseBkgnd</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::EraseBkgnd</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">ERASEBKGND</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::ERASEBKGND</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">EraseBkgnd</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::EraseBkgnd::from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_exit_menu_loop</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">EXITMENULOOP</span>, <span class="ident">wm</span>::<span class="ident">ExitMenuLoop</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_exit_menu_loop</span>, <span class="ident">co::WM::EXITMENULOOP</span>, <span class="ident">wm::ExitMenuLoop</span>,
 		<span class="doccomment">/// [`WM_EXITMENULOOP`](crate::msg::wm::ExitMenuLoop) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Notifies an application&#39;s main window procedure that a menu modal</span>
 		<span class="doccomment">/// loop has been exited.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_exit_size_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">EXITSIZEMOVE</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_exit_size_move</span>, <span class="ident">co::WM::EXITSIZEMOVE</span>,
 		<span class="doccomment">/// [`WM_EXITSIZEMOVE`](crate::msg::wm::ExitSizeMove) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent one time to a window, after it has exited the moving or sizing</span>
@@ -1908,7 +1908,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_font</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HFONT</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">GETFONT</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::GETFONT</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>())
 		});
@@ -1920,13 +1920,13 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_h_menu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MN_GETHMENU</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::MN_GETHMENU</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>())
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_get_min_max_info</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">GETMINMAXINFO</span>, <span class="ident">wm</span>::<span class="ident">GetMinMaxInfo</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_get_min_max_info</span>, <span class="ident">co::WM::GETMINMAXINFO</span>, <span class="ident">wm::GetMinMaxInfo</span>,
 		<span class="doccomment">/// [`WM_GETMINMAXINFO`](crate::msg::wm::GetMinMaxInfo) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when the size or position of the window is about to</span>
@@ -1935,19 +1935,19 @@
 		<span class="doccomment">/// maximum tracking size.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_get_title_bar_info_ex</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">GETTITLEBARINFOEX</span>, <span class="ident">wm</span>::<span class="ident">GetTitleBarInfoEx</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_get_title_bar_info_ex</span>, <span class="ident">co::WM::GETTITLEBARINFOEX</span>, <span class="ident">wm::GetTitleBarInfoEx</span>,
 		<span class="doccomment">/// [`WM_GETTITLEBARINFOEX`](crate::msg::wm::GetTitleBarInfoEx) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to request extended title bar information.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_help</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">HELP</span>, <span class="ident">wm</span>::<span class="ident">Help</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_help</span>, <span class="ident">co::WM::HELP</span>, <span class="ident">wm::Help</span>,
 		<span class="doccomment">/// [`WM_HELP`](crate::msg::wm::Help) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Indicates that the user pressed the F1 key.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_h_scroll</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">HSCROLL</span>, <span class="ident">wm</span>::<span class="ident">HScroll</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_h_scroll</span>, <span class="ident">co::WM::HSCROLL</span>, <span class="ident">wm::HScroll</span>,
 		<span class="doccomment">/// [`WM_HSCROLL`](crate::msg::wm::HScroll) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The WM_HSCROLL message is sent to a window when a scroll event</span>
@@ -1956,7 +1956,7 @@
 		<span class="doccomment">/// scroll event occurs in the control.</span>
 	}
 
-	<span class="macro">pub_fn_wm_retbool_param</span><span class="macro">!</span> { <span class="ident">wm_init_dialog</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">INITDIALOG</span>, <span class="ident">wm</span>::<span class="ident">InitDialog</span>,
+	<span class="macro">pub_fn_wm_retbool_param!</span> { <span class="ident">wm_init_dialog</span>, <span class="ident">co::WM::INITDIALOG</span>, <span class="ident">wm::InitDialog</span>,
 		<span class="doccomment">/// [`WM_INITDIALOG`](crate::msg::wm::InitDialog) message, sent only to</span>
 		<span class="doccomment">/// dialog windows. Non-dialog windows receive</span>
 		<span class="doccomment">/// [`WM_CREATE`](crate::gui::events::WindowEvents::wm_create) instead.</span>
@@ -1983,7 +1983,7 @@
 		<span class="doccomment">/// ```</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_init_menu_popup</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">INITMENUPOPUP</span>, <span class="ident">wm</span>::<span class="ident">InitMenuPopup</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_init_menu_popup</span>, <span class="ident">co::WM::INITMENUPOPUP</span>, <span class="ident">wm::InitMenuPopup</span>,
 		<span class="doccomment">/// [`WM_INITMENUPOPUP`](crate::msg::wm::InitMenuPopup) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when a drop-down menu or submenu is about to become active.</span>
@@ -1991,7 +1991,7 @@
 		<span class="doccomment">/// displayed, without changing the entire menu.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_key_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KEYDOWN</span>, <span class="ident">wm</span>::<span class="ident">KeyDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_key_down</span>, <span class="ident">co::WM::KEYDOWN</span>, <span class="ident">wm::KeyDown</span>,
 		<span class="doccomment">/// [`WM_KEYDOWN`](crate::msg::wm::KeyDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when a nonsystem key is</span>
@@ -1999,7 +1999,7 @@
 		<span class="doccomment">/// is not pressed.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_key_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KEYUP</span>, <span class="ident">wm</span>::<span class="ident">KeyUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_key_up</span>, <span class="ident">co::WM::KEYUP</span>, <span class="ident">wm::KeyUp</span>,
 		<span class="doccomment">/// [`WM_KEYUP`](crate::msg::wm::KeyUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when a nonsystem key is</span>
@@ -2008,13 +2008,13 @@
 		<span class="doccomment">/// the keyboard focus.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_kill_focus</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">KILLFOCUS</span>, <span class="ident">wm</span>::<span class="ident">KillFocus</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_kill_focus</span>, <span class="ident">co::WM::KILLFOCUS</span>, <span class="ident">wm::KillFocus</span>,
 		<span class="doccomment">/// [`WM_KILLFOCUS`](crate::msg::wm::KillFocus) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window immediately before it loses the keyboard focus.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_l_button_dbl_clk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONDBLCLK</span>, <span class="ident">wm</span>::<span class="ident">LButtonDblClk</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_l_button_dbl_clk</span>, <span class="ident">co::WM::LBUTTONDBLCLK</span>, <span class="ident">wm::LButtonDblClk</span>,
 		<span class="doccomment">/// [`WM_LBUTTONDBLCLK`](crate::msg::wm::LButtonDblClk) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user double-clicks the left mouse button while the</span>
@@ -2024,7 +2024,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_l_button_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONDOWN</span>, <span class="ident">wm</span>::<span class="ident">LButtonDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_l_button_down</span>, <span class="ident">co::WM::LBUTTONDOWN</span>, <span class="ident">wm::LButtonDown</span>,
 		<span class="doccomment">/// [`WM_LBUTTONDOWN`](crate::msg::wm::LButtonDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user presses the left mouse button while the cursor</span>
@@ -2048,7 +2048,7 @@
 		<span class="doccomment">/// ```</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_l_button_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">LBUTTONUP</span>, <span class="ident">wm</span>::<span class="ident">LButtonUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_l_button_up</span>, <span class="ident">co::WM::LBUTTONUP</span>, <span class="ident">wm::LButtonUp</span>,
 		<span class="doccomment">/// [`WM_LBUTTONUP`](crate::msg::wm::LButtonUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user releases the left mouse button while the cursor</span>
@@ -2057,7 +2057,7 @@
 		<span class="doccomment">/// message is posted to the window that has captured the mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_m_button_dbl_clk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONDBLCLK</span>, <span class="ident">wm</span>::<span class="ident">MButtonDblClk</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_m_button_dbl_clk</span>, <span class="ident">co::WM::MBUTTONDBLCLK</span>, <span class="ident">wm::MButtonDblClk</span>,
 		<span class="doccomment">/// [`WM_MBUTTONDBLCLK`](crate::msg::wm::MButtonDblClk) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user double-clicks the middle mouse button while the</span>
@@ -2067,7 +2067,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_m_button_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONDOWN</span>, <span class="ident">wm</span>::<span class="ident">MButtonDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_m_button_down</span>, <span class="ident">co::WM::MBUTTONDOWN</span>, <span class="ident">wm::MButtonDown</span>,
 		<span class="doccomment">/// [`WM_MBUTTONDOWN`](crate::msg::wm::MButtonDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user presses the middle mouse button while the</span>
@@ -2077,7 +2077,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_m_button_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MBUTTONUP</span>, <span class="ident">wm</span>::<span class="ident">MButtonUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_m_button_up</span>, <span class="ident">co::WM::MBUTTONUP</span>, <span class="ident">wm::MButtonUp</span>,
 		<span class="doccomment">/// [`WM_MBUTTONUP`](crate::msg::wm::MButtonUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user releases the middle mouse button while the</span>
@@ -2087,7 +2087,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_menu_command</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MENUCOMMAND</span>, <span class="ident">wm</span>::<span class="ident">MenuCommand</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_menu_command</span>, <span class="ident">co::WM::MENUCOMMAND</span>, <span class="ident">wm::MenuCommand</span>,
 		<span class="doccomment">/// [`WM_MENUCOMMAND`](crate::msg::wm::MenuCommand) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when the user makes a selection from a menu.</span>
@@ -2098,22 +2098,22 @@
 	<span class="doccomment">/// Sent to the owner of a drag-and-drop menu when the user drags a menu</span>
 	<span class="doccomment">/// item.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_menu_drag</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">MenuDrag</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">MND</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::MenuDrag</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::MND</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MENUDRAG</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::MENUDRAG</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">MenuDrag</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::MenuDrag::from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_menu_r_button_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MENURBUTTONUP</span>, <span class="ident">wm</span>::<span class="ident">MenuRButtonUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_menu_r_button_up</span>, <span class="ident">co::WM::MENURBUTTONUP</span>, <span class="ident">wm::MenuRButtonUp</span>,
 		<span class="doccomment">/// [`WM_MENURBUTTONUP`](crate::msg::wm::MenuRButtonUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when the user releases the right mouse button while the cursor</span>
 		<span class="doccomment">/// is on a menu item.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_mouse_hover</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOUSEHOVER</span>, <span class="ident">wm</span>::<span class="ident">MouseHover</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_mouse_hover</span>, <span class="ident">co::WM::MOUSEHOVER</span>, <span class="ident">wm::MouseHover</span>,
 		<span class="doccomment">/// [`WM_MOUSEHOVER`](crate::msg::wm::MouseHover) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to a window when the cursor hovers over the client area of</span>
@@ -2121,7 +2121,7 @@
 		<span class="doccomment">/// [`TrackMouseEvent`](crate::TrackMouseEvent).</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_mouse_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOUSEMOVE</span>, <span class="ident">wm</span>::<span class="ident">MouseMove</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_mouse_move</span>, <span class="ident">co::WM::MOUSEMOVE</span>, <span class="ident">wm::MouseMove</span>,
 		<span class="doccomment">/// [`WM_MOUSEMOVE`](crate::msg::wm::MouseMove) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to a window when the cursor moves. If the mouse is not</span>
@@ -2130,13 +2130,13 @@
 		<span class="doccomment">/// captured the mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_move</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOVE</span>, <span class="ident">wm</span>::<span class="ident">Move</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_move</span>, <span class="ident">co::WM::MOVE</span>, <span class="ident">wm::Move</span>,
 		<span class="doccomment">/// [`WM_MOVE`](crate::msg::wm::Move) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent after a window has been moved.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_moving</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">MOVING</span>, <span class="ident">wm</span>::<span class="ident">Moving</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_moving</span>, <span class="ident">co::WM::MOVING</span>, <span class="ident">wm::Moving</span>,
 		<span class="doccomment">/// [`WM_MOVING`](crate::msg::wm::Moving) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window that the user is moving. By processing this</span>
@@ -2151,15 +2151,15 @@
 	<span class="doccomment">/// content of the window&#39;s client area when the size or position of the</span>
 	<span class="doccomment">/// window changes.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_nc_calc_size</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">NcCalcSize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">WVR</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::NcCalcSize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WVR</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCCALCSIZE</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::NCCALCSIZE</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcCalcSize</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::NcCalcSize::from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_retbool_param</span><span class="macro">!</span> { <span class="ident">wm_nc_create</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCCREATE</span>, <span class="ident">wm</span>::<span class="ident">NcCreate</span>,
+	<span class="macro">pub_fn_wm_retbool_param!</span> { <span class="ident">wm_nc_create</span>, <span class="ident">co::WM::NCCREATE</span>, <span class="ident">wm::NcCreate</span>,
 		<span class="doccomment">/// [`WM_NCCREATE`](crate::msg::wm::NcCreate) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent prior to the</span>
@@ -2167,7 +2167,7 @@
 		<span class="doccomment">/// a window is first created.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_nc_destroy</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCDESTROY</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_nc_destroy</span>, <span class="ident">co::WM::NCDESTROY</span>,
 		<span class="doccomment">/// [`WM_NCDESTROY`](crate::msg::wm::NcDestroy) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Notifies a window that its nonclient area is being destroyed. The</span>
@@ -2200,15 +2200,15 @@
 	<span class="doccomment">/// Otherwise, the message is sent to the window that has captured the</span>
 	<span class="doccomment">/// mouse.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_nc_hit_test</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">NcHitTest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co</span>::<span class="ident">HT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::NcHitTest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::HT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCHITTEST</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::NCHITTEST</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">NcHitTest</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::NcHitTest::from_generic_wm</span>(<span class="ident">p</span>)).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_nc_paint</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NCPAINT</span>, <span class="ident">wm</span>::<span class="ident">NcPaint</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_nc_paint</span>, <span class="ident">co::WM::NCPAINT</span>, <span class="ident">wm::NcPaint</span>,
 		<span class="doccomment">/// [`WM_NCPAINT`](crate::msg::wm::NcPaint) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when its frame must be painted.</span>
@@ -2221,21 +2221,21 @@
 		<span class="doccomment">/// * dialog [`WindowControl`](crate::gui::WindowControl).</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_next_dlg_ctl</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NEXTDLGCTL</span>, <span class="ident">wm</span>::<span class="ident">NextDlgCtl</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_next_dlg_ctl</span>, <span class="ident">co::WM::NEXTDLGCTL</span>, <span class="ident">wm::NextDlgCtl</span>,
 		<span class="doccomment">/// [`WM_NEXTDLGCTL`](crate::msg::wm::NextDlgCtl) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a dialog box procedure to set the keyboard focus to a</span>
 		<span class="doccomment">/// different control in the dialog box.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_null</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">NULL</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_null</span>, <span class="ident">co::WM::NULL</span>,
 		<span class="doccomment">/// [`WM_NULL`](crate::msg::wm::Null) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Performs no operation. An application sends the message if it wants</span>
 		<span class="doccomment">/// to post a message that the recipient window will ignore.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_paint</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">PAINT</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_paint</span>, <span class="ident">co::WM::PAINT</span>,
 		<span class="doccomment">/// [`WM_PAINT`](crate::msg::wm::Paint) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when the system or another application makes a request to paint</span>
@@ -2248,7 +2248,7 @@
 		<span class="doccomment">/// [`PeekMessage`](crate::PeekMessage) function.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_parent_notify</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">PARENTNOTIFY</span>, <span class="ident">wm</span>::<span class="ident">ParentNotify</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_parent_notify</span>, <span class="ident">co::WM::PARENTNOTIFY</span>, <span class="ident">wm::ParentNotify</span>,
 		<span class="doccomment">/// [`WM_PARENTNOTIFY`](crate::msg::wm::ParentNotify) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when a significant action occurs on a descendant</span>
@@ -2262,13 +2262,13 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_query_open</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">QUERYOPEN</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::QUERYOPEN</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>() <span class="kw">as</span> <span class="kw">_</span>)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_r_button_dbl_clk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONDBLCLK</span>, <span class="ident">wm</span>::<span class="ident">RButtonDblClk</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_r_button_dbl_clk</span>, <span class="ident">co::WM::RBUTTONDBLCLK</span>, <span class="ident">wm::RButtonDblClk</span>,
 		<span class="doccomment">/// [`WM_RBUTTONDBLCLK`](crate::msg::wm::RButtonDblClk) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user double-clicks the right mouse button while the</span>
@@ -2278,7 +2278,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_r_button_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONDOWN</span>, <span class="ident">wm</span>::<span class="ident">RButtonDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_r_button_down</span>, <span class="ident">co::WM::RBUTTONDOWN</span>, <span class="ident">wm::RButtonDown</span>,
 		<span class="doccomment">/// [`WM_RBUTTONDOWN`](crate::msg::wm::RButtonDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user presses the right mouse button while the cursor</span>
@@ -2287,7 +2287,7 @@
 		<span class="doccomment">/// message is posted to the window that has captured the mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_r_button_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">RBUTTONUP</span>, <span class="ident">wm</span>::<span class="ident">RButtonUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_r_button_up</span>, <span class="ident">co::WM::RBUTTONUP</span>, <span class="ident">wm::RButtonUp</span>,
 		<span class="doccomment">/// [`WM_RBUTTONUP`](crate::msg::wm::RButtonUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user releases the right mouse button while the</span>
@@ -2297,14 +2297,14 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_retbool_param</span><span class="macro">!</span> { <span class="ident">wm_set_cursor</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SETCURSOR</span>, <span class="ident">wm</span>::<span class="ident">SetCursor</span>,
+	<span class="macro">pub_fn_wm_retbool_param!</span> { <span class="ident">wm_set_cursor</span>, <span class="ident">co::WM::SETCURSOR</span>, <span class="ident">wm::SetCursor</span>,
 		<span class="doccomment">/// [`WM_SETCURSOR`](crate::msg::wm::SetCursor) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window if the mouse causes the cursor to move within a window</span>
 		<span class="doccomment">/// and mouse input is not captured.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_set_focus</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SETFOCUS</span>, <span class="ident">wm</span>::<span class="ident">SetFocus</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_set_focus</span>, <span class="ident">co::WM::SETFOCUS</span>, <span class="ident">wm::SetFocus</span>,
 		<span class="doccomment">/// [`WM_SETFOCUS`](crate::msg::wm::SetFocus) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window after it has gained the keyboard focus.</span>
@@ -2317,7 +2317,7 @@
 		<span class="doccomment">/// * non-dialog [`WindowModal`](crate::gui::WindowModal).</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_set_font</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SETFONT</span>, <span class="ident">wm</span>::<span class="ident">SetFont</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_set_font</span>, <span class="ident">co::WM::SETFONT</span>, <span class="ident">wm::SetFont</span>,
 		<span class="doccomment">/// [`WM_SETFONT`](crate::msg::wm::SetFont) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sets the font that a control is to use when drawing text.</span>
@@ -2329,24 +2329,24 @@
 	<span class="doccomment">/// the large icon in the Alt+TAB dialog box, and the small icon in the</span>
 	<span class="doccomment">/// window caption.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_set_icon</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm</span>::<span class="ident">SetIcon</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">wm::SetIcon</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SETICON</span>, {
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::SETICON</span>, {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(
-				<span class="ident">func</span>(<span class="ident">wm</span>::<span class="ident">SetIcon</span>::<span class="ident">from_generic_wm</span>(<span class="ident">p</span>))
+				<span class="ident">func</span>(<span class="ident">wm::SetIcon::from_generic_wm</span>(<span class="ident">p</span>))
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
 			)
 		});
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_show_window</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SHOWWINDOW</span>, <span class="ident">wm</span>::<span class="ident">ShowWindow</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_show_window</span>, <span class="ident">co::WM::SHOWWINDOW</span>, <span class="ident">wm::ShowWindow</span>,
 		<span class="doccomment">/// [`WM_SHOWWINDOW`](crate::msg::wm::ShowWindow) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when the window is about to be hidden or shown.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_size</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SIZE</span>, <span class="ident">wm</span>::<span class="ident">Size</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_size</span>, <span class="ident">co::WM::SIZE</span>, <span class="ident">wm::Size</span>,
 		<span class="doccomment">/// [`WM_SIZE`](crate::msg::wm::Size) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window after its size has changed.</span>
@@ -2371,7 +2371,7 @@
 		<span class="doccomment">/// ```</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sizing</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SIZING</span>, <span class="ident">wm</span>::<span class="ident">Sizing</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sizing</span>, <span class="ident">co::WM::SIZING</span>, <span class="ident">wm::Sizing</span>,
 		<span class="doccomment">/// [`WM_SIZING`](crate::msg::wm::Sizing) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window that the user is resizing. By processing this</span>
@@ -2379,7 +2379,7 @@
 		<span class="doccomment">/// drag rectangle and, if needed, change its size or position.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_style_changed</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">STYLECHANGED</span>, <span class="ident">wm</span>::<span class="ident">StyleChanged</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_style_changed</span>, <span class="ident">co::WM::STYLECHANGED</span>, <span class="ident">wm::StyleChanged</span>,
 		<span class="doccomment">/// [`WM_STYLECHANGED`](crate::msg::wm::StyleChanged) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window after the</span>
@@ -2387,7 +2387,7 @@
 		<span class="doccomment">/// changed one or more of the window&#39;s styles.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_style_changing</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">STYLECHANGING</span>, <span class="ident">wm</span>::<span class="ident">StyleChanging</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_style_changing</span>, <span class="ident">co::WM::STYLECHANGING</span>, <span class="ident">wm::StyleChanging</span>,
 		<span class="doccomment">/// [`WM_STYLECHANGING`](crate::msg::wm::StyleChanging) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when the</span>
@@ -2395,7 +2395,7 @@
 		<span class="doccomment">/// about to change one or more of the window&#39;s styles.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sys_char</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSCHAR</span>, <span class="ident">wm</span>::<span class="ident">SysChar</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sys_char</span>, <span class="ident">co::WM::SYSCHAR</span>, <span class="ident">wm::SysChar</span>,
 		<span class="doccomment">/// [`WM_SYSCHAR`](crate::msg::wm::SysChar) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when a</span>
@@ -2405,7 +2405,7 @@
 		<span class="doccomment">/// character key that is pressed while the ALT key is down.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sys_command</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSCOMMAND</span>, <span class="ident">wm</span>::<span class="ident">SysCommand</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sys_command</span>, <span class="ident">co::WM::SYSCOMMAND</span>, <span class="ident">wm::SysCommand</span>,
 		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::msg::wm::SysCommand) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// A window receives this message when the user chooses a command from</span>
@@ -2414,7 +2414,7 @@
 		<span class="doccomment">/// button, or close button.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sys_dead_char</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSDEADCHAR</span>, <span class="ident">wm</span>::<span class="ident">SysDeadChar</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sys_dead_char</span>, <span class="ident">co::WM::SYSDEADCHAR</span>, <span class="ident">wm::SysDeadChar</span>,
 		<span class="doccomment">/// [`WM_SYSDEADCHAR`](crate::msg::wm::SysDeadChar) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to the window with the keyboard focus when a</span>
@@ -2424,7 +2424,7 @@
 		<span class="doccomment">/// that is, a dead key that is pressed while holding down the ALT key.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sys_key_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSKEYDOWN</span>, <span class="ident">wm</span>::<span class="ident">SysKeyDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sys_key_down</span>, <span class="ident">co::WM::SYSKEYDOWN</span>, <span class="ident">wm::SysKeyDown</span>,
 		<span class="doccomment">/// [`WM_SYSKEYDOWN`](crate::msg::wm::SysKeyDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when the user presses</span>
@@ -2436,7 +2436,7 @@
 		<span class="doccomment">/// context code in the lParam parameter.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_sys_key_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">SYSKEYUP</span>, <span class="ident">wm</span>::<span class="ident">SysKeyUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_sys_key_up</span>, <span class="ident">co::WM::SYSKEYUP</span>, <span class="ident">wm::SysKeyUp</span>,
 		<span class="doccomment">/// [`WM_SYSKEYUP`](crate::msg::wm::SysKeyUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted to the window with the keyboard focus when the user releases</span>
@@ -2447,7 +2447,7 @@
 		<span class="doccomment">/// contexts by checking the context code in the lParam parameter.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0</span><span class="macro">!</span> { <span class="ident">wm_theme_changed</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">THEMECHANGED</span>,
+	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_theme_changed</span>, <span class="ident">co::WM::THEMECHANGED</span>,
 		<span class="doccomment">/// [`WM_THEMECHANGED`](crate::msg::wm::ThemeChanged) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Broadcast to every window following a theme change event. Examples</span>
@@ -2455,13 +2455,13 @@
 		<span class="doccomment">/// deactivation of a theme, or a transition from one theme to another.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_uninit_menu_popup</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">UNINITMENUPOPUP</span>, <span class="ident">wm</span>::<span class="ident">UninitMenuPopup</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_uninit_menu_popup</span>, <span class="ident">co::WM::UNINITMENUPOPUP</span>, <span class="ident">wm::UninitMenuPopup</span>,
 		<span class="doccomment">/// [`WM_UNINITMENUPOPUP`](crate::msg::wm::UninitMenuPopup) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when a drop-down menu or submenu has been destroyed.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_v_scroll</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">VSCROLL</span>, <span class="ident">wm</span>::<span class="ident">VScroll</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_v_scroll</span>, <span class="ident">co::WM::VSCROLL</span>, <span class="ident">wm::VScroll</span>,
 		<span class="doccomment">/// [`WM_VSCROLL`](crate::msg::wm::VScroll) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The WM_VSCROLL message is sent to a window when a scroll event</span>
@@ -2470,7 +2470,7 @@
 		<span class="doccomment">/// scroll event occurs in the control.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_window_pos_changed</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">WINDOWPOSCHANGED</span>, <span class="ident">wm</span>::<span class="ident">WindowPosChanged</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_window_pos_changed</span>, <span class="ident">co::WM::WINDOWPOSCHANGED</span>, <span class="ident">wm::WindowPosChanged</span>,
 		<span class="doccomment">/// [`WM_WINDOWPOSCHANGED`](crate::msg::wm::WindowPosChanged) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window whose size, position, or place in the Z order has</span>
@@ -2479,7 +2479,7 @@
 		<span class="doccomment">/// window-management function.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_window_pos_changing</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">WINDOWPOSCHANGING</span>, <span class="ident">wm</span>::<span class="ident">WindowPosChanging</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_window_pos_changing</span>, <span class="ident">co::WM::WINDOWPOSCHANGING</span>, <span class="ident">wm::WindowPosChanging</span>,
 		<span class="doccomment">/// [`WM_WINDOWPOSCHANGING`](crate::msg::wm::WindowPosChanging) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window whose size, position, or place in the Z order is</span>
@@ -2488,7 +2488,7 @@
 		<span class="doccomment">/// window-management function.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_x_button_dbl_clk</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONDBLCLK</span>, <span class="ident">wm</span>::<span class="ident">XButtonDblClk</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_x_button_dbl_clk</span>, <span class="ident">co::WM::XBUTTONDBLCLK</span>, <span class="ident">wm::XButtonDblClk</span>,
 		<span class="doccomment">/// [`WM_XBUTTONDBLCLK`](crate::msg::wm::XButtonDblClk) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user double-clicks the first or second X button</span>
@@ -2498,7 +2498,7 @@
 		<span class="doccomment">/// captured the mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_x_button_down</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONDOWN</span>, <span class="ident">wm</span>::<span class="ident">XButtonDown</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_x_button_down</span>, <span class="ident">co::WM::XBUTTONDOWN</span>, <span class="ident">wm::XButtonDown</span>,
 		<span class="doccomment">/// [`WM_XBUTTONDOWN`](crate::msg::wm::XButtonDown) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user presses the first or second X button while the</span>
@@ -2508,7 +2508,7 @@
 		<span class="doccomment">/// mouse.</span>
 	}
 
-	<span class="macro">pub_fn_wm_ret0_param</span><span class="macro">!</span> { <span class="ident">wm_x_button_up</span>, <span class="ident">co</span>::<span class="ident">WM</span>::<span class="ident">XBUTTONUP</span>, <span class="ident">wm</span>::<span class="ident">XButtonUp</span>,
+	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_x_button_up</span>, <span class="ident">co::WM::XBUTTONUP</span>, <span class="ident">wm::XButtonUp</span>,
 		<span class="doccomment">/// [`WM_XBUTTONUP`](crate::msg::wm::XButtonUp) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Posted when the user releases the first or second X button while the</span>
@@ -2519,5 +2519,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-js="../../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>

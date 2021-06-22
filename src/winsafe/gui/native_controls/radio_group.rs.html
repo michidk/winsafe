@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\native_controls\radio_group.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>radio_group.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -177,15 +177,15 @@
 <span id="174">174</span>
 <span id="175">175</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std::ops::Index</span>;
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">funcs</span>::<span class="ident">PostQuitMessage</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">events</span>::<span class="ident">RadioGroupEvents</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gui</span>::<span class="ident">very_unsafe_cell</span>::<span class="ident">VeryUnsafeCell</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::RadioGroupEvents</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 
 <span class="doccomment">/// A group of native [`RadioButton`](crate::gui::RadioButton) controls.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -202,7 +202,7 @@
 <span class="kw">impl</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
 	<span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">RadioButton</span>;
 
-	<span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Output</span> {
+	<span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span><span class="ident">::Output</span> {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>[<span class="ident">i</span>]
 	}
 }
@@ -217,29 +217,29 @@
 	<span class="doccomment">/// Panics if no options are passed.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="kw-2">&amp;</span>[<span class="ident">RadioButtonOpts</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
 		<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">is_empty</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
+			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
 
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
 
 		<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">radio_opts</span>) <span class="kw">in</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radio_opts</span> <span class="op">=</span> <span class="ident">radio_opts</span>.<span class="ident">manual_clone</span>();
 			<span class="kw">if</span> <span class="ident">idx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="comment">// first radio?</span>
-				<span class="ident">radio_opts</span>.<span class="ident">window_style</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">TABSTOP</span> <span class="op">|</span> <span class="ident">co</span>::<span class="ident">WS</span>::<span class="ident">GROUP</span>;
+				<span class="ident">radio_opts</span>.<span class="ident">window_style</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>;
 			}
 
-			<span class="kw">let</span> <span class="ident">new_radio</span> <span class="op">=</span> <span class="ident">RadioButton</span>::<span class="ident">new</span>(<span class="ident">parent</span>, <span class="ident">radio_opts</span>);
+			<span class="kw">let</span> <span class="ident">new_radio</span> <span class="op">=</span> <span class="ident">RadioButton::new</span>(<span class="ident">parent</span>, <span class="ident">radio_opts</span>);
 			<span class="ident">ctrl_ids</span>.<span class="ident">push</span>(<span class="ident">new_radio</span>.<span class="ident">ctrl_id</span>());
 			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">new_radio</span>);
 		}
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
+			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
-					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>),
+					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>),
 				},
 			)),
 		);
@@ -260,21 +260,21 @@
 	<span class="doccomment">/// Panics if no control IDs are passed.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_ids</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
 		<span class="kw">if</span> <span class="ident">ctrl_ids</span>.<span class="ident">is_empty</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
+			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
 
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">ctrl_ids</span>.<span class="ident">len</span>());
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">ctrl_ids</span>.<span class="ident">len</span>());
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
-			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">RadioButton</span>::<span class="ident">new_dlg</span>(<span class="ident">parent</span>, <span class="kw-2">*</span><span class="ident">ctrl_id</span>));
+			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">RadioButton::new_dlg</span>(<span class="ident">parent</span>, <span class="kw-2">*</span><span class="ident">ctrl_id</span>));
 		}
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VeryUnsafeCell</span>::<span class="ident">new</span>(
+			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
-					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>::<span class="ident">new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>.<span class="ident">to_vec</span>()),
+					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>.<span class="ident">to_vec</span>()),
 				},
 			)),
 		);
@@ -308,9 +308,9 @@
 		<span class="kw">let</span> <span class="ident">first_radio</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index</span>(<span class="number">0</span>);
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control is created.&quot;</span>);
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">first_radio</span>.<span class="ident">base_ref</span>().<span class="ident">parent_base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
-			<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the parent window is created.&quot;</span>);
 		}
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_events</span>
 	}
@@ -331,7 +331,7 @@
 	<span class="doccomment">///     single_radio.hwnd().SetWindowText(&quot;One&quot;).unwrap();</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">slice</span>::<span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">RadioButton</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">RadioButton</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">iter</span>()
 	}
 
@@ -353,5 +353,5 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-js="../../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>
