@@ -142,6 +142,48 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -149,7 +191,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::uxtheme</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HDC</span>, <span class="ident">HRGN</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::RECT</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">RECT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::hr_to_winresult</span>;
 
 <span class="macro">pub_struct_handle!</span> {
@@ -260,6 +302,27 @@
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pRegion</span>)
 	}
 
+	<span class="doccomment">/// [`GetThemeColor`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemecolor)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeColor</span>(<span class="self">self</span>,
+		<span class="ident">iPartId</span>: <span class="ident">co::VS_PART</span>, <span class="ident">iStateId</span>: <span class="ident">co::VS_STATE</span>,
+		<span class="ident">iPropId</span>: <span class="ident">co::TMT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">COLORREF</span><span class="op">&gt;</span>
+	{
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pColor</span> <span class="op">=</span> <span class="ident">COLORREF</span>(<span class="number">0</span>);
+
+		<span class="ident">hr_to_winresult</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">uxtheme::GetThemeColor</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">iPartId</span>.<span class="number">0</span>,
+					<span class="ident">iStateId</span>.<span class="number">0</span>,
+					<span class="ident">iPropId</span>.<span class="number">0</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pColor</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				)
+			},
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pColor</span>)
+	}
+
 	<span class="doccomment">/// [`IsAppThemed`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isappthemed)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsAppThemed</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -278,10 +341,31 @@
 		<span class="kw">unsafe</span> { <span class="ident">uxtheme::IsThemeActive</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
+	<span class="doccomment">/// [`IsThemeBackgroundPartiallyTransparent`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isthemebackgroundpartiallytransparent)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemeBackgroundPartiallyTransparent</span>(<span class="self">self</span>,
+		<span class="ident">iPartId</span>: <span class="ident">co::VS_PART</span>, <span class="ident">iStateId</span>: <span class="ident">co::VS_STATE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
+	{
+		<span class="kw">unsafe</span> {
+			<span class="ident">uxtheme::IsThemeBackgroundPartiallyTransparent</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">iPartId</span>.<span class="number">0</span>, <span class="ident">iStateId</span>.<span class="number">0</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+		}
+	}
+
 	<span class="doccomment">/// [`IsThemeDialogTextureEnabled`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isthemedialogtextureenabled)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemeDialogTextureEnabled</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> { <span class="ident">uxtheme::IsThemeDialogTextureEnabled</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	}
+
+	<span class="doccomment">/// [`IsThemePartDefined`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isthemepartdefined)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemePartDefined</span>(<span class="self">self</span>,
+		<span class="ident">iPartId</span>: <span class="ident">co::VS_PART</span>, <span class="ident">iStateId</span>: <span class="ident">co::VS_STATE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
+	{
+		<span class="kw">unsafe</span> {
+			<span class="ident">uxtheme::IsThemePartDefined</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">iPartId</span>.<span class="number">0</span>, <span class="ident">iStateId</span>.<span class="number">0</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+		}
 	}
 }
 </pre></div>

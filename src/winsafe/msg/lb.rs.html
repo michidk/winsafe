@@ -813,6 +813,8 @@
 <span id="810">810</span>
 <span id="811">811</span>
 <span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! List box control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-box-control-reference-messages),</span>
@@ -822,7 +824,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg::macros::point_to_lp</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg::macros</span>::{<span class="ident">point_to_lp</span>, <span class="ident">zero_as_err</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs</span>::{<span class="ident">LB_ERR</span>, <span class="ident">LB_ERRSPACE</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">POINT</span>, <span class="ident">RECT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::WString</span>;
@@ -1589,7 +1591,9 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetTabStops</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
-	<span class="macro">fn_convert_ret_winresult_void!</span>();
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::RetType</span> {
+		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
