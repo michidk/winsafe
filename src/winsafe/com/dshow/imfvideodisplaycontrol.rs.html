@@ -232,6 +232,9 @@
 <span id="229">229</span>
 <span id="230">230</span>
 <span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -241,6 +244,7 @@
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
+		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::co</span> <span class="kw">as</span> <span class="ident">dshowco</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::MFVideoNormalizedRect</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::vt::IMFVideoDisplayControlVT</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::funcs::CoTaskMemFree</span>;
@@ -259,8 +263,8 @@
 
 			<span class="doccomment">/// [`IMFVideoDisplayControl::GetAspectRatioMode`](https://docs.microsoft.com/en-us/windows/win32/api/evr/nf-evr-imfvideodisplaycontrol-getaspectratiomode)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAspectRatioMode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::MFVideoARMode</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">co::MFVideoARMode::None</span>;
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAspectRatioMode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">dshowco::MFVideoARMode</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">dshowco::MFVideoARMode::None</span>;
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imfvideodisplaycontrol_vt</span>().<span class="ident">GetAspectRatioMode</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -392,7 +396,9 @@
 
 			<span class="doccomment">/// [`IMFVideoDisplayControl::SetAspectRatioMode`](https://docs.microsoft.com/en-us/windows/win32/api/evr/nf-evr-imfvideodisplaycontrol-setaspectratiomode)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetAspectRatioMode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mode</span>: <span class="ident">co::MFVideoARMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetAspectRatioMode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">mode</span>: <span class="ident">dshowco::MFVideoARMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+			{
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imfvideodisplaycontrol_vt</span>().<span class="ident">SetAspectRatioMode</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,

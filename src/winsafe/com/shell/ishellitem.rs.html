@@ -130,6 +130,9 @@
 <span id="127">127</span>
 <span id="128">128</span>
 <span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -140,6 +143,7 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::CoTaskMemFree</span>;
+		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::shell::co</span> <span class="kw">as</span> <span class="ident">shellco</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::shell::vt::IShellItemVT</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::shell32</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::WString</span>;
@@ -182,7 +186,7 @@
 			<span class="doccomment">/// [`IShellItem::GetAttributes`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getattributes)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAttributes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">sfgaoMask</span>: <span class="ident">co::SFGAO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::SFGAO</span><span class="op">&gt;</span>
+				<span class="ident">sfgaoMask</span>: <span class="ident">shellco::SFGAO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">shellco::SFGAO</span><span class="op">&gt;</span>
 			{
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attrs</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
@@ -192,7 +196,7 @@
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">attrs</span>,
 					) <span class="kw">as</span> <span class="kw">_</span>,
 				) {
-					<span class="ident">co::ERROR::S_OK</span> <span class="op">|</span> <span class="ident">co::ERROR::S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::SFGAO</span>(<span class="ident">attrs</span>)),
+					<span class="ident">co::ERROR::S_OK</span> <span class="op">|</span> <span class="ident">co::ERROR::S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">shellco::SFGAO</span>(<span class="ident">attrs</span>)),
 					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 				}
 			}
@@ -209,7 +213,9 @@
 			<span class="doccomment">/// let full_path = shi.GetDisplayName(co::SIGDN::FILESYSPATH).unwrap();</span>
 			<span class="doccomment">/// println!(&quot;{}&quot;, full_path);</span>
 			<span class="doccomment">/// ```</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDisplayName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sigdnName</span>: <span class="ident">co::SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDisplayName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">sigdnName</span>: <span class="ident">shellco::SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
+			{
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pstr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ishellitem_vt</span>().<span class="ident">GetDisplayName</span>)(
