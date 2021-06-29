@@ -189,6 +189,20 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -291,6 +305,9 @@
 					)<span class="question-mark">?</span>;
 
 					<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span>{ <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
+
+					<span class="self">self</span>.<span class="ident">items</span>().<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">items</span>)<span class="question-mark">?</span>;
+					<span class="self">self</span>.<span class="ident">items</span>().<span class="ident">set_selected</span>(<span class="ident">opts</span>.<span class="ident">selected_item</span>);
 					<span class="prelude-val">Ok</span>(())
 				},
 				<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
@@ -354,6 +371,15 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to an auto-generated ID.</span>
 	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+
+	<span class="doccomment">/// Items to be added right away to the control.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to none.</span>
+	<span class="kw">pub</span> <span class="ident">items</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Index of the item initially selected. The item must exist.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to `None`.</span>
+	<span class="kw">pub</span> <span class="ident">selected_item</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ComboBoxOpts</span> {
@@ -366,6 +392,8 @@
 			<span class="ident">combo_box_style</span>: <span class="ident">co::CBS::DROPDOWNLIST</span>,
 			<span class="ident">window_style</span>: <span class="ident">co::WS::CHILD</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span> <span class="op">|</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>,
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span>,
+			<span class="ident">items</span>: <span class="ident">Vec::default</span>(),
+			<span class="ident">selected_item</span>: <span class="prelude-val">None</span>,
 		}
 	}
 }

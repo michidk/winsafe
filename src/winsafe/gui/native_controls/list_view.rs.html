@@ -350,6 +350,15 @@
 <span id="347">347</span>
 <span id="348">348</span>
 <span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -475,6 +484,8 @@
 					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">list_view_ex_style</span> <span class="op">!</span><span class="op">=</span> <span class="ident">co::LVS_EX::NONE</span> {
 						<span class="self">self</span>.<span class="ident">toggle_extended_style</span>(<span class="bool-val">true</span>, <span class="ident">opts</span>.<span class="ident">list_view_ex_style</span>);
 					}
+
+					<span class="self">self</span>.<span class="ident">columns</span>().<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">columns</span>)<span class="question-mark">?</span>;
 					<span class="prelude-val">Ok</span>(())
 				},
 				<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
@@ -667,6 +678,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to an auto-generated ID.</span>
 	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+
 	<span class="doccomment">/// Context popup menu.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This menu is shared: it must be destroyed manually after the control is</span>
@@ -675,6 +687,11 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to `None`.</span>
 	<span class="kw">pub</span> <span class="ident">context_menu</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Text and width of columns to be added right away. The columns only show</span>
+	<span class="doccomment">/// in report mode.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to none.</span>
+	<span class="kw">pub</span> <span class="ident">columns</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ListViewOpts</span> {
@@ -688,6 +705,7 @@
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span> <span class="op">|</span> <span class="ident">co::WS_EX::CLIENTEDGE</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
 			<span class="ident">context_menu</span>: <span class="prelude-val">None</span>,
+			<span class="ident">columns</span>: <span class="ident">Vec::default</span>(),
 		}
 	}
 }
