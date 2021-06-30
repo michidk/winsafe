@@ -421,6 +421,33 @@
 <span id="418">418</span>
 <span id="419">419</span>
 <span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -540,6 +567,33 @@
 	<span class="ident">Separator</span>,
 	<span class="doccomment">/// A submenu, with its entry text.</span>
 	<span class="ident">Submenu</span>(<span class="ident">HMENU</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>),
+}
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`;</span>
+<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hFooterIcon`.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HiconIdTdicon</span> {
+	<span class="doccomment">/// No icon.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// An icon handle.</span>
+	<span class="ident">Hicon</span>(<span class="ident">HICON</span>),
+	<span class="doccomment">/// A resource ID.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// A predefined icon.</span>
+	<span class="ident">Tdicon</span>(<span class="ident">co::TD_ICON</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">HiconIdTdicon</span> {
+	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="self">Self</span><span class="ident">::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
+			<span class="self">Self</span><span class="ident">::Hicon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+		}
+	}
 }
 
 <span class="doccomment">/// Variant parameter for:</span>

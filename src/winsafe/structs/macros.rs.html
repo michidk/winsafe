@@ -105,9 +105,52 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Implements `Default` trait by zeroing all members.</span>
-<span class="macro">macro_rules!</span> <span class="ident">impl_default_zero</span> {
+<span class="macro">macro_rules!</span> <span class="ident">impl_default</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">impl</span><span class="op">&lt;</span>$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>),<span class="kw-2">*</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span>$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>),<span class="kw-2">*</span><span class="op">&gt;</span> {
 			<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
@@ -142,6 +185,22 @@
 		<span class="doccomment">/// Sets the bool field.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">bool</span>) {
 			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">val</span> <span class="kw">as</span> <span class="kw">_</span>
+		}
+	};
+}
+
+<span class="doccomment">/// Implements getter and setter methods for the given resource ID field, stored</span>
+<span class="doccomment">/// as `*mut u16`.</span>
+<span class="macro">macro_rules!</span> <span class="ident">pub_fn_resource_id_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the resource ID field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="kw">as</span> <span class="kw">_</span>
+		}
+
+		<span class="doccomment">/// Sets the resource ID field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">u16</span>) {
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">val</span> <span class="kw">as</span> <span class="kw">_</span>;
 		}
 	};
 }
@@ -195,18 +254,45 @@
 	};
 }
 
-<span class="doccomment">/// Implements getter and setter methods for the given resource ID field, stored</span>
-<span class="doccomment">/// as `*mut u16`.</span>
-<span class="macro">macro_rules!</span> <span class="ident">pub_fn_resource_id_get_set</span> {
-	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-		<span class="doccomment">/// Returns the resource ID field.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
-			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="kw">as</span> <span class="kw">_</span>
+<span class="doccomment">/// Implements getter and setter methods for the given pointer member.</span>
+<span class="macro">macro_rules!</span> <span class="ident">pub_fn_ptr_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the pointer field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span> {
+			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
 		}
 
-		<span class="doccomment">/// Sets the resource ID field.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">u16</span>) {
-			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">val</span> <span class="kw">as</span> <span class="kw">_</span>;
+		<span class="doccomment">/// Sets the pointer field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">obj</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span>) {
+			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">obj</span><span class="op">|</span> <span class="ident">obj</span>);
+		}
+	};
+}
+
+<span class="doccomment">/// Implements getter and setter methods for the given array + size members,</span>
+<span class="doccomment">/// setting buffer and its size.</span>
+<span class="macro">macro_rules!</span> <span class="ident">pub_fn_array_buf_get_set</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// Returns the array field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>]<span class="op">&gt;</span> {
+			<span class="kw">unsafe</span> {
+				<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>()
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">std::slice::from_raw_parts_mut</span>(<span class="ident">p</span>, <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span> <span class="kw">as</span> <span class="kw">_</span>))
+			}
+		}
+
+		<span class="doccomment">/// Sets the array field.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>]<span class="op">&gt;</span>) {
+			<span class="kw">match</span> <span class="ident">buf</span> {
+				<span class="prelude-val">Some</span>(<span class="ident">buf</span>) <span class="op">=</span><span class="op">&gt;</span> {
+					<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">buf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>;
+					<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>;
+				},
+				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+					<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+					<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span> <span class="op">=</span> <span class="number">0</span>;
+				},
+			}
 		}
 	};
 }

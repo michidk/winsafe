@@ -1197,6 +1197,73 @@
 <span id="1194">1194</span>
 <span id="1195">1195</span>
 <span id="1196">1196</span>
+<span id="1197">1197</span>
+<span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
+<span id="1201">1201</span>
+<span id="1202">1202</span>
+<span id="1203">1203</span>
+<span id="1204">1204</span>
+<span id="1205">1205</span>
+<span id="1206">1206</span>
+<span id="1207">1207</span>
+<span id="1208">1208</span>
+<span id="1209">1209</span>
+<span id="1210">1210</span>
+<span id="1211">1211</span>
+<span id="1212">1212</span>
+<span id="1213">1213</span>
+<span id="1214">1214</span>
+<span id="1215">1215</span>
+<span id="1216">1216</span>
+<span id="1217">1217</span>
+<span id="1218">1218</span>
+<span id="1219">1219</span>
+<span id="1220">1220</span>
+<span id="1221">1221</span>
+<span id="1222">1222</span>
+<span id="1223">1223</span>
+<span id="1224">1224</span>
+<span id="1225">1225</span>
+<span id="1226">1226</span>
+<span id="1227">1227</span>
+<span id="1228">1228</span>
+<span id="1229">1229</span>
+<span id="1230">1230</span>
+<span id="1231">1231</span>
+<span id="1232">1232</span>
+<span id="1233">1233</span>
+<span id="1234">1234</span>
+<span id="1235">1235</span>
+<span id="1236">1236</span>
+<span id="1237">1237</span>
+<span id="1238">1238</span>
+<span id="1239">1239</span>
+<span id="1240">1240</span>
+<span id="1241">1241</span>
+<span id="1242">1242</span>
+<span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
+<span id="1248">1248</span>
+<span id="1249">1249</span>
+<span id="1250">1250</span>
+<span id="1251">1251</span>
+<span id="1252">1252</span>
+<span id="1253">1253</span>
+<span id="1254">1254</span>
+<span id="1255">1255</span>
+<span id="1256">1256</span>
+<span id="1257">1257</span>
+<span id="1258">1258</span>
+<span id="1259">1259</span>
+<span id="1260">1260</span>
+<span id="1261">1261</span>
+<span id="1262">1262</span>
+<span id="1263">1263</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -1204,9 +1271,9 @@
 
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">WNDPROC</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">PFTASKDIALOGCALLBACK</span>, <span class="ident">WNDPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">HiconIdTdicon</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::BOOL</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{
 	<span class="ident">HIDWORD</span>,
@@ -1287,7 +1354,7 @@
 	<span class="kw">pub</span> <span class="ident">bmBits</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">BITMAP</span>);
+<span class="macro">impl_default!</span>(<span class="ident">BITMAP</span>);
 
 <span class="doccomment">/// [`BITMAPINFO`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfo)</span>
 <span class="doccomment">/// struct.</span>
@@ -1342,24 +1409,24 @@
 	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">rgbResult</span>: <span class="ident">COLORREF</span>,
 	<span class="ident">lpCustColors</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>],
+	<span class="ident">lpCustColors_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">COLORREF</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">Flags</span>: <span class="ident">co::CC</span>,
 	<span class="kw">pub</span> <span class="ident">lCustData</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">lpfnHook</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CCHOOKPROC</span><span class="op">&gt;</span>,
 	<span class="ident">lpTemplateName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// u16 resource ID</span>
-	<span class="ident">m_lpCustColors</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">COLORREF</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">CHOOSECOLOR</span>, <span class="ident">lStructSize</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpCustColors` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpCustColors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpCustColors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lpCustColors</span>.<span class="ident">as_mut</span>() }
 	}
 
 	<span class="doccomment">/// Sets the `lpCustColors` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpCustColors</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]) {
-		<span class="self">self</span>.<span class="ident">lpCustColors</span> <span class="op">=</span> <span class="ident">buf</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpCustColors</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">lpCustColors</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">buf</span><span class="op">|</span> <span class="ident">buf</span>);
 	}
 
 	<span class="macro">pub_fn_resource_id_get_set!</span>(<span class="ident">lpTemplateName</span>, <span class="ident">set_lpTemplateName</span>);
@@ -1379,7 +1446,7 @@
 	<span class="kw">pub</span> <span class="ident">dwLocaleId</span>: <span class="ident">LCID</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">COMPAREITEMSTRUCT</span>);
+<span class="macro">impl_default!</span>(<span class="ident">COMPAREITEMSTRUCT</span>);
 
 <span class="doccomment">/// [`CREATESTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-createstructw)</span>
 <span class="doccomment">/// struct.</span>
@@ -1395,13 +1462,13 @@
 	<span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">co::WS</span>,
 	<span class="ident">lpszName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpszName_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="ident">lpszClass</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpszClass_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">dwExStyle</span>: <span class="ident">co::WS_EX</span>,
-	<span class="ident">m_lpszName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">m_lpszClass</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">CREATESTRUCT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
+<span class="macro">impl_default!</span>(<span class="ident">CREATESTRUCT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">CREATESTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpszName</span>, <span class="ident">set_lpszName</span>);
@@ -1419,7 +1486,7 @@
 	<span class="kw">pub</span> <span class="ident">itemData</span>: <span class="ident">usize</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">DELETEITEMSTRUCT</span>);
+<span class="macro">impl_default!</span>(<span class="ident">DELETEITEMSTRUCT</span>);
 
 <span class="doccomment">/// [`DRAWITEMSTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-drawitemstruct)</span>
 <span class="doccomment">/// struct.</span>
@@ -1436,7 +1503,7 @@
 	<span class="kw">pub</span> <span class="ident">itemData</span>: <span class="ident">usize</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">DRAWITEMSTRUCT</span>);
+<span class="macro">impl_default!</span>(<span class="ident">DRAWITEMSTRUCT</span>);
 
 <span class="doccomment">/// [`FILETIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime)</span>
 <span class="doccomment">/// struct.</span>
@@ -1496,7 +1563,7 @@
 	<span class="kw">pub</span> <span class="ident">lopnColor</span>: <span class="ident">COLORREF</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">LOGPEN</span>);
+<span class="macro">impl_default!</span>(<span class="ident">LOGPEN</span>);
 
 <span class="doccomment">/// [`LOGBRUSH`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-logbrush)</span>
 <span class="doccomment">/// struct.</span>
@@ -1507,7 +1574,7 @@
 	<span class="kw">pub</span> <span class="ident">lbHatch</span>: <span class="ident">usize</span>, <span class="comment">// weird field</span>
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">LOGBRUSH</span>);
+<span class="macro">impl_default!</span>(<span class="ident">LOGBRUSH</span>);
 
 <span class="doccomment">/// [`LOGFONT`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-logfontw)</span>
 <span class="doccomment">/// struct.</span>
@@ -1612,7 +1679,7 @@
 	<span class="ident">lPrivate</span>: <span class="ident">u32</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">MSG</span>);
+<span class="macro">impl_default!</span>(<span class="ident">MSG</span>);
 
 <span class="doccomment">/// [`MSLLHOOKSTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-msllhookstruct)</span>
 <span class="doccomment">/// struct.</span>
@@ -1628,26 +1695,18 @@
 
 <span class="doccomment">/// [`NCCALCSIZE_PARAMS`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nccalcsize_params)</span>
 <span class="doccomment">/// struct.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// You cannot directly instantiate this object.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NCCALCSIZE_PARAMS</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">rgrc</span>: [<span class="ident">RECT</span>; <span class="number">3</span>],
 	<span class="ident">lppos</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span>,
-	<span class="ident">m_lppos</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span>,
+	<span class="ident">lppos_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">NCCALCSIZE_PARAMS</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Returns the `lppos` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lppos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lppos</span>.<span class="ident">as_mut</span>() }
-	}
-
-	<span class="doccomment">/// Sets the `lppos` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lppos</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">lppos</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span>) {
-		<span class="self">self</span>.<span class="ident">lppos</span> <span class="op">=</span> <span class="ident">lppos</span>;
-	}
+	<span class="macro">pub_fn_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lppos</span>, <span class="ident">set_lppos</span>, <span class="ident">WINDOWPOS</span>);
 }
+
+<span class="macro">impl_default!</span>(<span class="ident">NCCALCSIZE_PARAMS</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="doccomment">/// [`NMHDR`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nmhdr)</span>
 <span class="doccomment">/// struct.</span>
@@ -1662,7 +1721,7 @@
 	<span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">co::NM</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">NMHDR</span>);
+<span class="macro">impl_default!</span>(<span class="ident">NMHDR</span>);
 
 <span class="kw">impl</span> <span class="ident">NMHDR</span> {
 	<span class="doccomment">/// `Returns the `idFrom` field, the ID of the control sending the message.</span>
@@ -1775,7 +1834,7 @@
 	<span class="kw">pub</span> <span class="ident">hEvent</span>: <span class="ident">HEVENT</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">OVERLAPPED</span>);
+<span class="macro">impl_default!</span>(<span class="ident">OVERLAPPED</span>);
 
 <span class="doccomment">/// [`PAINTSTRUCT`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-paintstruct)</span>
 <span class="doccomment">/// struct.</span>
@@ -1789,7 +1848,7 @@
 	<span class="ident">rgbReserved</span>: [<span class="ident">u8</span>; <span class="number">32</span>],
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">PAINTSTRUCT</span>);
+<span class="macro">impl_default!</span>(<span class="ident">PAINTSTRUCT</span>);
 
 <span class="doccomment">/// [`POINT`](https://docs.microsoft.com/en-us/windows/win32/api/windef/ns-windef-point)</span>
 <span class="doccomment">/// struct.</span>
@@ -1823,7 +1882,7 @@
 	<span class="kw">pub</span> <span class="ident">dwThreadId</span>: <span class="ident">u32</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">PROCESS_INFORMATION</span>);
+<span class="macro">impl_default!</span>(<span class="ident">PROCESS_INFORMATION</span>);
 
 <span class="doccomment">/// [`PROCESSENTRY32`](https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/ns-tlhelp32-processentry32w)</span>
 <span class="doccomment">/// struct.</span>
@@ -1906,22 +1965,14 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">nLength</span>: <span class="ident">u32</span>,
 	<span class="ident">lpSecurityDescriptor</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">SECURITY_DESCRIPTOR</span>,
+	<span class="ident">lpSecurityDescriptor_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SECURITY_DESCRIPTOR</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">bInheritHandle</span>: <span class="ident">i32</span>,
-	<span class="ident">m_lpSecurityDescriptor</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SECURITY_DESCRIPTOR</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">SECURITY_ATTRIBUTES</span>, <span class="ident">nLength</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Returns the `lpSecurityDescriptor` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpSecurityDescriptor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_DESCRIPTOR</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lpSecurityDescriptor</span>.<span class="ident">as_mut</span>() }
-	}
-
-	<span class="doccomment">/// Sets the `lppos` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_lpSecurityDescriptor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sd</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">SECURITY_DESCRIPTOR</span>) {
-		<span class="self">self</span>.<span class="ident">lpSecurityDescriptor</span> <span class="op">=</span> <span class="ident">sd</span>;
-	}
+	<span class="macro">pub_fn_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpSecurityDescriptor</span>, <span class="ident">set_lpSecurityDescriptor</span>, <span class="ident">SECURITY_DESCRIPTOR</span>);
 }
 
 <span class="doccomment">/// [`SECURITY_DESCRIPTOR`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-security_descriptor)</span>
@@ -1948,7 +1999,7 @@
 	<span class="ident">szTypeName</span>: [<span class="ident">u16</span>; <span class="number">80</span>],
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">SHFILEINFO</span>);
+<span class="macro">impl_default!</span>(<span class="ident">SHFILEINFO</span>);
 
 <span class="kw">impl</span> <span class="ident">SHFILEINFO</span> {
 	<span class="macro">pub_fn_string_arr_get_set!</span>(<span class="ident">szDisplayName</span>, <span class="ident">set_szDisplayName</span>);
@@ -1962,17 +2013,17 @@
 	<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span> <span class="ident">wFunc</span>: <span class="ident">co::FO</span>,
 	<span class="ident">pFrom</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// double-null terminated</span>
+	<span class="ident">pFrom_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="ident">pTo</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// double-null terminated</span>
+	<span class="ident">pTo_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">fFlags</span>: <span class="ident">co::FOF</span>,
 	<span class="ident">fAnyOperationsAborted</span>: <span class="ident">BOOL</span>,
 	<span class="ident">hNameMappings</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>, <span class="comment">// lots of stuff going here...</span>
 	<span class="ident">lpszProgressTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
-	<span class="ident">m_pFrom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">usize</span><span class="op">&gt;</span>,
-	<span class="ident">m_pTo</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">usize</span><span class="op">&gt;</span>,
-	<span class="ident">m_lpszProgressTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">lpszProgressTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">usize</span><span class="op">&gt;</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">SHFILEOPSTRUCT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>);
+<span class="macro">impl_default!</span>(<span class="ident">SHFILEOPSTRUCT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">SHFILEOPSTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
 	<span class="macro">pub_fn_bool_get_set!</span>(<span class="ident">fAnyOperationsAborted</span>, <span class="ident">set_fAnyOperationsAborted</span>);
@@ -2037,7 +2088,9 @@
 	<span class="ident">cb</span>: <span class="ident">u32</span>,
 	<span class="ident">lpReserved</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">lpDesktop</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpDesktop_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="ident">lpTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">dwX</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwY</span>: <span class="ident">u32</span>,
 	<span class="kw">pub</span> <span class="ident">dwXSize</span>: <span class="ident">u32</span>,
@@ -2052,8 +2105,6 @@
 	<span class="kw">pub</span> <span class="ident">hStdInput</span>: <span class="ident">HPIPE</span>,
 	<span class="kw">pub</span> <span class="ident">hStdOutput</span>: <span class="ident">HPIPE</span>,
 	<span class="kw">pub</span> <span class="ident">hStdError</span>: <span class="ident">HPIPE</span>,
-	<span class="ident">m_lpDesktop</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">m_lpTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">STARTUPINFO</span>, <span class="ident">cb</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
@@ -2123,7 +2174,7 @@
 	<span class="kw">pub</span> <span class="ident">wProcessorRevision</span>: <span class="ident">u16</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">SYSTEM_INFO</span>);
+<span class="macro">impl_default!</span>(<span class="ident">SYSTEM_INFO</span>);
 
 <span class="doccomment">/// [`SYSTEMTIME`](https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime)</span>
 <span class="doccomment">/// struct.</span>
@@ -2138,6 +2189,89 @@
 	<span class="kw">pub</span> <span class="ident">wMinute</span>: <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">wSecond</span>: <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">wMilliseconds</span>: <span class="ident">u16</span>,
+}
+
+<span class="doccomment">/// [`TASKDIALOG_BUTTON`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-taskdialog_button)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">nButtonID</span>: <span class="ident">i32</span>,
+	<span class="ident">pszButtonText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszButtonText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+}
+
+<span class="macro">impl_default!</span>(<span class="ident">TASKDIALOG_BUTTON</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszButtonText</span>, <span class="ident">set_pszButtonText</span>);
+}
+
+<span class="doccomment">/// [`TASKDIALOGCONFIG`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-taskdialogconfig)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>, <span class="ident">packed</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TASKDIALOGCONFIG</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span><span class="op">&gt;</span> {
+	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">hwndParent</span>: <span class="ident">HWND</span>,
+	<span class="kw">pub</span> <span class="ident">hInstance</span>: <span class="ident">HINSTANCE</span>,
+	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co::TDF</span>,
+	<span class="kw">pub</span> <span class="ident">dwCommonButtons</span>: <span class="ident">co::TDCBF</span>,
+	<span class="ident">pszWindowTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszWindowTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">hMainIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>, <span class="comment">// union: HICON, PCWSTR</span>
+	<span class="ident">pszMainInstruction</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszMainInstruction_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszContent</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszContent_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">cButtons</span>: <span class="ident">u32</span>,
+	<span class="ident">pButtons</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;d</span><span class="op">&gt;</span>,
+	<span class="ident">pButtons_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;d</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;d</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">nDefaultButton</span>: <span class="ident">i32</span>,
+	<span class="ident">cRadioButtons</span>: <span class="ident">u32</span>,
+	<span class="ident">pRadioButtons</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;e</span><span class="op">&gt;</span>,
+	<span class="ident">pRadioButtons_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;e</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;e</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">nDefaultRadioButton</span>: <span class="ident">i32</span>,
+	<span class="ident">pszVerificationText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszVerificationText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;f</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszExpandedInformation</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszExpandedInformation_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszExpandedControlText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszExpandedControlText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;h</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszCollapsedControlText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszCollapsedControlText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;i</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">hFooterIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>, <span class="comment">// union: HICON, PCWSTR</span>
+	<span class="ident">pszFooter</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszFooter_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;j</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">pfCallback</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PFTASKDIALOGCALLBACK</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">lpCallbackData</span>: <span class="ident">isize</span>,
+	<span class="kw">pub</span> <span class="ident">cxWidth</span>: <span class="ident">u32</span>,
+}
+
+<span class="macro">impl_default_with_size!</span>(<span class="ident">TASKDIALOGCONFIG</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span><span class="op">&gt;</span>
+	<span class="ident">TASKDIALOGCONFIG</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span><span class="op">&gt;</span>
+{
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszWindowTitle</span>, <span class="ident">set_pszWindowTitle</span>);
+
+	<span class="doccomment">/// Sets the `hMainIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">HiconIdTdicon</span>) {
+		<span class="self">self</span>.<span class="ident">hMainIcon</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">as_ptr</span>();
+	}
+
+	<span class="doccomment">/// Sets the `hFooterIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hMFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">HiconIdTdicon</span>) {
+		<span class="self">self</span>.<span class="ident">hFooterIcon</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">as_ptr</span>();
+	}
+
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;b</span>, <span class="ident">pszMainInstruction</span>, <span class="ident">set_pszMainInstruction</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;c</span>, <span class="ident">pszContent</span>, <span class="ident">set_pszContent</span>);
+	<span class="macro">pub_fn_array_buf_get_set!</span>(<span class="lifetime">&#39;d</span>, <span class="ident">pButtons</span>, <span class="ident">set_pButtons</span>, <span class="ident">cButtons</span>, <span class="ident">TASKDIALOG_BUTTON</span>);
+	<span class="macro">pub_fn_array_buf_get_set!</span>(<span class="lifetime">&#39;e</span>, <span class="ident">pRadioButtons</span>, <span class="ident">set_pRadioButtons</span>, <span class="ident">cRadioButtons</span>, <span class="ident">TASKDIALOG_BUTTON</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;f</span>, <span class="ident">pszVerificationText</span>, <span class="ident">set_pszVerificationText</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;g</span>, <span class="ident">pszExpandedInformation</span>, <span class="ident">set_pszExpandedInformation</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;h</span>, <span class="ident">pszExpandedControlText</span>, <span class="ident">set_pszExpandedControlText</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;i</span>, <span class="ident">pszCollapsedControlText</span>, <span class="ident">set_pszCollapsedControlText</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;j</span>, <span class="ident">pszFooter</span>, <span class="ident">set_pszFooter</span>);
 }
 
 <span class="doccomment">/// [`TEXTMETRIC`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-textmetricw)</span>
@@ -2290,7 +2424,7 @@
 	<span class="ident">cAlternateFileName</span>: [<span class="ident">u16</span>; <span class="number">14</span>],
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">WIN32_FIND_DATA</span>);
+<span class="macro">impl_default!</span>(<span class="ident">WIN32_FIND_DATA</span>);
 
 <span class="kw">impl</span> <span class="ident">WIN32_FIND_DATA</span> {
 	<span class="macro">pub_fn_string_arr_get_set!</span>(<span class="ident">cFileName</span>, <span class="ident">set_cFileName</span>);
@@ -2348,7 +2482,7 @@
 	<span class="kw">pub</span> <span class="ident">flags</span>: <span class="ident">co::SWP</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">WINDOWPOS</span>);
+<span class="macro">impl_default!</span>(<span class="ident">WINDOWPOS</span>);
 
 <span class="kw">impl</span> <span class="ident">WINDOWPOS</span> {
 	<span class="doccomment">/// Returns the `hwndInsertAfter` field.</span>
@@ -2384,8 +2518,8 @@
 	<span class="kw">pub</span> <span class="ident">hbrBackground</span>: <span class="ident">HBRUSH</span>,
 	<span class="ident">lpszMenuName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>, <span class="comment">// u16 resource ID</span>
 	<span class="ident">lpszClassName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">lpszClassName_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">hIconSm</span>: <span class="ident">HICON</span>,
-	<span class="ident">m_lpszClassName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">WNDCLASSEX</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>);

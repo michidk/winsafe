@@ -23,23 +23,6 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -51,34 +34,17 @@
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">COMDLG_FILTERSPEC</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="ident">pszName</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
-	<span class="ident">pszSpec</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
-	<span class="ident">m_pszName</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">m_pszSpec</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszName</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszName_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">pszSpec</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="ident">pszSpec_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="macro">impl_default_zero!</span>(<span class="ident">COMDLG_FILTERSPEC</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
+<span class="macro">impl_default!</span>(<span class="ident">COMDLG_FILTERSPEC</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">COMDLG_FILTERSPEC</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Returns the `pszName` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszName</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString::from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszName</span>).<span class="ident">to_string</span>()
-	}
-
-	<span class="doccomment">/// Sets the `pszName` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszName</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">WString</span>) {
-		<span class="self">self</span>.<span class="ident">pszName</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() };
-	}
-
-	<span class="doccomment">/// Returns the `pszSpec` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszSpec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="ident">WString::from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszSpec</span>).<span class="ident">to_string</span>()
-	}
-
-	<span class="doccomment">/// Sets the `pszSpec` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszSpec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">WString</span>) {
-		<span class="self">self</span>.<span class="ident">pszSpec</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() };
-	}
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszName</span>, <span class="ident">set_pszName</span>);
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;b</span>, <span class="ident">pszSpec</span>, <span class="ident">set_pszSpec</span>);
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
