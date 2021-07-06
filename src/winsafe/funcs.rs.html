@@ -1286,6 +1286,16 @@
 <span id="1283">1283</span>
 <span id="1284">1284</span>
 <span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -2086,6 +2096,8 @@
 
 <span class="doccomment">/// [`MultiByteToWideChar`](https://docs.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar)</span>
 <span class="doccomment">/// function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The resulting `Vec&lt;u16&gt;` includes a terminating null.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MultiByteToWideChar</span>(
 	<span class="ident">CodePage</span>: <span class="ident">co::CP</span>, <span class="ident">dwFlags</span>: <span class="ident">co::MBC</span>,
 	<span class="ident">lpMultiByteStr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -2102,7 +2114,8 @@
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="ident">numBytes</span> <span class="op">=</span><span class="op">&gt;</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">destBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>, <span class="ident">numBytes</span> <span class="kw">as</span> <span class="kw">_</span>];
+			<span class="kw">let</span> <span class="ident">numBytes</span> <span class="op">=</span> <span class="ident">numBytes</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>; <span class="comment">// add room for terminating null</span>
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">destBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x0000</span>; <span class="ident">numBytes</span> <span class="kw">as</span> <span class="kw">_</span>];
 
 			<span class="kw">match</span> <span class="kw">unsafe</span> {
 				<span class="ident">kernel32::MultiByteToWideChar</span>(
@@ -2115,7 +2128,10 @@
 				)
 			} {
 				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">destBuf</span>),
+				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+					<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">destBuf</span>.<span class="ident">get_unchecked_mut</span>(<span class="ident">numBytes</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">=</span> <span class="number">0x0000</span>; } <span class="comment">// terminating null</span>
+					<span class="prelude-val">Ok</span>(<span class="ident">destBuf</span>)
+				},
 			}
 		},
 	}
@@ -2263,8 +2279,8 @@
 <span class="doccomment">/// function.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// **Note:** If you are returning an icon in the `hIcon` member of</span>
-<span class="doccomment">/// [`SHFILEINFO`](crate::SHFILEINFO), it must be paired with a</span>
-<span class="doccomment">/// [`DestroyIcon`](crate::HICON::DestroyIcon) call.</span>
+<span class="doccomment">/// [`SHFILEINFO`](crate::SHFILEINFO), it must be paired with an</span>
+<span class="doccomment">/// [`HICON::DestroyIcon`](crate::HICON::DestroyIcon) call.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SHGetFileInfo</span>(
 	<span class="ident">pszPath</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">dwFileAttributes</span>: <span class="ident">co::FILE_ATTRIBUTE</span>,
 	<span class="ident">psfi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SHFILEINFO</span>, <span class="ident">uFlags</span>: <span class="ident">co::SHGFI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
@@ -2525,6 +2541,8 @@
 
 <span class="doccomment">/// [`WideCharToMultiByte`](https://docs.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte)</span>
 <span class="doccomment">/// function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The resulting `Vec&lt;u16&gt;` includes a terminating null.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WideCharToMultiByte</span>(
 	<span class="ident">CodePage</span>: <span class="ident">co::CP</span>, <span class="ident">dwFlags</span>: <span class="ident">co::WC</span>,
 	<span class="ident">lpWideCharStr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>], <span class="ident">lpDefaultChar</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
@@ -2546,7 +2564,8 @@
 	} {
 		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 		<span class="ident">numBytes</span> <span class="op">=</span><span class="op">&gt;</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">destBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">numBytes</span> <span class="kw">as</span> <span class="kw">_</span>];
+			<span class="kw">let</span> <span class="ident">numBytes</span> <span class="op">=</span> <span class="ident">numBytes</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>; <span class="comment">// add room for terminating null</span>
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">destBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x00</span>; <span class="ident">numBytes</span> <span class="kw">as</span> <span class="kw">_</span>];
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">boolBuf</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>;
 
 			<span class="kw">match</span> <span class="kw">unsafe</span> {
@@ -2556,7 +2575,7 @@
 					<span class="ident">lpWideCharStr</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">lpWideCharStr</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">destBuf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">numBytes</span>,
+					<span class="ident">numBytes</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpDefaulCharBuf</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">boolBuf</span>,
 				)
@@ -2566,6 +2585,7 @@
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lp</span>) <span class="op">=</span> <span class="ident">lpUsedDefaultChar</span> {
 						<span class="kw-2">*</span><span class="ident">lp</span> <span class="op">=</span> <span class="ident">boolBuf</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>;
 					}
+					<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">destBuf</span>.<span class="ident">get_unchecked_mut</span>(<span class="ident">numBytes</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">=</span> <span class="number">0x00</span>; } <span class="comment">// terminating null</span>
 					<span class="prelude-val">Ok</span>(<span class="ident">destBuf</span>)
 				},
 			}

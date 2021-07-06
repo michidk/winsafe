@@ -226,6 +226,7 @@
 <span id="223">223</span>
 <span id="224">224</span>
 <span id="225">225</span>
+<span id="226">226</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::cell::Cell</span>;
 <span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
@@ -425,12 +426,13 @@
 	<span class="doccomment">/// inconvenient of the manual conversion from [`WString`](crate::WString)</span>
 	<span class="doccomment">/// to `String`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">title</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
+		<span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lvc</span> <span class="op">=</span> <span class="ident">LVCOLUMN::default</span>();
 		<span class="ident">lvc</span>.<span class="ident">iSubItem</span> <span class="op">=</span> <span class="ident">column_index</span> <span class="kw">as</span> <span class="kw">_</span>;
 		<span class="ident">lvc</span>.<span class="ident">mask</span> <span class="op">=</span> <span class="ident">co::LVCF::TEXT</span>;
 
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">buf</span>;
 		<span class="ident">buf</span>.<span class="ident">realloc_buffer</span>(<span class="number">128</span>); <span class="comment">// arbitrary</span>
 		<span class="ident">lvc</span>.<span class="ident">set_pszText</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>));
 
