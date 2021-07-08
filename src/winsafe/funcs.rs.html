@@ -1296,6 +1296,27 @@
 <span id="1293">1293</span>
 <span id="1294">1294</span>
 <span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -2484,21 +2505,42 @@
 
 <span class="doccomment">/// [`VarQueryValue`](https://docs.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew)</span>
 <span class="doccomment">/// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">VarQueryValue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-	<span class="ident">pBlock</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="ident">lpSubBlock</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]<span class="op">&gt;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// **Note:** The returned reference type varies according to `lpSubBlock`. If</span>
+<span class="doccomment">/// you set it wrong, you&#39;re likely to cause a buffer overrun.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Reading version information from resource:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// use winsafe::{HINSTANCE, VS_FIXEDFILEINFO};</span>
+<span class="doccomment">/// use winsafe::{GetFileVersionInfo, VarQueryValue};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let exe_name = HINSTANCE::NULL.GetModuleFileName().unwrap();</span>
+<span class="doccomment">/// let mut res_buf = Vec::default();</span>
+<span class="doccomment">/// GetFileVersionInfo(&amp;exe_name, &amp;mut res_buf).unwrap();</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let vsffi = unsafe {</span>
+<span class="doccomment">///     VarQueryValue::&lt;VS_FIXEDFILEINFO&gt;(&amp;res_buf, &quot;\\&quot;).unwrap()</span>
+<span class="doccomment">/// };</span>
+<span class="doccomment">/// let ver = vsffi.dwFileVersion();</span>
+<span class="doccomment">/// println!(&quot;Version {}.{}.{}.{}&quot;,</span>
+<span class="doccomment">///     ver[0], ver[1], ver[2], ver[3]);</span>
+<span class="doccomment">/// ```</span>
+<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">VarQueryValue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(
+	<span class="ident">pBlock</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="ident">lpSubBlock</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span><span class="op">&gt;</span>
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lplpBuffer</span> <span class="op">=</span> <span class="ident">std::ptr::null</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">puLen</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="ident">bool_to_winresult</span>(
-		<span class="kw">unsafe</span> {
-			<span class="ident">version::VerQueryValueW</span>(
-				<span class="ident">pBlock</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">WString::from_str</span>(<span class="ident">lpSubBlock</span>).<span class="ident">as_ptr</span>(),
-				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lplpBuffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">puLen</span>,
-			)
-		},
-	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">std::slice::from_raw_parts</span>(<span class="ident">lplpBuffer</span>, <span class="ident">puLen</span> <span class="kw">as</span> <span class="kw">_</span>) })
+		<span class="ident">version::VerQueryValueW</span>(
+			<span class="ident">pBlock</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">WString::from_str</span>(<span class="ident">lpSubBlock</span>).<span class="ident">as_ptr</span>(),
+			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lplpBuffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">puLen</span>,
+		),
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lplpBuffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">T</span>))
 }
 
 <span class="doccomment">/// [`VerifyVersionInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-verifyversioninfow)</span>

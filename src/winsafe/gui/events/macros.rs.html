@@ -216,29 +216,6 @@
 <span id="213">213</span>
 <span id="214">214</span>
 <span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Declares a method for an ordinary message notification, which has no</span>
 <span class="doccomment">/// parameters and returns zero (or a non-meaningful value).</span>
@@ -249,12 +226,9 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
-			});
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, <span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> }); <span class="comment">// return value is never meaningful</span>
 		}
 	};
 }
@@ -268,12 +242,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span><span class="ident">::from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">None</span> } <span class="comment">// return value is never meaningful</span>
-			});
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span><span class="ident">::from_generic_wm</span>(<span class="ident">p</span>)); <span class="prelude-val">None</span> }); <span class="comment">// return value is never meaningful</span>
 		}
 	};
 }
@@ -287,12 +259,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span><span class="ident">::from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>)
-			});
+			<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wmconst</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">parm</span><span class="op">&gt;</span><span class="ident">::from_generic_wm</span>(<span class="ident">p</span>)) <span class="kw">as</span> <span class="kw">_</span>));
 		}
 	};
 }
@@ -334,12 +304,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>, <span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">func</span>()
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>, <span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">func</span>());
 		}
 	};
 }
@@ -354,12 +322,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> }
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">func</span>(); <span class="prelude-val">None</span> });
 		}
 	};
 }
@@ -373,12 +339,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }); <span class="prelude-val">None</span> }
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }); <span class="prelude-val">None</span> });
 		}
 	};
 }
@@ -392,12 +356,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr_mut</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }); <span class="prelude-val">None</span> }
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr_mut</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }); <span class="prelude-val">None</span> });
 		}
 	};
 }
@@ -411,12 +373,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>)
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>));
 		}
 	};
 }
@@ -430,12 +390,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr_mut</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>)
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr_mut</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>));
 		}
 	};
 }
@@ -450,12 +408,10 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>() <span class="kw">as</span> <span class="kw">_</span>)
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>() <span class="kw">as</span> <span class="kw">_</span>));
 		}
 	};
 }
@@ -469,14 +425,13 @@
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		{
-			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>, {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>;
-				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>)
-			});
+			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nfy</span>,
+				<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="kw">unsafe</span> { <span class="ident">p</span>.<span class="ident">cast_nmhdr</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span><span class="op">&gt;</span>() }) <span class="kw">as</span> <span class="kw">_</span>));
 		}
 	};
-}</pre></div>
+}
+</pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>

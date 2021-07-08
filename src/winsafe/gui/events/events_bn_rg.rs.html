@@ -195,14 +195,14 @@
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_clicked</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co::BN::CLICKED</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, {
 				<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
-				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
+				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>()
 			});
 		}
 	}
@@ -216,14 +216,14 @@
 	<span class="doccomment">/// [`BS::OWNERDRAW`](crate::co::BS::OWNERDRAW) buttons. Other button types</span>
 	<span class="doccomment">/// send only if they have the [`BS::NOTIFY`](crate::co::BS::NOTIFY) style.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_dbl_clk</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co::BN::DBLCLK</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, {
 				<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
-				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
+				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>()
 			});
 		}
 	}
@@ -235,14 +235,14 @@
 	<span class="doccomment">/// [`BS::NOTIFY`](crate::co::BS::NOTIFY) style to send this notification</span>
 	<span class="doccomment">/// code.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_kill_focus</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co::BN::KILLFOCUS</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, {
 				<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
-				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
+				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>()
 			});
 		}
 	}
@@ -254,14 +254,14 @@
 	<span class="doccomment">/// [`BS::NOTIFY`](crate::co::BS::NOTIFY) style to send this notification</span>
 	<span class="doccomment">/// code.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bn_set_focus</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(<span class="ident">func</span>));
 
 		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
 			<span class="self">self</span>.<span class="ident">parent_user_events</span>().<span class="ident">wm_command</span>(<span class="ident">co::BN::SETFOCUS</span>.<span class="ident">into</span>(), <span class="kw-2">*</span><span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, {
 				<span class="kw">let</span> <span class="ident">shared_func</span> <span class="op">=</span> <span class="ident">shared_func</span>.<span class="ident">clone</span>();
-				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>.<span class="ident">as_mut</span>()()
+				<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">shared_func</span>()
 			});
 		}
 	}
