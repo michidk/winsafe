@@ -27,37 +27,17 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">/// Declares a COM virtual table struct, and implements the `ComVT` trait.</span>
-<span class="macro">macro_rules!</span> <span class="ident">pub_struct_vtable</span> {
-	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-		<span class="op">=</span><span class="op">&gt;</span>
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>:<span class="ident">expr</span>,
-		$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">member</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">descr</span>:<span class="ident">ty</span>)<span class="op">*</span>
-	) <span class="op">=</span><span class="op">&gt;</span> {
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-		<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-		<span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			$(
-				<span class="kw">pub</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">member</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">descr</span>,
-			)<span class="op">*</span>
-		}
+<span class="doccomment">/// Implements the conversion from `PPI` to the COM type itself.</span>
+<span class="macro">macro_rules!</span> <span class="ident">impl_send_sync_fromppvt</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
 
-		<span class="kw">impl</span> <span class="kw">crate</span><span class="ident">::com::ComVT</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">const</span> <span class="ident">IID</span>: <span class="kw">crate</span><span class="ident">::structs::IID</span> <span class="op">=</span>
-				<span class="kw">crate</span><span class="ident">::structs::IID::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>);
+		<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPI</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppvt</span>: <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+				<span class="self">Self</span> { <span class="ident">ppvt</span> }
+			}
 		}
 	};
 }

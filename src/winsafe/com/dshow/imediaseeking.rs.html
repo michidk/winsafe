@@ -186,28 +186,91 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="macro">macro_rules!</span> <span class="ident">pub_struct_IMediaSeeking</span> {
-	(
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>
-	) <span class="op">=</span><span class="op">&gt;</span> {
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
+
+<span class="doccomment">/// [`IMediaSeeking`](crate::dshow::IMediaSeeking) virtual table.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMediaSeekingVT</span> {
+	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
+	<span class="kw">pub</span> <span class="ident">GetCapabilities</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">CheckCapabilities</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">IsFormatSupported</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryPreferredFormat</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetTimeFormat</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">IsUsingTimeFormat</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetTimeFormat</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetDuration</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetStopPosition</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetCurrentPosition</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ConvertTimeFormat</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>, <span class="ident">PCVOID</span>, <span class="ident">i64</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetPositions</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetPositions</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetAvailable</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetRate</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetRate</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetPreroll</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+}
+
+<span class="doccomment">/// [`IMediaSeeking`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-imediaseeking)</span>
+<span class="doccomment">/// COM interface over</span>
+<span class="doccomment">/// [`IMediaSeekingVT`](crate::dshow::vt::IMediaSeekingVT). Inherits from</span>
+<span class="doccomment">/// [`IUnknown`](crate::IUnknown).</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Automatically calls</span>
+<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+<span class="doccomment">/// when the object goes out of scope.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMediaSeeking</span> {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+}
+
+<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IMediaSeeking</span>);
+
+<span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IMediaSeeking</span> {
+	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x36b73880</span>, <span class="number">0xc2c8</span>, <span class="number">0x11cf</span>, <span class="number">0x8b46</span>, <span class="number">0x00805f6cef60</span>);
+}
+
+<span class="macro">macro_rules!</span> <span class="ident">impl_IMediaSeeking</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::co</span> <span class="kw">as</span> <span class="ident">dshowco</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::guid</span>;
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::dshow::vt::IMediaSeekingVT</span>;
 		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::GUID</span>;
-
-		<span class="macro">pub_struct_IUnknown!</span> {
-			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
-		}
 
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">imediaseeking_vt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">IMediaSeekingVT</span> {
-				<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>) }
+				<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) }
 			}
 
 			<span class="doccomment">/// [`IMediaSeeking::ConvertTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-converttimeformat)</span>
@@ -361,17 +424,8 @@
 	};
 }
 
-<span class="macro">pub_struct_IMediaSeeking!</span> {
-	<span class="doccomment">/// [`IMediaSeeking`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-imediaseeking)</span>
-	<span class="doccomment">/// COM interface over</span>
-	<span class="doccomment">/// [`IMediaSeekingVT`](crate::dshow::vt::IMediaSeekingVT). Inherits from</span>
-	<span class="doccomment">/// [`IUnknown`](crate::IUnknown).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Automatically calls</span>
-	<span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-	<span class="doccomment">/// when the object goes out of scope.</span>
-	<span class="ident">IMediaSeeking</span>, <span class="kw">crate</span><span class="ident">::com::dshow::vt::IMediaSeekingVT</span>
-}
+<span class="macro">impl_IUnknown!</span>(<span class="ident">IMediaSeeking</span>, <span class="ident">IMediaSeekingVT</span>);
+<span class="macro">impl_IMediaSeeking!</span>(<span class="ident">IMediaSeeking</span>, <span class="ident">IMediaSeekingVT</span>);
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
     <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script></body></html>

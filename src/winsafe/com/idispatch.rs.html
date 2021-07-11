@@ -58,26 +58,64 @@
 <span id="55">55</span>
 <span id="56">56</span>
 <span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="macro">macro_rules!</span> <span class="ident">pub_struct_IDispatch</span> {
-	(
-		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>
-	) <span class="op">=</span><span class="op">&gt;</span> {
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::ITypeInfo</span>;
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::vt</span>::{<span class="ident">IDispatchVT</span>, <span class="ident">ITypeInfoVT</span>};
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::LCID</span>;
+<span class="comment">// use crate::com::itypeinfo::ITypeInfoVT;</span>
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
-		<span class="macro">pub_struct_IUnknown!</span> {
-			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>
-		}
+<span class="doccomment">/// [`IDispatch`](crate::IDispatch) virtual table.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IDispatchVT</span> {
+	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
+	<span class="kw">pub</span> <span class="ident">GetTypeInfoCount</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetTypeInfo</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetIDsOfNames</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Invoke</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">i32</span>, <span class="ident">PCVOID</span>, <span class="ident">u32</span>, <span class="ident">u16</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+}
+
+<span class="doccomment">/// [`IDispatch`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nn-oaidl-idispatch)</span>
+<span class="doccomment">/// COM interface over [`IDispatchVT`](crate::IDispatchVT). Inherits from</span>
+<span class="doccomment">/// [`IUnknown`](crate::IUnknown).</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Automatically calls</span>
+<span class="doccomment">/// [`Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
+<span class="doccomment">/// when the object goes out of scope.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IDispatch</span> {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+}
+
+<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IDispatch</span>);
+
+<span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IDispatch</span> {
+	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x00020400</span>, <span class="number">0x0000</span>, <span class="number">0x0000</span>, <span class="number">0xc000</span>, <span class="number">0x000000000046</span>);
+}
+
+<span class="macro">macro_rules!</span> <span class="ident">impl_IDispatch</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::ITypeInfo</span>;
+		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::LCID</span>;
 
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">idispatch_vt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">IDispatchVT</span> {
-				<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>) }
+				<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) }
 			}
 
 			<span class="doccomment">/// [`IDispatch::GetTypeInfoCount`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-gettypeinfocount)</span>
@@ -92,7 +130,7 @@
 			<span class="doccomment">/// [`IDispatch::GetTypeInfo`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-gettypeinfo)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTypeInfo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iTInfo</span>: <span class="ident">u32</span>, <span class="ident">lcid</span>: <span class="ident">LCID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ITypeInfo</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPComVT</span><span class="op">&lt;</span><span class="ident">ITypeInfoVT</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">idispatch_vt</span>().<span class="ident">GetTypeInfo</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -106,16 +144,8 @@
 	};
 }
 
-<span class="macro">pub_struct_IDispatch!</span> {
-	<span class="doccomment">/// [`IDispatch`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nn-oaidl-idispatch)</span>
-	<span class="doccomment">/// COM interface over [`IDispatchVT`](crate::IDispatchVT). Inherits from</span>
-	<span class="doccomment">/// [`IUnknown`](crate::IUnknown).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Automatically calls</span>
-	<span class="doccomment">/// [`Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
-	<span class="doccomment">/// when the object goes out of scope.</span>
-	<span class="ident">IDispatch</span>, <span class="kw">crate</span><span class="ident">::com::vt::IDispatchVT</span>
-}
+<span class="macro">impl_IUnknown!</span>(<span class="ident">IDispatch</span>, <span class="ident">IDispatchVT</span>);
+<span class="macro">impl_IDispatch!</span>(<span class="ident">IDispatch</span>, <span class="ident">IDispatchVT</span>);
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
