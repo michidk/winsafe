@@ -35,6 +35,14 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -66,6 +74,14 @@
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreatePenIndirect</span>(<span class="ident">plpen</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LOGPEN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreatePenIndirect</span>(<span class="ident">plpen</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+	}
+
+	<span class="doccomment">/// [`GetStockObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getstockobject)</span>
+	<span class="doccomment">/// static method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetStockObject</span>(<span class="ident">i</span>: <span class="ident">co::STOCK_PEN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">gdi32::GetStockObject</span>(<span class="ident">i</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
