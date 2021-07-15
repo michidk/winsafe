@@ -495,6 +495,23 @@
 <span id="492">492</span>
 <span id="493">493</span>
 <span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -543,19 +560,20 @@
 <span class="doccomment">/// * [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx) `lpClassName`;</span>
 <span class="doccomment">/// * [`HWND::FindWindowEx`](crate::HWND::FindWindowEx) `lpszClass`;</span>
 <span class="doccomment">/// * [`UnregisterClass`](crate::UnregisterClass) `lpClassName`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">AtomStr</span> {
 	<span class="doccomment">/// An [`ATOM`](crate::ATOM) returned by</span>
 	<span class="doccomment">/// [`RegisterClassEx`](crate::RegisterClassEx).</span>
 	<span class="ident">Atom</span>(<span class="ident">ATOM</span>),
 	<span class="doccomment">/// A string.</span>
-	<span class="ident">Str</span>(<span class="ident">WString</span>),
+	<span class="ident">Str</span>(<span class="ident">String</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">AtomStr</span> {
 	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() },
+			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">s</span>).<span class="ident">as_ptr</span>() },
 			<span class="self">Self</span><span class="ident">::Atom</span>(<span class="ident">atom</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">atom</span>.<span class="ident">as_ptr</span>(),
 		}
 	}
@@ -564,6 +582,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`BM_GETIMAGE`](crate::msg::bm::GetImage) `image`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BitmapIcon</span> {
 	<span class="ident">Bitmap</span>(<span class="ident">HBITMAP</span>),
 	<span class="ident">Icon</span>(<span class="ident">HICON</span>),
@@ -581,13 +600,14 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HMENU::AppendMenu`](crate::HMENU::AppendMenu) `lpNewItem`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BitmapPtrStr</span> {
 	<span class="doccomment">/// An [`HBITMAP`](crate::HBITMAP).</span>
 	<span class="ident">Bitmap</span>(<span class="ident">HBITMAP</span>),
-	<span class="doccomment">/// A string.</span>
-	<span class="ident">Str</span>(<span class="ident">WString</span>),
 	<span class="doccomment">/// A pointer to anything.</span>
-	<span class="ident">Param</span>(<span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span>),
+	<span class="ident">Ptr</span>(<span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span>),
+	<span class="doccomment">/// A string.</span>
+	<span class="ident">Str</span>(<span class="ident">String</span>),
 	<span class="doccomment">/// Nothing.</span>
 	<span class="prelude-val">None</span>,
 }
@@ -597,8 +617,8 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span><span class="ident">::Bitmap</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() },
-			<span class="self">Self</span><span class="ident">::Param</span>(<span class="ident">lp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Ptr</span>(<span class="ident">lp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">s</span>).<span class="ident">as_ptr</span>() },
 			<span class="self">Self</span><span class="ident">::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
 		}
 	}
@@ -608,6 +628,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`DEVMODE`](crate::DEVMODE) `dmDisplayFlags`;</span>
 <span class="doccomment">/// * [`DEVMODE`](crate::DEVMODE) `dmNup`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DispfNup</span> {
 	<span class="doccomment">/// Used for displays.</span>
 	<span class="ident">Dispf</span>(<span class="ident">co::DMDISPLAYFLAGS</span>),
@@ -631,6 +652,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`;</span>
 <span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hFooterIcon`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HiconIdTdicon</span> {
 	<span class="doccomment">/// No icon.</span>
 	<span class="prelude-val">None</span>,
@@ -645,6 +667,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`TVINSERTSTRUCT`](crate::TVINSERTSTRUCT) `hInsertAfter`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HtreeitemTvi</span> {
 	<span class="doccomment">/// Handle to a tree view item.</span>
 	<span class="ident">Htreeitem</span>(<span class="ident">HTREEITEM</span>),
@@ -674,6 +697,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`WM_NEXTDLGCTL`](crate::msg::wm::NextDlgCtl) `hwnd_focus`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndFocus</span> {
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
 	<span class="ident">FocusPrev</span>(<span class="ident">bool</span>),
@@ -683,6 +707,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`WM_ENTERIDLE`](crate::msg::wm::EnterIdle) reason.</span>
 <span class="doccomment">/// * [`HELPINFO`](crate::HELPINFO) `hItemHandle`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndHmenu</span> {
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
 	<span class="ident">Hmenu</span>(<span class="ident">HMENU</span>),
@@ -700,6 +725,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HWND::SetWindowPos`](crate::HWND::SetWindowPos) `hWndInsertAfter`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndPlace</span> {
 	<span class="doccomment">/// A handle to the window to precede the positioned window in the Z order.</span>
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
@@ -723,6 +749,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`WM_PARENTNOTIFY`](crate::msg::wm::ParentNotify) `data32`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndPointId</span> {
 	<span class="doccomment">/// Handle to the child window.</span>
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
@@ -745,6 +772,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HINSTANCE::LoadCursor`](crate::HINSTANCE::LoadCursor) `lpCursorName`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdcStr</span> {
 	<span class="doccomment">/// A resource ID.</span>
 	<span class="ident">Id</span>(<span class="ident">u16</span>),
@@ -768,6 +796,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HINSTANCE::LoadIcon`](crate::HINSTANCE::LoadIcon) `lpIconName`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdIdiStr</span> {
 	<span class="doccomment">/// A resource ID.</span>
 	<span class="ident">Id</span>(<span class="ident">u16</span>),
@@ -792,6 +821,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HMENU::AppendMenu`](crate::HMENU::AppendMenu) `uIDNewItem`;</span>
 <span class="doccomment">/// * [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx) `hMenu`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdMenu</span> {
 	<span class="doccomment">/// A command ID.</span>
 	<span class="ident">Id</span>(<span class="ident">u16</span>),
@@ -870,6 +900,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HINSTANCE::EnumResourceNames`](crate::HINSTANCE::EnumResourceNames) `func`;</span>
 <span class="doccomment">/// * [`HINSTANCE::LoadAccelerators`](crate::HINSTANCE::LoadAccelerators) `lpTableName`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdStr</span> {
 	<span class="doccomment">/// A resource ID.</span>
 	<span class="ident">Id</span>(<span class="ident">u16</span>),
@@ -889,6 +920,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HWND::TaskDialog`](crate::HWND::TaskDialog) `pszIcon`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdTdiconStr</span> {
 	<span class="doccomment">/// No icon.</span>
 	<span class="prelude-val">None</span>,
@@ -923,6 +955,7 @@
 }
 
 <span class="doccomment">/// Variant value returned by [`RegQueryValueEx`](crate::HKEY::RegQueryValueEx).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RegistryValue</span> {
 	<span class="doccomment">/// Binary value, defined as [`REG::BINARY`](crate::co::REG::BINARY).</span>
 	<span class="ident">Binary</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
@@ -931,7 +964,7 @@
 	<span class="doccomment">/// An `u64` integer value, defined as [`REG::QWORD`](crate::co::REG::QWORD).</span>
 	<span class="ident">Qword</span>(<span class="ident">u64</span>),
 	<span class="doccomment">/// String value, defined as [`REG::SZ`](crate::co::REG::SZ).</span>
-	<span class="ident">Sz</span>(<span class="ident">WString</span>),
+	<span class="ident">Sz</span>(<span class="ident">String</span>),
 	<span class="doccomment">/// No value, defined as [`REG::NONE`](crate::co::REG::NONE). Also used for</span>
 	<span class="doccomment">/// non-implemented value types.</span>
 	<span class="prelude-val">None</span>,
@@ -944,7 +977,7 @@
 			<span class="self">Self</span><span class="ident">::Binary</span>(<span class="ident">b</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">b</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span><span class="ident">::Dword</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span><span class="ident">::Qword</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="self">Self</span><span class="ident">::Sz</span>(<span class="ident">u16</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">u16</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="self">Self</span><span class="ident">::Sz</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">s</span>).<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
 			<span class="self">Self</span><span class="ident">::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
 		}
 	}
@@ -975,6 +1008,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HINSTANCE::EnumResourceTypes`](crate::HINSTANCE::EnumResourceTypes) `func`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RtStr</span> {
 	<span class="doccomment">/// A predefined resource ID.</span>
 	<span class="ident">Rt</span>(<span class="ident">co::RT</span>),
