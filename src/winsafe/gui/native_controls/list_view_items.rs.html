@@ -354,32 +354,6 @@
 <span id="351">351</span>
 <span id="352">352</span>
 <span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std::cell::Cell</span>;
 <span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
@@ -688,27 +662,19 @@
 	<span class="doccomment">/// Retrieves the text of an item under a column by sending an</span>
 	<span class="doccomment">/// [`LVM_GETITEMTEXT`](crate::msg::lvm::GetItemText) message.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// The passed buffer will be automatically allocated.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This method can be more performant than</span>
-	<span class="doccomment">/// [`text_str`](crate::gui::ListViewItems::text_str) because the buffer can be</span>
-	<span class="doccomment">/// reused, avoiding multiple allocations. However, it has the inconvenient</span>
-	<span class="doccomment">/// of the manual conversion from [`WString`](crate::WString) to `String`.</span>
-	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{gui, WString};</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let mut buf = WString::default();</span>
-	<span class="doccomment">/// my_list.items().text(0, 2, &amp;mut buf); // 1st item, 3rd column</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// println!(&quot;Text: {}&quot;, buf.to_string());</span>
+	<span class="doccomment">/// println!(&quot;Text: {}&quot;, my_list.items().text(0, 2)); // 1st item, 3rd column</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) {
-		<span class="self">Self</span><span class="ident">::text_retrieve</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">item_index</span>, <span class="ident">column_index</span>, <span class="ident">buf</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
+		<span class="self">Self</span><span class="ident">::text_retrieve</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">item_index</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+		<span class="ident">buf</span>.<span class="ident">to_string</span>()
 	}
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="kw">fn</span> <span class="ident">text_retrieve</span>(
@@ -740,24 +706,6 @@
 
 			<span class="ident">buf_sz</span> <span class="op">+</span><span class="op">=</span> <span class="ident">BLOCK</span>; <span class="comment">// increase buffer size to try again</span>
 		}
-	}
-
-	<span class="doccomment">/// A more convenient [`text`](crate::gui::ListViewItems::text), which</span>
-	<span class="doccomment">/// directly returns a `String` instead of requiring an external buffer.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::gui;</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// println!(&quot;Text: {}&quot;, my_list.items().text(0, 2)); // 1st item, 3rd column</span>
-	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item_index</span>: <span class="ident">u32</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
-		<span class="self">self</span>.<span class="ident">text</span>(<span class="ident">item_index</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
-		<span class="ident">buf</span>.<span class="ident">to_string</span>()
 	}
 }
 </pre></div>
