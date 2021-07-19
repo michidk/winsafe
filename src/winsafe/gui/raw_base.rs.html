@@ -233,6 +233,7 @@
 		<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>, <span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
 		<span class="ident">wcx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">class_name_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
+		<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">Self</span><span class="ident">::window_proc</span>);
 		<span class="ident">wcx</span>.<span class="ident">hInstance</span> <span class="op">=</span> <span class="ident">hinst</span>;
 		<span class="ident">wcx</span>.<span class="ident">style</span> <span class="op">=</span> <span class="ident">class_style</span>;
 		<span class="ident">wcx</span>.<span class="ident">hIcon</span> <span class="op">=</span> <span class="ident">class_icon</span>;
@@ -265,7 +266,6 @@
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">register_class</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">wcx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WNDCLASSEX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ATOM</span><span class="op">&gt;</span>
 	{
-		<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">Self</span><span class="ident">::window_proc</span>);
 		<span class="ident">SetLastError</span>(<span class="ident">co::ERROR::SUCCESS</span>);
 
 		<span class="ident">RegisterClassEx</span>(<span class="kw-2">&amp;</span><span class="ident">wcx</span>)
@@ -285,7 +285,7 @@
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">create_window</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">class_name</span>: <span class="ident">AtomStr</span>,
+		<span class="ident">class_name</span>: <span class="ident">ATOM</span>,
 		<span class="ident">title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
 		<span class="ident">hmenu</span>: <span class="ident">IdMenu</span>,
 		<span class="ident">pos</span>: <span class="ident">POINT</span>,
@@ -301,7 +301,7 @@
 		<span class="comment">// CreateWindowEx returns.</span>
 		<span class="ident">HWND::CreateWindowEx</span>(
 			<span class="ident">ex_styles</span>,
-			<span class="ident">class_name</span>,
+			<span class="ident">AtomStr::Atom</span>(<span class="ident">class_name</span>),
 			<span class="ident">title</span>, <span class="ident">styles</span>,
 			<span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>,
 			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()),
