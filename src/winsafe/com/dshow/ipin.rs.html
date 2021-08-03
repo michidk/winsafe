@@ -105,34 +105,32 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PSTR</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IPin`](crate::dshow::IPin) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IPinVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">Connect</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PPI</span>, <span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ReceiveConnection</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Disconnect</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ConnectedTo</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ConnectionMediaType</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">QueryPinInfo</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">QueryDirection</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">QueryId</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">QueryAccept</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">EnumMediaTypes</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">QueryInternalConnections</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">EndOfStream</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">BeginFlush</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">EndFlush</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">NewSegment</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">i64</span>, <span class="ident">i64</span>, <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Connect</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PPVT</span>, <span class="ident">PPVT</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ReceiveConnection</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PPVT</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Disconnect</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ConnectedTo</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ConnectionMediaType</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryPinInfo</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryDirection</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryId</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryAccept</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">EnumMediaTypes</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">QueryInternalConnections</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">EndOfStream</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">BeginFlush</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">EndFlush</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">NewSegment</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">i64</span>, <span class="ident">i64</span>, <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IPin`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ipin)</span>
@@ -143,10 +141,8 @@
 <span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IPin</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IPin</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IPin</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x56a86891</span>, <span class="number">0x0ad4</span>, <span class="number">0x11ce</span>, <span class="number">0xb03a</span>, <span class="number">0x0020af0ba770</span>);
@@ -171,7 +167,7 @@
 			<span class="doccomment">/// [`IPin::ConnectedTo`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-ipin-connectedto)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ConnectedTo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IPin</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ipin_vt</span>().<span class="ident">ConnectedTo</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,

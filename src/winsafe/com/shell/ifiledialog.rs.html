@@ -307,42 +307,40 @@
 <span id="305">305</span>
 <span id="306">306</span>
 <span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::shell::vt::IModalWindowVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCSTR</span>, <span class="ident">PCVOID</span>, <span class="ident">PSTR</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IFileDialog`](crate::shell::IFileDialog) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileDialogVT</span> {
 	<span class="kw">pub</span> <span class="ident">IModalWindowVT</span>: <span class="ident">IModalWindowVT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFileTypes</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFileTypeIndex</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetFileTypeIndex</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Advise</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Unadvise</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetOptions</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetOptions</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetDefaultFolder</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFolder</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetFolder</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetCurrentSelection</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetTitle</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetOkButtonLabel</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFileNameLabel</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetResult</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">AddPlace</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PPI</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetDefaultExtension</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Close</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetClientGuid</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ClearClientData</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFilter</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFileTypes</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFileTypeIndex</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetFileTypeIndex</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Advise</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Unadvise</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetOptions</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetOptions</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetDefaultFolder</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFolder</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetFolder</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetCurrentSelection</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetTitle</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetOkButtonLabel</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFileNameLabel</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetResult</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">AddPlace</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PPVT</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetDefaultExtension</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Close</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetClientGuid</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ClearClientData</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFilter</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IFileDialog`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifiledialog)</span>
@@ -354,10 +352,8 @@
 <span class="doccomment">/// [`Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileDialog</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IFileDialog</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IFileDialog</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x42f85136</span>, <span class="number">0xdb7e</span>, <span class="number">0x439c</span>, <span class="number">0x85f1</span>, <span class="number">0xe4075d135fc8</span>);
@@ -403,7 +399,7 @@
 			<span class="doccomment">/// [`IFileDialog::GetCurrentSelection`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-getcurrentselection)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCurrentSelection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ifiledialog_vt</span>().<span class="ident">GetCurrentSelection</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -437,7 +433,7 @@
 			<span class="doccomment">/// [`IFileDialog::GetFolder`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-getfolder)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFolder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ifiledialog_vt</span>().<span class="ident">GetFolder</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -458,7 +454,7 @@
 			<span class="doccomment">/// [`IFileDialog::GetResult`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-getresult)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetResult</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ifiledialog_vt</span>().<span class="ident">GetResult</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,

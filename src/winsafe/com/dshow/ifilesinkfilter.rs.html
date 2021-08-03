@@ -101,21 +101,19 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCSTR</span>, <span class="ident">PCVOID</span>, <span class="ident">PSTR</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IFileSinkFilter`](crate::dshow::IFileSinkFilter) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileSinkFilterVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">SetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCSTR</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetCurFile</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetFileName</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCSTR</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetCurFile</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IFileSinkFilter`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ifilesinkfilter)</span>
@@ -127,10 +125,8 @@
 <span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileSinkFilter</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IFileSinkFilter</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IFileSinkFilter</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0xa2104830</span>, <span class="number">0x7c70</span>, <span class="number">0x11cf</span>, <span class="number">0x8bce</span>, <span class="number">0x00aa00a3f1a6</span>);

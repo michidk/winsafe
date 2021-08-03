@@ -59,23 +59,21 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::HRESULT</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IEnumFilters`](crate::dshow::IEnumFilters) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IEnumFiltersVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">Next</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Skip</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Reset</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Clone</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Next</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Skip</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Reset</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Clone</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IEnumFilters`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ienumfilters)</span>
@@ -86,10 +84,8 @@
 <span class="doccomment">/// [`IUnknown::Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IEnumFilters</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IEnumFilters</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IEnumFilters</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x56a86893</span>, <span class="number">0x0ad4</span>, <span class="number">0x11ce</span>, <span class="number">0xb03a</span>, <span class="number">0x0020af0ba770</span>);

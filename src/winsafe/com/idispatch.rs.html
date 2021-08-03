@@ -70,24 +70,22 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="comment">// use crate::com::itypeinfo::ITypeInfoVT;</span>
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IDispatch`](crate::IDispatch) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IDispatchVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">GetTypeInfoCount</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetTypeInfo</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetIDsOfNames</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Invoke</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">i32</span>, <span class="ident">PCVOID</span>, <span class="ident">u32</span>, <span class="ident">u16</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetTypeInfoCount</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetTypeInfo</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetIDsOfNames</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Invoke</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">i32</span>, <span class="ident">PCVOID</span>, <span class="ident">u32</span>, <span class="ident">u16</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IDispatch`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nn-oaidl-idispatch)</span>
@@ -98,10 +96,8 @@
 <span class="doccomment">/// [`Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IDispatch</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IDispatch</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IDispatch</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x00020400</span>, <span class="number">0x0000</span>, <span class="number">0x0000</span>, <span class="number">0xc000</span>, <span class="number">0x000000000046</span>);
@@ -129,7 +125,7 @@
 			<span class="doccomment">/// [`IDispatch::GetTypeInfo`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-gettypeinfo)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTypeInfo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iTInfo</span>: <span class="ident">u32</span>, <span class="ident">lcid</span>: <span class="ident">LCID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ITypeInfo</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">idispatch_vt</span>().<span class="ident">GetTypeInfo</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,

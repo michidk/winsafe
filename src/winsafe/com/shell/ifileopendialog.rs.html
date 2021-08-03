@@ -83,21 +83,19 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::shell::vt</span>::{<span class="ident">IFileDialogVT</span>, <span class="ident">IModalWindowVT</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::HRESULT</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`IFileOpenDialog`](crate::shell::IFileOpenDialog) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileOpenDialogVT</span> {
 	<span class="kw">pub</span> <span class="ident">IFileDialogVT</span>: <span class="ident">IFileDialogVT</span>,
-	<span class="kw">pub</span> <span class="ident">GetResults</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetSelectedItems</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetResults</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetSelectedItems</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`IFileOpenDialog`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileopendialog)</span>
@@ -122,10 +120,8 @@
 <span class="doccomment">/// ).unwrap();</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileOpenDialog</span>  {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">IFileOpenDialog</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IFileOpenDialog</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0xd57c7288</span>, <span class="number">0xd4ad</span>, <span class="number">0x4768</span>, <span class="number">0xbe02</span>, <span class="number">0x9d969532d960</span>);
@@ -143,7 +139,7 @@
 			<span class="doccomment">/// [`IFileOpenDialog::GetResults`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifileopendialog-getresults)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetResults</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ifileopendialog_vt</span>().<span class="ident">GetResults</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -155,7 +151,7 @@
 			<span class="doccomment">/// [`IFileOpenDialog::GetSelectedItems`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifileopendialog-getselecteditems)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSelectedItems</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPI</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ifileopendialog_vt</span>().<span class="ident">GetSelectedItems</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,

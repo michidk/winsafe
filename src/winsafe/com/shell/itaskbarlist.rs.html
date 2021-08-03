@@ -96,24 +96,22 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
-<span id="97">97</span>
-<span id="98">98</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknownVT</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HANDLE</span>, <span class="ident">HRESULT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`ITaskbarList`](crate::shell::ITaskbarList) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarListVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">HrInit</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">AddTab</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">DeleteTab</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ActivateTab</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetActiveAlt</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">HrInit</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">AddTab</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">DeleteTab</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">ActivateTab</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetActiveAlt</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`ITaskbarList`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist)</span>
@@ -136,10 +134,8 @@
 <span class="doccomment">/// ).unwrap();</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">ITaskbarList</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">ITaskbarList</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x56fdf342</span>, <span class="number">0xfd6d</span>, <span class="number">0x11d0</span>, <span class="number">0x958a</span>, <span class="number">0x006097c9a090</span>);

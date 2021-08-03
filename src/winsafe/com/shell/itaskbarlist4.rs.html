@@ -73,20 +73,18 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::shell::vt</span>::{<span class="ident">ITaskbarListVT</span>, <span class="ident">ITaskbarList2VT</span>, <span class="ident">ITaskbarList3VT</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPI</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HANDLE</span>, <span class="ident">HRESULT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
 
 <span class="doccomment">/// [`ITaskbarList4`](crate::shell::ITaskbarList4) virtual table.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList4VT</span> {
 	<span class="kw">pub</span> <span class="ident">ITaskbarList3VT</span>: <span class="ident">ITaskbarList3VT</span>,
-	<span class="kw">pub</span> <span class="ident">SetTabProperties</span>: <span class="kw">fn</span>(<span class="ident">PPI</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetTabProperties</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 }
 
 <span class="doccomment">/// [`ITaskbarList4`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist4)</span>
@@ -113,10 +111,8 @@
 <span class="doccomment">/// ).unwrap();</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList4</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPI</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
 }
-
-<span class="macro">impl_send_sync_fromppvt!</span>(<span class="ident">ITaskbarList4</span>);
 
 <span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">ITaskbarList4</span> {
 	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0xc43dc798</span>, <span class="number">0x95d1</span>, <span class="number">0x4bea</span>, <span class="number">0x9030</span>, <span class="number">0xbb99e2983a1a</span>);
