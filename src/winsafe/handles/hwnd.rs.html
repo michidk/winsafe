@@ -1339,6 +1339,21 @@
 <span id="1337">1337</span>
 <span id="1338">1338</span>
 <span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
+<span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
+<span id="1354">1354</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1806,6 +1821,13 @@
 		}
 	}
 
+	<span class="doccomment">/// [`GetShellWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getshellwindow)</span>
+	<span class="doccomment">/// static method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetShellWindow</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetShellWindow</span>().<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+	}
+
 	<span class="doccomment">/// [`GetUpdateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getupdatergn)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetUpdateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
@@ -2056,6 +2078,14 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">KillTimer</span>(<span class="self">self</span>, <span class="ident">uIDEvent</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::KillTimer</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uIDEvent</span>) })
+	}
+
+	<span class="doccomment">/// [`LogicalToPhysicalPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-logicaltophysicalpoint)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LogicalToPhysicalPoint</span>(<span class="self">self</span>, <span class="ident">lpPoint</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(
+			<span class="kw">unsafe</span> { <span class="ident">user32::LogicalToPhysicalPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw">_</span>) },
+		)
 	}
 
 	<span class="doccomment">/// [`MapDialogRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapdialogrect)</span>
