@@ -1246,7 +1246,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::func_store::FuncStore</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HDC</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
@@ -1662,7 +1662,7 @@
 	<span class="doccomment">/// However, only owner-drawn buttons respond to the parent window</span>
 	<span class="doccomment">/// processing this message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_btn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorBtn</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorBtn</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORBTN</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorBtn::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));
@@ -1674,7 +1674,7 @@
 	<span class="doccomment">/// responding to this message, the dialog box can set its text and</span>
 	<span class="doccomment">/// background colors using the specified display device context handle.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_dlg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorDlg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorDlg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORDLG</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorDlg::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));
@@ -1687,7 +1687,7 @@
 	<span class="doccomment">/// to this message, the parent window can use the specified device context</span>
 	<span class="doccomment">/// handle to set the text and background colors of the edit control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_edit</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorEdit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorEdit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLOREDIT</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorEdit::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));
@@ -1700,7 +1700,7 @@
 	<span class="doccomment">/// and background colors of the list box by using the specified display</span>
 	<span class="doccomment">/// device context handle.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_list_box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorListBox</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorListBox</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORLISTBOX</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorListBox::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));
@@ -1713,7 +1713,7 @@
 	<span class="doccomment">/// use the display context handle to set the background color of the scroll</span>
 	<span class="doccomment">/// bar control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_scroll_bar</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorScrollBar</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorScrollBar</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORSCROLLBAR</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorScrollBar::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));
@@ -1727,7 +1727,7 @@
 	<span class="doccomment">/// specified device context handle to set the text foreground and</span>
 	<span class="doccomment">/// background colors of the static control.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_ctl_color_static</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorStatic</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HDC</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::CtlColorStatic</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::CTLCOLORSTATIC</span>,
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::CtlColorStatic::from_generic_wm</span>(<span class="ident">p</span>)).<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>));

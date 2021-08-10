@@ -506,6 +506,8 @@
 <span id="504">504</span>
 <span id="505">505</span>
 <span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -829,11 +831,12 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadCursor</span>(<span class="self">self</span>, <span class="ident">lpCursorName</span>: <span class="ident">IdIdcStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_lpCursorName</span> <span class="op">=</span> <span class="ident">WString::default</span>();
-		<span class="kw">unsafe</span> { <span class="ident">user32::LoadCursorW</span>(
-			<span class="self">self</span>.<span class="ident">ptr</span>,
-			<span class="ident">lpCursorName</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpCursorName</span>),
-		).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
+		<span class="kw">unsafe</span> {
+				<span class="ident">user32::LoadCursorW</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">lpCursorName</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpCursorName</span>),
+			).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -852,11 +855,12 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadIcon</span>(<span class="self">self</span>, <span class="ident">lpIconName</span>: <span class="ident">IdIdiStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_lpIconName</span> <span class="op">=</span> <span class="ident">WString::default</span>();
-		<span class="kw">unsafe</span> { <span class="ident">user32::LoadIconW</span>(
-			<span class="self">self</span>.<span class="ident">ptr</span>,
-			<span class="ident">lpIconName</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpIconName</span>),
-		).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
+		<span class="kw">unsafe</span> {
+			<span class="ident">user32::LoadIconW</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">lpIconName</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpIconName</span>),
+			).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
