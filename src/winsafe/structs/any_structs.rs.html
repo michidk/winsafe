@@ -1525,6 +1525,25 @@
 <span id="1523">1523</span>
 <span id="1524">1524</span>
 <span id="1525">1525</span>
+<span id="1526">1526</span>
+<span id="1527">1527</span>
+<span id="1528">1528</span>
+<span id="1529">1529</span>
+<span id="1530">1530</span>
+<span id="1531">1531</span>
+<span id="1532">1532</span>
+<span id="1533">1533</span>
+<span id="1534">1534</span>
+<span id="1535">1535</span>
+<span id="1536">1536</span>
+<span id="1537">1537</span>
+<span id="1538">1538</span>
+<span id="1539">1539</span>
+<span id="1540">1540</span>
+<span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
+<span id="1544">1544</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -1534,7 +1553,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">PFTASKDIALOGCALLBACK</span>, <span class="ident">WNDPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">DispfNup</span>, <span class="ident">HiconIdTdicon</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">DispfNup</span>, <span class="ident">IconIdTdicon</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::BOOL</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{
 	<span class="ident">HIDWORD</span>,
@@ -2091,6 +2110,25 @@
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">MEMORYSTATUSEX</span>, <span class="ident">dwLength</span>);
+
+<span class="doccomment">/// [`MENUBARINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menubarinfo)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MENUBARINFO</span> {
+	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">rcBar</span>: <span class="ident">RECT</span>,
+	<span class="kw">pub</span> <span class="ident">hMenu</span>: <span class="ident">HMENU</span>,
+	<span class="kw">pub</span> <span class="ident">hwndMenu</span>: <span class="ident">HWND</span>,
+	<span class="ident">fBarFocused</span>: <span class="ident">BOOL</span>,
+	<span class="ident">fFocused</span>: <span class="ident">BOOL</span>,
+}
+
+<span class="macro">impl_default_with_size!</span>(<span class="ident">MENUBARINFO</span>, <span class="ident">cbSize</span>);
+
+<span class="kw">impl</span> <span class="ident">MENUBARINFO</span> {
+	<span class="macro">pub_fn_bool_get_set!</span>(<span class="ident">fBarFocused</span>, <span class="ident">set_fBarFocused</span>);
+	<span class="macro">pub_fn_bool_get_set!</span>(<span class="ident">fFocused</span>, <span class="ident">set_fFocused</span>);
+}
 
 <span class="doccomment">/// [`MENUINFO`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-menuinfo)</span>
 <span class="doccomment">/// struct.</span>
@@ -2765,12 +2803,12 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszWindowTitle</span>, <span class="ident">set_pszWindowTitle</span>);
 
 	<span class="doccomment">/// Sets the `hMainIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">HiconIdTdicon</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">HiconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">HiconIdTdicon::Hicon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">hMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
-			<span class="ident">HiconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">HiconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">hMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
+			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
 		}
 	}
 
@@ -2784,12 +2822,12 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;i</span>, <span class="ident">pszCollapsedControlText</span>, <span class="ident">set_pszCollapsedControlText</span>);
 
 	<span class="doccomment">/// Sets the `hFooterIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">HiconIdTdicon</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">HiconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">HiconIdTdicon::Hicon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">hFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
-			<span class="ident">HiconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">HiconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">hFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
+			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
 		}
 	}
 

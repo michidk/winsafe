@@ -535,6 +535,16 @@
 <span id="533">533</span>
 <span id="534">534</span>
 <span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -607,17 +617,18 @@
 
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// * [`BM_GETIMAGE`](crate::msg::bm::GetImage) `image`.</span>
+<span class="doccomment">/// * [`BM_GETIMAGE`](crate::msg::bm::GetImage) `image`;</span>
+<span class="doccomment">/// * [`BM_SETIMAGE`](crate::msg::bm::SetImage) `image`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BitmapIcon</span> {
-	<span class="ident">Bitmap</span>(<span class="ident">HBITMAP</span>),
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BmpIcon</span> {
+	<span class="ident">Bmp</span>(<span class="ident">HBITMAP</span>),
 	<span class="ident">Icon</span>(<span class="ident">HICON</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">BitmapIcon</span> {
+<span class="kw">impl</span> <span class="ident">BmpIcon</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
 		(<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span><span class="ident">::Bitmap</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="ident">ptr</span>,
+			<span class="self">Self</span><span class="ident">::Bmp</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="ident">ptr</span>,
 			<span class="self">Self</span><span class="ident">::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hicon</span>.<span class="ident">ptr</span>,
 		}) <span class="kw">as</span> <span class="ident">isize</span>
 	}
@@ -627,9 +638,9 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HMENU::AppendMenu`](crate::HMENU::AppendMenu) `lpNewItem`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BitmapPtrStr</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BmpPtrStr</span> {
 	<span class="doccomment">/// An [`HBITMAP`](crate::HBITMAP).</span>
-	<span class="ident">Bitmap</span>(<span class="ident">HBITMAP</span>),
+	<span class="ident">Bmp</span>(<span class="ident">HBITMAP</span>),
 	<span class="doccomment">/// A pointer to anything.</span>
 	<span class="ident">Ptr</span>(<span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span>),
 	<span class="doccomment">/// A string.</span>
@@ -638,11 +649,11 @@
 	<span class="prelude-val">None</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">BitmapPtrStr</span> {
+<span class="kw">impl</span> <span class="ident">BmpPtrStr</span> {
 	<span class="doccomment">/// Converts the internal value to a `*const u16`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span><span class="ident">::Bitmap</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Bmp</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span><span class="ident">::Ptr</span>(<span class="ident">lp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw-2">*</span><span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">s</span>);
@@ -668,7 +679,7 @@
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HMENU::AppendMenuEnum`](crate::HMENU::AppendMenuEnum) `entry`.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">EntrySeparatorSubmenu</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MenuEnum</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// A selectable entry item, with command ID and text.</span>
 	<span class="ident">Entry</span>(<span class="ident">u16</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>),
 	<span class="doccomment">/// A separator.</span>
@@ -679,57 +690,14 @@
 
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`;</span>
-<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hFooterIcon`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HiconIdTdicon</span> {
-	<span class="doccomment">/// No icon.</span>
-	<span class="prelude-val">None</span>,
-	<span class="doccomment">/// An icon handle.</span>
-	<span class="ident">Hicon</span>(<span class="ident">HICON</span>),
-	<span class="doccomment">/// A resource ID.</span>
-	<span class="ident">Id</span>(<span class="ident">u16</span>),
-	<span class="doccomment">/// A predefined icon.</span>
-	<span class="ident">Tdicon</span>(<span class="ident">co::TD_ICON</span>),
-}
-
-<span class="doccomment">/// Variant parameter for:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// * [`TVINSERTSTRUCT`](crate::TVINSERTSTRUCT) `hInsertAfter`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HtreeitemTvi</span> {
-	<span class="doccomment">/// Handle to a tree view item.</span>
-	<span class="ident">Htreeitem</span>(<span class="ident">HTREEITEM</span>),
-	<span class="doccomment">/// One of the predefined values.</span>
-	<span class="ident">Tvi</span>(<span class="ident">co::TVI</span>),
-}
-
-<span class="kw">impl</span> <span class="ident">HtreeitemTvi</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_isize</span>(<span class="ident">val</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HtreeitemTvi</span> {
-		<span class="kw">match</span> <span class="ident">co::TVI</span>(<span class="ident">val</span>) {
-			<span class="ident">co::TVI::FIRST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::FIRST</span>),
-			<span class="ident">co::TVI::LAST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::LAST</span>),
-			<span class="ident">co::TVI::ROOT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::ROOT</span>),
-			<span class="ident">co::TVI::SORT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::SORT</span>),
-			<span class="ident">val</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Htreeitem</span>(<span class="ident">HTREEITEM</span> { <span class="ident">ptr</span>: <span class="ident">val</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span> }),
-		}
-	}
-
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span><span class="ident">::Htreeitem</span>(<span class="ident">htreeitem</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">htreeitem</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">tvi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tvi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-		}
-	}
-}
-
-<span class="doccomment">/// Variant parameter for:</span>
-<span class="doccomment">///</span>
 <span class="doccomment">/// * [`WM_NEXTDLGCTL`](crate::msg::wm::NextDlgCtl) `hwnd_focus`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HwndFocus</span> {
+	<span class="doccomment">/// Handle to the control to receive the focus.</span>
 	<span class="ident">Hwnd</span>(<span class="ident">HWND</span>),
-	<span class="ident">FocusPrev</span>(<span class="ident">bool</span>),
+	<span class="doccomment">/// If `true`, the next control with [`WS::TABSTOP`](crate::co::WS::TABSTOP)</span>
+	<span class="doccomment">/// receives the focus; if `false`, the previous.</span>
+	<span class="ident">FocusNext</span>(<span class="ident">bool</span>),
 }
 
 <span class="doccomment">/// Variant parameter for:</span>
@@ -796,6 +764,22 @@
 			<span class="self">Self</span><span class="ident">::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
+}
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`;</span>
+<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hFooterIcon`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IconIdTdicon</span> {
+	<span class="doccomment">/// No icon.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// An icon handle.</span>
+	<span class="ident">Icon</span>(<span class="ident">HICON</span>),
+	<span class="doccomment">/// A resource ID.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// A predefined icon.</span>
+	<span class="ident">Tdicon</span>(<span class="ident">co::TD_ICON</span>),
 }
 
 <span class="doccomment">/// Variant parameter for:</span>
@@ -887,15 +871,21 @@
 	}
 }
 
-<span class="doccomment">/// Variant parameter used in [menu](crate::HMENU) methods:</span>
+<span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// * [`HMENU::CheckMenuItem`](crate::HMENU::CheckMenuItem) `uIDCheckItem`;</span>
+<span class="doccomment">/// * [`HMENU::CheckMenuRadioItem`](crate::HMENU::CheckMenuRadioItem) `first`, `last`, `check`;</span>
 <span class="doccomment">/// * [`HMENU::DeleteMenu`](crate::HMENU::DeleteMenu) `uPosition`;</span>
 <span class="doccomment">/// * [`HMENU::EnableMenuItem`](crate::HMENU::EnableMenuItem) `uIDEnableItem`;</span>
-<span class="doccomment">/// * [`HWND::HiliteMenuItem`](crate::HWND::HiliteMenuItem) `uIDHiliteItem`;</span>
+<span class="doccomment">/// * [`HMENU::GetMenuDefaultItem`](crate::HMENU::GetMenuDefaultItem) return value;</span>
+<span class="doccomment">/// * [`HMENU::GetMenuItemInfo`](crate::HMENU::GetMenuItemInfo) `item`;</span>
+<span class="doccomment">/// * [`HMENU::GetMenuState`](crate::HMENU::GetMenuState) `uId`;</span>
+<span class="doccomment">/// * [`HMENU::GetMenuString`](crate::HMENU::GetMenuString) `uIDItem`;</span>
 <span class="doccomment">/// * [`HMENU::InsertMenuItem`](crate::HMENU::InsertMenuItem) `item`;</span>
 <span class="doccomment">/// * [`HMENU::RemoveMenu`](crate::HMENU::RemoveMenu) `uPosition`;</span>
-<span class="doccomment">/// * [`HMENU::SetMenuItemInfo`](crate::HMENU::SetMenuItemInfo) `item`.</span>
+<span class="doccomment">/// * [`HMENU::SetMenuItemBitmaps`](crate::HMENU::SetMenuItemBitmaps) `uPosition`;</span>
+<span class="doccomment">/// * [`HMENU::SetMenuItemInfo`](crate::HMENU::SetMenuItemInfo) `item`;</span>
+<span class="doccomment">/// * [`HWND::HiliteMenuItem`](crate::HWND::HiliteMenuItem) `uIDHiliteItem`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// A command ID.</span>
@@ -1068,6 +1058,36 @@
 				<span class="kw-2">*</span><span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">s</span>);
 				<span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">as_ptr</span>() }
 			},
+		}
+	}
+}
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`TVINSERTSTRUCT`](crate::TVINSERTSTRUCT) `hInsertAfter`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TreeitemTvi</span> {
+	<span class="doccomment">/// Handle to a tree view item.</span>
+	<span class="ident">Treeitem</span>(<span class="ident">HTREEITEM</span>),
+	<span class="doccomment">/// One of the predefined values.</span>
+	<span class="ident">Tvi</span>(<span class="ident">co::TVI</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">TreeitemTvi</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_isize</span>(<span class="ident">val</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeitemTvi</span> {
+		<span class="kw">match</span> <span class="ident">co::TVI</span>(<span class="ident">val</span>) {
+			<span class="ident">co::TVI::FIRST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::FIRST</span>),
+			<span class="ident">co::TVI::LAST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::LAST</span>),
+			<span class="ident">co::TVI::ROOT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::ROOT</span>),
+			<span class="ident">co::TVI::SORT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">co::TVI::SORT</span>),
+			<span class="ident">val</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Treeitem</span>(<span class="ident">HTREEITEM</span> { <span class="ident">ptr</span>: <span class="ident">val</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span> }),
+		}
+	}
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="self">Self</span><span class="ident">::Treeitem</span>(<span class="ident">htreeitem</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">htreeitem</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="self">Self</span><span class="ident">::Tvi</span>(<span class="ident">tvi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tvi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }

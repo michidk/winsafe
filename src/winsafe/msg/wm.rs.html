@@ -3342,11 +3342,11 @@
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::NEXTDLGCTL</span>,
 			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd_focus</span> {
 				<span class="ident">HwndFocus::Hwnd</span>(<span class="ident">hctl</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hctl</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">HwndFocus::FocusPrev</span>(<span class="ident">prev</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">prev</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">HwndFocus::FocusNext</span>(<span class="ident">next</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">if</span> <span class="ident">next</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="number">1</span> },
 			},
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd_focus</span> {
 				<span class="ident">HwndFocus::Hwnd</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
-				<span class="ident">HwndFocus::FocusPrev</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+				<span class="ident">HwndFocus::FocusNext</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
 			}, <span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -3357,7 +3357,7 @@
 		<span class="self">Self</span> {
 			<span class="ident">hwnd_focus</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">wparam</span> {
 				<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> }),
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::FocusPrev</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>),
+				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::FocusNext</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>),
 			},
 		}
 	}

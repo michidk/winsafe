@@ -1422,6 +1422,20 @@
 <span id="1420">1420</span>
 <span id="1421">1421</span>
 <span id="1422">1422</span>
+<span id="1423">1423</span>
+<span id="1424">1424</span>
+<span id="1425">1425</span>
+<span id="1426">1426</span>
+<span id="1427">1427</span>
+<span id="1428">1428</span>
+<span id="1429">1429</span>
+<span id="1430">1430</span>
+<span id="1431">1431</span>
+<span id="1432">1432</span>
+<span id="1433">1433</span>
+<span id="1434">1434</span>
+<span id="1435">1435</span>
+<span id="1436">1436</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1466,6 +1480,7 @@
 	<span class="ident">RECT</span>,
 	<span class="ident">SHFILEINFO</span>,
 	<span class="ident">SHFILEOPSTRUCT</span>,
+	<span class="ident">SIZE</span>,
 	<span class="ident">STARTUPINFO</span>,
 	<span class="ident">SYSTEM_INFO</span>,
 	<span class="ident">SYSTEMTIME</span>,
@@ -1673,6 +1688,12 @@
 			)
 		},
 	)
+}
+
+<span class="doccomment">/// [`EndMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-endmenu)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndMenu</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::EndMenu</span>() })
 }
 
 <span class="doccomment">/// [`EnumDisplaySettingsEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumdisplaysettingsexw)</span>
@@ -1997,6 +2018,13 @@
 			}
 		},
 	}
+}
+
+<span class="doccomment">/// [`GetMenuCheckMarkDimensions`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenucheckmarkdimensions)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuCheckMarkDimensions</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SIZE</span> {
+	<span class="kw">let</span> <span class="ident">dims</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetMenuCheckMarkDimensions</span>() };
+	<span class="ident">SIZE::new</span>(<span class="ident">LOWORD</span>(<span class="ident">dims</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">HIWORD</span>(<span class="ident">dims</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>)
 }
 
 <span class="doccomment">/// [`GetMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessagew)</span>
@@ -2629,7 +2657,7 @@
 <span class="doccomment">/// # Examples</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```rust,ignore</span>
-<span class="doccomment">/// use winsafe::{co, gui, HiconIdTdicon,</span>
+<span class="doccomment">/// use winsafe::{co, gui, IconIdTdicon,</span>
 <span class="doccomment">///     TASKDIALOG_BUTTON TASKDIALOGCONFIG, TaskDialogIndirect,</span>
 <span class="doccomment">///     WString};</span>
 <span class="doccomment">///</span>
@@ -2638,7 +2666,7 @@
 <span class="doccomment">/// let mut tdc = TASKDIALOGCONFIG::default();</span>
 <span class="doccomment">/// tdc.hwndParent = wnd.hwnd();</span>
 <span class="doccomment">/// tdc.dwCommonButtons = co::TDCBF::YES | co::TDCBF::NO;</span>
-<span class="doccomment">/// tdc.set_hMainIcon(HiconIdTdicon::Tdicon(co::TD_ICON::INFORMATION));</span>
+<span class="doccomment">/// tdc.set_hMainIcon(IconIdTdicon::Tdicon(co::TD_ICON::INFORMATION));</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let mut title = WString::from_str(&quot;Title&quot;);</span>
 <span class="doccomment">/// tdc.set_pszWindowTitle(Some(&amp;mut title));</span>
