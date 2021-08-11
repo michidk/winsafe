@@ -36,6 +36,33 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Toolbar control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-toolbar-control-reference-messages),</span>
@@ -44,7 +71,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::TBADDBITMAP</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">TBADDBITMAP</span>, <span class="ident">TBBUTTON</span>};
 
 <span class="doccomment">/// [`TB_ADDBITMAP`](https://docs.microsoft.com/en-us/windows/win32/controls/tb-addbitmap)</span>
 <span class="doccomment">/// message parameters.</span>
@@ -70,6 +97,33 @@
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::ADDBITMAP</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">num_images</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">info</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// [`TB_ADDBUTTONS`](https://docs.microsoft.com/en-us/windows/win32/controls/tb-addbuttons)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddButtons</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">buttons</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">TBBUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>],
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">AddButtons</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::RetType</span> {
+		<span class="kw">match</span> <span class="ident">v</span> {
+			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co::ERROR::BAD_ARGUMENTS</span>),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co::TBM::ADDBUTTONS</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">buttons</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">buttons</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }

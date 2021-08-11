@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["AddBitmap","`TB_ADDBITMAP` message parameters."]]});
+initSidebarItems({"struct":[["AddBitmap","`TB_ADDBITMAP` message parameters."],["AddButtons","`TB_ADDBUTTONS` message parameters."]]});
