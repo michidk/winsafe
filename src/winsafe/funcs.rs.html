@@ -1436,6 +1436,46 @@
 <span id="1434">1434</span>
 <span id="1435">1435</span>
 <span id="1436">1436</span>
+<span id="1437">1437</span>
+<span id="1438">1438</span>
+<span id="1439">1439</span>
+<span id="1440">1440</span>
+<span id="1441">1441</span>
+<span id="1442">1442</span>
+<span id="1443">1443</span>
+<span id="1444">1444</span>
+<span id="1445">1445</span>
+<span id="1446">1446</span>
+<span id="1447">1447</span>
+<span id="1448">1448</span>
+<span id="1449">1449</span>
+<span id="1450">1450</span>
+<span id="1451">1451</span>
+<span id="1452">1452</span>
+<span id="1453">1453</span>
+<span id="1454">1454</span>
+<span id="1455">1455</span>
+<span id="1456">1456</span>
+<span id="1457">1457</span>
+<span id="1458">1458</span>
+<span id="1459">1459</span>
+<span id="1460">1460</span>
+<span id="1461">1461</span>
+<span id="1462">1462</span>
+<span id="1463">1463</span>
+<span id="1464">1464</span>
+<span id="1465">1465</span>
+<span id="1466">1466</span>
+<span id="1467">1467</span>
+<span id="1468">1468</span>
+<span id="1469">1469</span>
+<span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Win32 free functions.</span>
 
@@ -1464,6 +1504,7 @@
 	<span class="ident">MAX_COMPUTERNAME_LENGTH</span>,
 	<span class="ident">MAX_PATH</span>,
 	<span class="ident">parse_multi_z_str</span>,
+	<span class="ident">UNLEN</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{
 	<span class="ident">ATOM</span>,
@@ -2076,6 +2117,18 @@
 	<span class="ident">COLORREF</span>(<span class="kw">unsafe</span> { <span class="ident">user32::GetSysColor</span>(<span class="ident">nIndex</span>.<span class="number">0</span>) })
 }
 
+<span class="doccomment">/// [`GetSystemDirectory`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemdirectoryw)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemDirectory</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">MAX_PATH</span> <span class="op">+</span> <span class="number">1</span>);
+	<span class="kw">match</span> <span class="kw">unsafe</span> {
+		<span class="ident">kernel32::GetSystemDirectoryW</span>(<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>(), <span class="ident">buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>)
+	} {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">buf</span>.<span class="ident">to_string</span>()),
+	}
+}
+
 <span class="doccomment">/// [`GetSystemInfo`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemInfo</span>(<span class="ident">lpSystemInfo</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SYSTEM_INFO</span>) {
@@ -2142,6 +2195,17 @@
 	}
 }
 
+<span class="doccomment">/// [`GetUserNameW`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetUserName</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">UNLEN</span> <span class="op">+</span> <span class="number">1</span>);
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">advapi32::GetUserNameW</span>(<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>) } {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">buf</span>.<span class="ident">to_string</span>()),
+	}
+}
+
 <span class="doccomment">/// [`GetTickCount64`](https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount64)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTickCount64</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
@@ -2197,6 +2261,16 @@
 		}
 	} <span class="kw">else</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">r</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>)
+	}
+}
+
+<span class="doccomment">/// [`IsNativeVhdBoot`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-isnativevhdboot)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsNativeVhdBoot</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nativeVhdBoot</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::IsNativeVhdBoot</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">nativeVhdBoot</span>) } {
+		<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+		<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">nativeVhdBoot</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>),
 	}
 }
 
@@ -2285,6 +2359,12 @@
 		<span class="ident">LOBYTE</span>(<span class="ident">co::WIN32::WINNT_VISTA</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		<span class="number">0</span>,
 	)
+}
+
+<span class="doccomment">/// [`IsWow64Message`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-iswow64message)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWow64Message</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">return</span> <span class="kw">unsafe</span> { <span class="ident">user32::IsWow64Message</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span>}
 }
 
 <span class="doccomment">/// [`LOBYTE`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms632658(v=vs.85))</span>
