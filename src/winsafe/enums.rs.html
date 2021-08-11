@@ -545,13 +545,42 @@
 <span id="543">543</span>
 <span id="544">544</span>
 <span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::MAKEDWORD</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HTREEITEM</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::MAKEINTRESOURCE</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HTREEITEM</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs</span>::{<span class="ident">IS_INTRESOURCE</span>, <span class="ident">MAKEINTRESOURCE</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">ATOM</span>, <span class="ident">NCCALCSIZE_PARAMS</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::various::WString</span>;
 
@@ -662,6 +691,19 @@
 			<span class="self">Self</span><span class="ident">::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
 		}
 	}
+}
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`TBADDBITMAP`](crate::TBADDBITMAP) `nID`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BmpIdbRes</span> {
+	<span class="doccomment">/// An [`HBITMAP`](crate::HBITMAP).</span>
+	<span class="ident">Bmp</span>(<span class="ident">HBITMAP</span>),
+	<span class="doccomment">/// A system-defined [`co::IDB`](crate::co::IDB) bitmap.</span>
+	<span class="ident">Idb</span>(<span class="ident">co::IDB</span>),
+	<span class="doccomment">/// A bitmap resource.</span>
+	<span class="ident">Res</span>(<span class="ident">IdStr</span>, <span class="ident">HINSTANCE</span>),
 }
 
 <span class="doccomment">/// Variant parameter for:</span>
@@ -934,6 +976,14 @@
 }
 
 <span class="kw">impl</span> <span class="ident">IdStr</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IdStr</span> {
+		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">ptr</span>) {
+			<span class="self">Self</span><span class="ident">::Id</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
+		} <span class="kw">else</span> {
+			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">WString::from_wchars_nullt</span>(<span class="ident">ptr</span>).<span class="ident">to_string</span>())
+		}
+	}
+
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span><span class="ident">::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -1051,6 +1101,14 @@
 }
 
 <span class="kw">impl</span> <span class="ident">RtStr</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RtStr</span> {
+		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">ptr</span>) {
+			<span class="self">Self</span><span class="ident">::Rt</span>(<span class="ident">co::RT</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>))
+		} <span class="kw">else</span> {
+			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">WString::from_wchars_nullt</span>(<span class="ident">ptr</span>).<span class="ident">to_string</span>())
+		}
+	}
+
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span><span class="ident">::Rt</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),

@@ -500,14 +500,6 @@
 <span id="498">498</span>
 <span id="499">499</span>
 <span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -526,7 +518,7 @@
 	<span class="ident">HRSRCMEM</span>,
 	<span class="ident">HWND</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">IS_INTRESOURCE</span>, <span class="ident">MAX_PATH</span>, <span class="ident">str_to_iso88591</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">MAX_PATH</span>, <span class="ident">str_to_iso88591</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">ATOM</span>, <span class="ident">LANGID</span>, <span class="ident">WNDCLASSEX</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::various::WString</span>;
 
@@ -633,11 +625,7 @@
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">IdStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 	{
 		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">F</span>) };
-		<span class="ident">func</span>(<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">lpName</span>) {
-			<span class="ident">IdStr::Id</span>(<span class="ident">lpName</span> <span class="kw">as</span> <span class="kw">_</span>)
-		} <span class="kw">else</span> {
-			<span class="ident">IdStr::Str</span>(<span class="ident">WString::from_wchars_nullt</span>(<span class="ident">lpName</span>).<span class="ident">to_string</span>())
-		}) <span class="kw">as</span> <span class="kw">_</span>
+		<span class="ident">func</span>(<span class="ident">IdStr::from_ptr</span>(<span class="ident">lpName</span>)) <span class="kw">as</span> <span class="kw">_</span>
 	}
 
 	<span class="doccomment">/// [`EnumResourceTypes`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-enumresourcetypesw)</span>
@@ -660,11 +648,7 @@
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">RtStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 	{
 		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">F</span>) };
-		<span class="ident">func</span>(<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">lpszType</span>) {
-			<span class="ident">RtStr::Rt</span>(<span class="ident">co::RT</span>(<span class="ident">lpszType</span> <span class="kw">as</span> <span class="kw">_</span>))
-		} <span class="kw">else</span> {
-			<span class="ident">RtStr::Str</span>(<span class="ident">WString::from_wchars_nullt</span>(<span class="ident">lpszType</span>).<span class="ident">to_string</span>())
-		}) <span class="kw">as</span> <span class="kw">_</span>
+		<span class="ident">func</span>(<span class="ident">RtStr::from_ptr</span>(<span class="ident">lpszType</span>)) <span class="kw">as</span> <span class="kw">_</span>
 	}
 
 	<span class="doccomment">/// [`FindResource`](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-findresourcew)</span>
