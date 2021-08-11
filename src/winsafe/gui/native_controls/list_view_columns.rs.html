@@ -244,7 +244,7 @@
 	}
 
 	<span class="doccomment">/// Adds many columns at once by sending an</span>
-	<span class="doccomment">/// [`LVM_INSERTCOLUMN`](crate::msg::lvm::InsertColumn) message.</span>
+	<span class="doccomment">/// [`lvm::InsertColumn`](crate::msg::lvm::InsertColumn) message.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Widths will be adjusted to match current system DPI.</span>
 	<span class="doccomment">///</span>
@@ -298,15 +298,15 @@
 	}
 
 	<span class="doccomment">/// Retrieves the number of columns by sending an</span>
-	<span class="doccomment">/// [`HDM_GETITEMCOUNT`](crate::msg::hdm::GetItemCount) message to the</span>
-	<span class="doccomment">/// handle returned by [`LVM_GETHEADER`](crate::msg::lvm::GetHeader).</span>
+	<span class="doccomment">/// [`hdm::GetItemCount`](crate::msg::hdm::GetItemCount) message to the</span>
+	<span class="doccomment">/// handle returned by [`lvm::GetHeader`](crate::msg::lvm::GetHeader).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetHeader</span> {})<span class="question-mark">?</span>
 			.<span class="ident">SendMessage</span>(<span class="ident">hdm::GetItemCount</span> {})
 	}
 
 	<span class="doccomment">/// Retrieves information about the column by sending an</span>
-	<span class="doccomment">/// [`LVM_GETCOLUMN`](crate::msg::lvm::GetColumn) message.</span>
+	<span class="doccomment">/// [`lvm::GetColumn`](crate::msg::lvm::GetColumn) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">lvc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LVCOLUMN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumn</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
@@ -340,7 +340,7 @@
 	}
 
 	<span class="doccomment">/// Sets information of the column by sending an</span>
-	<span class="doccomment">/// [`LVM_SETCOLUMN`](crate::msg::lvm::SetColumn) message.</span>
+	<span class="doccomment">/// [`lvm::SetColumn`](crate::msg::lvm::SetColumn) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">lvc</span>: <span class="kw-2">&amp;</span><span class="ident">LVCOLUMN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumn</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
@@ -362,7 +362,7 @@
 	}
 
 	<span class="doccomment">/// Sets the width of the column by sending an</span>
-	<span class="doccomment">/// [`LVM_SETCOLUMNWIDTH`](crate::msg::lvm::SetColumnWidth) message.</span>
+	<span class="doccomment">/// [`lvm::SetColumnWidth`](crate::msg::lvm::SetColumnWidth) message.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Width will be adjusted to match current system DPI.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_width</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">width</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -376,7 +376,7 @@
 	}
 
 	<span class="doccomment">/// Sets the width of the column by sending an</span>
-	<span class="doccomment">/// [`LVM_SETCOLUMNWIDTH`](crate::msg::lvm::SetColumnWidth) message. The</span>
+	<span class="doccomment">/// [`lvm::SetColumnWidth`](crate::msg::lvm::SetColumnWidth) message. The</span>
 	<span class="doccomment">/// width will be calculated to fill the remaining space.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_width_to_fill</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">num_cols</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>()<span class="question-mark">?</span>;
@@ -410,7 +410,7 @@
 	}
 
 	<span class="doccomment">/// Retrieves the width of the column by sending an</span>
-	<span class="doccomment">/// [`LVM_GETCOLUMNWIDTH`](crate::msg::lvm::GetColumnWidth) message.</span>
+	<span class="doccomment">/// [`lvm::GetColumnWidth`](crate::msg::lvm::GetColumnWidth) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">width</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumnWidth</span> { <span class="ident">index</span>: <span class="ident">column_index</span> })
 	}

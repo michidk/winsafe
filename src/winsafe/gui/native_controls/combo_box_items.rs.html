@@ -141,7 +141,7 @@
 		<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd_ptr</span>.<span class="ident">get</span>().<span class="ident">as_ref</span>() }
 	}
 
-	<span class="doccomment">/// Adds new texts by sending [`CB_ADDSTRING`](crate::msg::cb::AddString)</span>
+	<span class="doccomment">/// Adds new texts by sending [`cb::AddString`](crate::msg::cb::AddString)</span>
 	<span class="doccomment">/// messages.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
@@ -161,26 +161,26 @@
 	}
 
 	<span class="doccomment">/// Retrieves the number of items by sending a</span>
-	<span class="doccomment">/// [`CB_GETCOUNT`](crate::msg::cb::GetCount) message.</span>
+	<span class="doccomment">/// [`cb::GetCount`](crate::msg::cb::GetCount) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::GetCount</span> {})
 	}
 
 	<span class="doccomment">/// Deletes the item at the given index by sending a</span>
-	<span class="doccomment">/// [`CB_DELETESTRING`](crate::msg::cb::DeleteString) message.</span>
+	<span class="doccomment">/// [`cb::DeleteString`](crate::msg::cb::DeleteString) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::DeleteString</span> { <span class="ident">index</span> })
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
 	<span class="doccomment">/// Deletes all items by sending a</span>
-	<span class="doccomment">/// [`CB_RESETCONTENT`](crate::msg::cb::ResetContent) message.</span>
+	<span class="doccomment">/// [`cb::ResetContent`](crate::msg::cb::ResetContent) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::ResetContent</span> {})
 	}
 
 	<span class="doccomment">/// Retrieves the index of the currently selected item, if any, by sending a</span>
-	<span class="doccomment">/// [`CB_GETCURSEL`](crate::msg::cb::GetCurSel) message.</span>
+	<span class="doccomment">/// [`cb::GetCurSel`](crate::msg::cb::GetCurSel) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::GetCurSel</span> {})
 	}
@@ -194,13 +194,13 @@
 	}
 
 	<span class="doccomment">/// Sets the currently selected index, or clears it, by sending a</span>
-	<span class="doccomment">/// [`CB_SETCURSEL`](crate::msg::cb::SetCurSel) message.</span>
+	<span class="doccomment">/// [`cb::SetCurSel`](crate::msg::cb::SetCurSel) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::SetCurSel</span> { <span class="ident">index</span> });
 	}
 
 	<span class="doccomment">/// Retrieves the text at the given position, if any, by sending a</span>
-	<span class="doccomment">/// [`CB_GETLBTEXT`](crate::msg::cb::GetLbText) message.</span>
+	<span class="doccomment">/// [`cb::GetLbText`](crate::msg::cb::GetLbText) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span> }) {
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
