@@ -494,7 +494,6 @@
 <span id="492">492</span>
 <span id="493">493</span>
 <span id="494">494</span>
-<span id="495">495</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -524,14 +523,13 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AppendMenu</span>(<span class="self">self</span>, <span class="ident">uFlags</span>: <span class="ident">co::MF</span>,
 		<span class="ident">uIDNewItem</span>: <span class="ident">IdMenu</span>, <span class="ident">lpNewItem</span>: <span class="ident">BmpPtrStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_lpNewItem</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::AppendMenuW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">uFlags</span>.<span class="number">0</span>,
-					<span class="ident">uIDNewItem</span>.<span class="ident">into</span>(),
-					<span class="ident">lpNewItem</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpNewItem</span>),
+					<span class="ident">uIDNewItem</span>.<span class="ident">as_usize</span>(),
+					<span class="ident">lpNewItem</span>.<span class="ident">as_ptr</span>(),
 				)
 			},
 		)
@@ -579,7 +577,7 @@
 			<span class="ident">MenuEnum::Entry</span>(<span class="ident">cmd_id</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
 				<span class="ident">co::MF::STRING</span>,
 				<span class="ident">IdMenu::Id</span>(<span class="kw-2">*</span><span class="ident">cmd_id</span>),
-				<span class="ident">BmpPtrStr::Str</span>((<span class="kw-2">*</span><span class="ident">text</span>).<span class="ident">to_owned</span>()),
+				<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
 			),
 			<span class="ident">MenuEnum::Separator</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
 				<span class="ident">co::MF::SEPARATOR</span>,
@@ -589,7 +587,7 @@
 			<span class="ident">MenuEnum::Submenu</span>(<span class="ident">hmenu</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
 				<span class="ident">co::MF::POPUP</span>,
 				<span class="ident">IdMenu::Menu</span>(<span class="kw-2">*</span><span class="ident">hmenu</span>),
-				<span class="ident">BmpPtrStr::Str</span>((<span class="kw-2">*</span><span class="ident">text</span>).<span class="ident">to_owned</span>()),
+				<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
 			),
 		}
 	}

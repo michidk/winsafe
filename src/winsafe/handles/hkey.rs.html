@@ -640,8 +640,6 @@
 <span id="638">638</span>
 <span id="639">639</span>
 <span id="640">640</span>
-<span id="641">641</span>
-<span id="642">642</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -925,7 +923,7 @@
 					} <span class="kw">as</span> <span class="kw">_</span>
 				) {
 					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(
-						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>).<span class="ident">to_string</span>()),
+						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>)),
 					),
 					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 				}
@@ -1174,7 +1172,7 @@
 					} <span class="kw">as</span> <span class="kw">_</span>
 				) {
 					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(
-						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>).<span class="ident">to_string</span>()),
+						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>)),
 					),
 					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 				}
@@ -1222,7 +1220,6 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegSetKeyValue</span>(<span class="self">self</span>, <span class="ident">lpSubKey</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 		<span class="ident">lpValueName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpData</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_lpData</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetKeyValueW</span>(
@@ -1230,7 +1227,7 @@
 					<span class="ident">WString::from_str</span>(<span class="ident">lpSubKey</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">lpValueName</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">lpData</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
-					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpData</span>),
+					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">lpData</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
@@ -1267,7 +1264,6 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegSetValueEx</span>(<span class="self">self</span>,
 		<span class="ident">lpValueName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpData</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_lpData</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetValueExW</span>(
@@ -1275,7 +1271,7 @@
 					<span class="ident">WString::from_str</span>(<span class="ident">lpValueName</span>).<span class="ident">as_ptr</span>(),
 					<span class="number">0</span>,
 					<span class="ident">lpData</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
-					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf_lpData</span>) <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">lpData</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>

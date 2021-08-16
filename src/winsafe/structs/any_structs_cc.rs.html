@@ -749,7 +749,6 @@
 <span id="747">747</span>
 <span id="748">748</span>
 <span id="749">749</span>
-<span id="750">750</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Assorted Win32 structs used by common controls.</span>
 
@@ -1380,12 +1379,11 @@
 	}
 
 	<span class="doccomment">/// Sets the `hInst` and `nID` fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_nID</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">BmpIdbRes</span>) {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_nID</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="kw-2">&amp;</span><span class="ident">BmpIdbRes</span>) {
 		<span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">val</span> {
 			<span class="ident">BmpIdbRes::Idb</span>(<span class="ident">idb</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINST_COMMCTRL</span>, <span class="ident">nID</span>: <span class="ident">idb</span>.<span class="number">0</span> },
 			<span class="ident">BmpIdbRes::Bmp</span>(<span class="ident">bmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINSTANCE::NULL</span>, <span class="ident">nID</span>: <span class="ident">bmp</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> },
-			<span class="ident">BmpIdbRes::Res</span>(<span class="ident">res</span>, <span class="ident">hInst</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>, <span class="ident">nID</span>: <span class="ident">res</span>.<span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>) <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">BmpIdbRes::Res</span>(<span class="ident">res</span>, <span class="ident">hInst</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="kw-2">*</span><span class="ident">hInst</span>, <span class="ident">nID</span>: <span class="ident">res</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
 		}
 	}
 }
