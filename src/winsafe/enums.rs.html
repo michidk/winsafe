@@ -595,6 +595,18 @@
 <span id="593">593</span>
 <span id="594">594</span>
 <span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -823,9 +835,21 @@
 
 <span class="doccomment">/// Variant parameter for:</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`;</span>
 <span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hFooterIcon`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IconId</span> {
+	<span class="doccomment">/// No icon.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// An icon handle.</span>
+	<span class="ident">Icon</span>(<span class="ident">HICON</span>),
+	<span class="doccomment">/// A resource ID.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+}
+
+<span class="doccomment">/// Variant parameter for:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// * [`TASKDIALOGCONFIG`](crate::TASKDIALOGCONFIG) `hMainIcon`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IconIdTdicon</span> {
 	<span class="doccomment">/// No icon.</span>
 	<span class="prelude-val">None</span>,
@@ -1022,7 +1046,7 @@
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="self">Self</span><span class="ident">::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
 			<span class="self">Self</span><span class="ident">::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="self">Self</span><span class="ident">::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+			<span class="self">Self</span><span class="ident">::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="self">Self</span><span class="ident">::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}

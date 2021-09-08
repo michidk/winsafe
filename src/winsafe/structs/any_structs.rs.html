@@ -1559,6 +1559,16 @@
 <span id="1557">1557</span>
 <span id="1558">1558</span>
 <span id="1559">1559</span>
+<span id="1560">1560</span>
+<span id="1561">1561</span>
+<span id="1562">1562</span>
+<span id="1563">1563</span>
+<span id="1564">1564</span>
+<span id="1565">1565</span>
+<span id="1566">1566</span>
+<span id="1567">1567</span>
+<span id="1568">1568</span>
+<span id="1569">1569</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Assorted Win32 structs.</span>
 
@@ -1568,7 +1578,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">CCHOOKPROC</span>, <span class="ident">PFTASKDIALOGCALLBACK</span>, <span class="ident">WNDPROC</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">DispfNup</span>, <span class="ident">IconIdTdicon</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">DispfNup</span>, <span class="ident">IconId</span>, <span class="ident">IconIdTdicon</span>, <span class="ident">HwndHmenu</span>, <span class="ident">HwndPlace</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::BOOL</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{
 	<span class="ident">HIDWORD</span>,
@@ -1598,6 +1608,7 @@
 	<span class="ident">CCHFORMNAME</span>,
 	<span class="ident">CCHILDREN_TITLEBAR</span>,
 	<span class="ident">DM_SPECVERSION</span>,
+	<span class="ident">IS_INTRESOURCE</span>,
 	<span class="ident">LF_FACESIZE</span>,
 	<span class="ident">MAKEINTRESOURCE</span>,
 	<span class="ident">MAX_PATH</span>,
@@ -2782,7 +2793,7 @@
 	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co::TDF</span>,
 	<span class="kw">pub</span> <span class="ident">dwCommonButtons</span>: <span class="ident">co::TDCBF</span>,
 	<span class="ident">pszWindowTitle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
-	<span class="ident">union0</span>: <span class="ident">TASKDIALOGCONFIG_union0</span>,
+	<span class="ident">pszMainIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>, <span class="comment">// union with HICON</span>
 	<span class="ident">pszMainInstruction</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">pszContent</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">cButtons</span>: <span class="ident">u32</span>,
@@ -2795,7 +2806,7 @@
 	<span class="ident">pszExpandedInformation</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">pszExpandedControlText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="ident">pszCollapsedControlText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
-	<span class="ident">union1</span>: <span class="ident">TASKDIALOGCONFIG_union1</span>,
+	<span class="ident">pszFooterIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>, <span class="comment">// union with HICON</span>
 	<span class="ident">pszFooter</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">pfCallback</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PFTASKDIALOGCALLBACK</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">lpCallbackData</span>: <span class="ident">isize</span>,
@@ -2813,18 +2824,6 @@
 	<span class="ident">pszFooter_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;j</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>, <span class="ident">packed</span>)]</span>
-<span class="ident">union</span> <span class="ident">TASKDIALOGCONFIG_union0</span> {
-	<span class="ident">hMainIcon</span>: <span class="ident">HICON</span>,
-	<span class="ident">pszMainIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
-}
-
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>, <span class="ident">packed</span>)]</span>
-<span class="ident">union</span> <span class="ident">TASKDIALOGCONFIG_union1</span> {
-	<span class="ident">hFooterIcon</span>: <span class="ident">HICON</span>,
-	<span class="ident">pszFooterIcon</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
-}
-
 <span class="macro">impl_default_with_size!</span>(<span class="ident">TASKDIALOGCONFIG</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span><span class="op">&gt;</span>
@@ -2832,13 +2831,26 @@
 {
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszWindowTitle</span>, <span class="ident">set_pszWindowTitle</span>);
 
-	<span class="doccomment">/// Sets the `hMainIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
+	<span class="doccomment">/// Returns the `pszMainIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IconIdTdicon</span> {
+		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span>) {
+			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0xfffc</span> {
+				<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">co::TD_ICON</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span>))
+			} <span class="kw">else</span> {
+				<span class="ident">IconIdTdicon::Id</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
+			}
+		} <span class="kw">else</span> {
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span> })
+		}
+	}
+
+	<span class="doccomment">/// Sets the `pszMainIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">hMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
-			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 
@@ -2851,13 +2863,21 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;h</span>, <span class="ident">pszExpandedControlText</span>, <span class="ident">set_pszExpandedControlText</span>);
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;i</span>, <span class="ident">pszCollapsedControlText</span>, <span class="ident">set_pszCollapsedControlText</span>);
 
-	<span class="doccomment">/// Sets the `hFooterIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
+	<span class="doccomment">/// Returns the `pszFooterIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IconId</span> {
+		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span>) {
+			<span class="ident">IconId::Id</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
+		} <span class="kw">else</span> {
+			<span class="ident">IconId::Icon</span>(<span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span> })
+		}
+	}
+
+	<span class="doccomment">/// Sets the `pszFooterIcon` field.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconId</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">hFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>,
-			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span>),
+			<span class="ident">IconId::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconId::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconId::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 
