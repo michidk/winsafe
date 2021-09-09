@@ -1,6 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\handles\hdc.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>hdc.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
-<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\handles\hdc.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>hdc.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -555,6 +553,26 @@
 <span id="553">553</span>
 <span id="554">554</span>
 <span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -583,11 +601,17 @@
 	<span class="doccomment">/// [`AngleArc`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-anglearc)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AngleArc</span>(<span class="self">self</span>,
-		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>,
-		<span class="ident">r</span>: <span class="ident">u32</span>, <span class="ident">StartAngle</span>: <span class="ident">f32</span>, <span class="ident">SweepAngle</span>: <span class="ident">f32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">center</span>: <span class="ident">POINT</span>, <span class="ident">radius</span>: <span class="ident">u32</span>,
+		<span class="ident">startAngle</span>: <span class="ident">f32</span>, <span class="ident">sweepAngle</span>: <span class="ident">f32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">gdi32::AngleArc</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">r</span>, <span class="ident">StartAngle</span>, <span class="ident">SweepAngle</span>) },
+			<span class="kw">unsafe</span> {
+				<span class="ident">gdi32::AngleArc</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">center</span>.<span class="ident">x</span>, <span class="ident">center</span>.<span class="ident">y</span>,
+					<span class="ident">radius</span>, <span class="ident">startAngle</span>, <span class="ident">sweepAngle</span>,
+				)
+			},
 		)
 	}
 
@@ -600,18 +624,17 @@
 	<span class="doccomment">/// [`BitBlt`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-bitblt)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">BitBlt</span>(<span class="self">self</span>,
-		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>,
-		<span class="ident">hdcSrc</span>: <span class="ident">HDC</span>,
-		<span class="ident">x1</span>: <span class="ident">i32</span>, <span class="ident">y1</span>: <span class="ident">i32</span>,
-		<span class="ident">rop</span>: <span class="ident">co::ROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">destTopLeft</span>: <span class="ident">POINT</span>, <span class="ident">sz</span>: <span class="ident">SIZE</span>,
+		<span class="ident">hdcSrc</span>: <span class="ident">HDC</span>, <span class="ident">srcTopLeft</span>: <span class="ident">POINT</span>, <span class="ident">rop</span>: <span class="ident">co::ROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">gdi32::BitBlt</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">cx</span>, <span class="ident">cy</span>,
+					<span class="ident">destTopLeft</span>.<span class="ident">x</span>, <span class="ident">destTopLeft</span>.<span class="ident">y</span>,
+					<span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>,
 					<span class="ident">hdcSrc</span>.<span class="ident">ptr</span>,
-					<span class="ident">x1</span>, <span class="ident">y1</span>,
+					<span class="ident">srcTopLeft</span>.<span class="ident">x</span>, <span class="ident">srcTopLeft</span>.<span class="ident">y</span>,
 					<span class="ident">rop</span>.<span class="number">0</span>,
 				)
 			},
@@ -627,13 +650,17 @@
 	<span class="doccomment">/// [`Chord`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-chord)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Chord</span>(<span class="self">self</span>,
-		<span class="ident">x1</span>: <span class="ident">i32</span>, <span class="ident">y1</span>: <span class="ident">i32</span>,
-		<span class="ident">x2</span>: <span class="ident">i32</span>, <span class="ident">y2</span>: <span class="ident">i32</span>,
-		<span class="ident">x3</span>: <span class="ident">i32</span>, <span class="ident">y3</span>: <span class="ident">i32</span>,
-		<span class="ident">x4</span>: <span class="ident">i32</span>, <span class="ident">y4</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">bound</span>: <span class="ident">RECT</span>, <span class="ident">startRadial</span>: <span class="ident">POINT</span>, <span class="ident">endRadial</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">gdi32::Chord</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x1</span>, <span class="ident">y1</span>, <span class="ident">x2</span>, <span class="ident">y2</span>, <span class="ident">x3</span>, <span class="ident">y3</span>, <span class="ident">x4</span>, <span class="ident">y4</span>) },
+			<span class="kw">unsafe</span> {
+				<span class="ident">gdi32::Chord</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">bound</span>.<span class="ident">left</span>, <span class="ident">bound</span>.<span class="ident">top</span>, <span class="ident">bound</span>.<span class="ident">right</span>, <span class="ident">bound</span>.<span class="ident">bottom</span>,
+					<span class="ident">startRadial</span>.<span class="ident">x</span>, <span class="ident">startRadial</span>.<span class="ident">y</span>,
+					<span class="ident">endRadial</span>.<span class="ident">x</span>, <span class="ident">endRadial</span>.<span class="ident">y</span>,
+				)
+			},
 		)
 	}
 
@@ -760,8 +787,7 @@
 			<span class="kw">unsafe</span> {
 				<span class="ident">gdi32::MoveToEx</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">x</span>,
-					<span class="ident">y</span>,
+					<span class="ident">x</span>, <span class="ident">y</span>,
 					<span class="ident">lppt</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				)
 			},
@@ -770,10 +796,14 @@
 
 	<span class="doccomment">/// [`PatBlt`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-patblt)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PatBlt</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>,
-		<span class="ident">w</span>: <span class="ident">i32</span>, <span class="ident">h</span>: <span class="ident">i32</span>, <span class="ident">rop</span>: <span class="ident">co::ROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PatBlt</span>(<span class="self">self</span>,
+		<span class="ident">topLeft</span>: <span class="ident">POINT</span>, <span class="ident">sz</span>: <span class="ident">SIZE</span>, <span class="ident">rop</span>: <span class="ident">co::ROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">gdi32::PatBlt</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">w</span>, <span class="ident">h</span>, <span class="ident">rop</span>.<span class="number">0</span>) })
+		<span class="ident">bool_to_winresult</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">gdi32::PatBlt</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">topLeft</span>.<span class="ident">x</span>, <span class="ident">topLeft</span>.<span class="ident">y</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">rop</span>.<span class="number">0</span>)
+			},
+		)
 	}
 
 	<span class="doccomment">/// [`PathToRegion`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-pathtoregion)</span>
@@ -790,12 +820,16 @@
 	<span class="doccomment">/// [`Pie`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-pie)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Pie</span>(<span class="self">self</span>,
-		<span class="ident">left</span>: <span class="ident">i32</span>, <span class="ident">top</span>: <span class="ident">i32</span>, <span class="ident">right</span>: <span class="ident">i32</span>, <span class="ident">bottom</span>: <span class="ident">i32</span>,
-		<span class="ident">xr1</span>: <span class="ident">i32</span>, <span class="ident">yr1</span>: <span class="ident">i32</span>, <span class="ident">xr2</span>: <span class="ident">i32</span>, <span class="ident">yr2</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">bound</span>: <span class="ident">RECT</span>, <span class="ident">radial1</span>: <span class="ident">POINT</span>, <span class="ident">radial2</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">gdi32::Pie</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">left</span>, <span class="ident">top</span>, <span class="ident">right</span>, <span class="ident">bottom</span>, <span class="ident">xr1</span>, <span class="ident">yr1</span>, <span class="ident">xr2</span>, <span class="ident">yr2</span>)
+				<span class="ident">gdi32::Pie</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">bound</span>.<span class="ident">left</span>, <span class="ident">bound</span>.<span class="ident">top</span>, <span class="ident">bound</span>.<span class="ident">right</span>, <span class="ident">bound</span>.<span class="ident">bottom</span>,
+					<span class="ident">radial1</span>.<span class="ident">x</span>, <span class="ident">radial1</span>.<span class="ident">y</span>,
+					<span class="ident">radial2</span>.<span class="ident">y</span>, <span class="ident">radial2</span>.<span class="ident">y</span>,
+				)
 			},
 		)
 	}
@@ -868,11 +902,12 @@
 
 	<span class="doccomment">/// [`Rectangle`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-rectangle)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Rectangle</span>(<span class="self">self</span>,
-		<span class="ident">left</span>: <span class="ident">i32</span>, <span class="ident">top</span>: <span class="ident">i32</span>, <span class="ident">right</span>: <span class="ident">i32</span>, <span class="ident">bottom</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Rectangle</span>(<span class="self">self</span>, <span class="ident">bound</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">gdi32::Rectangle</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">left</span>, <span class="ident">top</span>, <span class="ident">right</span>, <span class="ident">bottom</span>) },
+			<span class="kw">unsafe</span> {
+				<span class="ident">gdi32::Rectangle</span>(<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">bound</span>.<span class="ident">left</span>, <span class="ident">bound</span>.<span class="ident">top</span>, <span class="ident">bound</span>.<span class="ident">right</span>, <span class="ident">bound</span>.<span class="ident">bottom</span>)
+			},
 		)
 	}
 
@@ -884,13 +919,14 @@
 
 	<span class="doccomment">/// [`RoundRect`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-roundrect)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RoundRect</span>(<span class="self">self</span>,
-		<span class="ident">left</span>: <span class="ident">i32</span>, <span class="ident">top</span>: <span class="ident">i32</span>, <span class="ident">right</span>: <span class="ident">i32</span>, <span class="ident">bottom</span>: <span class="ident">i32</span>,
-		<span class="ident">width</span>: <span class="ident">i32</span>, <span class="ident">height</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RoundRect</span>(<span class="self">self</span>, <span class="ident">bound</span>: <span class="ident">RECT</span>, <span class="ident">sz</span>: <span class="ident">SIZE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">gdi32::RoundRect</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">left</span>, <span class="ident">top</span>, <span class="ident">right</span>, <span class="ident">bottom</span>, <span class="ident">width</span>, <span class="ident">height</span>)
+				<span class="ident">gdi32::RoundRect</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">bound</span>.<span class="ident">left</span>, <span class="ident">bound</span>.<span class="ident">top</span>, <span class="ident">bound</span>.<span class="ident">right</span>, <span class="ident">bound</span>.<span class="ident">bottom</span>,
+					<span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>,
+				)
 			},
 		)
 	}
@@ -1087,18 +1123,20 @@
 	<span class="doccomment">/// [`TransparentBlt`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-transparentblt)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TransparentBlt</span>(<span class="self">self</span>,
-		<span class="ident">xoriginDest</span>: <span class="ident">i32</span>, <span class="ident">yoriginDest</span>: <span class="ident">i32</span>, <span class="ident">wDest</span>: <span class="ident">i32</span>, <span class="ident">hDest</span>: <span class="ident">i32</span>,
+		<span class="ident">destTopLeft</span>: <span class="ident">POINT</span>, <span class="ident">destSz</span>: <span class="ident">SIZE</span>,
 		<span class="ident">hdcSrc</span>: <span class="ident">HDC</span>,
-		<span class="ident">xoriginSrc</span>: <span class="ident">i32</span>, <span class="ident">yoriginSrc</span>: <span class="ident">i32</span>, <span class="ident">wSrc</span>: <span class="ident">i32</span>, <span class="ident">hSrc</span>: <span class="ident">i32</span>,
+		<span class="ident">srcTopLeft</span>: <span class="ident">POINT</span>, <span class="ident">srcSz</span>: <span class="ident">SIZE</span>,
 		<span class="ident">crTransparent</span>: <span class="ident">COLORREF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">msimg32::TransparentBlt</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">xoriginDest</span>, <span class="ident">yoriginDest</span>, <span class="ident">wDest</span>, <span class="ident">hDest</span>,
+					<span class="ident">destTopLeft</span>.<span class="ident">x</span>, <span class="ident">destTopLeft</span>.<span class="ident">y</span>,
+					<span class="ident">destSz</span>.<span class="ident">cx</span>, <span class="ident">destSz</span>.<span class="ident">cy</span>,
 					<span class="ident">hdcSrc</span>.<span class="ident">ptr</span>,
-					<span class="ident">xoriginSrc</span>, <span class="ident">yoriginSrc</span>, <span class="ident">wSrc</span>, <span class="ident">hSrc</span>,
+					<span class="ident">srcTopLeft</span>.<span class="ident">x</span>, <span class="ident">srcTopLeft</span>.<span class="ident">y</span>,
+					<span class="ident">srcSz</span>.<span class="ident">cx</span>, <span class="ident">srcSz</span>.<span class="ident">cy</span>,
 					<span class="ident">crTransparent</span>.<span class="number">0</span>,
 				)
 			},
@@ -1112,4 +1150,6 @@
 	}
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
+</body></html>
