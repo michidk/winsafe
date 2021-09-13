@@ -129,30 +129,30 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HTHREAD::CloseHandle`](crate::HTHREAD::CloseHandle) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateThread</span>(
-		<span class="ident">lpThreadAttributes</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
-		<span class="ident">dwStackSize</span>: <span class="ident">u64</span>,
-		<span class="ident">lpStartAddress</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
-		<span class="ident">lpParameter</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
-		<span class="ident">dwCreationFlags</span>: <span class="ident">co::THREAD_CREATE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">HTHREAD</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
+		<span class="ident">thread_attrs</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
+		<span class="ident">stack_size</span>: <span class="ident">u64</span>,
+		<span class="ident">start_addr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
+		<span class="ident">parameter</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
+		<span class="ident">flags</span>: <span class="ident">co::THREAD_CREATE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">HTHREAD</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpThreadId</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">thread_id</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::CreateThread</span>(
-				<span class="ident">lpThreadAttributes</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
-				<span class="ident">dwStackSize</span>,
-				<span class="ident">lpStartAddress</span>,
-				<span class="ident">lpParameter</span>,
-				<span class="ident">dwCreationFlags</span>.<span class="number">0</span>,
-				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpThreadId</span>,
+				<span class="ident">thread_attrs</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+				<span class="ident">stack_size</span>,
+				<span class="ident">start_addr</span>,
+				<span class="ident">parameter</span>,
+				<span class="ident">flags</span>.<span class="number">0</span>,
+				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">thread_id</span>,
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> (<span class="self">Self</span> { <span class="ident">ptr</span> }, <span class="ident">lpThreadId</span>))
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> (<span class="self">Self</span> { <span class="ident">ptr</span> }, <span class="ident">thread_id</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`ExitThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-exitthread)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ExitThread</span>(<span class="ident">dwExitCode</span>: <span class="ident">u32</span>) {
-		<span class="kw">unsafe</span> { <span class="ident">kernel32::ExitThread</span>(<span class="ident">dwExitCode</span>) }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ExitThread</span>(<span class="ident">exit_code</span>: <span class="ident">u32</span>) {
+		<span class="kw">unsafe</span> { <span class="ident">kernel32::ExitThread</span>(<span class="ident">exit_code</span>) }
 	}
 
 	<span class="doccomment">/// [`GetCurrentThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthread)</span>
@@ -164,10 +164,10 @@
 	<span class="doccomment">/// [`GetExitCodeThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodethread)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetExitCodeThread</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lpExitCode</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exit_code</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">kernel32::GetExitCodeThread</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpExitCode</span>) },
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">lpExitCode</span>)
+			<span class="kw">unsafe</span> { <span class="ident">kernel32::GetExitCodeThread</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exit_code</span>) },
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">exit_code</span>)
 	}
 
 	<span class="doccomment">/// [`GetProcessIdOfThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessidofthread)</span>
@@ -191,19 +191,19 @@
 	<span class="doccomment">/// [`GetThreadTimes`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadtimes)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThreadTimes</span>(<span class="self">self</span>,
-		<span class="ident">lpCreationTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
-		<span class="ident">lpExitTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
-		<span class="ident">lpKernelTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
-		<span class="ident">lpUserTime</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">creation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
+		<span class="ident">exit</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
+		<span class="ident">kernel</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
+		<span class="ident">user</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::GetThreadTimes</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">lpCreationTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">lpExitTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">lpKernelTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">lpUserTime</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">creation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">exit</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">kernel</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">user</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)

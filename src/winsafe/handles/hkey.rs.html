@@ -545,107 +545,15 @@
 <span id="545">545</span>
 <span id="546">546</span>
 <span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
-<span id="608">608</span>
-<span id="609">609</span>
-<span id="610">610</span>
-<span id="611">611</span>
-<span id="612">612</span>
-<span id="613">613</span>
-<span id="614">614</span>
-<span id="615">615</span>
-<span id="616">616</span>
-<span id="617">617</span>
-<span id="618">618</span>
-<span id="619">619</span>
-<span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
-<span id="629">629</span>
-<span id="630">630</span>
-<span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
-<span id="634">634</span>
-<span id="635">635</span>
-<span id="636">636</span>
-<span id="637">637</span>
-<span id="638">638</span>
-<span id="639">639</span>
-<span id="640">640</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+
+<span class="kw">use</span> <span class="ident">std::convert::TryInto</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::RegistryValue</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::advapi32</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::FILETIME</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::various::WString</span>;
 
@@ -681,8 +589,11 @@
 
 	<span class="doccomment">/// [`RegCloseKey`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regclosekey)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegCloseKey</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">advapi32::RegCloseKey</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseKey</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">advapi32::RegCloseKey</span>(<span class="self">self</span>.<span class="ident">ptr</span>) <span class="kw">as</span> <span class="kw">_</span> }) {
+			<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		}
 	}
 
 	<span class="doccomment">/// This method calls</span>
@@ -694,39 +605,39 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HKEY};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.RegOpenKeyEx(</span>
+	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.OpenKeyEx(</span>
 	<span class="doccomment">///     &quot;Control Panel&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for key_name in hkey.RegEnumKeyEx().unwrap() {</span>
+	<span class="doccomment">/// for key_name in hkey.EnumKeyEx().unwrap() {</span>
 	<span class="doccomment">///     println!(&quot;{}&quot;, key_name);</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegCloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegEnumKeyEx</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nKeys</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">maxKeyLen</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>; <span class="comment">// length of longest subkey name</span>
-		<span class="self">self</span>.<span class="ident">RegQueryInfoKey</span>(
-			<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">nKeys</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">maxKeyLen</span>),
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumKeyEx</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_keys</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max_key_name_len</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="self">self</span>.<span class="ident">QueryInfoKey</span>(
+			<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">num_keys</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">max_key_name_len</span>),
 			<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">namesVec</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">nKeys</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nameBuf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">maxKeyLen</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lenBuf</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">names_vec</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">num_keys</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">name_buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">max_key_name_len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">len_buf</span>;
 
-		<span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">nKeys</span> {
-			<span class="ident">lenBuf</span> <span class="op">=</span> <span class="ident">nameBuf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_keys</span> {
+			<span class="ident">len_buf</span> <span class="op">=</span> <span class="ident">name_buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>;
 
 			<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegEnumKeyExW</span>(
 						<span class="self">self</span>.<span class="ident">ptr</span>,
 						<span class="ident">index</span>,
-						<span class="ident">nameBuf</span>.<span class="ident">as_mut_ptr</span>(),
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lenBuf</span>,
+						<span class="ident">name_buf</span>.<span class="ident">as_mut_ptr</span>(),
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len_buf</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
 						<span class="ident">std::ptr::null_mut</span>(),
 						<span class="ident">std::ptr::null_mut</span>(),
@@ -738,11 +649,11 @@
 			<span class="kw">if</span> <span class="ident">err</span> <span class="op">!</span><span class="op">=</span> <span class="ident">co::ERROR::SUCCESS</span> {
 				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
 			}
-			<span class="ident">namesVec</span>.<span class="ident">push</span>(<span class="ident">nameBuf</span>.<span class="ident">to_string</span>());
+			<span class="ident">names_vec</span>.<span class="ident">push</span>(<span class="ident">name_buf</span>.<span class="ident">to_string</span>());
 		}
 
-		<span class="ident">namesVec</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to_uppercase</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">to_uppercase</span>()));
-		<span class="prelude-val">Ok</span>(<span class="ident">namesVec</span>)
+		<span class="ident">names_vec</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to_uppercase</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">to_uppercase</span>()));
+		<span class="prelude-val">Ok</span>(<span class="ident">names_vec</span>)
 	}
 
 	<span class="doccomment">/// This method calls</span>
@@ -754,42 +665,41 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HKEY};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.RegOpenKeyEx(</span>
+	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.OpenKeyEx(</span>
 	<span class="doccomment">///     &quot;Control Panel\\Appearance&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for (value, reg_type) in hkey.RegEnumValue().unwrap() {</span>
+	<span class="doccomment">/// for (value, reg_type) in hkey.EnumValue().unwrap() {</span>
 	<span class="doccomment">///     println!(&quot;{}, {}&quot;, value, reg_type);</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegCloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegEnumValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">co::REG</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nVals</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">maxValLen</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>; <span class="comment">// length of longest value name</span>
-		<span class="self">self</span>.<span class="ident">RegQueryInfoKey</span>(
-			<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">nVals</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">maxValLen</span>),
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">co::REG</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_vals</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max_val_name_len</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="self">self</span>.<span class="ident">QueryInfoKey</span>(
+			<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">num_vals</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">max_val_name_len</span>),
 			<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">namesTypesVec</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">nVals</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nameBuf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">maxValLen</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lenBuf</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rawDataType</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">names_types_vec</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">num_vals</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">name_buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">max_val_name_len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_data_type</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 
-		<span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">nVals</span> {
-			<span class="ident">lenBuf</span> <span class="op">=</span> <span class="ident">nameBuf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_vals</span> {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">len_buf</span> <span class="op">=</span> <span class="ident">name_buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>;
 
 			<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegEnumValueW</span>(
 						<span class="self">self</span>.<span class="ident">ptr</span>,
 						<span class="ident">index</span>,
-						<span class="ident">nameBuf</span>.<span class="ident">as_mut_ptr</span>(),
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lenBuf</span>,
+						<span class="ident">name_buf</span>.<span class="ident">as_mut_ptr</span>(),
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len_buf</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rawDataType</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_data_type</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
 						<span class="ident">std::ptr::null_mut</span>(),
 					)
@@ -799,24 +709,25 @@
 			<span class="kw">if</span> <span class="ident">err</span> <span class="op">!</span><span class="op">=</span> <span class="ident">co::ERROR::SUCCESS</span> {
 				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
 			}
-			<span class="ident">namesTypesVec</span>.<span class="ident">push</span>((<span class="ident">nameBuf</span>.<span class="ident">to_string</span>(), <span class="ident">co::REG</span>(<span class="ident">rawDataType</span>)));
+			<span class="ident">names_types_vec</span>.<span class="ident">push</span>((<span class="ident">name_buf</span>.<span class="ident">to_string</span>(), <span class="ident">co::REG</span>(<span class="ident">raw_data_type</span>)));
 		}
 
-		<span class="ident">namesTypesVec</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">to_uppercase</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="number">0</span>.<span class="ident">to_uppercase</span>()));
-		<span class="prelude-val">Ok</span>(<span class="ident">namesTypesVec</span>)
+		<span class="ident">names_types_vec</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">to_uppercase</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="number">0</span>.<span class="ident">to_uppercase</span>()));
+		<span class="prelude-val">Ok</span>(<span class="ident">names_types_vec</span>)
 	}
 
 	<span class="doccomment">/// [`RegGetValue`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-reggetvaluew)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// The data type will be automatically queried with a first call to `RegGetValue`.</span>
+	<span class="doccomment">/// The data type will be automatically queried with a first call to</span>
+	<span class="doccomment">/// `RegGetValue`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{HKEY, RegistryValue};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let val = HKEY::CURRENT_USER.RegGetValue(</span>
+	<span class="doccomment">/// let val = HKEY::CURRENT_USER.GetValue(</span>
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     &quot;Beep&quot;,</span>
 	<span class="doccomment">/// ).unwrap();</span>
@@ -835,25 +746,25 @@
 	<span class="doccomment">///     RegistryValue::None =&gt; println!(&quot;No value&quot;),</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegGetValue</span>(<span class="self">self</span>,
-		<span class="ident">lpSubKey</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpValue</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetValue</span>(<span class="self">self</span>,
+		<span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="ident">wSubKey</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">lpSubKey</span>);
-		<span class="kw">let</span> <span class="ident">wValueName</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">lpValue</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rawDataType</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dataLen</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="ident">sub_key_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>);
+		<span class="kw">let</span> <span class="ident">value_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">value</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_data_type</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data_len</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 
 		<span class="comment">// Query data type and length.</span>
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegGetValueW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">wSubKey</span>.<span class="ident">as_ptr</span>(),
-					<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rawDataType</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_data_type</span>,
 					<span class="ident">std::ptr::null_mut</span>(),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data_len</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
 		) {
@@ -861,91 +772,40 @@
 			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 		}
 
-		<span class="comment">// Retrieve value according to informed data type.</span>
-		<span class="kw">match</span> <span class="ident">co::REG</span>(<span class="ident">rawDataType</span>) {
-			<span class="ident">co::REG::NONE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>), <span class="comment">// no value to query</span>
-			<span class="ident">co::REG::DWORD</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dwordBuf</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="comment">// Retrieve value.</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x00</span>; <span class="ident">data_len</span> <span class="kw">as</span> <span class="kw">_</span>];
 
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegGetValueW</span>( <span class="comment">// query DWORD value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wSubKey</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dwordBuf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Dword</span>(<span class="ident">dwordBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
-			<span class="ident">co::REG::QWORD</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">qwordBuf</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">advapi32::RegGetValueW</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
+					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
+					<span class="ident">std::ptr::null_mut</span>(),
+					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data_len</span>,
+				)
+			} <span class="kw">as</span> <span class="kw">_</span>
+		) {
+			<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> {},
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		}
 
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegGetValueW</span>( <span class="comment">// query QWORD value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wSubKey</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">qwordBuf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Qword</span>(<span class="ident">qwordBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
+		<span class="comment">// Return the value according to type.</span>
+		<span class="kw">match</span> <span class="ident">co::REG</span>(<span class="ident">raw_data_type</span>) {
+			<span class="ident">co::REG::NONE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>),
+			<span class="ident">co::REG::DWORD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Dword</span>(
+				<span class="ident">u32::from_ne_bytes</span>(<span class="ident">buf</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())),
+			),
+			<span class="ident">co::REG::QWORD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Qword</span>(
+				<span class="ident">u64::from_ne_bytes</span>(<span class="ident">buf</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())),
+			),
 			<span class="ident">co::REG::SZ</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">szBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">dataLen</span> <span class="kw">as</span> <span class="ident">usize</span>]; <span class="comment">// alloc wchar buffer</span>
-
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegGetValueW</span>( <span class="comment">// query string value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wSubKey</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">szBuf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(
-						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>)),
-					),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
+				<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">vec16</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">align_to</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>() };
+				<span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">vec16</span>)))
 			},
-			<span class="ident">co::REG::BINARY</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">byteBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">dataLen</span> <span class="kw">as</span> <span class="ident">usize</span>]; <span class="comment">// alloc byte buffer</span>
-
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegGetValueW</span>( <span class="comment">// query binary value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wSubKey</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">byteBuf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Binary</span>(<span class="ident">byteBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
+			<span class="ident">co::REG::BINARY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Binary</span>(<span class="ident">buf</span>)),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>), <span class="comment">// other types not implemented yet</span>
 		}
 	}
@@ -954,23 +814,23 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
-	<span class="doccomment">/// [`HKEY::RegCloseKey`](crate::HKEY::RegCloseKey) call.</span>
+	<span class="doccomment">/// [`HKEY::CloseKey`](crate::HKEY::CloseKey) call.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HKEY};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.RegOpenKeyEx(</span>
+	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.OpenKeyEx(</span>
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegCloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegOpenKeyEx</span>(<span class="self">self</span>, <span class="ident">lpSubKey</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">ulOptions</span>: <span class="ident">co::REG_OPTION</span>, <span class="ident">samDesired</span>: <span class="ident">co::KEY</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HKEY</span><span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenKeyEx</span>(<span class="self">self</span>, <span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+		<span class="ident">options</span>: <span class="ident">co::REG_OPTION</span>, <span class="ident">access_rights</span>: <span class="ident">co::KEY</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HKEY</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hKey</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::NULL</span>;
 
@@ -978,9 +838,9 @@
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegOpenKeyExW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">WString::from_str</span>(<span class="ident">lpSubKey</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">ulOptions</span>.<span class="number">0</span>,
-					<span class="ident">samDesired</span>.<span class="number">0</span>,
+					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">options</span>.<span class="number">0</span>,
+					<span class="ident">access_rights</span>.<span class="number">0</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hKey</span>.<span class="ident">ptr</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
@@ -992,60 +852,62 @@
 
 	<span class="doccomment">/// [`RegQueryInfoKey`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryinfokeyw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegQueryInfoKey</span>(<span class="self">self</span>,
-		<span class="kw-2">mut</span> <span class="ident">lpClass</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>,
-		<span class="ident">lpcSubKeys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcbMaxSubKeyLen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcbMaxClassLen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcValues</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcbMaxValueNameLen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcbMaxValueLen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpcbSecurityDescriptor</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
-		<span class="ident">lpftLastWriteTime</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryInfoKey</span>(<span class="self">self</span>,
+		<span class="kw-2">mut</span> <span class="ident">class</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>,
+		<span class="ident">num_sub_keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">max_sub_key_name_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">max_class_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">num_values</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">max_value_name_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">max_value_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">security_descr_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">last_write_time</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">lpClass2</span>, <span class="kw-2">mut</span> <span class="ident">lpcchClass</span>) <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpClass</span> {
-			<span class="prelude-val">Some</span>(<span class="ident">lpClass</span>) <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">if</span> <span class="ident">lpClass</span>.<span class="ident">buffer_size</span>() <span class="op">&lt;</span> <span class="number">32</span> {
-					<span class="ident">lpClass</span>.<span class="ident">realloc_buffer</span>(<span class="number">32</span>); <span class="comment">// arbitrary</span>
+		<span class="kw">const</span> <span class="ident">BLOCK</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>; <span class="comment">// arbitrary</span>
+
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">class_ptr</span>, <span class="kw-2">mut</span> <span class="ident">class_len</span>) <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">class</span> {
+			<span class="prelude-val">Some</span>(<span class="ident">class</span>) <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">if</span> <span class="ident">class</span>.<span class="ident">buffer_size</span>() <span class="op">&lt;</span> <span class="ident">BLOCK</span> {
+					<span class="ident">class</span>.<span class="ident">realloc_buffer</span>(<span class="ident">BLOCK</span>); <span class="comment">// make it at least BLOCK_SZ</span>
 				}
-				(<span class="kw">unsafe</span> { <span class="ident">lpClass</span>.<span class="ident">as_mut_ptr</span>() }, <span class="ident">lpClass</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="ident">u32</span>)
+				(<span class="kw">unsafe</span> { <span class="ident">class</span>.<span class="ident">as_mut_ptr</span>() }, <span class="ident">class</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="ident">u32</span>)
 			},
 			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">std::ptr::null_mut</span>(), <span class="number">0</span>),
 		};
 
-		<span class="kw">let</span> <span class="ident">lpcSubKeys2</span> <span class="op">=</span> <span class="ident">lpcSubKeys</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcbMaxSubKeyLen2</span> <span class="op">=</span> <span class="ident">lpcbMaxSubKeyLen</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcbMaxClassLen2</span> <span class="op">=</span> <span class="ident">lpcbMaxClassLen</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcValues2</span> <span class="op">=</span> <span class="ident">lpcValues</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcbMaxValueNameLen2</span> <span class="op">=</span> <span class="ident">lpcbMaxValueNameLen</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcbMaxValueLen2</span> <span class="op">=</span> <span class="ident">lpcbMaxValueLen</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpcbSecurityDescriptor2</span> <span class="op">=</span> <span class="ident">lpcbSecurityDescriptor</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
-		<span class="kw">let</span> <span class="ident">lpftLastWriteTime2</span> <span class="op">=</span> <span class="ident">lpftLastWriteTime</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">num_sub_keys</span> <span class="op">=</span> <span class="ident">num_sub_keys</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">max_sub_key_name_len</span> <span class="op">=</span> <span class="ident">max_sub_key_name_len</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">max_class_len</span> <span class="op">=</span> <span class="ident">max_class_len</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">num_values</span> <span class="op">=</span> <span class="ident">num_values</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">max_value_name_len</span> <span class="op">=</span> <span class="ident">max_value_name_len</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">max_value_len</span> <span class="op">=</span> <span class="ident">max_value_len</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">security_descr_len</span> <span class="op">=</span> <span class="ident">security_descr_len</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw">_</span>);
+		<span class="kw">let</span> <span class="ident">last_write_time</span> <span class="op">=</span> <span class="ident">last_write_time</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>);
 
-		<span class="kw">loop</span> { <span class="comment">// until lpClass is large enough</span>
+		<span class="kw">loop</span> { <span class="comment">// until class is large enough</span>
 			<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegQueryInfoKeyW</span>(
 						<span class="self">self</span>.<span class="ident">ptr</span>,
-						<span class="ident">lpClass2</span>,
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpcchClass</span>,
+						<span class="ident">class_ptr</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">class_len</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
-						<span class="ident">lpcSubKeys2</span>,
-						<span class="ident">lpcbMaxSubKeyLen2</span>,
-						<span class="ident">lpcbMaxClassLen2</span>,
-						<span class="ident">lpcValues2</span>,
-						<span class="ident">lpcbMaxValueNameLen2</span>,
-						<span class="ident">lpcbMaxValueLen2</span>,
-						<span class="ident">lpcbSecurityDescriptor2</span>,
-						<span class="ident">lpftLastWriteTime2</span>,
+						<span class="ident">num_sub_keys</span>,
+						<span class="ident">max_sub_key_name_len</span>,
+						<span class="ident">max_class_len</span>,
+						<span class="ident">num_values</span>,
+						<span class="ident">max_value_name_len</span>,
+						<span class="ident">max_value_len</span>,
+						<span class="ident">security_descr_len</span>,
+						<span class="ident">last_write_time</span>,
 					)
 				} <span class="kw">as</span> <span class="kw">_</span>
 			) {
-				<span class="ident">co::ERROR::MORE_DATA</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpClass</span> {
-					<span class="prelude-val">Some</span>(<span class="ident">lpClass</span>) <span class="op">=</span><span class="op">&gt;</span> {
-						<span class="ident">lpClass</span>.<span class="ident">realloc_buffer</span>(<span class="ident">lpClass</span>.<span class="ident">buffer_size</span>() <span class="op">+</span> <span class="number">32</span>); <span class="comment">// arbitrary</span>
-						<span class="ident">lpClass2</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">lpClass</span>.<span class="ident">as_mut_ptr</span>() };
-						<span class="ident">lpcchClass</span> <span class="op">=</span> <span class="ident">lpClass</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>;
+				<span class="ident">co::ERROR::MORE_DATA</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">class</span> {
+					<span class="prelude-val">Some</span>(<span class="ident">class</span>) <span class="op">=</span><span class="op">&gt;</span> {
+						<span class="ident">class</span>.<span class="ident">realloc_buffer</span>(<span class="ident">class</span>.<span class="ident">buffer_size</span>() <span class="op">+</span> <span class="ident">BLOCK</span>);
+						<span class="ident">class_ptr</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">class</span>.<span class="ident">as_mut_ptr</span>() };
+						<span class="ident">class_len</span> <span class="op">=</span> <span class="ident">class</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>;
 					},
 					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">co::ERROR::MORE_DATA</span>),
 				},
@@ -1066,13 +928,13 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HKEY, RegistryValue};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.RegOpenKeyEx(</span>
+	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.OpenKeyEx(</span>
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let val = hkey.RegQueryValueEx(&quot;Beep&quot;)</span>
+	<span class="doccomment">/// let val = hkey.QueryValueEx(&quot;Beep&quot;)</span>
 	<span class="doccomment">///   .unwrap();</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// match val {</span>
@@ -1089,23 +951,23 @@
 	<span class="doccomment">///     RegistryValue::None =&gt; println!(&quot;No value&quot;),</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegCloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegQueryValueEx</span>(<span class="self">self</span>, <span class="ident">lpValueName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">wValueName</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">lpValueName</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rawDataType</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dataLen</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryValueEx</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">value_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">value</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_data_type</span> <span class="op">=</span> <span class="ident">u32::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data_len</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 
 		<span class="comment">// Query data type and length.</span>
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegQueryValueExW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rawDataType</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_data_type</span>,
 					<span class="ident">std::ptr::null_mut</span>(),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data_len</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
 		) {
@@ -1113,87 +975,39 @@
 			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 		}
 
-		<span class="comment">// Retrieve value according to informed data type.</span>
-		<span class="kw">match</span> <span class="ident">co::REG</span>(<span class="ident">rawDataType</span>) {
-			<span class="ident">co::REG::NONE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>), <span class="comment">// no value to query</span>
-			<span class="ident">co::REG::DWORD</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dwordBuf</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="comment">// Retrieve value.</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x00</span>; <span class="ident">data_len</span> <span class="kw">as</span> <span class="kw">_</span>];
 
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegQueryValueExW</span>( <span class="comment">// query DWORD value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dwordBuf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Dword</span>(<span class="ident">dwordBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
-			<span class="ident">co::REG::QWORD</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">qwordBuf</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">advapi32::RegQueryValueExW</span>(
+					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">std::ptr::null_mut</span>(),
+					<span class="ident">std::ptr::null_mut</span>(),
+					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data_len</span>,
+				)
+			} <span class="kw">as</span> <span class="kw">_</span>
+		) {
+			<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> {},
+			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		}
 
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegQueryValueExW</span>( <span class="comment">// query QWORD value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">qwordBuf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Qword</span>(<span class="ident">qwordBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
+		<span class="comment">// Return the value according to type.</span>
+		<span class="kw">match</span> <span class="ident">co::REG</span>(<span class="ident">raw_data_type</span>) {
+			<span class="ident">co::REG::NONE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>),
+			<span class="ident">co::REG::DWORD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Dword</span>(
+				<span class="ident">u32::from_ne_bytes</span>(<span class="ident">buf</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())),
+			),
+			<span class="ident">co::REG::QWORD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Qword</span>(
+				<span class="ident">u64::from_ne_bytes</span>(<span class="ident">buf</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())),
+			),
 			<span class="ident">co::REG::SZ</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">szBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">dataLen</span> <span class="kw">as</span> <span class="ident">usize</span>]; <span class="comment">// alloc wchar buffer</span>
-
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegQueryValueExW</span>( <span class="comment">// query string value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">szBuf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(
-						<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">szBuf</span>)),
-					),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
+				<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">vec16</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">buf</span>.<span class="ident">align_to</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>() };
+				<span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Sz</span>(<span class="ident">WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="ident">vec16</span>)))
 			},
-			<span class="ident">co::REG::BINARY</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">byteBuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">dataLen</span> <span class="kw">as</span> <span class="ident">usize</span>]; <span class="comment">// alloc byte buffer</span>
-
-				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
-					<span class="kw">unsafe</span> {
-						<span class="ident">advapi32::RegQueryValueExW</span>( <span class="comment">// query binary value</span>
-							<span class="self">self</span>.<span class="ident">ptr</span>,
-							<span class="ident">wValueName</span>.<span class="ident">as_ptr</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">std::ptr::null_mut</span>(),
-							<span class="ident">byteBuf</span>.<span class="ident">as_mut_ptr</span>(),
-							<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dataLen</span>,
-						)
-					} <span class="kw">as</span> <span class="kw">_</span>
-				) {
-					<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Binary</span>(<span class="ident">byteBuf</span>)),
-					<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				}
-			},
+			<span class="ident">co::REG::BINARY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::Binary</span>(<span class="ident">buf</span>)),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RegistryValue::None</span>), <span class="comment">// other types not implemented yet</span>
 		}
 	}
@@ -1202,31 +1016,31 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If the value doesn&#39;t exist, if will be created. If new type is different</span>
-	<span class="doccomment">/// from current type, new type will prevail.</span>
+	<span class="doccomment">/// from current type, new type will take over.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{HKEY, RegistryValue};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// HKEY::CURRENT_USER.RegSetKeyValue(</span>
+	<span class="doccomment">/// HKEY::CURRENT_USER.SetKeyValue(</span>
 	<span class="doccomment">///     &quot;Software\\My Company&quot;,</span>
 	<span class="doccomment">///     &quot;Color&quot;,</span>
 	<span class="doccomment">///     RegistryValue::Sz(&quot;blue&quot;.to_owned()),</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegSetKeyValue</span>(<span class="self">self</span>, <span class="ident">lpSubKey</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">lpValueName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpData</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetKeyValue</span>(<span class="self">self</span>,
+		<span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetKeyValueW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">WString::from_str</span>(<span class="ident">lpSubKey</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">WString::from_str</span>(<span class="ident">lpValueName</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">lpData</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
-					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>(),
-					<span class="ident">lpData</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
+					<span class="ident">data</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
 		) {
@@ -1246,31 +1060,31 @@
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{co, HKEY, RegistryValue};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.RegOpenKeyEx(</span>
+	<span class="doccomment">/// let hkey = HKEY::CURRENT_USER.OpenKeyEx(</span>
 	<span class="doccomment">///     &quot;Console\\Git Bash&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::ALL_ACCESS,</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegSetValueEx(</span>
+	<span class="doccomment">/// hkey.SetValueEx(</span>
 	<span class="doccomment">///     &quot;Color&quot;,</span>
 	<span class="doccomment">///     RegistryValue::Sz(&quot;blue&quot;.to_owned()),</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.RegCloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RegSetValueEx</span>(<span class="self">self</span>,
-		<span class="ident">lpValueName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lpData</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetValueEx</span>(<span class="self">self</span>,
+		<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetValueExW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">WString::from_str</span>(<span class="ident">lpValueName</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
 					<span class="number">0</span>,
-					<span class="ident">lpData</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
-					<span class="ident">lpData</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">lpData</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
+					<span class="ident">data</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
 		) {

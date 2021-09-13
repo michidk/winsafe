@@ -110,8 +110,8 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalFree`](crate::HGLOBAL::GlobalFree) call.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GlobalAlloc</span>(<span class="ident">uFlags</span>: <span class="ident">co::GMEM</span>, <span class="ident">dwBytes</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">kernel32::GlobalAlloc</span>(<span class="ident">uFlags</span>.<span class="number">0</span>, <span class="ident">dwBytes</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GlobalAlloc</span>(<span class="ident">flags</span>: <span class="ident">co::GMEM</span>, <span class="ident">num_bytes</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">kernel32::GlobalAlloc</span>(<span class="ident">flags</span>.<span class="number">0</span>, <span class="ident">num_bytes</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -143,10 +143,10 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalUnlock`](crate::HGLOBAL::GlobalUnlock) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GlobalLock</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">memSz</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">GlobalSize</span>()<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">mem_sz</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">GlobalSize</span>()<span class="question-mark">?</span>;
 		<span class="kw">unsafe</span> { <span class="ident">kernel32::GlobalLock</span>(<span class="self">self</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="kw">unsafe</span> {
-				<span class="ident">std::slice::from_raw_parts_mut</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">memSz</span> <span class="kw">as</span> <span class="kw">_</span>)
+				<span class="ident">std::slice::from_raw_parts_mut</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>, <span class="ident">mem_sz</span> <span class="kw">as</span> <span class="kw">_</span>)
 			})
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -157,9 +157,9 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalFree`](crate::HGLOBAL::GlobalFree) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GlobalReAlloc</span>(<span class="self">self</span>,
-		<span class="ident">dwBytes</span>: <span class="ident">u64</span>, <span class="ident">uFlags</span>: <span class="ident">co::GMEM</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span>
+		<span class="ident">num_bytes</span>: <span class="ident">u64</span>, <span class="ident">flags</span>: <span class="ident">co::GMEM</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span>
 	{
-		<span class="kw">unsafe</span> { <span class="ident">kernel32::GlobalReAlloc</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">dwBytes</span>, <span class="ident">uFlags</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
+		<span class="kw">unsafe</span> { <span class="ident">kernel32::GlobalReAlloc</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">num_bytes</span>, <span class="ident">flags</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}

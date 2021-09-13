@@ -202,18 +202,18 @@
 	<span class="doccomment">/// [`DrawThemeBackground`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-drawthemebackground)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DrawThemeBackground</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>,
-		<span class="ident">pRect</span>: <span class="ident">RECT</span>, <span class="ident">pClipRect</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>,
+		<span class="ident">rc</span>: <span class="ident">RECT</span>, <span class="ident">rc_clip</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::DrawThemeBackground</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">hdc</span>.<span class="ident">ptr</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">part</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">state</span>,
-					<span class="kw-2">&amp;</span><span class="ident">pRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="ident">pClipRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">part_state</span>.<span class="ident">part</span>,
+					<span class="ident">part_state</span>.<span class="ident">state</span>,
+					<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="ident">rc_clip</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -228,43 +228,43 @@
 	<span class="doccomment">/// [`GetThemeBackgroundContentRect`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemebackgroundcontentrect)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundContentRect</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>, <span class="ident">pBoundingRect</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">bounds</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pContentRect</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_content</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
 
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundContentRect</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">hdc</span>.<span class="ident">ptr</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">part</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">state</span>,
-					<span class="kw-2">&amp;</span><span class="ident">pBoundingRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pContentRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">part_state</span>.<span class="ident">part</span>,
+					<span class="ident">part_state</span>.<span class="ident">state</span>,
+					<span class="kw-2">&amp;</span><span class="ident">bounds</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc_content</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pContentRect</span>)
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rc_content</span>)
 	}
 
 	<span class="doccomment">/// [`GetThemeBackgroundExtent`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemebackgroundextent)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundExtent</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>, <span class="ident">pContentRect</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc_content</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pExtentRect</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_extent</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
 
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundExtent</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">hdc</span>.<span class="ident">ptr</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">part</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">state</span>,
-					<span class="kw-2">&amp;</span><span class="ident">pContentRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pExtentRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">part_state</span>.<span class="ident">part</span>,
+					<span class="ident">part_state</span>.<span class="ident">state</span>,
+					<span class="kw-2">&amp;</span><span class="ident">rc_content</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc_extent</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
-		 ).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pExtentRect</span>)
+		 ).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rc_extent</span>)
 	}
 
 	<span class="doccomment">/// [`GetThemeBackgroundRegion`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemebackgroundregion)</span>
@@ -273,42 +273,42 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::HRGN::DeleteObject) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundRegion</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>, <span class="ident">pRect</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pRegion</span> <span class="op">=</span> <span class="ident">HRGN::NULL</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hrgn</span> <span class="op">=</span> <span class="ident">HRGN::NULL</span>;
 
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundRegion</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
 					<span class="ident">hdc</span>.<span class="ident">ptr</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">part</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">state</span>,
-					<span class="kw-2">&amp;</span><span class="ident">pRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pRegion</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">part_state</span>.<span class="ident">part</span>,
+					<span class="ident">part_state</span>.<span class="ident">state</span>,
+					<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hrgn</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pRegion</span>)
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">hrgn</span>)
 	}
 
 	<span class="doccomment">/// [`GetThemeColor`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemecolor)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeColor</span>(<span class="self">self</span>,
-		<span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>, <span class="ident">iPropId</span>: <span class="ident">co::TMT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">COLORREF</span><span class="op">&gt;</span>
+		<span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">prop</span>: <span class="ident">co::TMT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">COLORREF</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pColor</span> <span class="op">=</span> <span class="ident">COLORREF</span>(<span class="number">0</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">color</span> <span class="op">=</span> <span class="ident">COLORREF</span>(<span class="number">0</span>);
 
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeColor</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">part</span>,
-					<span class="ident">iPartStateId</span>.<span class="ident">state</span>,
-					<span class="ident">iPropId</span>.<span class="number">0</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pColor</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">part_state</span>.<span class="ident">part</span>,
+					<span class="ident">part_state</span>.<span class="ident">state</span>,
+					<span class="ident">prop</span>.<span class="number">0</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">color</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pColor</span>)
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">color</span>)
 	}
 
 	<span class="doccomment">/// [`IsAppThemed`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isappthemed)</span>
@@ -332,11 +332,11 @@
 	<span class="doccomment">/// [`IsThemeBackgroundPartiallyTransparent`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isthemebackgroundpartiallytransparent)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemeBackgroundPartiallyTransparent</span>(<span class="self">self</span>,
-		<span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
+		<span class="ident">part_state</span>: <span class="ident">co::VS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">uxtheme::IsThemeBackgroundPartiallyTransparent</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">iPartStateId</span>.<span class="ident">part</span>, <span class="ident">iPartStateId</span>.<span class="ident">state</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">part_state</span>.<span class="ident">part</span>, <span class="ident">part_state</span>.<span class="ident">state</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 		}
 	}
 
@@ -348,10 +348,10 @@
 
 	<span class="doccomment">/// [`IsThemePartDefined`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-isthemepartdefined)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemePartDefined</span>(<span class="self">self</span>, <span class="ident">iPartStateId</span>: <span class="ident">co::VS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsThemePartDefined</span>(<span class="self">self</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">uxtheme::IsThemePartDefined</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">iPartStateId</span>.<span class="ident">part</span>, <span class="ident">iPartStateId</span>.<span class="ident">state</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">part_state</span>.<span class="ident">part</span>, <span class="ident">part_state</span>.<span class="ident">state</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 		}
 	}
 }

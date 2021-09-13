@@ -131,13 +131,13 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HPROCESSLIST::CloseHandle`](crate::HPROCESSLIST::CloseHandle) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateToolhelp32Snapshot</span>(
-		<span class="ident">dwFlags</span>: <span class="ident">co::TH32CS</span>,
-		<span class="ident">th32ProcessID</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPROCESSLIST</span><span class="op">&gt;</span>
+		<span class="ident">flags</span>: <span class="ident">co::TH32CS</span>,
+		<span class="ident">th32_process_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPROCESSLIST</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::CreateToolhelp32Snapshot</span>(
-				<span class="ident">dwFlags</span>.<span class="number">0</span>,
-				<span class="ident">th32ProcessID</span>.<span class="ident">unwrap_or_default</span>(),
+				<span class="ident">flags</span>.<span class="number">0</span>,
+				<span class="ident">th32_process_id</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -145,9 +145,9 @@
 
 	<span class="doccomment">/// [`Process32First`](https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32firstw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32First</span>(<span class="self">self</span>, <span class="ident">lppe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32First</span>(<span class="self">self</span>, <span class="ident">pe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">kernel32::Process32FirstW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lppe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">kernel32::Process32FirstW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::NO_MORE_FILES</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
@@ -159,9 +159,9 @@
 
 	<span class="doccomment">/// [`Process32Next`](https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32nextw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32Next</span>(<span class="self">self</span>, <span class="ident">lppe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32Next</span>(<span class="self">self</span>, <span class="ident">pe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">kernel32::Process32NextW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lppe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">kernel32::Process32NextW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::NO_MORE_FILES</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),

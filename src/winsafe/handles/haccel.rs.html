@@ -47,11 +47,11 @@
 <span class="kw">impl</span> <span class="ident">HACCEL</span> {
 	<span class="doccomment">/// [`CreateAcceleratorTable`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createacceleratortablew)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateAcceleratorTable</span>(<span class="ident">paccel</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ACCEL</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateAcceleratorTable</span>(<span class="ident">accel</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ACCEL</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::CreateAcceleratorTableW</span>(
-				<span class="ident">paccel</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">paccel</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">accel</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">accel</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())

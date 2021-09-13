@@ -1402,11 +1402,6 @@
 <span id="1402">1402</span>
 <span id="1403">1403</span>
 <span id="1404">1404</span>
-<span id="1405">1405</span>
-<span id="1406">1406</span>
-<span id="1407">1407</span>
-<span id="1408">1408</span>
-<span id="1409">1409</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1426,6 +1421,7 @@
 	<span class="ident">POINT</span>,
 	<span class="ident">RECT</span>,
 	<span class="ident">SCROLLINFO</span>,
+	<span class="ident">SIZE</span>,
 	<span class="ident">WINDOWINFO</span>,
 	<span class="ident">WINDOWPLACEMENT</span>,
 };
@@ -1487,8 +1483,8 @@
 	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">BeginPaint</span>(<span class="self">self</span>, <span class="ident">lpPaint</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PAINTSTRUCT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::BeginPaint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPaint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">BeginPaint</span>(<span class="self">self</span>, <span class="ident">ps</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PAINTSTRUCT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::BeginPaint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">ps</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HDC</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -1501,37 +1497,34 @@
 
 	<span class="doccomment">/// [`ChildWindowFromPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-childwindowfrompoint)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ChildWindowFromPoint</span>(<span class="self">self</span>, <span class="ident">point</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> {
-			<span class="ident">user32::ChildWindowFromPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">point</span>.<span class="ident">x</span>, <span class="ident">point</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ChildWindowFromPoint</span>(<span class="self">self</span>, <span class="ident">pt</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::ChildWindowFromPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">pt</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
 	<span class="doccomment">/// [`ClientToScreen`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClientToScreen</span>(<span class="self">self</span>, <span class="ident">lpPoint</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClientToScreen</span>(<span class="self">self</span>, <span class="ident">pt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">user32::ClientToScreen</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
-			},
+			<span class="kw">unsafe</span> { <span class="ident">user32::ClientToScreen</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`ClientToScreen`](crate::HWND::ClientToScreen) method for a</span>
 	<span class="doccomment">/// [`RECT`](crate::RECT).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClientToScreenRc</span>(<span class="self">self</span>, <span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ClientToScreenRc</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::ClientToScreen</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		).<span class="ident">and_then</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::ClientToScreen</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		))
@@ -1548,28 +1541,29 @@
 	<span class="doccomment">/// [`CreateWindowEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateWindowEx</span>(
-		<span class="ident">dwExStyle</span>: <span class="ident">co::WS_EX</span>,
-		<span class="ident">lpClassName</span>: <span class="ident">AtomStr</span>,
-		<span class="ident">lpWindowName</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">dwStyle</span>: <span class="ident">co::WS</span>,
-		<span class="ident">X</span>: <span class="ident">i32</span>, <span class="ident">Y</span>: <span class="ident">i32</span>,
-		<span class="ident">nWidth</span>: <span class="ident">i32</span>, <span class="ident">nHeight</span>: <span class="ident">i32</span>,
-		<span class="ident">hWndParent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
-		<span class="ident">hMenu</span>: <span class="ident">IdMenu</span>,
-		<span class="ident">hInstance</span>: <span class="ident">HINSTANCE</span>,
-		<span class="ident">lpParam</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">ex_style</span>: <span class="ident">co::WS_EX</span>,
+		<span class="ident">class_name</span>: <span class="ident">AtomStr</span>,
+		<span class="ident">title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">style</span>: <span class="ident">co::WS</span>,
+		<span class="ident">pos</span>: <span class="ident">POINT</span>,
+		<span class="ident">size</span>: <span class="ident">SIZE</span>,
+		<span class="ident">hwnd_parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+		<span class="ident">hmenu</span>: <span class="ident">IdMenu</span>,
+		<span class="ident">hinstance</span>: <span class="ident">HINSTANCE</span>,
+		<span class="ident">lparam</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::CreateWindowExW</span>(
-				<span class="ident">dwExStyle</span>.<span class="number">0</span>,
-				<span class="ident">lpClassName</span>.<span class="ident">as_ptr</span>(),
-				<span class="ident">WString::from_opt_str</span>(<span class="ident">lpWindowName</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">dwStyle</span>.<span class="number">0</span>,
-				<span class="ident">X</span>, <span class="ident">Y</span>, <span class="ident">nWidth</span>, <span class="ident">nHeight</span>,
-				<span class="ident">hWndParent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-				<span class="ident">hMenu</span>.<span class="ident">as_ptr</span>(),
-				<span class="ident">hInstance</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpParam</span>.<span class="ident">unwrap_or_default</span>() <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">ex_style</span>.<span class="number">0</span>,
+				<span class="ident">class_name</span>.<span class="ident">as_ptr</span>(),
+				<span class="ident">WString::from_opt_str</span>(<span class="ident">title</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">style</span>.<span class="number">0</span>,
+				<span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>,
+				<span class="ident">size</span>.<span class="ident">cx</span>, <span class="ident">size</span>.<span class="ident">cy</span>,
+				<span class="ident">hwnd_parent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">hmenu</span>.<span class="ident">as_ptr</span>(),
+				<span class="ident">hinstance</span>.<span class="ident">ptr</span>,
+				<span class="ident">lparam</span>.<span class="ident">unwrap_or_default</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -1581,12 +1575,12 @@
 	<span class="doccomment">/// The return type is variable, being defined by the `RetType` associated</span>
 	<span class="doccomment">/// type of the [`MsgSend`](crate::msg::MsgSend) trait. That means each</span>
 	<span class="doccomment">/// message can define its own return type.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DefSubclassProc</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">uMsg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
-		<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
-		<span class="ident">uMsg</span>.<span class="ident">convert_ret</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DefSubclassProc</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
+		<span class="ident">msg</span>.<span class="ident">convert_ret</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::DefSubclassProc</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wm_any</span>.<span class="ident">wparam</span>, <span class="ident">wm_any</span>.<span class="ident">lparam</span>,
 				)
 			},
 		)
@@ -1598,12 +1592,12 @@
 	<span class="doccomment">/// The return type is variable, being defined by the `RetType` associated</span>
 	<span class="doccomment">/// type of the [`MsgSend`](crate::msg::MsgSend) trait. That means each</span>
 	<span class="doccomment">/// message can define its own return type.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DefWindowProc</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">uMsg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
-		<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
-		<span class="ident">uMsg</span>.<span class="ident">convert_ret</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DefWindowProc</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
+		<span class="ident">msg</span>.<span class="ident">convert_ret</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::DefWindowProcW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wm_any</span>.<span class="ident">wparam</span>, <span class="ident">wm_any</span>.<span class="ident">lparam</span>,
 				)
 			},
 		)
@@ -1623,20 +1617,20 @@
 
 	<span class="doccomment">/// [`EnableWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablewindow)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableWindow</span>(<span class="self">self</span>, <span class="ident">bEnable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::EnableWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bEnable</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableWindow</span>(<span class="self">self</span>, <span class="ident">enable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::EnableWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">enable</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`EndDialog`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enddialog)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndDialog</span>(<span class="self">self</span>, <span class="ident">nResult</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::EndDialog</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nResult</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndDialog</span>(<span class="self">self</span>, <span class="ident">result</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::EndDialog</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">result</span>) })
 	}
 
 	<span class="doccomment">/// [`EndPaint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-endpaint)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndPaint</span>(<span class="self">self</span>, <span class="ident">lpPaint</span>: <span class="kw-2">&amp;</span><span class="ident">PAINTSTRUCT</span>) {
-		<span class="kw">unsafe</span> { <span class="ident">user32::EndPaint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPaint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>); }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndPaint</span>(<span class="self">self</span>, <span class="ident">ps</span>: <span class="kw-2">&amp;</span><span class="ident">PAINTSTRUCT</span>) {
+		<span class="kw">unsafe</span> { <span class="ident">user32::EndPaint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">ps</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>); }
 	}
 
 	<span class="doccomment">/// [`EnumChildWindows`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumchildwindows)</span>
@@ -1665,23 +1659,23 @@
 			);
 		}
 	}
-	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildProc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">lParam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
+	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildProc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
 	{
-		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lParam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">F</span>) };
+		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">F</span>) };
 		<span class="ident">func</span>(<span class="ident">hwnd</span>) <span class="kw">as</span> <span class="kw">_</span>
 	}
 
 	<span class="doccomment">/// [`FindWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindoww)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FindWindow</span>(
-		<span class="ident">lpClassName</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AtomStr</span><span class="op">&gt;</span>,
-		<span class="ident">lpWindowName</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">class_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AtomStr</span><span class="op">&gt;</span>,
+		<span class="ident">title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::FindWindowW</span>(
-				<span class="ident">lpClassName</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">as_ptr</span>()),
-				<span class="ident">WString::from_opt_str</span>(<span class="ident">lpWindowName</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">class_name</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">as_ptr</span>()),
+				<span class="ident">WString::from_opt_str</span>(<span class="ident">title</span>).<span class="ident">as_ptr</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -1690,16 +1684,16 @@
 	<span class="doccomment">/// [`FindWindowEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowexw)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FindWindowEx</span>(<span class="self">self</span>,
-		<span class="ident">hWndChildAfter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
-		<span class="ident">lpszClass</span>: <span class="ident">AtomStr</span>,
-		<span class="ident">lpszWindow</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">hwnd_child_after</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
+		<span class="ident">class_name</span>: <span class="ident">AtomStr</span>,
+		<span class="ident">title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::FindWindowExW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">hWndChildAfter</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-				<span class="ident">lpszClass</span>.<span class="ident">as_ptr</span>(),
-				<span class="ident">WString::from_opt_str</span>(<span class="ident">lpszWindow</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">hwnd_child_after</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">class_name</span>.<span class="ident">as_ptr</span>(),
+				<span class="ident">WString::from_opt_str</span>(<span class="ident">title</span>).<span class="ident">as_ptr</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -1715,28 +1709,29 @@
 	<span class="doccomment">/// [`GetAltTabInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getalttabinfow)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// If `iItem` is `None`, the item text is not retrieved.</span>
+	<span class="doccomment">/// If `item` is `None`, the item text is not retrieved.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// The `cchItemText` is the maximum number of expected chars for the item</span>
+	<span class="doccomment">/// The `sz_item_text` is the maximum number of expected chars for the item</span>
 	<span class="doccomment">/// text. If `None`, defaults to 100.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAltTabInfo</span>(<span class="self">self</span>,
-		<span class="ident">iItem</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">pati</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ALTTABINFO</span>,
-		<span class="ident">cchItemText</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
+		<span class="ident">item</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">ati</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ALTTABINFO</span>,
+		<span class="ident">sz_item_text</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="ident">bufSz</span> <span class="op">=</span> <span class="ident">cchItemText</span>.<span class="ident">unwrap_or</span>(<span class="number">100</span>) <span class="op">+</span> <span class="number">1</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">iItem</span>.<span class="ident">map_or</span>(
+		<span class="kw">let</span> <span class="ident">buf_sz</span> <span class="op">=</span> <span class="ident">sz_item_text</span>.<span class="ident">unwrap_or</span>(<span class="number">100</span>) <span class="op">+</span> <span class="number">1</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">item</span>.<span class="ident">map_or</span>(
 			<span class="ident">WString::default</span>(),
-			<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">bufSz</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// room for terminating null</span>
+			<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">buf_sz</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// room for terminating null</span>
 		);
 
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::GetAltTabInfoW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">iItem</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">iItem</span><span class="op">|</span> <span class="ident">iItem</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or</span>(<span class="op">-</span><span class="number">1</span>),
-					<span class="ident">pati</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">iItem</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>()),
-					<span class="ident">bufSz</span>,
+					<span class="ident">item</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">iItem</span><span class="op">|</span> <span class="ident">iItem</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or</span>(<span class="op">-</span><span class="number">1</span>),
+					<span class="ident">ati</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">item</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>()),
+					<span class="ident">buf_sz</span>,
 				)
 			},
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">to_string</span>())
@@ -1744,8 +1739,8 @@
 
 	<span class="doccomment">/// [`GetAncestor`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getancestor)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAncestor</span>(<span class="self">self</span>, <span class="ident">gaFlags</span>: <span class="ident">co::GA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetAncestor</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">gaFlags</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAncestor</span>(<span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">co::GA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetAncestor</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">flags</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
@@ -1758,8 +1753,8 @@
 
 	<span class="doccomment">/// [`GetClassLongPtr`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclasslongptrw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetClassLongPtr</span>(<span class="self">self</span>, <span class="ident">nIndex</span>: <span class="ident">co::GCLP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetClassLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nIndex</span>.<span class="number">0</span>) }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetClassLongPtr</span>(<span class="self">self</span>, <span class="ident">index</span>: <span class="ident">co::GCLP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetClassLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">index</span>.<span class="number">0</span>) }
 	}
 
 	<span class="doccomment">/// [`GetClientRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect)</span>
@@ -1807,8 +1802,8 @@
 
 	<span class="doccomment">/// [`GetDlgItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdlgitem)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDlgItem</span>(<span class="self">self</span>, <span class="ident">nIDDlgItem</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetDlgItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nIDDlgItem</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDlgItem</span>(<span class="self">self</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetDlgItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -1837,15 +1832,15 @@
 	<span class="doccomment">/// [`GetMenuBarInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenubarinfo)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuBarInfo</span>(<span class="self">self</span>,
-		<span class="ident">idObject</span>: <span class="ident">co::OBJID</span>, <span class="ident">idItem</span>: <span class="ident">u32</span>, <span class="ident">pmbi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MENUBARINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">obj_id</span>: <span class="ident">co::OBJID</span>, <span class="ident">item_id</span>: <span class="ident">u32</span>, <span class="ident">mbi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MENUBARINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::GetMenuBarInfo</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">idObject</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">idItem</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">pmbi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">obj_id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">item_id</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">mbi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -1854,15 +1849,15 @@
 	<span class="doccomment">/// [`GetMenuItemRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenuitemrect)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuItemRect</span>(<span class="self">self</span>,
-		<span class="ident">hMenu</span>: <span class="ident">HMENU</span>, <span class="ident">uItemPos</span>: <span class="ident">u32</span>, <span class="ident">lprcItem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hmenu</span>: <span class="ident">HMENU</span>, <span class="ident">item_pos</span>: <span class="ident">u32</span>, <span class="ident">rc_item</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::GetMenuItemRect</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">hMenu</span>.<span class="ident">ptr</span>,
-					<span class="ident">uItemPos</span>,
-					<span class="ident">lprcItem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">hmenu</span>.<span class="ident">ptr</span>,
+					<span class="ident">item_pos</span>,
+					<span class="ident">rc_item</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -1871,10 +1866,10 @@
 	<span class="doccomment">/// [`GetNextDlgGroupItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getnextdlggroupitem)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetNextDlgGroupItem</span>(<span class="self">self</span>,
-		<span class="ident">hCtl</span>: <span class="ident">HWND</span>, <span class="ident">bPrevious</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">hwnd_ctrl</span>: <span class="ident">HWND</span>, <span class="ident">previous</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::GetNextDlgGroupItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">user32::GetNextDlgGroupItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hwnd_ctrl</span>.<span class="ident">ptr</span>, <span class="ident">previous</span> <span class="kw">as</span> <span class="kw">_</span>)
 				.<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -1883,10 +1878,10 @@
 	<span class="doccomment">/// [`GetNextDlgTabItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getnextdlgtabitem)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetNextDlgTabItem</span>(<span class="self">self</span>,
-		<span class="ident">hCtl</span>: <span class="ident">HWND</span>, <span class="ident">bPrevious</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">hwnd_ctrl</span>: <span class="ident">HWND</span>, <span class="ident">previous</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::GetNextDlgTabItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hCtl</span>.<span class="ident">ptr</span>, <span class="ident">bPrevious</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>()
+			<span class="ident">user32::GetNextDlgTabItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hwnd_ctrl</span>.<span class="ident">ptr</span>, <span class="ident">previous</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -1902,19 +1897,19 @@
 	<span class="doccomment">/// [`GetScrollInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getscrollinfo)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetScrollInfo</span>(<span class="self">self</span>,
-		<span class="ident">nBar</span>: <span class="ident">co::SBB</span>, <span class="ident">lpsi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SCROLLINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">bar</span>: <span class="ident">co::SBB</span>, <span class="ident">si</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SCROLLINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32::GetScrollInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nBar</span>.<span class="number">0</span>, <span class="ident">lpsi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+				<span class="ident">user32::GetScrollInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bar</span>.<span class="number">0</span>, <span class="ident">si</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 			},
 		)
 	}
 
 	<span class="doccomment">/// [`GetScrollPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getscrollpos)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetScrollPos</span>(<span class="self">self</span>, <span class="ident">nBar</span>: <span class="ident">co::SBB</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nBar</span>.<span class="number">0</span>) } {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetScrollPos</span>(<span class="self">self</span>, <span class="ident">bar</span>: <span class="ident">co::SBB</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bar</span>.<span class="number">0</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>), <span class="comment">// actual zero position</span>
 				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
@@ -1932,15 +1927,15 @@
 
 	<span class="doccomment">/// [`GetSystemMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmenu)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemMenu</span>(<span class="self">self</span>, <span class="ident">bRevert</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetSystemMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">bRevert</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemMenu</span>(<span class="self">self</span>, <span class="ident">revert</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetSystemMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">revert</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HMENU</span> { <span class="ident">ptr</span> })
 	}
 
 	<span class="doccomment">/// [`GetUpdateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getupdatergn)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetUpdateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetUpdateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="kw">_</span>) } {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetUpdateRgn</span>(<span class="self">self</span>, <span class="ident">hrgn</span>: <span class="ident">HRGN</span>, <span class="ident">erase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetUpdateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hrgn</span>.<span class="ident">ptr</span>, <span class="ident">erase</span> <span class="kw">as</span> <span class="kw">_</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::REGION</span>(<span class="ident">ret</span>)),
 		}
@@ -1948,8 +1943,8 @@
 
 	<span class="doccomment">/// [`GetWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindow)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindow</span>(<span class="self">self</span>, <span class="ident">uCmd</span>: <span class="ident">co::GW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uCmd</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindow</span>(<span class="self">self</span>, <span class="ident">cmd</span>: <span class="ident">co::GW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">cmd</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -1968,41 +1963,37 @@
 	<span class="doccomment">/// [`GetWindowDisplayAffinity`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowdisplayaffinity)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowDisplayAffinity</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::WDA</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pdwAffinity</span> <span class="op">=</span> <span class="ident">co::WDA::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">affinity</span> <span class="op">=</span> <span class="ident">co::WDA::default</span>();
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::GetWindowDisplayAffinity</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pdwAffinity</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">affinity</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">pdwAffinity</span>),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">affinity</span>),
 		}
 	}
 
 	<span class="doccomment">/// [`GetWindowInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowinfo)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowInfo</span>(<span class="self">self</span>, <span class="ident">pwi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WINDOWINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowInfo</span>(<span class="self">self</span>, <span class="ident">wi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WINDOWINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::GetWindowInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pwi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::GetWindowInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`GetWindowLongPtr`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowlongptrw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowLongPtr</span>(<span class="self">self</span>, <span class="ident">nIndex</span>: <span class="ident">co::GWLP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetWindowLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nIndex</span>.<span class="number">0</span>) }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowLongPtr</span>(<span class="self">self</span>, <span class="ident">index</span>: <span class="ident">co::GWLP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetWindowLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">index</span>.<span class="number">0</span>) }
 	}
 
 	<span class="doccomment">/// [`GetWindowPlacement`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowplacement)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowPlacement</span>(<span class="self">self</span>,
-		<span class="ident">lpwndpl</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WINDOWPLACEMENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowPlacement</span>(<span class="self">self</span>, <span class="ident">wp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WINDOWPLACEMENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">user32::GetWindowPlacement</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpwndpl</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
-			},
+			<span class="kw">unsafe</span> { <span class="ident">user32::GetWindowPlacement</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
@@ -2020,8 +2011,8 @@
 
 	<span class="doccomment">/// [`GetWindowRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrgn)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>) } {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hrgn</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hrgn</span>.<span class="ident">ptr</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::REGION</span>(<span class="ident">ret</span>)),
 		}
@@ -2029,9 +2020,9 @@
 
 	<span class="doccomment">/// [`GetWindowRgnBox`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrgnbox)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgnBox</span>(<span class="self">self</span>, <span class="ident">lprc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetWindowRgnBox</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32::GetWindowRgnBox</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lprc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">user32::GetWindowRgnBox</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::REGION</span>(<span class="ident">ret</span>)),
@@ -2089,11 +2080,11 @@
 	<span class="doccomment">/// [`HiliteMenuItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-hilitemenuitem)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HiliteMenuItem</span>(<span class="self">self</span>,
-		<span class="ident">hMenu</span>: <span class="ident">HMENU</span>, <span class="ident">uIDHiliteItem</span>: <span class="ident">IdPos</span>, <span class="ident">uHilite</span>: <span class="ident">co::MF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
+		<span class="ident">hmenu</span>: <span class="ident">HMENU</span>, <span class="ident">id_or_pos</span>: <span class="ident">IdPos</span>, <span class="ident">hilite</span>: <span class="ident">co::MF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::HiliteMenuItem</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hMenu</span>.<span class="ident">ptr</span>, <span class="ident">uIDHiliteItem</span>.<span class="ident">id_or_pos_u32</span>(), <span class="ident">uHilite</span>.<span class="number">0</span>,
+				<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hmenu</span>.<span class="ident">ptr</span>, <span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(), <span class="ident">hilite</span>.<span class="number">0</span>,
 			) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 		}
 	}
@@ -2114,14 +2105,14 @@
 	<span class="doccomment">///     .unwrap();</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InvalidateRect</span>(<span class="self">self</span>,
-		<span class="ident">lpRect</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RECT</span><span class="op">&gt;</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">rc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RECT</span><span class="op">&gt;</span>, <span class="ident">erase</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::InvalidateRect</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">lpRect</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
-					<span class="ident">bErase</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">rc</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+					<span class="ident">erase</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -2129,21 +2120,21 @@
 
 	<span class="doccomment">/// [`InvalidateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-invalidatergn)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InvalidateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bErase</span>: <span class="ident">bool</span>) {
-		<span class="kw">unsafe</span> { <span class="ident">user32::InvalidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bErase</span> <span class="kw">as</span> <span class="kw">_</span>); }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InvalidateRgn</span>(<span class="self">self</span>, <span class="ident">hrgn</span>: <span class="ident">HRGN</span>, <span class="ident">erase</span>: <span class="ident">bool</span>) {
+		<span class="kw">unsafe</span> { <span class="ident">user32::InvalidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hrgn</span>.<span class="ident">ptr</span>, <span class="ident">erase</span> <span class="kw">as</span> <span class="kw">_</span>); }
 	}
 
 	<span class="doccomment">/// [`IsChild`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-ischild)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsChild</span>(<span class="self">self</span>, <span class="ident">hWndPossibleChild</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::IsChild</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hWndPossibleChild</span>.<span class="ident">ptr</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsChild</span>(<span class="self">self</span>, <span class="ident">hwnd_possible_child</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::IsChild</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hwnd_possible_child</span>.<span class="ident">ptr</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`IsDialogMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-isdialogmessagew)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsDialogMessage</span>(<span class="self">self</span>, <span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsDialogMessage</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::IsDialogMessageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+			<span class="ident">user32::IsDialogMessageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">msg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 		}
 	}
 
@@ -2185,23 +2176,23 @@
 
 	<span class="doccomment">/// [`KillTimer`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-killtimer)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">KillTimer</span>(<span class="self">self</span>, <span class="ident">uIDEvent</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::KillTimer</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">uIDEvent</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">KillTimer</span>(<span class="self">self</span>, <span class="ident">event_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::KillTimer</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">event_id</span>) })
 	}
 
 	<span class="doccomment">/// [`LogicalToPhysicalPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-logicaltophysicalpoint)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LogicalToPhysicalPoint</span>(<span class="self">self</span>, <span class="ident">lpPoint</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LogicalToPhysicalPoint</span>(<span class="self">self</span>, <span class="ident">pt</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::LogicalToPhysicalPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::LogicalToPhysicalPoint</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pt</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`MapDialogRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapdialogrect)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MapDialogRect</span>(<span class="self">self</span>, <span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MapDialogRect</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::MapDialogRect</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::MapDialogRect</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
@@ -2233,15 +2224,15 @@
 	<span class="doccomment">///     .MessageBox(&quot;Hello, world&quot;, &quot;Title&quot;, co::MB::ICONEXCLAMATION)</span>
 	<span class="doccomment">///     .unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MessageBox</span>(<span class="self">self</span>, <span class="ident">lpText</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">lpCaption</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">uType</span>: <span class="ident">co::MB</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::DLGID</span><span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MessageBox</span>(<span class="self">self</span>,
+		<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">caption</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">flags</span>: <span class="ident">co::MB</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::DLGID</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::MessageBoxW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">WString::from_str</span>(<span class="ident">lpText</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">WString::from_str</span>(<span class="ident">lpCaption</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">uType</span>.<span class="number">0</span>,
+				<span class="ident">WString::from_str</span>(<span class="ident">text</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">WString::from_str</span>(<span class="ident">caption</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">flags</span>.<span class="number">0</span>,
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -2252,15 +2243,15 @@
 	<span class="doccomment">/// [`MoveWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-movewindow)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MoveWindow</span>(<span class="self">self</span>,
-		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>, <span class="ident">nWidth</span>: <span class="ident">i32</span>, <span class="ident">nHeight</span>: <span class="ident">i32</span>, <span class="ident">bRepaint</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">pos</span>: <span class="ident">POINT</span>, <span class="ident">size</span>: <span class="ident">SIZE</span>, <span class="ident">repaint</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::MoveWindow</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">x</span>, <span class="ident">y</span>,
-					<span class="ident">nWidth</span>, <span class="ident">nHeight</span>,
-					<span class="ident">bRepaint</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>,
+					<span class="ident">size</span>.<span class="ident">cx</span>, <span class="ident">size</span>.<span class="ident">cy</span>,
+					<span class="ident">repaint</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -2280,11 +2271,11 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HTHEME::CloseThemeData`](crate::HTHEME::CloseThemeData) call.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenThemeData</span>(<span class="self">self</span>, <span class="ident">pszClassList</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HTHEME</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenThemeData</span>(<span class="self">self</span>, <span class="ident">class_list</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HTHEME</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">uxtheme::OpenThemeData</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">WString::from_str</span>(<span class="ident">pszClassList</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">WString::from_str</span>(<span class="ident">class_list</span>).<span class="ident">as_ptr</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HTHEME</span> { <span class="ident">ptr</span> })
 	}
@@ -2313,12 +2304,12 @@
 	<span class="doccomment">///     wm::ExitMenuLoop { is_shortcut: false },</span>
 	<span class="doccomment">/// ).unwrap();</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">uMsg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::PostMessageW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wm_any</span>.<span class="ident">wparam</span>, <span class="ident">wm_any</span>.<span class="ident">lparam</span>,
 				)
 			},
 		)
@@ -2327,13 +2318,13 @@
 	<span class="doccomment">/// [`RealChildWindowFromPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-realchildwindowfrompoint)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RealChildWindowFromPoint</span>(<span class="self">self</span>,
-		<span class="ident">ptParentClientCoords</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
+		<span class="ident">pt_parent_client_coords</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::RealChildWindowFromPoint</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">ptParentClientCoords</span>.<span class="ident">x</span>,
-				<span class="ident">ptParentClientCoords</span>.<span class="ident">y</span>,
+				<span class="ident">pt_parent_client_coords</span>.<span class="ident">x</span>,
+				<span class="ident">pt_parent_client_coords</span>.<span class="ident">y</span>,
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
@@ -2341,14 +2332,14 @@
 	<span class="doccomment">/// [`RedrawWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-redrawwindow)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RedrawWindow</span>(<span class="self">self</span>,
-		<span class="ident">lprcUpdate</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>, <span class="ident">hrgnUpdate</span>: <span class="ident">HRGN</span>, <span class="ident">flags</span>: <span class="ident">co::RDW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">rc_update</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>, <span class="ident">hrgn_update</span>: <span class="ident">HRGN</span>, <span class="ident">flags</span>: <span class="ident">co::RDW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::RedrawWindow</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">lprcUpdate</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">hrgnUpdate</span>.<span class="ident">ptr</span>,
+					<span class="ident">rc_update</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">hrgn_update</span>.<span class="ident">ptr</span>,
 					<span class="ident">flags</span>.<span class="number">0</span>,
 				)
 			},
@@ -2357,23 +2348,23 @@
 
 	<span class="doccomment">/// [`ReleaseDC`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-releasedc)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ReleaseDC</span>(<span class="self">self</span>, <span class="ident">hDC</span>: <span class="ident">HDC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ReleaseDC</span>(<span class="self">self</span>, <span class="ident">hdc</span>: <span class="ident">HDC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::ReleaseDC</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hDC</span>.<span class="ident">ptr</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::ReleaseDC</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hdc</span>.<span class="ident">ptr</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`RemoveWindowSubclass`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-removewindowsubclass)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RemoveWindowSubclass</span>(<span class="self">self</span>,
-		<span class="ident">pfnSubclass</span>: <span class="ident">SUBCLASSPROC</span>, <span class="ident">uIdSubclass</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">subclass_func</span>: <span class="ident">SUBCLASSPROC</span>, <span class="ident">subclass_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::RemoveWindowSubclass</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">uIdSubclass</span>,
+					<span class="ident">subclass_func</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">subclass_id</span>,
 				)
 			},
 		)
@@ -2381,29 +2372,29 @@
 
 	<span class="doccomment">/// [`ScreenToClient`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-screentoclient)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ScreenToClient</span>(<span class="self">self</span>, <span class="ident">lpPoint</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ScreenToClient</span>(<span class="self">self</span>, <span class="ident">pt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32::ScreenToClient</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpPoint</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+				<span class="ident">user32::ScreenToClient</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 			},
 		)
 	}
 
 	<span class="doccomment">/// [`ScreenToClient`](crate::HWND::ScreenToClient) method for a</span>
 	<span class="doccomment">/// [`RECT`](crate::RECT).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ScreenToClientRc</span>(<span class="self">self</span>, <span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ScreenToClientRc</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::ScreenToClient</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>.<span class="ident">left</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		).<span class="ident">and_then</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::ScreenToClient</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lpRect</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		))
@@ -2434,12 +2425,12 @@
 	<span class="doccomment">///     lvitem: &amp;lvi,</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SendMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">uMsg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
-		<span class="kw">let</span> <span class="ident">wmAny</span> <span class="op">=</span> <span class="ident">uMsg</span>.<span class="ident">as_generic_wm</span>();
-		<span class="ident">uMsg</span>.<span class="ident">convert_ret</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SendMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::RetType</span> {
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
+		<span class="ident">msg</span>.<span class="ident">convert_ret</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SendMessageW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wmAny</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wmAny</span>.<span class="ident">wparam</span>, <span class="ident">wmAny</span>.<span class="ident">lparam</span>,
+					<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wm_any</span>.<span class="ident">wparam</span>, <span class="ident">wm_any</span>.<span class="ident">lparam</span>,
 				)
 			},
 		)
@@ -2470,15 +2461,15 @@
 
 	<span class="doccomment">/// [`SetMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setmenu)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetMenu</span>(<span class="self">self</span>, <span class="ident">hMenu</span>: <span class="ident">HMENU</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::SetMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hMenu</span>.<span class="ident">ptr</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetMenu</span>(<span class="self">self</span>, <span class="ident">hmenu</span>: <span class="ident">HMENU</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::SetMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hmenu</span>.<span class="ident">ptr</span>) })
 	}
 
 	<span class="doccomment">/// [`SetParent`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setparent)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetParent</span>(<span class="self">self</span>, <span class="ident">hWndNewParent</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetParent</span>(<span class="self">self</span>, <span class="ident">hwnd_new_parent</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32::SetParent</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hWndNewParent</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>()
+			<span class="ident">user32::SetParent</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hwnd_new_parent</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>()
 		} {
 			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">ptr</span> })),
 			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
@@ -2491,13 +2482,13 @@
 	<span class="doccomment">/// [`SetScrollInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setscrollinfo)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetScrollInfo</span>(<span class="self">self</span>,
-		<span class="ident">nBar</span>: <span class="ident">co::SBB</span>, <span class="ident">lpsi</span>: <span class="kw-2">&amp;</span><span class="ident">SCROLLINFO</span>, <span class="ident">redraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>
+		<span class="ident">bar</span>: <span class="ident">co::SBB</span>, <span class="ident">si</span>: <span class="kw-2">&amp;</span><span class="ident">SCROLLINFO</span>, <span class="ident">redraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::SetScrollInfo</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">nBar</span>.<span class="number">0</span>,
-				<span class="ident">lpsi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">bar</span>.<span class="number">0</span>,
+				<span class="ident">si</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">redraw</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		}
@@ -2506,10 +2497,10 @@
 	<span class="doccomment">/// [`SetScrollPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setscrollpos)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetScrollPos</span>(<span class="self">self</span>,
-		<span class="ident">nBar</span>: <span class="ident">co::SBB</span>, <span class="ident">nPos</span>: <span class="ident">i32</span>, <span class="ident">bRedraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
+		<span class="ident">b</span>: <span class="ident">co::SBB</span>, <span class="ident">pos</span>: <span class="ident">i32</span>, <span class="ident">redraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32::SetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nBar</span>.<span class="number">0</span>, <span class="ident">nPos</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
+			<span class="ident">user32::SetScrollPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">b</span>.<span class="number">0</span>, <span class="ident">pos</span>, <span class="ident">redraw</span> <span class="kw">as</span> <span class="ident">BOOL</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>), <span class="comment">// actual zero position</span>
@@ -2522,16 +2513,16 @@
 	<span class="doccomment">/// [`SetScrollRange`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setscrollrange)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetScrollRange</span>(<span class="self">self</span>,
-		<span class="ident">nBar</span>: <span class="ident">co::SBB</span>, <span class="ident">nMinPos</span>: <span class="ident">i32</span>, <span class="ident">nMaxPos</span>: <span class="ident">i32</span>, <span class="ident">bRedraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">bar</span>: <span class="ident">co::SBB</span>, <span class="ident">min_pos</span>: <span class="ident">i32</span>, <span class="ident">max_pos</span>: <span class="ident">i32</span>, <span class="ident">redraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetScrollRange</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">nBar</span>.<span class="number">0</span>,
-					<span class="ident">nMinPos</span>,
-					<span class="ident">nMaxPos</span>,
-					<span class="ident">bRedraw</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">bar</span>.<span class="number">0</span>,
+					<span class="ident">min_pos</span>,
+					<span class="ident">max_pos</span>,
+					<span class="ident">redraw</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
 			},
 		)
@@ -2540,15 +2531,15 @@
 	<span class="doccomment">/// [`SetTimer`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-settimer)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetTimer</span>(<span class="self">self</span>,
-		<span class="ident">nIDEvent</span>: <span class="ident">usize</span>, <span class="ident">uElapse</span>: <span class="ident">u32</span>,
-		<span class="ident">lpTimerFunc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TIMERPROC</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+		<span class="ident">event_id</span>: <span class="ident">usize</span>, <span class="ident">elapse_ms</span>: <span class="ident">u32</span>,
+		<span class="ident">timer_func</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TIMERPROC</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::SetTimer</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">nIDEvent</span>,
-				<span class="ident">uElapse</span>,
-				<span class="ident">lpTimerFunc</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>),
+				<span class="ident">event_id</span>,
+				<span class="ident">elapse_ms</span>,
+				<span class="ident">timer_func</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>),
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -2558,41 +2549,40 @@
 
 	<span class="doccomment">/// [`SetWindowDisplayAffinity`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowdisplayaffinity)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowDisplayAffinity</span>(<span class="self">self</span>, <span class="ident">dwAffinity</span>: <span class="ident">co::WDA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowDisplayAffinity</span>(<span class="self">self</span>, <span class="ident">affinity</span>: <span class="ident">co::WDA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowDisplayAffinity</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">dwAffinity</span>.<span class="number">0</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowDisplayAffinity</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">affinity</span>.<span class="number">0</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`SetWindowLongPtr`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlongptrw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowLongPtr</span>(<span class="self">self</span>, <span class="ident">nIndex</span>: <span class="ident">co::GWLP</span>, <span class="ident">dwNewLong</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nIndex</span>.<span class="number">0</span>, <span class="ident">dwNewLong</span>) }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowLongPtr</span>(<span class="self">self</span>, <span class="ident">index</span>: <span class="ident">co::GWLP</span>, <span class="ident">new_long</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowLongPtrW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">index</span>.<span class="number">0</span>, <span class="ident">new_long</span>) }
 	}
 
 	<span class="doccomment">/// [`SetWindowPlacement`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowplacement)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowPlacement</span>(<span class="self">self</span>, <span class="ident">lpwndpl</span>: <span class="kw-2">&amp;</span><span class="ident">WINDOWPLACEMENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowPlacement</span>(<span class="self">self</span>, <span class="ident">wp</span>: <span class="kw-2">&amp;</span><span class="ident">WINDOWPLACEMENT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">user32::SetWindowPlacement</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpwndpl</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
-			},
+			<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowPlacement</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`SetWindowPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowPos</span>(<span class="self">self</span>,
-		<span class="ident">hWndInsertAfter</span>: <span class="ident">HwndPlace</span>,
-		<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">uFlags</span>: <span class="ident">co::SWP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hwnd_insert_after</span>: <span class="ident">HwndPlace</span>,
+		<span class="ident">pos</span>: <span class="ident">POINT</span>, <span class="ident">size</span>: <span class="ident">SIZE</span>, <span class="ident">flags</span>: <span class="ident">co::SWP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetWindowPos</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">hWndInsertAfter</span>.<span class="ident">as_ptr</span>(),
-					<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">cx</span>, <span class="ident">cy</span>,
-					<span class="ident">uFlags</span>.<span class="number">0</span>,
+					<span class="ident">hwnd_insert_after</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">pos</span>.<span class="ident">x</span>, <span class="ident">pos</span>.<span class="ident">y</span>,
+					<span class="ident">size</span>.<span class="ident">cx</span>, <span class="ident">size</span>.<span class="ident">cy</span>,
+					<span class="ident">flags</span>.<span class="number">0</span>,
 				)
 			},
 		)
@@ -2600,25 +2590,25 @@
 
 	<span class="doccomment">/// [`SetWindowRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowrgn)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>, <span class="ident">bRedraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowRgn</span>(<span class="self">self</span>, <span class="ident">hrgn</span>: <span class="ident">HRGN</span>, <span class="ident">redraw</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>, <span class="ident">bRedraw</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::SetWindowRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hrgn</span>.<span class="ident">ptr</span>, <span class="ident">redraw</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`SetWindowSubclass`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-setwindowsubclass)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowSubclass</span>(<span class="self">self</span>,
-		<span class="ident">pfnSubclass</span>: <span class="ident">SUBCLASSPROC</span>,
-		<span class="ident">uIdSubclass</span>: <span class="ident">usize</span>, <span class="ident">dwRefData</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">subclass_proc</span>: <span class="ident">SUBCLASSPROC</span>,
+		<span class="ident">subclass_id</span>: <span class="ident">usize</span>, <span class="ident">ref_data</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::SetWindowSubclass</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">pfnSubclass</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">uIdSubclass</span>,
-					<span class="ident">dwRefData</span>,
+					<span class="ident">subclass_proc</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">subclass_id</span>,
+					<span class="ident">ref_data</span>,
 				)
 			},
 		)
@@ -2626,12 +2616,12 @@
 
 	<span class="doccomment">/// [`SetWindowText`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowtextw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowText</span>(<span class="self">self</span>, <span class="ident">lpString</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetWindowText</span>(<span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetWindowTextW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">WString::from_str</span>(<span class="ident">lpString</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">WString::from_str</span>(<span class="ident">text</span>).<span class="ident">as_ptr</span>(),
 				)
 			},
 		)
@@ -2640,20 +2630,20 @@
 	<span class="doccomment">/// [`ShellExecute`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ShellExecute</span>(<span class="self">self</span>,
-		<span class="ident">lpOperation</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">lpFile</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">lpParameters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">lpDirectory</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">nShowCmd</span>: <span class="ident">co::SW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span>, <span class="ident">co::SE_ERR</span><span class="op">&gt;</span>
+		<span class="ident">operation</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+		<span class="ident">file</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+		<span class="ident">parameters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">directory</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">show_cmd</span>: <span class="ident">co::SW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span>, <span class="ident">co::SE_ERR</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">unsafe</span> {
 			<span class="ident">shell32::ShellExecuteW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">WString::from_str</span>(<span class="ident">lpOperation</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">WString::from_str</span>(<span class="ident">lpFile</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">lpParameters</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString::from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
-				<span class="ident">lpDirectory</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString::from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
-				<span class="ident">nShowCmd</span>.<span class="number">0</span>,
+				<span class="ident">WString::from_str</span>(<span class="ident">operation</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">WString::from_str</span>(<span class="ident">file</span>).<span class="ident">as_ptr</span>(),
+				<span class="ident">parameters</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString::from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
+				<span class="ident">directory</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString::from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
+				<span class="ident">show_cmd</span>.<span class="number">0</span>,
 			)
 		};
 
@@ -2672,8 +2662,8 @@
 
 	<span class="doccomment">/// [`ShowWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ShowWindow</span>(<span class="self">self</span>, <span class="ident">nCmdShow</span>: <span class="ident">co::SW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::ShowWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nCmdShow</span>.<span class="number">0</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ShowWindow</span>(<span class="self">self</span>, <span class="ident">show_cmd</span>: <span class="ident">co::SW</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::ShowWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">show_cmd</span>.<span class="number">0</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`TaskDialog`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-taskdialog)</span>
@@ -2722,41 +2712,41 @@
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TaskDialog</span>(<span class="self">self</span>,
-		<span class="ident">hInstance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span>,
-		<span class="ident">pszWindowTitle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">pszMainInstruction</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">pszContent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
-		<span class="ident">dwCommonButtons</span>: <span class="ident">co::TDCBF</span>,
-		<span class="ident">pszIcon</span>: <span class="ident">IdTdiconStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::DLGID</span><span class="op">&gt;</span>
+		<span class="ident">hinstance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span>,
+		<span class="ident">window_title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">main_instruction</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">content</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">common_buttons</span>: <span class="ident">co::TDCBF</span>,
+		<span class="ident">icon</span>: <span class="ident">IdTdiconStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::DLGID</span><span class="op">&gt;</span>
 	{
 		<span class="comment">// https://weblogs.asp.net/kennykerr/Windows-Vista-for-Developers-_1320_-Part-2-_1320_-Task-Dialogs-in-Depth</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pnButton</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_button</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
 		<span class="ident">hr_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::TaskDialog</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">hInstance</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-					<span class="ident">WString::from_opt_str</span>(<span class="ident">pszWindowTitle</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">WString::from_opt_str</span>(<span class="ident">pszMainInstruction</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">WString::from_opt_str</span>(<span class="ident">pszContent</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">dwCommonButtons</span>.<span class="number">0</span>,
-					<span class="ident">pszIcon</span>.<span class="ident">as_ptr</span>(),
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pnButton</span>,
+					<span class="ident">hinstance</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+					<span class="ident">WString::from_opt_str</span>(<span class="ident">window_title</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">WString::from_opt_str</span>(<span class="ident">main_instruction</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">WString::from_opt_str</span>(<span class="ident">content</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">common_buttons</span>.<span class="number">0</span>,
+					<span class="ident">icon</span>.<span class="ident">as_ptr</span>(),
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pn_button</span>,
 				)
 			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">co::DLGID</span>(<span class="ident">pnButton</span> <span class="kw">as</span> <span class="kw">_</span>))
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">co::DLGID</span>(<span class="ident">pn_button</span> <span class="kw">as</span> <span class="kw">_</span>))
 	}
 
 	<span class="doccomment">/// [`TranslateAccelerator`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-translateacceleratorw)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TranslateAccelerator</span>(<span class="self">self</span>,
-		<span class="ident">hAccTable</span>: <span class="ident">HACCEL</span>, <span class="ident">lpMsg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">haccel_table</span>: <span class="ident">HACCEL</span>, <span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MSG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::TranslateAcceleratorW</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">hAccTable</span>.<span class="ident">ptr</span>,
-				<span class="ident">lpMsg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">haccel_table</span>.<span class="ident">ptr</span>,
+				<span class="ident">msg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -2772,46 +2762,46 @@
 
 	<span class="doccomment">/// [`ValidateRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-validaterect)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ValidateRect</span>(<span class="self">self</span>, <span class="ident">lpRect</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ValidateRect</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">user32::ValidateRect</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">lpRect</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+				<span class="ident">user32::ValidateRect</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 			},
 		)
 	}
 
 	<span class="doccomment">/// [`ValidateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-validatergn)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ValidateRgn</span>(<span class="self">self</span>, <span class="ident">hRgn</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::ValidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hRgn</span>.<span class="ident">ptr</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ValidateRgn</span>(<span class="self">self</span>, <span class="ident">hrgn</span>: <span class="ident">HRGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::ValidateRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hrgn</span>.<span class="ident">ptr</span>) })
 	}
 
 	<span class="doccomment">/// [`WindowFromPhysicalPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-windowfromphysicalpoint)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WindowFromPhysicalPoint</span>(<span class="ident">point</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::WindowFromPhysicalPoint</span>(<span class="ident">point</span>.<span class="ident">x</span>, <span class="ident">point</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WindowFromPhysicalPoint</span>(<span class="ident">pt</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::WindowFromPhysicalPoint</span>(<span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">pt</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
 	<span class="doccomment">/// [`WindowFromPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-windowfrompoint)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WindowFromPoint</span>(<span class="ident">point</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::WindowFromPoint</span>(<span class="ident">point</span>.<span class="ident">x</span>, <span class="ident">point</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WindowFromPoint</span>(<span class="ident">pt</span>: <span class="ident">POINT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> { <span class="ident">user32::WindowFromPoint</span>(<span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">pt</span>.<span class="ident">y</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
 	}
 
 	<span class="doccomment">/// [`WinHelp`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-winhelpw)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">WinHelp</span>(<span class="self">self</span>,
-		<span class="ident">lpszHelp</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">uCommand</span>: <span class="ident">co::HELPW</span>, <span class="ident">dwData</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">help_file</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">cmd</span>: <span class="ident">co::HELPW</span>, <span class="ident">data</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::WinHelpW</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">WString::from_str</span>(<span class="ident">lpszHelp</span>).<span class="ident">as_ptr</span>(),
-					<span class="ident">uCommand</span>.<span class="number">0</span>,
-					<span class="ident">dwData</span>,
+					<span class="ident">WString::from_str</span>(<span class="ident">help_file</span>).<span class="ident">as_ptr</span>(),
+					<span class="ident">cmd</span>.<span class="number">0</span>,
+					<span class="ident">data</span>,
 				)
 			},
 		)

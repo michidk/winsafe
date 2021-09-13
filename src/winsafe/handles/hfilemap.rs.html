@@ -133,17 +133,17 @@
 	<span class="doccomment">/// [`HFILEMAPVIEW::UnmapViewOfFile`](crate::HFILEMAPVIEW::UnmapViewOfFile)</span>
 	<span class="doccomment">/// call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MapViewOfFile</span>(<span class="self">self</span>,
-		<span class="ident">desiredAccess</span>: <span class="ident">co::FILE_MAP</span>,
+		<span class="ident">desired_access</span>: <span class="ident">co::FILE_MAP</span>,
 		<span class="ident">offset</span>: <span class="ident">u64</span>,
-		<span class="ident">numberOfBytesToMap</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFILEMAPVIEW</span><span class="op">&gt;</span>
+		<span class="ident">number_of_bytes_to_map</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HFILEMAPVIEW</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::MapViewOfFile</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">desiredAccess</span>.<span class="number">0</span>,
+				<span class="ident">desired_access</span>.<span class="number">0</span>,
 				<span class="ident">HIDWORD</span>(<span class="ident">offset</span>),
 				<span class="ident">LODWORD</span>(<span class="ident">offset</span>),
-				<span class="ident">numberOfBytesToMap</span>.<span class="ident">unwrap_or_default</span>(),
+				<span class="ident">number_of_bytes_to_map</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFILEMAPVIEW</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
