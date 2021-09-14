@@ -155,27 +155,27 @@
 			<span class="doccomment">/// [`GetDisplayName`](crate::shell::IShellItem::GetDisplayName) on</span>
 			<span class="doccomment">/// each one of them.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDisplayNames</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">sigdnName</span>: <span class="ident">shellco::SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>
+				<span class="ident">sigdn_name</span>: <span class="ident">shellco::SIGDN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>
 			{
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">names</span> <span class="op">=</span> <span class="ident">Vec::default</span>();
 				<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">GetCount</span>()<span class="question-mark">?</span> {
-					<span class="kw">let</span> <span class="ident">shellItem</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">GetItemAt</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
-					<span class="ident">names</span>.<span class="ident">push</span>(<span class="ident">shellItem</span>.<span class="ident">GetDisplayName</span>(<span class="ident">sigdnName</span>)<span class="question-mark">?</span>);
+					<span class="kw">let</span> <span class="ident">shell_item</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">GetItemAt</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
+					<span class="ident">names</span>.<span class="ident">push</span>(<span class="ident">shell_item</span>.<span class="ident">GetDisplayName</span>(<span class="ident">sigdn_name</span>)<span class="question-mark">?</span>);
 				}
 				<span class="prelude-val">Ok</span>(<span class="ident">names</span>)
 			}
 
 			<span class="doccomment">/// [`IShellItemArray::GetItemAt`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitemarray-getitemat)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetItemAt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dwIndex</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetItemAt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">ishellitemarray_vt</span>().<span class="ident">GetItemAt</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="ident">dwIndex</span>,
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="ident">index</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
-				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem::from</span>(<span class="ident">ppvQueried</span>))
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem::from</span>(<span class="ident">ppv_queried</span>))
 			}
 		}
 	};

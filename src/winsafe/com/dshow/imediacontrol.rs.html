@@ -172,27 +172,27 @@
 
 			<span class="doccomment">/// [`IMediaControl::AddSourceFilter`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-addsourcefilter)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AddSourceFilter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IDispatch</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AddSourceFilter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IDispatch</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediacontrol_vt</span>().<span class="ident">AddSourceFilter</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>() }, <span class="comment">// BSTR</span>
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">file_name</span>).<span class="ident">as_mut_ptr</span>() }, <span class="comment">// BSTR</span>
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
-				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IDispatch::from</span>(<span class="ident">ppvQueried</span>))
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IDispatch::from</span>(<span class="ident">ppv_queried</span>))
 			}
 
 			<span class="doccomment">/// [`IMediaControl::GetState`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-getstate)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">msTimeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">dshowco::FILTER_STATE</span><span class="op">&gt;</span>
+				<span class="ident">ms_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">dshowco::FILTER_STATE</span><span class="op">&gt;</span>
 			{
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">dshowco::FILTER_STATE::Stopped</span>;
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediacontrol_vt</span>().<span class="ident">GetState</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="ident">msTimeout</span>.<span class="ident">unwrap_or</span>(<span class="ident">INFINITE</span> <span class="kw">as</span> <span class="kw">_</span>),
+						<span class="ident">ms_timeout</span>.<span class="ident">unwrap_or</span>(<span class="ident">INFINITE</span> <span class="kw">as</span> <span class="kw">_</span>),
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>.<span class="number">0</span>,
 					),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">state</span>)
@@ -206,11 +206,11 @@
 
 			<span class="doccomment">/// [`IMediaControl::RenderFile`](https://docs.microsoft.com/en-us/windows/win32/api/control/nf-control-imediacontrol-renderfile)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RenderFile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fileName</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RenderFile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediacontrol_vt</span>().<span class="ident">RenderFile</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">fileName</span>).<span class="ident">as_mut_ptr</span>() }, <span class="comment">// BSTR</span>
+						<span class="kw">unsafe</span> { <span class="ident">WString::from_str</span>(<span class="ident">file_name</span>).<span class="ident">as_mut_ptr</span>() }, <span class="comment">// BSTR</span>
 					),
 				)
 			}

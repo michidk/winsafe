@@ -68,6 +68,8 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -122,16 +124,18 @@
 
 			<span class="doccomment">/// [`IDispatch::GetTypeInfo`](https://docs.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-gettypeinfo)</span>
 			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTypeInfo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iTInfo</span>: <span class="ident">u32</span>, <span class="ident">lcid</span>: <span class="ident">LCID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ITypeInfo</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppvQueried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTypeInfo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">info_type</span>: <span class="ident">u32</span>, <span class="ident">lcid</span>: <span class="ident">LCID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">ITypeInfo</span><span class="op">&gt;</span>
+			{
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">idispatch_vt</span>().<span class="ident">GetTypeInfo</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="ident">iTInfo</span>,
+						<span class="ident">info_type</span>,
 						<span class="ident">lcid</span>.<span class="number">0</span>,
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppvQueried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
-				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">ITypeInfo::from</span>(<span class="ident">ppvQueried</span>))
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">ITypeInfo::from</span>(<span class="ident">ppv_queried</span>))
 			}
 		}
 	};

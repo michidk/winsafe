@@ -207,7 +207,6 @@
 <span id="207">207</span>
 <span id="208">208</span>
 <span id="209">209</span>
-<span id="210">210</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -269,16 +268,17 @@
 			<span class="doccomment">/// [`IMediaSeeking::ConvertTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-converttimeformat)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ConvertTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">targetFormat</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>, <span class="ident">source</span>: <span class="ident">i64</span>, <span class="ident">sourceFormat</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
+				<span class="ident">target_format</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>,
+				<span class="ident">source</span>: <span class="ident">i64</span>, <span class="ident">source_format</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
 			{
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">ConvertTimeFormat</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>,
-						<span class="ident">targetFormat</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="ident">target_format</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 						<span class="ident">source</span>,
-						<span class="ident">sourceFormat</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="ident">source_format</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">target</span>)
 			}
@@ -288,8 +288,7 @@
 			<span class="doccomment">///</span>
 			<span class="doccomment">/// Returns earliest and latest times for efficient seeking.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetAvailable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">i64</span>, <span class="ident">i64</span>)<span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">early</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">late</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">early</span>, <span class="kw-2">mut</span> <span class="ident">late</span>) <span class="op">=</span> (<span class="ident">i64::default</span>(), <span class="ident">i64::default</span>());
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetPositions</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -302,7 +301,7 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetCurrentPosition method`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-getcurrentposition)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCurrentPosition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetCurrentPosition</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -314,7 +313,7 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetDuration`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-getduration)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetDuration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">duration</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">duration</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetDuration</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">duration</span>),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">duration</span>)
@@ -325,8 +324,7 @@
 			<span class="doccomment">///</span>
 			<span class="doccomment">/// Returns current and stop positions.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetPositions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">i64</span>, <span class="ident">i64</span>)<span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">current</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stop</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">current</span>, <span class="kw-2">mut</span> <span class="ident">stop</span>) <span class="op">=</span> (<span class="ident">i64::default</span>(), <span class="ident">i64::default</span>());
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetPositions</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
@@ -339,7 +337,7 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetPreroll`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-getpreroll)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetPreroll</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">preroll</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">preroll</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetPreroll</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">preroll</span>),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">preroll</span>)
@@ -348,7 +346,7 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetRate`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-getrate)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetRate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rate</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">0.0</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rate</span> <span class="op">=</span> <span class="ident">f64::default</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetRate</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rate</span>),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rate</span>)
@@ -357,7 +355,7 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetStopPosition`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-getstopposition)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetStopPosition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetStopPosition</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>),
 				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">pos</span>)
@@ -366,28 +364,28 @@
 			<span class="doccomment">/// [`IMediaSeeking::GetTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-gettimeformat)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">GUID</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">timeGuid</span> <span class="op">=</span> <span class="ident">guid::TIME_FORMAT_NONE</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_guid</span> <span class="op">=</span> <span class="ident">guid::TIME_FORMAT_NONE</span>;
 				<span class="ident">hr_to_winresult</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">GetStopPosition</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">timeGuid</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">time_guid</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					),
-				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">timeGuid</span>)
+				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">time_guid</span>)
 			}
 
 			<span class="doccomment">/// [`IMediaSeeking::SetPositions`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-setpositions)</span>
 			<span class="doccomment">/// method.</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetPositions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="kw-2">mut</span> <span class="ident">current</span>: <span class="ident">i64</span>, <span class="ident">currentFlags</span>: <span class="ident">dshowco::SEEKING_FLAGS</span>,
-				<span class="kw-2">mut</span> <span class="ident">stop</span>: <span class="ident">i64</span>, <span class="ident">stopFlags</span>: <span class="ident">dshowco::SEEKING_FLAGS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+				<span class="kw-2">mut</span> <span class="ident">current</span>: <span class="ident">i64</span>, <span class="ident">current_flags</span>: <span class="ident">dshowco::SEEKING_FLAGS</span>,
+				<span class="kw-2">mut</span> <span class="ident">stop</span>: <span class="ident">i64</span>, <span class="ident">stop_flags</span>: <span class="ident">dshowco::SEEKING_FLAGS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 			{
 				<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 					(<span class="self">self</span>.<span class="ident">imediaseeking_vt</span>().<span class="ident">SetPositions</span>)(
 						<span class="self">self</span>.<span class="ident">ppvt</span>,
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">current</span>,
-						<span class="ident">currentFlags</span>.<span class="number">0</span>,
+						<span class="ident">current_flags</span>.<span class="number">0</span>,
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stop</span>,
-						<span class="ident">stopFlags</span>.<span class="number">0</span>,
+						<span class="ident">stop_flags</span>.<span class="number">0</span>,
 					) <span class="kw">as</span> <span class="kw">_</span>,
 				) {
 					<span class="ident">co::ERROR::S_OK</span> <span class="op">|</span> <span class="ident">co::ERROR::S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
