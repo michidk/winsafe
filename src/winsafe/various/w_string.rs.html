@@ -457,6 +457,21 @@
 <span id="457">457</span>
 <span id="458">458</span>
 <span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
 
@@ -469,15 +484,25 @@
 <span class="doccomment">/// [`WString::guess_encoding`](crate::WString::guess_encoding).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Encoding</span> {
+	<span class="doccomment">/// Unknown encoding.</span>
 	<span class="ident">Unknown</span>,
+	<span class="doccomment">/// Common [US_ASCII](https://en.wikipedia.org/wiki/ASCII) encoding.</span>
 	<span class="ident">Ansi</span>,
+	<span class="doccomment">/// [Windows-1252](https://en.wikipedia.org/wiki/Windows-1252) encoding.</span>
 	<span class="ident">Win1252</span>,
+	<span class="doccomment">/// [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.</span>
 	<span class="ident">Utf8</span>,
+	<span class="doccomment">/// [UTF-16](https://en.wikipedia.org/wiki/UTF-16) encoding, big-endian.</span>
 	<span class="ident">Utf16be</span>,
+	<span class="doccomment">/// [UTF-16](https://en.wikipedia.org/wiki/UTF-16) encoding, little-endian.</span>
 	<span class="ident">Utf16le</span>,
+	<span class="doccomment">/// [UTF-32](https://en.wikipedia.org/wiki/UTF-32) encoding, big-endian.</span>
 	<span class="ident">Utf32be</span>,
+	<span class="doccomment">/// [UTF-32](https://en.wikipedia.org/wiki/UTF-32) encoding, little-endian.</span>
 	<span class="ident">Utf32le</span>,
+	<span class="doccomment">/// [Standard Compression Scheme for Unicode](https://en.wikipedia.org/wiki/Standard_Compression_Scheme_for_Unicode).</span>
 	<span class="ident">Scsu</span>,
+	<span class="doccomment">/// [Binary Ordered Compression for Unicode](https://en.wikipedia.org/wiki/Binary_Ordered_Compression_for_Unicode).</span>
 	<span class="ident">Bocu1</span>,
 }
 
@@ -744,8 +769,13 @@
 	<span class="doccomment">/// If the new size is zero, the internal buffer is deallocated.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** The internal memory can move after a realloc, so if you&#39;re</span>
-	<span class="doccomment">/// using the internal buffer somewhere, update it by calling `as_const_ptr`</span>
-	<span class="doccomment">/// or `as_mut_buffer` again.</span>
+	<span class="doccomment">/// using a pointer or reference to the internal buffer, they may then point</span>
+	<span class="doccomment">/// to an invalid memory location. After a realloc, the following methods</span>
+	<span class="doccomment">/// must be called again:</span>
+	<span class="doccomment">/// * [`as_mut_ptr`](crate::WString::as_mut_ptr);</span>
+	<span class="doccomment">/// * [`as_ptr`](crate::WString::as_ptr);</span>
+	<span class="doccomment">/// * [`as_mut_slice`](crate::WString::as_mut_slice);</span>
+	<span class="doccomment">/// * [`as_slice`](crate::WString::as_slice).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">realloc_buffer</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">new_size</span>: <span class="ident">usize</span>) {
 		<span class="kw">if</span> <span class="ident">new_size</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
 			<span class="self">self</span>.<span class="ident">vec_u16</span> <span class="op">=</span> <span class="prelude-val">None</span>; <span class="comment">// dealloc</span>
