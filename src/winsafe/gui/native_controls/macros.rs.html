@@ -107,13 +107,12 @@
 <span id="107">107</span>
 <span id="108">108</span>
 <span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
 </pre><pre class="rust">
-<span class="doccomment">/// Implements `Send`, `Sync` and `Child` traits for a control.</span>
-<span class="macro">macro_rules!</span> <span class="ident">impl_send_sync_debug_child</span> {
+<span class="doccomment">/// Implements Debug trait to control.</span>
+<span class="macro">macro_rules!</span> <span class="ident">impl_debug</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
-		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
-
 		<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
 				<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;HWND {}, ID {}&quot;</span>,
@@ -122,7 +121,12 @@
 				)
 			}
 		}
+	};
+}
 
+<span class="doccomment">/// Implements Child trait to control.</span>
+<span class="macro">macro_rules!</span> <span class="ident">impl_child</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">impl</span> <span class="kw">crate</span><span class="ident">::gui::traits::Child</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">crate</span><span class="ident">::HWND</span> {
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>()

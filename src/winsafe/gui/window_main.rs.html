@@ -179,6 +179,13 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
@@ -307,7 +314,11 @@
 	<span class="ident">raw_dlg</span>: <span class="ident">RawDlg</span>,
 }
 
-<span class="macro">impl_send_sync_debug_parent!</span>(<span class="ident">WindowMain</span>);
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
+
+<span class="macro">impl_debug!</span>(<span class="ident">WindowMain</span>);
+<span class="macro">impl_parent!</span>(<span class="ident">WindowMain</span>);
 
 <span class="kw">impl</span> <span class="ident">WindowMain</span> {
 	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be created with</span>
@@ -334,7 +345,10 @@
 		}
 	}
 
-	<span class="macro">pub_fn_baseref_hwnd_on_runuithread!</span>();
+	<span class="macro">fn_base_ref!</span>();
+	<span class="macro">pub_fn_hwnd!</span>();
+	<span class="macro">pub_fn_on!</span>();
+	<span class="macro">pub_fn_run_ui_thread!</span>();
 
 	<span class="doccomment">/// Physically creates the window, then runs the main application loop. This</span>
 	<span class="doccomment">/// method will block until the window is closed.</span>

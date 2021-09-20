@@ -212,10 +212,6 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
@@ -244,7 +240,11 @@
 	<span class="ident">events</span>: <span class="ident">ButtonEvents</span>,
 }
 
-<span class="macro">impl_send_sync_debug_child!</span>(<span class="ident">RadioButton</span>);
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">RadioButton</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">RadioButton</span> {}
+
+<span class="macro">impl_debug!</span>(<span class="ident">RadioButton</span>);
+<span class="macro">impl_child!</span>(<span class="ident">RadioButton</span>);
 
 <span class="kw">impl</span> <span class="ident">RadioButton</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">RadioButtonOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
@@ -277,7 +277,6 @@
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
-				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">baseline_text_align</span> { <span class="ident">pos</span>.<span class="ident">y</span> <span class="op">+</span><span class="op">=</span> <span class="number">3</span>; }
 				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
@@ -361,11 +360,6 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to the size needed to fit the text.</span>
 	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">SIZE</span>,
-	<span class="doccomment">/// Will adjust `position.cy` so that, if the control is placed side-by-side</span>
-	<span class="doccomment">/// with an [`Edit`](crate::gui::Edit) control, their texts will be aligned.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to false.</span>
-	<span class="kw">pub</span> <span class="ident">baseline_text_align</span>: <span class="ident">bool</span>,
 	<span class="doccomment">/// Radio button styles to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
@@ -403,7 +397,6 @@
 			<span class="ident">text</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
 			<span class="ident">position</span>: <span class="ident">POINT::new</span>(<span class="number">0</span>, <span class="number">0</span>),
 			<span class="ident">size</span>: <span class="ident">SIZE::new</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">-</span><span class="number">1</span>), <span class="comment">// will resize to fit the text</span>
-			<span class="ident">baseline_text_align</span>: <span class="bool-val">false</span>,
 			<span class="ident">button_style</span>: <span class="ident">co::BS::AUTORADIOBUTTON</span>,
 			<span class="ident">window_style</span>: <span class="ident">co::WS::CHILD</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span>,
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span>,
@@ -426,7 +419,6 @@
 			<span class="ident">text</span>: <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">clone</span>(),
 			<span class="ident">position</span>: <span class="self">self</span>.<span class="ident">position</span>,
 			<span class="ident">size</span>: <span class="self">self</span>.<span class="ident">size</span>,
-			<span class="ident">baseline_text_align</span>: <span class="self">self</span>.<span class="ident">baseline_text_align</span>,
 			<span class="ident">button_style</span>: <span class="self">self</span>.<span class="ident">button_style</span>,
 			<span class="ident">window_style</span>: <span class="self">self</span>.<span class="ident">window_style</span>,
 			<span class="ident">window_ex_style</span>: <span class="self">self</span>.<span class="ident">window_ex_style</span>,

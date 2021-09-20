@@ -201,9 +201,6 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -234,7 +231,11 @@
 	<span class="ident">items</span>: <span class="ident">ComboBoxItems</span>,
 }
 
-<span class="macro">impl_send_sync_debug_child!</span>(<span class="ident">ComboBox</span>);
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">ComboBox</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">ComboBox</span> {}
+
+<span class="macro">impl_debug!</span>(<span class="ident">ComboBox</span>);
+<span class="macro">impl_child!</span>(<span class="ident">ComboBox</span>);
 
 <span class="kw">impl</span> <span class="ident">ComboBox</span> {
 	<span class="doccomment">/// Instantiates a new `ComboBox` object, to be created on the parent window</span>
@@ -295,7 +296,6 @@
 				<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">SIZE::new</span>(<span class="ident">opts</span>.<span class="ident">width</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
-					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">baseline_text_align</span> { <span class="ident">pos</span>.<span class="ident">y</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>; }
 					<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
 
 					<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
@@ -340,11 +340,6 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 0 x 0.</span>
 	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
-	<span class="doccomment">/// Will adjust `position.cy` so that, if the control is placed side-by-side</span>
-	<span class="doccomment">/// with an [`Edit`](crate::gui::Edit) control, their texts will be aligned.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to false.</span>
-	<span class="kw">pub</span> <span class="ident">baseline_text_align</span>: <span class="ident">bool</span>,
 	<span class="doccomment">/// Control width, in pixels, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
@@ -391,7 +386,6 @@
 	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">position</span>: <span class="ident">POINT::new</span>(<span class="number">0</span>, <span class="number">0</span>),
-			<span class="ident">baseline_text_align</span>: <span class="bool-val">false</span>,
 			<span class="ident">width</span>: <span class="number">120</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
 			<span class="ident">combo_box_style</span>: <span class="ident">co::CBS::DROPDOWNLIST</span>,

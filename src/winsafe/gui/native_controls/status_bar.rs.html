@@ -193,6 +193,10 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -226,7 +230,11 @@
 	<span class="ident">right_edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="comment">// buffer to speed up resize calls</span>
 }
 
-<span class="macro">impl_send_sync_debug_child!</span>(<span class="ident">StatusBar</span>);
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">StatusBar</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">StatusBar</span> {}
+
+<span class="macro">impl_debug!</span>(<span class="ident">StatusBar</span>);
+<span class="macro">impl_child!</span>(<span class="ident">StatusBar</span>);
 
 <span class="kw">impl</span> <span class="ident">StatusBar</span> {
 	<span class="doccomment">/// Instantiates a new `StatusBar` object, to be created on the parent</span>
