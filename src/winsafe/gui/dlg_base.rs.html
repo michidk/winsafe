@@ -137,14 +137,14 @@
 <span id="137">137</span>
 <span id="138">138</span>
 <span id="139">139</span>
+<span id="140">140</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::IdStr</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::base::Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::ProcessResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs::ui_font</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">post_quit_error</span>, <span class="ident">ui_font</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles::HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
@@ -217,64 +217,66 @@
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">dialog_proc</span>(
 		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span>
 	{
-		<span class="op">|</span><span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
-		{
-			<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
+		<span class="self">Self</span><span class="ident">::dialog_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>)
+			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">err</span>); <span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span> })
+	}
 
-			<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
-				<span class="ident">co::WM::INITDIALOG</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// first message being handled</span>
-					<span class="kw">let</span> <span class="ident">wm_idlg</span> <span class="op">=</span> <span class="ident">wm::InitDialog::from_generic_wm</span>(<span class="ident">wm_any</span>);
-					<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_idlg</span>.<span class="ident">additional_data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
-					<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// store</span>
-					<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
-					<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">hwnd</span>); <span class="comment">// store HWND in struct field</span>
-					<span class="ident">ptr_self</span>
-				},
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="comment">// retrieve</span>
-			};
+	<span class="kw">fn</span> <span class="ident">dialog_proc_proc</span>(
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
+	{
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
 
-			<span class="comment">// If no pointer stored, then no processing is done.</span>
-			<span class="comment">// Prevents processing before WM_INITDIALOG and after WM_NCDESTROY.</span>
-			<span class="kw">if</span> <span class="ident">ptr_self</span>.<span class="ident">is_null</span>() {
-				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">hwnd</span>.<span class="ident">DefWindowProc</span>(<span class="ident">wm_any</span>));
-			}
+		<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
+			<span class="ident">co::WM::INITDIALOG</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// first message being handled</span>
+				<span class="kw">let</span> <span class="ident">wm_idlg</span> <span class="op">=</span> <span class="ident">wm::InitDialog::from_generic_wm</span>(<span class="ident">wm_any</span>);
+				<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_idlg</span>.<span class="ident">additional_data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
+				<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// store</span>
+				<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
+				<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">hwnd</span>); <span class="comment">// store HWND in struct field</span>
+				<span class="ident">ptr_self</span>
+			},
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="comment">// retrieve</span>
+		};
 
-			<span class="comment">// Execute privileged closures.</span>
-			<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
-			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_privileged_messages</span>(<span class="ident">wm_any</span>);
+		<span class="comment">// If no pointer stored, then no processing is done.</span>
+		<span class="comment">// Prevents processing before WM_INITDIALOG and after WM_NCDESTROY.</span>
+		<span class="kw">if</span> <span class="ident">ptr_self</span>.<span class="ident">is_null</span>() {
+			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">hwnd</span>.<span class="ident">DefWindowProc</span>(<span class="ident">wm_any</span>));
+		}
 
-			<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::INITDIALOG</span> {
-				<span class="comment">// Child controls are created in privileged closures, so we set the</span>
-				<span class="comment">// system font only now.</span>
-				<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="comment">// on the window itself</span>
+		<span class="comment">// Execute privileged closures.</span>
+		<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
+		<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_privileged_messages</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
+
+		<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::INITDIALOG</span> {
+			<span class="comment">// Child controls are created in privileged closures, so we set the</span>
+			<span class="comment">// system font only now.</span>
+			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="comment">// on the window itself</span>
+				<span class="ident">hfont</span>: <span class="ident">ui_font</span>(),
+				<span class="ident">redraw</span>: <span class="bool-val">false</span>,
+			});
+			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">EnumChildWindows</span>(<span class="op">|</span><span class="ident">hchild</span><span class="op">|</span> {
+				<span class="ident">hchild</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="comment">// on each child control</span>
 					<span class="ident">hfont</span>: <span class="ident">ui_font</span>(),
 					<span class="ident">redraw</span>: <span class="bool-val">false</span>,
 				});
-				<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">EnumChildWindows</span>(<span class="op">|</span><span class="ident">hchild</span><span class="op">|</span> {
-					<span class="ident">hchild</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="comment">// on each child control</span>
-						<span class="ident">hfont</span>: <span class="ident">ui_font</span>(),
-						<span class="ident">redraw</span>: <span class="bool-val">false</span>,
-					});
-					<span class="bool-val">true</span>
-				});
-			}
-
-			<span class="comment">// Execute user closure, if any.</span>
-			<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_effective_message</span>(<span class="ident">wm_any</span>);
-
-			<span class="kw">if</span> <span class="ident">msg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
-				<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
-				<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">HWND::NULL</span>); <span class="comment">// clear stored HWND</span>
-			}
-
-			<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">process_result</span> {
-				<span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">res</span>,
-				<span class="ident">ProcessResult::HandledWithoutRet</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>, <span class="comment">// TRUE</span>
-				<span class="ident">ProcessResult::NotHandled</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// FALSE</span>
-			})
+				<span class="bool-val">true</span>
+			});
 		}
-		(<span class="ident">hwnd</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>)
-			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>); <span class="number">1</span> }) <span class="comment">// TRUE</span>
+
+		<span class="comment">// Execute user closure, if any.</span>
+		<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_one_message</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
+
+		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
+			<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
+			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">HWND::NULL</span>); <span class="comment">// clear stored HWND</span>
+		}
+
+		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">process_result</span> {
+			<span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">res</span>,
+			<span class="ident">ProcessResult::HandledWithoutRet</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>, <span class="comment">// TRUE</span>
+			<span class="ident">ProcessResult::NotHandled</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// FALSE</span>
+		})
 	}
 }
 </pre></div>

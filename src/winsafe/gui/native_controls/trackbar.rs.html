@@ -207,15 +207,11 @@
 <span id="207">207</span>
 <span id="208">208</span>
 <span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::TrackbarEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
@@ -264,7 +260,7 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
 
 		<span class="ident">new_self</span>
@@ -287,36 +283,34 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
 
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-			<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
-				<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
-					<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
+			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
+				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
 
-					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
-						<span class="string">&quot;msctls_trackbar32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
-						<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
-						<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
-						<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">trackbar_style</span>.<span class="ident">into</span>(),
-					)<span class="question-mark">?</span>;
+				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
+					<span class="string">&quot;msctls_trackbar32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
+					<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
+					<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
+					<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">trackbar_style</span>.<span class="ident">into</span>(),
+				)<span class="question-mark">?</span>;
 
-					<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">range</span> <span class="op">!</span><span class="op">=</span> (<span class="number">0</span>, <span class="number">100</span>) {
-						<span class="self">self</span>.<span class="ident">set_range</span>(<span class="ident">opts</span>.<span class="ident">range</span>.<span class="number">0</span>, <span class="ident">opts</span>.<span class="ident">range</span>.<span class="number">1</span>);
-					}
+				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">range</span> <span class="op">!</span><span class="op">=</span> (<span class="number">0</span>, <span class="number">100</span>) {
+					<span class="self">self</span>.<span class="ident">set_range</span>(<span class="ident">opts</span>.<span class="ident">range</span>.<span class="number">0</span>, <span class="ident">opts</span>.<span class="ident">range</span>.<span class="number">1</span>);
+				}
 
-					<span class="prelude-val">Ok</span>(())
-				},
-				<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
-			}
-		}().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
+				<span class="prelude-val">Ok</span>(())
+			},
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
+		}
 	}
 
 	<span class="macro">pub_fn_hwnd!</span>();

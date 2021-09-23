@@ -191,8 +191,8 @@
 <span class="kw">use</span> <span class="ident">std::ops::Index</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::RadioGroupEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
@@ -257,7 +257,7 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
 
 		<span class="ident">new_self</span>
@@ -292,17 +292,17 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
 
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">for</span> <span class="ident">radio</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">radios</span>.<span class="ident">iter_mut</span>() {
-			<span class="ident">radio</span>.<span class="ident">create</span>()
-				.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>));
+			<span class="ident">radio</span>.<span class="ident">create</span>()<span class="question-mark">?</span>;
 		}
+		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="doccomment">/// Exposes the radio group events.</span>

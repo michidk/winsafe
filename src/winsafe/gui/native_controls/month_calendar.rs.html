@@ -181,16 +181,12 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::HwndPlace</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::MonthCalendarEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
@@ -239,7 +235,7 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="number">0</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
 
 		<span class="ident">new_self</span>
@@ -262,39 +258,37 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(); <span class="bool-val">true</span> }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
 
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-			<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
-				<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
-					<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
+			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
+				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
-					<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
-						<span class="string">&quot;SysMonthCal32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">SIZE::new</span>(<span class="number">0</span>, <span class="number">0</span>),
-						<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
-						<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
-						<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">month_calendar_style</span>.<span class="ident">into</span>(),
-					)<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>( <span class="comment">// may panic</span>
+					<span class="string">&quot;SysMonthCal32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">SIZE::new</span>(<span class="number">0</span>, <span class="number">0</span>),
+					<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
+					<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
+					<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">month_calendar_style</span>.<span class="ident">into</span>(),
+				)<span class="question-mark">?</span>;
 
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bounding_rect</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
-					<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">mcm::GetMinReqRect</span> {
-						<span class="ident">bounding_rect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bounding_rect</span>,
-					})<span class="question-mark">?</span>;
-					<span class="ident">our_hwnd</span>.<span class="ident">SetWindowPos</span>(<span class="ident">HwndPlace::None</span>, <span class="ident">POINT::default</span>(),
-						<span class="ident">SIZE::new</span>(<span class="ident">bounding_rect</span>.<span class="ident">right</span>, <span class="ident">bounding_rect</span>.<span class="ident">bottom</span>),
-						<span class="ident">co::SWP::NOZORDER</span> <span class="op">|</span> <span class="ident">co::SWP::NOMOVE</span>)<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bounding_rect</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
+				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">mcm::GetMinReqRect</span> {
+					<span class="ident">bounding_rect</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bounding_rect</span>,
+				})<span class="question-mark">?</span>;
+				<span class="ident">our_hwnd</span>.<span class="ident">SetWindowPos</span>(<span class="ident">HwndPlace::None</span>, <span class="ident">POINT::default</span>(),
+					<span class="ident">SIZE::new</span>(<span class="ident">bounding_rect</span>.<span class="ident">right</span>, <span class="ident">bounding_rect</span>.<span class="ident">bottom</span>),
+					<span class="ident">co::SWP::NOZORDER</span> <span class="op">|</span> <span class="ident">co::SWP::NOMOVE</span>)<span class="question-mark">?</span>;
 
-					<span class="prelude-val">Ok</span>(())
-				},
-				<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
-			}
-		}().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
+				<span class="prelude-val">Ok</span>(())
+			},
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
+		}
 	}
 
 	<span class="macro">pub_fn_hwnd!</span>();

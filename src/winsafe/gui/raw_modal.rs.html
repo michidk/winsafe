@@ -235,6 +235,8 @@
 <span id="235">235</span>
 <span id="236">236</span>
 <span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -342,8 +344,8 @@
 				<span class="comment">// WM_QUIT was sent, exit modal loop now and signal parent.</span>
 				<span class="comment">// wParam has the program exit code.</span>
 				<span class="comment">// https://devblogs.microsoft.com/oldnewthing/20050222-00/?p=36393</span>
-				<span class="ident">PostQuitMessage</span>(<span class="ident">co::ERROR</span>(<span class="ident">msg</span>.<span class="ident">wParam</span> <span class="kw">as</span> <span class="ident">u32</span>));
-				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">msg</span>.<span class="ident">wParam</span> <span class="kw">as</span> <span class="ident">i32</span>);
+				<span class="ident">PostQuitMessage</span>(<span class="ident">msg</span>.<span class="ident">wParam</span> <span class="kw">as</span> <span class="kw">_</span>);
+				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">msg</span>.<span class="ident">wParam</span> <span class="kw">as</span> <span class="kw">_</span>);
 			}
 
 			<span class="comment">// If a child window, will retrieve its top-level parent.</span>
@@ -379,6 +381,7 @@
 						<span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">focus_first_child</span>(); <span class="comment">// if window receives focus, delegate to first child</span>
 					}
 				}
+				<span class="prelude-val">Ok</span>(())
 			}
 		});
 
@@ -388,11 +391,12 @@
 				<span class="kw">let</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>();
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">hparent</span>) <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">GetWindow</span>(<span class="ident">co::GW::OWNER</span>) {
 					<span class="ident">hparent</span>.<span class="ident">EnableWindow</span>(<span class="bool-val">true</span>); <span class="comment">// re-enable parent</span>
-					<span class="ident">hwnd</span>.<span class="ident">DestroyWindow</span>(); <span class="comment">// then destroy modal</span>
+					<span class="ident">hwnd</span>.<span class="ident">DestroyWindow</span>()<span class="question-mark">?</span>; <span class="comment">// then destroy modal</span>
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hprev</span>) <span class="op">=</span> <span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">hchild_prev_focus_parent</span> {
 						<span class="ident">hprev</span>.<span class="ident">SetFocus</span>(); <span class="comment">// this focus could be set on WM_DESTROY as well</span>
 					}
 				}
+				<span class="prelude-val">Ok</span>(())
 			}
 		});
 	}

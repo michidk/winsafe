@@ -93,10 +93,14 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::IdStr</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
@@ -143,7 +147,7 @@
 	}
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">run_main</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co::SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co::SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
 	{
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dialog_param</span>()<span class="question-mark">?</span>; <span class="comment">// may panic</span>
 		<span class="kw">let</span> <span class="ident">hinst</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">parent_hinstance</span>()<span class="question-mark">?</span>;
@@ -152,7 +156,9 @@
 			.<span class="ident">transpose</span>()<span class="question-mark">?</span>;
 
 		<span class="self">self</span>.<span class="ident">set_icon_if_any</span>(<span class="ident">hinst</span>)<span class="question-mark">?</span>;
-		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">ShowWindow</span>(<span class="ident">cmd_show</span>.<span class="ident">unwrap_or</span>(<span class="ident">co::SW::SHOW</span>));
+
+		<span class="kw">let</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>();
+		<span class="ident">hwnd</span>.<span class="ident">ShowWindow</span>(<span class="ident">cmd_show</span>.<span class="ident">unwrap_or</span>(<span class="ident">co::SW::SHOW</span>));
 
 		<span class="ident">Base::run_main_loop</span>(<span class="ident">haccel</span>) <span class="comment">// blocks until window is closed</span>
 	}
@@ -160,11 +166,13 @@
 	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">user_events_ref</span>().<span class="ident">wm_close</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">DestroyWindow</span>()
+			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">DestroyWindow</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(()) }
 		});
 
-		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">user_events_ref</span>().<span class="ident">wm_nc_destroy</span>(
-			<span class="op">|</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">co::ERROR::SUCCESS</span>));
+		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">user_events_ref</span>().<span class="ident">wm_nc_destroy</span>(<span class="op">|</span><span class="op">|</span> {
+			<span class="ident">PostQuitMessage</span>(<span class="number">0</span>);
+			<span class="prelude-val">Ok</span>(())
+		});
 	}
 
 	<span class="kw">fn</span> <span class="ident">set_icon_if_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {

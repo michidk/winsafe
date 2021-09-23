@@ -73,15 +73,12 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::HwndPlace</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::PostQuitMessage</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::base::Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::dlg_base::DlgBase</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
@@ -124,32 +121,31 @@
 	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
-				<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-					<span class="comment">// Center modal on parent.</span>
-					<span class="kw">let</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>();
-					<span class="kw">let</span> <span class="ident">rc</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
-					<span class="kw">let</span> <span class="ident">rc_parent</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">GetParent</span>()<span class="question-mark">?</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
-					<span class="ident">hwnd</span>.<span class="ident">SetWindowPos</span>(
-						<span class="ident">HwndPlace::None</span>,
-						<span class="ident">POINT::new</span>(
-							<span class="ident">rc_parent</span>.<span class="ident">left</span> <span class="op">+</span> ((<span class="ident">rc_parent</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">rc_parent</span>.<span class="ident">left</span>) <span class="op">/</span> <span class="number">2</span>) <span class="op">-</span> (<span class="ident">rc</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">rc</span>.<span class="ident">left</span>) <span class="op">/</span> <span class="number">2</span>,
-							<span class="ident">rc_parent</span>.<span class="ident">top</span> <span class="op">+</span> ((<span class="ident">rc_parent</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">rc_parent</span>.<span class="ident">top</span>) <span class="op">/</span> <span class="number">2</span>) <span class="op">-</span> (<span class="ident">rc</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">rc</span>.<span class="ident">top</span>) <span class="op">/</span> <span class="number">2</span>,
-						),
-						<span class="ident">SIZE::default</span>(),
-						<span class="ident">co::SWP::NOSIZE</span> <span class="op">|</span> <span class="ident">co::SWP::NOZORDER</span>,
-					)<span class="question-mark">?</span>;
-					<span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
-				}
-				(<span class="ident">p</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>);  <span class="bool-val">true</span> })
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+				<span class="comment">// Center modal on parent.</span>
+				<span class="kw">let</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>();
+				<span class="kw">let</span> <span class="ident">rc</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">rc_parent</span> <span class="op">=</span> <span class="ident">hwnd</span>.<span class="ident">GetParent</span>()<span class="question-mark">?</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
+				<span class="ident">hwnd</span>.<span class="ident">SetWindowPos</span>(
+					<span class="ident">HwndPlace::None</span>,
+					<span class="ident">POINT::new</span>(
+						<span class="ident">rc_parent</span>.<span class="ident">left</span> <span class="op">+</span> ((<span class="ident">rc_parent</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">rc_parent</span>.<span class="ident">left</span>) <span class="op">/</span> <span class="number">2</span>) <span class="op">-</span> (<span class="ident">rc</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">rc</span>.<span class="ident">left</span>) <span class="op">/</span> <span class="number">2</span>,
+						<span class="ident">rc_parent</span>.<span class="ident">top</span> <span class="op">+</span> ((<span class="ident">rc_parent</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">rc_parent</span>.<span class="ident">top</span>) <span class="op">/</span> <span class="number">2</span>) <span class="op">-</span> (<span class="ident">rc</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">rc</span>.<span class="ident">top</span>) <span class="op">/</span> <span class="number">2</span>,
+					),
+					<span class="ident">SIZE::default</span>(),
+					<span class="ident">co::SWP::NOSIZE</span> <span class="op">|</span> <span class="ident">co::SWP::NOZORDER</span>,
+				)<span class="question-mark">?</span>;
+				<span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
 			}
 		});
 
 		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">user_events_ref</span>().<span class="ident">wm_close</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>()
-				.<span class="ident">EndDialog</span>(<span class="ident">co::DLGID::CANCEL</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
-				.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">PostQuitMessage</span>(<span class="ident">err</span>))
+			<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
+				<span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>()
+					.<span class="ident">EndDialog</span>(<span class="ident">co::DLGID::CANCEL</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)<span class="question-mark">?</span>;
+				<span class="prelude-val">Ok</span>(())
+			}
 		});
 	}
 }
