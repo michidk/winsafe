@@ -1618,7 +1618,7 @@
 <span class="doccomment">/// cc.rgbResult = COLORREF::new(255, 0, 0); // color initially chosen</span>
 <span class="doccomment">/// cc.set_lpCustColors(&amp;mut custom_colors);</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// if ChooseColor(&amp;mut cc).unwrap() {</span>
+<span class="doccomment">/// if ChooseColor(&amp;mut cc)? {</span>
 <span class="doccomment">///     println!(&quot;The color: {} {} {}&quot;,</span>
 <span class="doccomment">///         cc.rgbResult.GetRValue(),</span>
 <span class="doccomment">///         cc.rgbResult.GetGValue(),</span>
@@ -1662,7 +1662,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// use winsafe::{CommandLineToArgv, GetCommandLine};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let args = CommandLineToArgv(&amp;GetCommandLine()).unwrap();</span>
+<span class="doccomment">/// let args = CommandLineToArgv(&amp;GetCommandLine())?;</span>
 <span class="doccomment">/// for arg in args.iter() {</span>
 <span class="doccomment">///     println!(&quot;{}&quot;, arg);</span>
 <span class="doccomment">/// }</span>
@@ -1801,7 +1801,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// println(&quot;{}&quot;, ExpandEnvironmentStrings(</span>
 <span class="doccomment">///     &quot;Os %OS%, home %HOMEPATH%, temp %TEMP%&quot;,</span>
-<span class="doccomment">/// ).unwrap());</span>
+<span class="doccomment">/// )?;</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ExpandEnvironmentStrings</span>(<span class="ident">src</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">wsrc</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">src</span>);
@@ -1946,7 +1946,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// use winsafe::GetEnvironmentStrings;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let env_vars = GetEnvironmentStrings().unwrap();</span>
+<span class="doccomment">/// let env_vars = GetEnvironmentStrings()?;</span>
 <span class="doccomment">/// for (k, v) in env_vars.iter() {</span>
 <span class="doccomment">///     println!(&quot;{} = {}&quot;, k, v);</span>
 <span class="doccomment">/// }</span>
@@ -1985,7 +1985,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// use winsafe::{co, GetFileAttributes};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let flags = GetFileAttributes(&quot;C:\\Temp\\test.txt&quot;).unwrap();</span>
+<span class="doccomment">/// let flags = GetFileAttributes(&quot;C:\\Temp\\test.txt&quot;)?;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let is_compressed = flags.has(co::FILE_ATTRIBUTE::COMPRESSED);</span>
 <span class="doccomment">/// let is_directory  = flags.has(co::FILE_ATTRIBUTE::DIRECTORY);</span>
@@ -2011,7 +2011,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileVersionInfo</span>(
 	<span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 {
-	<span class="ident">data</span>.<span class="ident">resize</span>(<span class="ident">GetFileVersionInfoSize</span>(<span class="ident">file_name</span>).<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
+	<span class="ident">data</span>.<span class="ident">resize</span>(<span class="ident">GetFileVersionInfoSize</span>(<span class="ident">file_name</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">version::GetFileVersionInfoW</span>(
@@ -2061,7 +2061,7 @@
 <span class="doccomment">/// GetGUIThreadInfo(</span>
 <span class="doccomment">///     hwnd.GetWindowThreadProcessId(),</span>
 <span class="doccomment">///     &amp;mut gti,</span>
-<span class="doccomment">/// ).unwrap();</span>
+<span class="doccomment">/// )?;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// println!(&quot;Caret rect: {}&quot;, gti.rcCaret);</span>
 <span class="doccomment">/// ```</span>
@@ -2557,13 +2557,13 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// use winsafe::{QueryPerformanceCounter, QueryPerformanceFrequency};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let freq = QueryPerformanceFrequency().unwrap();</span>
-<span class="doccomment">/// let start = QueryPerformanceCounter().unwrap();</span>
+<span class="doccomment">/// let freq = QueryPerformanceFrequency()?;</span>
+<span class="doccomment">/// let start = QueryPerformanceCounter()?;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// // perform some operation...</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let duration_ms =</span>
-<span class="doccomment">///     ((QueryPerformanceCounter().unwrap() - t0) as f64 / freq as f64) * 1000.0;</span>
+<span class="doccomment">///     ((QueryPerformanceCounter()? - t0) as f64 / freq as f64) * 1000.0;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// println!(&quot;Operation lasted {:.2} ms&quot;, duration_ms);</span>
 <span class="doccomment">/// ```</span>
@@ -2837,7 +2837,7 @@
 <span class="doccomment">/// let btns_slice = &amp;mut [btn1];</span>
 <span class="doccomment">/// tdc.set_pButtons(Some(btns_slice));</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// TaskDialogIndirect(&amp;tdc, None).unwrap();</span>
+<span class="doccomment">/// TaskDialogIndirect(&amp;tdc, None)?;</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TaskDialogIndirect</span>(
 	<span class="ident">task_config</span>: <span class="kw-2">&amp;</span><span class="ident">TASKDIALOGCONFIG</span>,
@@ -2906,12 +2906,12 @@
 <span class="doccomment">/// use winsafe::{HINSTANCE, VS_FIXEDFILEINFO};</span>
 <span class="doccomment">/// use winsafe::{GetFileVersionInfo, VarQueryValue};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let exe_name = HINSTANCE::NULL.GetModuleFileName().unwrap();</span>
+<span class="doccomment">/// let exe_name = HINSTANCE::NULL.GetModuleFileName()?;</span>
 <span class="doccomment">/// let mut res_buf = Vec::default();</span>
-<span class="doccomment">/// GetFileVersionInfo(&amp;exe_name, &amp;mut res_buf).unwrap();</span>
+<span class="doccomment">/// GetFileVersionInfo(&amp;exe_name, &amp;mut res_buf)?;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let vsffi = unsafe {</span>
-<span class="doccomment">///     VarQueryValue::&lt;VS_FIXEDFILEINFO&gt;(&amp;res_buf, &quot;\\&quot;).unwrap()</span>
+<span class="doccomment">///     VarQueryValue::&lt;VS_FIXEDFILEINFO&gt;(&amp;res_buf, &quot;\\&quot;)?</span>
 <span class="doccomment">/// };</span>
 <span class="doccomment">/// let ver = vsffi.dwFileVersion();</span>
 <span class="doccomment">/// println!(&quot;Version {}.{}.{}.{}&quot;,</span>

@@ -37,23 +37,23 @@ file is resized, re-generate the slice by calling <code>as_slice</code> again.</
     <span class="ident">co::DISPOSITION::OPEN_EXISTING</span>,
     <span class="ident">co::FILE_ATTRIBUTE::NORMAL</span>,
     <span class="prelude-val">None</span>,
-).<span class="ident">unwrap</span>();
+)<span class="question-mark">?</span>;
 
 <span class="kw">let</span> <span class="ident">hmap</span> <span class="op">=</span> <span class="ident">hfile</span>.<span class="ident">CreateFileMapping</span>(
     <span class="prelude-val">None</span>,
     <span class="ident">co::PAGE::READONLY</span>,
     <span class="prelude-val">None</span>,
     <span class="prelude-val">None</span>,
-).<span class="ident">unwrap</span>();
+)<span class="question-mark">?</span>;
 
-<span class="kw">let</span> <span class="ident">view</span> <span class="op">=</span> <span class="ident">hmap</span>.<span class="ident">MapViewOfFile</span>(<span class="ident">co::FILE_MAP::READ</span>, <span class="number">0</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">view</span> <span class="op">=</span> <span class="ident">hmap</span>.<span class="ident">MapViewOfFile</span>(<span class="ident">co::FILE_MAP::READ</span>, <span class="number">0</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
-<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">view</span>.<span class="ident">as_slice</span>(<span class="ident">hfile</span>.<span class="ident">GetFileSizeEx</span>().<span class="ident">unwrap</span>());
-<span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">slice</span>).<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">view</span>.<span class="ident">as_slice</span>(<span class="ident">hfile</span>.<span class="ident">GetFileSizeEx</span>()<span class="question-mark">?</span>);
+<span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">slice</span>)<span class="question-mark">?</span>;
 
-<span class="ident">view</span>.<span class="ident">UnmapViewOfFile</span>().<span class="ident">unwrap</span>();
-<span class="ident">hmap</span>.<span class="ident">CloseHandle</span>().<span class="ident">unwrap</span>();
-<span class="ident">hfile</span>.<span class="ident">CloseHandle</span>().<span class="ident">unwrap</span>();
+<span class="ident">view</span>.<span class="ident">UnmapViewOfFile</span>()<span class="question-mark">?</span>;
+<span class="ident">hmap</span>.<span class="ident">CloseHandle</span>()<span class="question-mark">?</span>;
+<span class="ident">hfile</span>.<span class="ident">CloseHandle</span>()<span class="question-mark">?</span>;
 
 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">text</span>);</pre></div>
 </div></details></div></details><h2 id="trait-implementations" class="small-section-header">Trait Implementations<a href="#trait-implementations" class="anchor"></a></h2><div id="trait-implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Binary" class="impl has-srclink"><div class="rightside"><a class="srclink" href="../src/winsafe/handles/hfilemap.rs.html#43-48" title="goto source code">[src]</a></div><a href="#impl-Binary" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/fmt/trait.Binary.html" title="trait core::fmt::Binary">Binary</a> for <a class="struct" href="struct.HFILEMAPVIEW.html" title="struct winsafe::HFILEMAPVIEW">HFILEMAPVIEW</a></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.fmt-3" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="../src/winsafe/handles/hfilemap.rs.html#43-48" title="goto source code">[src]</a></div><a href="#method.fmt-3" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/1.55.0/core/fmt/trait.Binary.html#tymethod.fmt" class="fnname">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/1.55.0/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/1.55.0/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></div></summary><div class='docblock'><p>Formats the value using the given formatter.</p>

@@ -502,6 +502,7 @@
 <span id="502">502</span>
 <span id="503">503</span>
 <span id="504">504</span>
+<span id="505">505</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -558,7 +559,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// my_hmenu.AppendMenuEnum(</span>
 	<span class="doccomment">///    &amp;MenuEnum::Entry(ID_FILE_OPEN, &quot;&amp;Open&quot;),</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Adding multiple entries at once:</span>
@@ -578,7 +579,7 @@
 	<span class="doccomment">///     MenuEnum::Separator,</span>
 	<span class="doccomment">///     MenuEnum::Entry(ID_FILE_EXIT, &quot;E&amp;xit&quot;),</span>
 	<span class="doccomment">/// ].iter()</span>
-	<span class="doccomment">///     .for_each(|e| file_menu.AppendMenuEnum(e).unwrap());</span>
+	<span class="doccomment">///     .for_each(|e| file_menu.AppendMenuEnum(e)?);</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AppendMenuEnum</span>(<span class="self">self</span>, <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident">MenuEnum</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">item</span> {
@@ -708,7 +709,7 @@
 	<span class="doccomment">/// hmenu.EnableMenuItem(</span>
 	<span class="doccomment">///     IdPos::Id(ID_FILE_OPEN),</span>
 	<span class="doccomment">///     false,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Disabling multiple menu items at once:</span>
@@ -725,10 +726,11 @@
 	<span class="doccomment">///     (ID_FILE_OPEN, &quot;Open\tCtrl+O&quot;),</span>
 	<span class="doccomment">///     (ID_FILE_SAVE, &quot;&amp;Save&quot;),</span>
 	<span class="doccomment">/// ].iter()</span>
-	<span class="doccomment">///     .for_each(|(id, txt)| hmenu.EnableMenuItem(</span>
+	<span class="doccomment">///     .map(|(id, txt)| hmenu.EnableMenuItem(</span>
 	<span class="doccomment">///         IdPos::Id(*id),</span>
 	<span class="doccomment">///         false,</span>
-	<span class="doccomment">///     ).unwrap());</span>
+	<span class="doccomment">///     ))</span>
+	<span class="doccomment">///     .collect::&lt;Result&lt;Vec&lt;co::MF&gt;, _&gt;&gt;()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableMenuItem</span>(<span class="self">self</span>,
 		<span class="ident">id_or_pos</span>: <span class="ident">IdPos</span>, <span class="ident">enable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::MF</span><span class="op">&gt;</span>

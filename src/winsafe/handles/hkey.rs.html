@@ -545,6 +545,7 @@
 <span id="545">545</span>
 <span id="546">546</span>
 <span id="547">547</span>
+<span id="548">548</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -609,13 +610,14 @@
 	<span class="doccomment">///     &quot;Control Panel&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for key_name in hkey.EnumKeyEx().unwrap() {</span>
+	<span class="doccomment">/// let key_names = hkey.EnumKeyEx()?;</span>
+	<span class="doccomment">/// for key_name in key_names.iter() {</span>
 	<span class="doccomment">///     println!(&quot;{}&quot;, key_name);</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumKeyEx</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_keys</span> <span class="op">=</span> <span class="ident">u32::default</span>();
@@ -669,13 +671,14 @@
 	<span class="doccomment">///     &quot;Control Panel\\Appearance&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for (value, reg_type) in hkey.EnumValue().unwrap() {</span>
+	<span class="doccomment">/// let values_and_types = hkey.EnumValue()?;</span>
+	<span class="doccomment">/// for (value, reg_type) in values_and_types.iter() {</span>
 	<span class="doccomment">///     println!(&quot;{}, {}&quot;, value, reg_type);</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">co::REG</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_vals</span> <span class="op">=</span> <span class="ident">u32::default</span>();
@@ -730,7 +733,7 @@
 	<span class="doccomment">/// let val = HKEY::CURRENT_USER.GetValue(</span>
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     &quot;Beep&quot;,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// match val {</span>
 	<span class="doccomment">///     RegistryValue::Dword(n) =&gt; println!(&quot;Number u32: {}&quot;, n),</span>
@@ -825,9 +828,9 @@
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenKeyEx</span>(<span class="self">self</span>, <span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 		<span class="ident">options</span>: <span class="ident">co::REG_OPTION</span>, <span class="ident">access_rights</span>: <span class="ident">co::KEY</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HKEY</span><span class="op">&gt;</span>
@@ -932,10 +935,9 @@
 	<span class="doccomment">///     &quot;Control Panel\\Mouse&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::READ,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let val = hkey.QueryValueEx(&quot;Beep&quot;)</span>
-	<span class="doccomment">///   .unwrap();</span>
+	<span class="doccomment">/// let val = hkey.QueryValueEx(&quot;Beep&quot;)?;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// match val {</span>
 	<span class="doccomment">///     RegistryValue::Dword(n) =&gt; println!(&quot;Number u32: {}&quot;, n),</span>
@@ -951,7 +953,7 @@
 	<span class="doccomment">///     RegistryValue::None =&gt; println!(&quot;No value&quot;),</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryValueEx</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">value_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">value</span>);
@@ -1027,7 +1029,7 @@
 	<span class="doccomment">///     &quot;Software\\My Company&quot;,</span>
 	<span class="doccomment">///     &quot;Color&quot;,</span>
 	<span class="doccomment">///     RegistryValue::Sz(&quot;blue&quot;.to_owned()),</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetKeyValue</span>(<span class="self">self</span>,
 		<span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
@@ -1064,14 +1066,14 @@
 	<span class="doccomment">///     &quot;Console\\Git Bash&quot;,</span>
 	<span class="doccomment">///     co::REG_OPTION::default(),</span>
 	<span class="doccomment">///     co::KEY::ALL_ACCESS,</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// hkey.SetValueEx(</span>
 	<span class="doccomment">///     &quot;Color&quot;,</span>
 	<span class="doccomment">///     RegistryValue::Sz(&quot;blue&quot;.to_owned()),</span>
-	<span class="doccomment">/// ).unwrap();</span>
+	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hkey.CloseKey().unwrap();</span>
+	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetValueEx</span>(<span class="self">self</span>,
 		<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
