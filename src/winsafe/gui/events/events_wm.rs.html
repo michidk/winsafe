@@ -1415,17 +1415,17 @@
 	<span class="doccomment">/// Handling a custom, user-defined message:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{co, gui::WindowMain, msg};</span>
+	<span class="doccomment">/// use winsafe::{co, gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let wnd: WindowMain; // initialized somewhere</span>
+	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let CUSTOM_MSG = co::WM::from(0x1234);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm(CUSTOM_MSG, {</span>
 	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///     move |p: msg::WndMsg| -&gt; isize {</span>
+	<span class="doccomment">///     move |p: msg::WndMsg| -&gt; ErrResult&lt;isize&gt; {</span>
 	<span class="doccomment">///         println!(&quot;HWND: {}, msg ID: {}&quot;, wnd.hwnd(), p.msg_id);</span>
-	<span class="doccomment">///         0</span>
+	<span class="doccomment">///         Ok(0)</span>
 	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
@@ -1473,13 +1473,13 @@
 	<span class="doccomment">/// Closing the window on ESC key:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{co, gui, msg};</span>
+	<span class="doccomment">/// use winsafe::{co, gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_command_accel_menu(co::DLGID::CANCEL.into(), {</span>
 	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///     move || {</span>
+	<span class="doccomment">///     move || -&gt; ErrResult&lt;()&gt; {</span>
 	<span class="doccomment">///         wnd.hwnd().SendMessage(msg::wm::Close {});</span>
 	<span class="doccomment">///         Ok(())</span>
 	<span class="doccomment">///     }</span>
@@ -1629,19 +1629,19 @@
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{gui, msg};</span>
+	<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_create({</span>
 	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-	<span class="doccomment">///     move |p: msg::wm::Create| -&gt; i32 {</span>
+	<span class="doccomment">///     move |p: msg::wm::Create| -&gt; ErrResult&lt;i32&gt; {</span>
 	<span class="doccomment">///         println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
 	<span class="doccomment">///             wnd.hwnd(),</span>
 	<span class="doccomment">///             p.createstruct.cx,</span>
 	<span class="doccomment">///             p.createstruct.cy,</span>
 	<span class="doccomment">///         );</span>
-	<span class="doccomment">///         0</span>
+	<span class="doccomment">///         Ok(0)</span>
 	<span class="doccomment">///     }</span>
 	<span class="doccomment">/// });</span>
 	<span class="doccomment">/// ```</span>
@@ -1740,11 +1740,11 @@
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::gui;</span>
+		<span class="doccomment">/// use winsafe::{gui, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// wnd.on().wm_destroy(|| {</span>
+		<span class="doccomment">/// wnd.on().wm_destroy(|| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     println!(&quot;Window is gone, goodbye!&quot;);</span>
 		<span class="doccomment">///     Ok(())</span>
 		<span class="doccomment">/// });</span>
@@ -1760,11 +1760,11 @@
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::{gui, msg};</span>
+		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// wnd.on().wm_drop_files(|p: msg::wm::DropFiles| {</span>
+		<span class="doccomment">/// wnd.on().wm_drop_files(|p: msg::wm::DropFiles| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     for dropped_file in p.hdrop.DragQueryFiles()?.iter() {</span>
 		<span class="doccomment">///         println!(&quot;Dropped: {}&quot;, dropped_file);</span>
 		<span class="doccomment">///     }</span>
@@ -1932,15 +1932,15 @@
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::{gui, msg};</span>
+		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_init_dialog({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-		<span class="doccomment">///     move |p: msg::wm::InitDialog| -&gt; bool {</span>
+		<span class="doccomment">///     move |p: msg::wm::InitDialog| -&gt; ErrResult&lt;bool&gt; {</span>
 		<span class="doccomment">///         println!(&quot;Focused HWND: {}&quot;, p.hwnd_focus);</span>
-		<span class="doccomment">///         true</span>
+		<span class="doccomment">///         Ok(true)</span>
 		<span class="doccomment">///     }</span>
 		<span class="doccomment">/// });</span>
 		<span class="doccomment">/// ```</span>
@@ -1998,13 +1998,13 @@
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::{gui, msg};</span>
+		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_l_button_down({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-		<span class="doccomment">///     move |p: msg::wm::LButtonDown| {</span>
+		<span class="doccomment">///     move |p: msg::wm::LButtonDown| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///         println!(&quot;Point: {}x{}&quot;, p.coords.x, p.coords.y);</span>
 		<span class="doccomment">///         Ok(())</span>
 		<span class="doccomment">///     }</span>
@@ -2304,13 +2304,13 @@
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::{gui, msg};</span>
+		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_size({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
-		<span class="doccomment">///     move |p: msg::wm::Size| {</span>
+		<span class="doccomment">///     move |p: msg::wm::Size| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///         println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
 		<span class="doccomment">///             wnd.hwnd(),</span>
 		<span class="doccomment">///             p.width,</span>

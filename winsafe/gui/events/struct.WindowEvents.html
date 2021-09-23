@@ -11,17 +11,17 @@ window message.</p>
 <p>Handling a custom, user-defined message:</p>
 
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">co</span>, <span class="ident">gui::WindowMain</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">co</span>, <span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
-<span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">WindowMain</span>; <span class="comment">// initialized somewhere</span>
+<span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="kw">let</span> <span class="ident">CUSTOM_MSG</span> <span class="op">=</span> <span class="ident">co::WM::from</span>(<span class="number">0x1234</span>);
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm</span>(<span class="ident">CUSTOM_MSG</span>, {
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::WndMsg</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::WndMsg</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;HWND: {}, msg ID: {}&quot;</span>, <span class="ident">wnd</span>.<span class="ident">hwnd</span>(), <span class="ident">p</span>.<span class="ident">msg_id</span>);
-        <span class="number">0</span>
+        <span class="prelude-val">Ok</span>(<span class="number">0</span>)
     }
 });</pre></div>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.wm_timer" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../../src/winsafe/gui/events/events_wm.rs.html#206-210" title="goto source code">[src]</a></div><a href="#method.wm_timer" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.wm_timer" class="fnname">wm_timer</a>&lt;F&gt;(&amp;self, timer_id: <a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.u32.html">u32</a>, func: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>() -&gt; <a class="type" href="../../type.ErrResult.html" title="type winsafe::ErrResult">ErrResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.unit.html">()</a>&gt; + 'static,&nbsp;</span></h4></div></summary><div class="docblock"><p><a href="../../msg/wm/struct.Timer.html"><code>WM_TIMER</code></a> message, narrowed to a specific
@@ -44,13 +44,13 @@ accelerators.</p>
 <p>Closing the window on ESC key:</p>
 
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">co</span>, <span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">co</span>, <span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_command_accel_menu</span>(<span class="ident">co::DLGID::CANCEL</span>.<span class="ident">into</span>(), {
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="ident">wnd</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">msg::wm::Close</span> {});
         <span class="prelude-val">Ok</span>(())
     }
@@ -130,19 +130,19 @@ new window receives this message after the window is created, but before
 the window becomes visible.</p>
 <h1 id="examples-2" class="section-header"><a href="#examples-2">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_create</span>({
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::Create</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::Create</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;HWND: {}, client area: {}x{}&quot;</span>,
             <span class="ident">wnd</span>.<span class="ident">hwnd</span>(),
             <span class="ident">p</span>.<span class="ident">createstruct</span>.<span class="ident">cx</span>,
             <span class="ident">p</span>.<span class="ident">createstruct</span>.<span class="ident">cy</span>,
         );
-        <span class="number">0</span>
+        <span class="prelude-val">Ok</span>(<span class="number">0</span>)
     }
 });</pre></div>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.wm_ctl_color_btn" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../../src/winsafe/gui/events/events_wm.rs.html#425-430" title="goto source code">[src]</a></div><a href="#method.wm_ctl_color_btn" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.wm_ctl_color_btn" class="fnname">wm_ctl_color_btn</a>&lt;F&gt;(&amp;self, func: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="struct" href="../../msg/wm/struct.CtlColorBtn.html" title="struct winsafe::msg::wm::CtlColorBtn">CtlColorBtn</a>) -&gt; <a class="type" href="../../type.ErrResult.html" title="type winsafe::ErrResult">ErrResult</a>&lt;<a class="struct" href="../../struct.HBRUSH.html" title="struct winsafe::HBRUSH">HBRUSH</a>&gt; + 'static,&nbsp;</span></h4></div></summary><div class="docblock"><p><a href="../../msg/wm/struct.CtlColorBtn.html"><code>WM_CTLCOLORBTN</code></a> message.</p>
@@ -196,11 +196,11 @@ processing of the message, it can be assumed that all child windows
 still exist.</p>
 <h1 id="examples-3" class="section-header"><a href="#examples-3">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe::gui</span>;
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
-<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_destroy</span>(<span class="op">|</span><span class="op">|</span> {
+<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_destroy</span>(<span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="macro">println!</span>(<span class="string">&quot;Window is gone, goodbye!&quot;</span>);
     <span class="prelude-val">Ok</span>(())
 });</pre></div>
@@ -209,11 +209,11 @@ still exist.</p>
 has registered itself as a recipient of dropped files.</p>
 <h1 id="examples-4" class="section-header"><a href="#examples-4">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
-<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_drop_files</span>(<span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::DropFiles</span><span class="op">|</span> {
+<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_drop_files</span>(<span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::DropFiles</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">for</span> <span class="ident">dropped_file</span> <span class="kw">in</span> <span class="ident">p</span>.<span class="ident">hdrop</span>.<span class="ident">DragQueryFiles</span>()<span class="question-mark">?</span>.<span class="ident">iter</span>() {
         <span class="macro">println!</span>(<span class="string">&quot;Dropped: {}&quot;</span>, <span class="ident">dropped_file</span>);
     }
@@ -301,15 +301,15 @@ initialize controls and carry out any other initialization tasks that
 affect the appearance of the dialog box.</p>
 <h1 id="examples-5" class="section-header"><a href="#examples-5">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_init_dialog</span>({
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::InitDialog</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::InitDialog</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;Focused HWND: {}&quot;</span>, <span class="ident">p</span>.<span class="ident">hwnd_focus</span>);
-        <span class="bool-val">true</span>
+        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
     }
 });</pre></div>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.wm_init_menu_popup" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../../src/winsafe/gui/events/events_wm.rs.html#713-719" title="goto source code">[src]</a></div><a href="#method.wm_init_menu_popup" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.wm_init_menu_popup" class="fnname">wm_init_menu_popup</a>&lt;F&gt;(&amp;self, func: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="struct" href="../../msg/wm/struct.InitMenuPopup.html" title="struct winsafe::msg::wm::InitMenuPopup">InitMenuPopup</a>) -&gt; <a class="type" href="../../type.ErrResult.html" title="type winsafe::ErrResult">ErrResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.unit.html">()</a>&gt; + 'static,&nbsp;</span></h4></div></summary><div class="docblock"><p><a href="../../msg/wm/struct.InitMenuPopup.html"><code>WM_INITMENUPOPUP</code></a> message.</p>
@@ -340,13 +340,13 @@ message is posted to the window beneath the cursor. Otherwise, the
 message is posted to the window that has captured the mouse.</p>
 <h1 id="examples-6" class="section-header"><a href="#examples-6">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_l_button_down</span>({
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;Point: {}x{}&quot;</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">x</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">y</span>);
         <span class="prelude-val">Ok</span>(())
     }
@@ -504,13 +504,13 @@ window caption.</p>
 <p>Sent to a window after its size has changed.</p>
 <h1 id="examples-7" class="section-header"><a href="#examples-7">Examples</a></h1>
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 
 <span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_size</span>({
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// pass into the closure</span>
-    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::Size</span><span class="op">|</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::Size</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;HWND: {}, client area: {}x{}&quot;</span>,
             <span class="ident">wnd</span>.<span class="ident">hwnd</span>(),
             <span class="ident">p</span>.<span class="ident">width</span>,
