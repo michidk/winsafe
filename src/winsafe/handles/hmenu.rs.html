@@ -491,18 +491,6 @@
 <span id="491">491</span>
 <span id="492">492</span>
 <span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -548,21 +536,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Adding a new menu entry, with its command ID:</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::{HMENU, MenuEnum};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let my_hmenu: HMENU; // initialized somewhere</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// const ID_FILE_OPEN: i32 = 2001;</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// my_hmenu.AppendMenuEnum(</span>
-	<span class="doccomment">///    &amp;MenuEnum::Entry(ID_FILE_OPEN, &quot;&amp;Open&quot;),</span>
-	<span class="doccomment">/// )?;</span>
-	<span class="doccomment">/// ```</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Adding multiple entries at once:</span>
+	<span class="doccomment">/// Adding multiple entries at once, with their command IDs:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::{HMENU, MenuEnum};</span>
@@ -573,32 +547,35 @@
 	<span class="doccomment">/// const ID_FILE_SAVE: i32 = 2002;</span>
 	<span class="doccomment">/// const ID_FILE_EXIT: i32 = 2003;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// [</span>
+	<span class="doccomment">/// my_hmenu.AppendMenuEnum(&amp;[</span>
 	<span class="doccomment">///     MenuEnum::Entry(ID_FILE_OPEN, &quot;&amp;Open&quot;),</span>
 	<span class="doccomment">///     MenuEnum::Entry(ID_FILE_OPEN, &quot;&amp;Save&quot;),</span>
 	<span class="doccomment">///     MenuEnum::Separator,</span>
 	<span class="doccomment">///     MenuEnum::Entry(ID_FILE_EXIT, &quot;E&amp;xit&quot;),</span>
-	<span class="doccomment">/// ].iter()</span>
-	<span class="doccomment">///     .for_each(|e| file_menu.AppendMenuEnum(e)?);</span>
+	<span class="doccomment">/// ])?;</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AppendMenuEnum</span>(<span class="self">self</span>, <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident">MenuEnum</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">item</span> {
-			<span class="ident">MenuEnum::Entry</span>(<span class="ident">cmd_id</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
-				<span class="ident">co::MF::STRING</span>,
-				<span class="ident">IdMenu::Id</span>(<span class="kw-2">*</span><span class="ident">cmd_id</span>),
-				<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
-			),
-			<span class="ident">MenuEnum::Separator</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
-				<span class="ident">co::MF::SEPARATOR</span>,
-				<span class="ident">IdMenu::None</span>,
-				<span class="ident">BmpPtrStr::None</span>,
-			),
-			<span class="ident">MenuEnum::Submenu</span>(<span class="ident">hmenu</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
-				<span class="ident">co::MF::POPUP</span>,
-				<span class="ident">IdMenu::Menu</span>(<span class="kw-2">*</span><span class="ident">hmenu</span>),
-				<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
-			),
-		}
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">AppendMenuEnum</span>(<span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="ident">MenuEnum</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">items</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> {
+			<span class="kw">match</span> <span class="ident">item</span> {
+				<span class="ident">MenuEnum::Entry</span>(<span class="ident">cmd_id</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
+					<span class="ident">co::MF::STRING</span>,
+					<span class="ident">IdMenu::Id</span>(<span class="kw-2">*</span><span class="ident">cmd_id</span>),
+					<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
+				),
+				<span class="ident">MenuEnum::Separator</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
+					<span class="ident">co::MF::SEPARATOR</span>,
+					<span class="ident">IdMenu::None</span>,
+					<span class="ident">BmpPtrStr::None</span>,
+				),
+				<span class="ident">MenuEnum::Submenu</span>(<span class="ident">hmenu</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">AppendMenu</span>(
+					<span class="ident">co::MF::POPUP</span>,
+					<span class="ident">IdMenu::Menu</span>(<span class="kw-2">*</span><span class="ident">hmenu</span>),
+					<span class="ident">BmpPtrStr::from_str</span>(<span class="kw-2">*</span><span class="ident">text</span>),
+				),
+			}
+		}).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+
+		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="doccomment">/// [`CheckMenuItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-checkmenuitem)</span>
@@ -730,7 +707,7 @@
 	<span class="doccomment">///         IdPos::Id(*id),</span>
 	<span class="doccomment">///         false,</span>
 	<span class="doccomment">///     ))</span>
-	<span class="doccomment">///     .collect::&lt;Result&lt;Vec&lt;co::MF&gt;, _&gt;&gt;()?;</span>
+	<span class="doccomment">///     .collect::&lt;Result&lt;Vec&lt;_&gt;, _&gt;&gt;()?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnableMenuItem</span>(<span class="self">self</span>,
 		<span class="ident">id_or_pos</span>: <span class="ident">IdPos</span>, <span class="ident">enable</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::MF</span><span class="op">&gt;</span>
@@ -824,7 +801,6 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuString</span>(<span class="self">self</span>, <span class="ident">id_or_pos</span>: <span class="ident">IdPos</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">const</span> <span class="ident">BLOCK</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">64</span>; <span class="comment">// arbitrary</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf_sz</span> <span class="op">=</span> <span class="ident">BLOCK</span>;
-
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 
 		<span class="kw">loop</span> {
