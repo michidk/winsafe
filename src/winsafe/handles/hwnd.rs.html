@@ -1401,6 +1401,27 @@
 <span id="1401">1401</span>
 <span id="1402">1402</span>
 <span id="1403">1403</span>
+<span id="1404">1404</span>
+<span id="1405">1405</span>
+<span id="1406">1406</span>
+<span id="1407">1407</span>
+<span id="1408">1408</span>
+<span id="1409">1409</span>
+<span id="1410">1410</span>
+<span id="1411">1411</span>
+<span id="1412">1412</span>
+<span id="1413">1413</span>
+<span id="1414">1414</span>
+<span id="1415">1415</span>
+<span id="1416">1416</span>
+<span id="1417">1417</span>
+<span id="1418">1418</span>
+<span id="1419">1419</span>
+<span id="1420">1420</span>
+<span id="1421">1421</span>
+<span id="1422">1422</span>
+<span id="1423">1423</span>
+<span id="1424">1424</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -1409,7 +1430,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">HwndPlace</span>, <span class="ident">IdMenu</span>, <span class="ident">IdPos</span>, <span class="ident">IdTdiconStr</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">comctl32</span>, <span class="ident">shell32</span>, <span class="ident">user32</span>, <span class="ident">uxtheme</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">SetLastError</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HDC</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HTHEME</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HDC</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HMENU</span>, <span class="ident">HMONITOR</span>, <span class="ident">HRGN</span>, <span class="ident">HTHEME</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg::MsgSend</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">hr_to_winresult</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{
@@ -1654,12 +1675,13 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::EnumChildWindows</span>(
 				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="self">Self</span><span class="ident">::EnumChildProc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// https://redd.it/npehj9</span>
+				<span class="self">Self</span><span class="ident">::enum_child_windows_proc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// https://redd.it/npehj9</span>
 				<span class="kw-2">&amp;</span><span class="ident">func</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			);
 		}
 	}
-	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">EnumChildProc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
+	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">enum_child_windows_proc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BOOL</span>
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
 	{
 		<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">F</span>) };
@@ -1930,6 +1952,18 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSystemMenu</span>(<span class="self">self</span>, <span class="ident">revert</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32::GetSystemMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">revert</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HMENU</span> { <span class="ident">ptr</span> })
+	}
+
+	<span class="doccomment">/// [`GetTopWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-gettopwindow)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetTopWindow</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetTopWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() } {
+			<span class="prelude-val">Some</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">ptr</span>: <span class="ident">h</span> })),
+			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
+				<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>), <span class="comment">// no child window</span>
+				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+			},
+		}
 	}
 
 	<span class="doccomment">/// [`GetUpdateRgn`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getupdatergn)</span>
@@ -2235,6 +2269,14 @@
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::DLGID</span>(<span class="ident">ret</span> <span class="kw">as</span> <span class="kw">_</span>)),
+		}
+	}
+
+	<span class="doccomment">/// [`MonitorFromWindow`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfromwindow)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MonitorFromWindow</span>(<span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">co::MONITOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HMONITOR</span> {
+		<span class="ident">HMONITOR</span> {
+			<span class="ident">ptr</span>: <span class="kw">unsafe</span> { <span class="ident">user32::MonitorFromWindow</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">flags</span>.<span class="number">0</span>) },
 		}
 	}
 
