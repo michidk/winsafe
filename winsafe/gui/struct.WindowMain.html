@@ -21,7 +21,7 @@ with a closure, and it displays the clicked coordinates in the
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
 <span class="attribute">#![<span class="ident">windows_subsystem</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>]</span>
 
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">BoxResult</span>};
 
 <span class="kw">fn</span> <span class="ident">main</span>() {
     <span class="kw">let</span> <span class="ident">my_main</span> <span class="op">=</span> <span class="ident">MyMain::new</span>();
@@ -51,7 +51,7 @@ with a closure, and it displays the clicked coordinates in the
     <span class="kw">fn</span> <span class="ident">events</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_l_button_down</span>({
             <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// clone to pass it to the closure</span>
-            <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> {
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">txt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Coords {} x {}&quot;</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">x</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">y</span>);
                 <span class="ident">wnd</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowText</span>(<span class="ident">txt</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
@@ -68,7 +68,7 @@ instead of creating the window programmatically. Note how
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
 <span class="attribute">#![<span class="ident">windows_subsystem</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>]</span>
 
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident">winsafe::gui</span>;
 
 <span class="kw">const</span> <span class="ident">ID_DLG_MAIN</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">101</span>; <span class="comment">// in our .res file, this is the dialog ID</span>
 
