@@ -2116,22 +2116,22 @@
 <span class="doccomment">/// [`GetFileVersionInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfow)</span>
 <span class="doccomment">/// function.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The passed buffer will be automatically allocated with</span>
+<span class="doccomment">/// The buffer will be automatically allocated with</span>
 <span class="doccomment">/// [`GetFileVersionInfoSize`](crate::GetFileVersionInfoSize).</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileVersionInfo</span>(
-	<span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-{
-	<span class="ident">data</span>.<span class="ident">resize</span>(<span class="ident">GetFileVersionInfoSize</span>(<span class="ident">file_name</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileVersionInfo</span>(<span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">block_sz</span> <span class="op">=</span> <span class="ident">GetFileVersionInfoSize</span>(<span class="ident">file_name</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x00</span>; <span class="ident">block_sz</span> <span class="kw">as</span> <span class="kw">_</span>];
+
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">version::GetFileVersionInfoW</span>(
 				<span class="ident">WString::from_str</span>(<span class="ident">file_name</span>).<span class="ident">as_ptr</span>(),
 				<span class="number">0</span>,
-				<span class="ident">data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">data</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">buf</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		},
-	)
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>)
 }
 
 <span class="doccomment">/// [`GetFileVersionInfoSize`](https://docs.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfosizew)</span>
@@ -2596,7 +2596,7 @@
 {
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">kernel32::MultiByteToWideChar</span>(
-			<span class="ident">code_page</span>.<span class="number">0</span>,
+			<span class="ident">code_page</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">flags</span>.<span class="number">0</span>,
 			<span class="ident">multi_byte_str</span>.<span class="ident">as_ptr</span>(),
 			<span class="ident">multi_byte_str</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
@@ -2611,7 +2611,7 @@
 
 			<span class="kw">match</span> <span class="kw">unsafe</span> {
 				<span class="ident">kernel32::MultiByteToWideChar</span>(
-					<span class="ident">code_page</span>.<span class="number">0</span>,
+					<span class="ident">code_page</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">flags</span>.<span class="number">0</span>,
 					<span class="ident">multi_byte_str</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">multi_byte_str</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
@@ -3006,7 +3006,7 @@
 <span class="doccomment">/// [`VarQueryValue`](https://docs.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew)</span>
 <span class="doccomment">/// function.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// **Note:** The returned reference type varies according to `lpSubBlock`. If</span>
+<span class="doccomment">/// **Note:** The returned pointer and size vary according to `lpSubBlock`. If</span>
 <span class="doccomment">/// you set it wrong, you&#39;re likely to cause a buffer overrun.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Examples</span>
@@ -3018,18 +3018,18 @@
 <span class="doccomment">/// use winsafe::{GetFileVersionInfo, VarQueryValue};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let exe_name = HINSTANCE::NULL.GetModuleFileName()?;</span>
-<span class="doccomment">/// let mut res_buf = Vec::default();</span>
-<span class="doccomment">/// GetFileVersionInfo(&amp;exe_name, &amp;mut res_buf)?;</span>
+<span class="doccomment">/// let res_buf = GetFileVersionInfo(&amp;exe_name)?;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let vsffi = unsafe {</span>
+<span class="doccomment">/// let (vsffi, sz_data) = unsafe {</span>
 <span class="doccomment">///     VarQueryValue::&lt;VS_FIXEDFILEINFO&gt;(&amp;res_buf, &quot;\\&quot;)?</span>
 <span class="doccomment">/// };</span>
-<span class="doccomment">/// let ver = vsffi.dwFileVersion();</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let ver = unsafe { &amp;*vsffi }.dwFileVersion();</span>
 <span class="doccomment">/// println!(&quot;Version {}.{}.{}.{}&quot;,</span>
 <span class="doccomment">///     ver[0], ver[1], ver[2], ver[3]);</span>
 <span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">VarQueryValue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(
-	<span class="ident">block</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="ident">sub_block</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">VarQueryValue</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+	<span class="ident">block</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">sub_block</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="kw-2">*</span><span class="kw">const</span> <span class="ident">T</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lp_lp_buffer</span> <span class="op">=</span> <span class="ident">std::ptr::null</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pu_len</span> <span class="op">=</span> <span class="number">0</span>;
@@ -3041,7 +3041,7 @@
 			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">lp_lp_buffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pu_len</span>,
 		),
-	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">lp_lp_buffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">T</span>))
+	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> (<span class="ident">lp_lp_buffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">T</span>, <span class="ident">pu_len</span>))
 }
 
 <span class="doccomment">/// [`VerifyVersionInfo`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-verifyversioninfow)</span>
@@ -3095,7 +3095,7 @@
 
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">kernel32::WideCharToMultiByte</span>(
-			<span class="ident">code_page</span>.<span class="number">0</span>,
+			<span class="ident">code_page</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">flags</span>.<span class="number">0</span>,
 			<span class="ident">wide_char_str</span>.<span class="ident">as_ptr</span>(),
 			<span class="ident">wide_char_str</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
@@ -3113,7 +3113,7 @@
 
 			<span class="kw">match</span> <span class="kw">unsafe</span> {
 				<span class="ident">kernel32::WideCharToMultiByte</span>(
-					<span class="ident">code_page</span>.<span class="number">0</span>,
+					<span class="ident">code_page</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">flags</span>.<span class="number">0</span>,
 					<span class="ident">wide_char_str</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">wide_char_str</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
