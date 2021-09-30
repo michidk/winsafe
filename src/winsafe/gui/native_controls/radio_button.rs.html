@@ -212,9 +212,28 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::ButtonEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>, <span class="ident">multiply_dpi</span>, <span class="ident">ui_font</span>};
@@ -294,7 +313,7 @@
 				)<span class="question-mark">?</span>;
 
 				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span>{ <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
-				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">checked</span> { <span class="self">self</span>.<span class="ident">set_check</span>(<span class="bool-val">true</span>); }
+				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">selected</span> { <span class="self">self</span>.<span class="ident">set_selected</span>(<span class="bool-val">true</span>); }
 			},
 			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>)<span class="question-mark">?</span>; <span class="comment">// may panic</span>
@@ -315,24 +334,41 @@
 	<span class="macro">pub_fn_onsubclass!</span>();
 	<span class="macro">pub_fn_on!</span>(<span class="ident">ButtonEvents</span>);
 
-	<span class="doccomment">/// Tells if this radio button is currently checked by sending a</span>
+	<span class="doccomment">/// Emulates the click event for the radio button by sending a</span>
+	<span class="doccomment">/// [`bm::Click`](crate::msg::bm::Click) message.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">emulate_click</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::Click</span> {});
+	}
+
+	<span class="doccomment">/// Tells if this radio button is the currently selected one by sending a</span>
 	<span class="doccomment">/// [`bm::GetCheck`](crate::msg::bm::GetCheck) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::GetCheck</span> {}) <span class="op">=</span><span class="op">=</span> <span class="ident">co::BST::CHECKED</span>
 	}
 
-	<span class="doccomment">/// Sets the current check state by sending a</span>
+	<span class="doccomment">/// Sets the this radio button as the currently selected one by sending a</span>
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">checked</span>: <span class="ident">bool</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::SetCheck</span> {
-			<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">checked</span> { <span class="ident">co::BST::CHECKED</span> } <span class="kw">else</span> { <span class="ident">co::BST::UNCHECKED</span> },
+			<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">selected</span> { <span class="ident">co::BST::CHECKED</span> } <span class="kw">else</span> { <span class="ident">co::BST::UNCHECKED</span> },
 		});
 	}
 
-	<span class="doccomment">/// Fires the click event for the radio button by sending a</span>
-	<span class="doccomment">/// [`bm::Click`](crate::msg::bm::Click) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trigger_click</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::Click</span> {});
+	<span class="doccomment">/// Sets the this radio button as the currently selected one by sending a</span>
+	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message, then sends a</span>
+	<span class="doccomment">/// [`wm::Command`](crate::msg::wm::Command) message to the parent, so it</span>
+	<span class="doccomment">/// can handle the event.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
+		<span class="self">self</span>.<span class="ident">set_selected</span>(<span class="ident">selected</span>);
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::Command</span> {
+			<span class="ident">event</span>: <span class="ident">AccelMenuCtrl::Ctrl</span>(
+				<span class="ident">AccelMenuCtrlData</span> {
+					<span class="ident">notif_code</span>: <span class="ident">co::BN::CLICKED</span>.<span class="ident">into</span>(),
+					<span class="ident">ctrl_id</span>: <span class="self">self</span>.<span class="ident">ctrl_id</span>(),
+					<span class="ident">ctrl_hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>(),
+				},
+			),
+		});
 	}
 }
 
@@ -385,10 +421,10 @@
 	<span class="doccomment">/// Defaults to an auto-generated ID.</span>
 	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 
-	<span class="doccomment">/// Checks the radio button right away.</span>
+	<span class="doccomment">/// Initial selection state.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to `false`.</span>
-	<span class="kw">pub</span> <span class="ident">checked</span>: <span class="ident">bool</span>,
+	<span class="kw">pub</span> <span class="ident">selected</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">RadioButtonOpts</span> {
@@ -401,7 +437,7 @@
 			<span class="ident">window_style</span>: <span class="ident">co::WS::CHILD</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span>,
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
-			<span class="ident">checked</span>: <span class="bool-val">false</span>,
+			<span class="ident">selected</span>: <span class="bool-val">false</span>,
 		}
 	}
 }
@@ -414,7 +450,7 @@
 		<span class="self">self</span>
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">manual_clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButtonOpts</span> { <span class="comment">// avoids a public clone method</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">manual_clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButtonOpts</span> { <span class="comment">// avoids a public clone method</span>
 		<span class="self">Self</span> {
 			<span class="ident">text</span>: <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">clone</span>(),
 			<span class="ident">position</span>: <span class="self">self</span>.<span class="ident">position</span>,
@@ -423,7 +459,7 @@
 			<span class="ident">window_style</span>: <span class="self">self</span>.<span class="ident">window_style</span>,
 			<span class="ident">window_ex_style</span>: <span class="self">self</span>.<span class="ident">window_ex_style</span>,
 			<span class="ident">ctrl_id</span>: <span class="self">self</span>.<span class="ident">ctrl_id</span>,
-			<span class="ident">checked</span>: <span class="self">self</span>.<span class="ident">checked</span>,
+			<span class="ident">selected</span>: <span class="self">self</span>.<span class="ident">selected</span>,
 		}
 	}
 }
