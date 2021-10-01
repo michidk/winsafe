@@ -36,7 +36,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// **Extremely** unsafe, intended only to provide less verbose internal</span>
 <span class="doccomment">/// mutability within the `gui` module.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">struct</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 
 <span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
 <span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
@@ -50,12 +50,12 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Instantiates a new object.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">obj</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">obj</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="self">Self</span>(<span class="ident">UnsafeCell::new</span>(<span class="ident">obj</span>))
 	}
 
 	<span class="doccomment">/// Returns a mutable reference to the underlying object.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">as_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
 		<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">get</span>() }
 	}
 }

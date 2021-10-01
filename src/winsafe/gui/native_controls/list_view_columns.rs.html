@@ -191,23 +191,8 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::cell::Cell</span>;
-<span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
@@ -222,25 +207,12 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewColumns</span> {
-	<span class="ident">hwnd_ptr</span>: <span class="ident">Cell</span><span class="op">&lt;</span><span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewColumns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">ListViewColumns</span> {
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListViewColumns</span> {
-		<span class="self">Self</span> {
-			<span class="ident">hwnd_ptr</span>: <span class="ident">Cell::new</span>(<span class="ident">NonNull::from</span>(<span class="kw-2">&amp;</span><span class="ident">HWND::NULL</span>)), <span class="comment">// initially invalid</span>
-		}
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="kw">fn</span> <span class="ident">set_hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_ref</span>: <span class="kw-2">&amp;</span><span class="ident">HWND</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd_ptr</span>.<span class="ident">replace</span>(<span class="ident">NonNull::from</span>(<span class="ident">hwnd_ref</span>));
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui::native_controls</span>) <span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
-		<span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd_ptr</span>.<span class="ident">get</span>().<span class="ident">as_ref</span>() }
-	}
-
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ListViewColumns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Adds many columns at once by sending an</span>
 	<span class="doccomment">/// [`lvm::InsertColumn`](crate::msg::lvm::InsertColumn) message.</span>
 	<span class="doccomment">///</span>
@@ -272,7 +244,7 @@
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wtext</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">text</span>.<span class="ident">as_ref</span>());
 			<span class="ident">lvc</span>.<span class="ident">set_pszText</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wtext</span>));
 
-			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::InsertColumn</span> {
+			<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::InsertColumn</span> {
 				<span class="ident">index</span>: <span class="number">0xffff</span>, <span class="comment">// insert as the last columns</span>
 				<span class="ident">lvcolumn</span>: <span class="kw-2">&amp;</span><span class="ident">lvc</span>,
 			})<span class="question-mark">?</span>;
@@ -283,12 +255,12 @@
 
 	<span class="doccomment">/// Retrieves the texts of all items at the given column.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all_texts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetItemCount</span> {});
+		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetItemCount</span> {});
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">texts</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">count</span> <span class="kw">as</span> <span class="kw">_</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 
 		<span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">count</span> {
-			<span class="ident">ListViewItems::text_retrieve</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">idx</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+			<span class="ident">ListViewItems::text_retrieve</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="ident">idx</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
 			<span class="ident">texts</span>.<span class="ident">push</span>(<span class="ident">buf</span>.<span class="ident">to_string</span>());
 		}
 
@@ -299,14 +271,14 @@
 	<span class="doccomment">/// [`hdm::GetItemCount`](crate::msg::hdm::GetItemCount) message to the</span>
 	<span class="doccomment">/// handle returned by [`lvm::GetHeader`](crate::msg::lvm::GetHeader).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetHeader</span> {})<span class="question-mark">?</span>
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetHeader</span> {})<span class="question-mark">?</span>
 			.<span class="ident">SendMessage</span>(<span class="ident">hdm::GetItemCount</span> {})
 	}
 
 	<span class="doccomment">/// Retrieves information about the column by sending an</span>
 	<span class="doccomment">/// [`lvm::GetColumn`](crate::msg::lvm::GetColumn) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">lvc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LVCOLUMN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumn</span> {
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumn</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
 			<span class="ident">lvcolumn</span>: <span class="ident">lvc</span>,
 		})
@@ -314,19 +286,19 @@
 
 	<span class="doccomment">/// Retrieves the texts of the selected items at the given column.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_texts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">sel_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetSelectedCount</span> {});
+		<span class="kw">let</span> <span class="ident">sel_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetSelectedCount</span> {});
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">texts</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">sel_count</span> <span class="kw">as</span> <span class="kw">_</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">idx</span> <span class="op">=</span> <span class="prelude-val">None</span>; <span class="comment">// will start at first item</span>
 		<span class="kw">loop</span> {
-			<span class="ident">idx</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetNextItem</span> {
+			<span class="ident">idx</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetNextItem</span> {
 				<span class="ident">initial_index</span>: <span class="ident">idx</span>,
 				<span class="ident">relationship</span>: <span class="ident">co::LVNI::SELECTED</span>,
 			}) {
 				<span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span><span class="op">&gt;</span> {
 					<span class="ident">ListViewItems::text_retrieve</span>(
-						<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">idx</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+						<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="ident">idx</span>, <span class="ident">column_index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
 					<span class="ident">texts</span>.<span class="ident">push</span>(<span class="ident">buf</span>.<span class="ident">to_string</span>());
 					<span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="comment">// update start item</span>
 				},
@@ -340,7 +312,7 @@
 	<span class="doccomment">/// Sets information of the column by sending an</span>
 	<span class="doccomment">/// [`lvm::SetColumn`](crate::msg::lvm::SetColumn) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>, <span class="ident">lvc</span>: <span class="kw-2">&amp;</span><span class="ident">LVCOLUMN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumn</span> {
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumn</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
 			<span class="ident">lvcolumn</span>: <span class="ident">lvc</span>,
 		})
@@ -367,7 +339,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">col_cx</span> <span class="op">=</span> <span class="ident">SIZE::new</span>(<span class="ident">width</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
 		<span class="ident">multiply_dpi</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">col_cx</span>))<span class="question-mark">?</span>;
 
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumnWidth</span> {
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumnWidth</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
 			<span class="ident">width</span>: <span class="ident">col_cx</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="kw">_</span>,
 		})
@@ -386,8 +358,8 @@
 			}
 		}
 
-		<span class="kw">let</span> <span class="ident">rc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>; <span class="comment">// list view client area</span>
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumnWidth</span> {
+		<span class="kw">let</span> <span class="ident">rc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>; <span class="comment">// list view client area</span>
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::SetColumnWidth</span> {
 			<span class="ident">index</span>: <span class="ident">column_index</span>,
 			<span class="ident">width</span>: <span class="ident">rc</span>.<span class="ident">right</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">-</span> <span class="ident">cx_used</span>,
 		})
@@ -410,7 +382,7 @@
 	<span class="doccomment">/// Retrieves the width of the column by sending an</span>
 	<span class="doccomment">/// [`lvm::GetColumnWidth`](crate::msg::lvm::GetColumnWidth) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">width</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">column_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumnWidth</span> { <span class="ident">index</span>: <span class="ident">column_index</span> })
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">lvm::GetColumnWidth</span> { <span class="ident">index</span>: <span class="ident">column_index</span> })
 	}
 }
 </pre></div>

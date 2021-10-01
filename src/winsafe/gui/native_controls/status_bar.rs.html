@@ -190,7 +190,9 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
 </pre><pre class="rust">
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
@@ -240,7 +242,6 @@
 	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
 	<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 	<span class="ident">events</span>: <span class="ident">StatusBarEvents</span>,
-	<span class="ident">parts</span>: <span class="ident">StatusBarParts</span>,
 	<span class="ident">parts_info</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatusBarPart</span><span class="op">&gt;</span>,
 	<span class="ident">right_edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="comment">// buffer to speed up resize calls</span>
 }
@@ -278,13 +279,11 @@
 					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
 					<span class="ident">ctrl_id</span>,
 					<span class="ident">events</span>: <span class="ident">StatusBarEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
-					<span class="ident">parts</span>: <span class="ident">StatusBarParts::new</span>(),
 					<span class="ident">parts_info</span>: <span class="ident">parts</span>.<span class="ident">to_vec</span>(),
 					<span class="ident">right_edges</span>: <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">parts</span>.<span class="ident">len</span>()],
 				},
 			)),
 		);
-		<span class="ident">new_self</span>.<span class="number">0</span>.<span class="ident">parts</span>.<span class="ident">set_hwnd_ref</span>(<span class="ident">new_self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>());
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
@@ -379,8 +378,11 @@
 	}
 
 	<span class="doccomment">/// Exposes the part methods.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">StatusBarParts</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parts</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">StatusBarParts</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+		<span class="ident">StatusBarParts</span> {
+			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>(),
+			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+		}
 	}
 }
 </pre></div>
