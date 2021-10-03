@@ -313,7 +313,7 @@
 				)<span class="question-mark">?</span>;
 
 				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span>{ <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
-				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">selected</span> { <span class="self">self</span>.<span class="ident">set_selected</span>(<span class="bool-val">true</span>); }
+				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">selected</span> { <span class="self">self</span>.<span class="ident">select</span>(<span class="bool-val">true</span>); }
 			},
 			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>)<span class="question-mark">?</span>; <span class="comment">// may panic</span>
@@ -348,7 +348,7 @@
 
 	<span class="doccomment">/// Sets the this radio button as the currently selected one by sending a</span>
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::SetCheck</span> {
 			<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">selected</span> { <span class="ident">co::BST::CHECKED</span> } <span class="kw">else</span> { <span class="ident">co::BST::UNCHECKED</span> },
 		});
@@ -358,8 +358,8 @@
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message, then sends a</span>
 	<span class="doccomment">/// [`wm::Command`](crate::msg::wm::Command) message to the parent, so it</span>
 	<span class="doccomment">/// can handle the event.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selected_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
-		<span class="self">self</span>.<span class="ident">set_selected</span>(<span class="ident">selected</span>);
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">selected</span>: <span class="ident">bool</span>) {
+		<span class="self">self</span>.<span class="ident">select</span>(<span class="ident">selected</span>);
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::Command</span> {
 			<span class="ident">event</span>: <span class="ident">AccelMenuCtrl::Ctrl</span>(
 				<span class="ident">AccelMenuCtrlData</span> {
