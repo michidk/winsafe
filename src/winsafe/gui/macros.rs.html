@@ -252,14 +252,14 @@
 		<span class="doccomment">/// printed at the windows&#39;s titlebar.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// ```rust,ignore</span>
-		<span class="doccomment">/// use winsafe::{gui, BoxResult, GetCurrentThreadId, Sleep};</span>
+		<span class="doccomment">/// use winsafe::{gui, ErrResult, GetCurrentThreadId, Sleep};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
 		<span class="doccomment">/// let btn: gui::Button;</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// btn.on().bn_clicked({</span>
 		<span class="doccomment">///     let wnd = wnd.clone();</span>
-		<span class="doccomment">///     move || -&gt; BoxResult&lt;()&gt; {</span>
+		<span class="doccomment">///     move || -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///         println!(&quot;Click event at {:#x}&quot;, GetCurrentThreadId());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">///         std::thread::spawn({</span>
@@ -270,7 +270,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">///                 wnd.run_ui_thread({</span>
 		<span class="doccomment">///                     let wnd = wnd.clone();</span>
-		<span class="doccomment">///                     move || -&gt; BoxResult&lt;()&gt; {</span>
+		<span class="doccomment">///                     move || -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///                         println!(&quot;Updating UI at {:#x}&quot;, GetCurrentThreadId());</span>
 		<span class="doccomment">///                         wnd.hwnd().SetWindowText(&quot;Status... 50%&quot;)?;</span>
 		<span class="doccomment">///                         Ok(())</span>
@@ -282,7 +282,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">///                 wnd.run_ui_thread({</span>
 		<span class="doccomment">///                     let wnd = wnd.clone();</span>
-		<span class="doccomment">///                     move || -&gt; BoxResult&lt;()&gt; {</span>
+		<span class="doccomment">///                     move || -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///                         println!(&quot;Updating UI at {:#x}&quot;, GetCurrentThreadId());</span>
 		<span class="doccomment">///                         wnd.hwnd().SetWindowText(&quot;Status... 100%&quot;)?;</span>
 		<span class="doccomment">///                         Ok(())</span>
@@ -296,7 +296,7 @@
 		<span class="doccomment">/// });</span>
 		<span class="doccomment">/// ```</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
+			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
 		{
 			<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_dlg</span> {
 				<span class="ident">RawDlg::Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">run_ui_thread</span>(<span class="ident">func</span>),

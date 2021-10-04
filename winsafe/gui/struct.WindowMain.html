@@ -21,7 +21,7 @@ with a closure, and it displays the clicked coordinates in the
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
 <span class="attribute">#![<span class="ident">windows_subsystem</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>]</span>
 
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">BoxResult</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">msg</span>, <span class="ident">ErrResult</span>};
 
 <span class="kw">fn</span> <span class="ident">main</span>() {
     <span class="kw">let</span> <span class="ident">my_main</span> <span class="op">=</span> <span class="ident">MyMain::new</span>();
@@ -51,7 +51,7 @@ with a closure, and it displays the clicked coordinates in the
     <span class="kw">fn</span> <span class="ident">events</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">wnd</span>.<span class="ident">on</span>().<span class="ident">wm_l_button_down</span>({
             <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">wnd</span>.<span class="ident">clone</span>(); <span class="comment">// clone to pass it to the closure</span>
-            <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span>: <span class="ident">msg::wm::LButtonDown</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">txt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Coords {} x {}&quot;</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">x</span>, <span class="ident">p</span>.<span class="ident">coords</span>.<span class="ident">y</span>);
                 <span class="ident">wnd</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowText</span>(<span class="ident">txt</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
@@ -107,7 +107,7 @@ only after the control is created.</p>
 <h1 id="panics" class="section-header"><a href="#panics">Panics</a></h1>
 <p>Panics if the window is already created. Events must be set before
 window creation.</p>
-</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.run_ui_thread" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/winsafe/gui/window_main.rs.html#162" title="goto source code">[src]</a></div><a href="#method.run_ui_thread" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.run_ui_thread" class="fnname">run_ui_thread</a>&lt;F&gt;(&amp;self, func: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/ops/function/trait.FnOnce.html" title="trait core::ops::function::FnOnce">FnOnce</a>() -&gt; <a class="type" href="../type.BoxResult.html" title="type winsafe::BoxResult">BoxResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.unit.html">()</a>&gt;,&nbsp;</span></h4></div></summary><div class="docblock"><p>If you perform a very long task in the UI thread, the UI freezes until
+</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.run_ui_thread" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/winsafe/gui/window_main.rs.html#162" title="goto source code">[src]</a></div><a href="#method.run_ui_thread" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.run_ui_thread" class="fnname">run_ui_thread</a>&lt;F&gt;(&amp;self, func: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/1.55.0/core/ops/function/trait.FnOnce.html" title="trait core::ops::function::FnOnce">FnOnce</a>() -&gt; <a class="type" href="../type.ErrResult.html" title="type winsafe::ErrResult">ErrResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.unit.html">()</a>&gt;,&nbsp;</span></h4></div></summary><div class="docblock"><p>If you perform a very long task in the UI thread, the UI freezes until
 the task is complete – this may cause the impression that your
 application crashed. That’s why long tasks are performed in parallel
 threads. However, at some point you’ll want to update the UI to reflect
@@ -132,14 +132,14 @@ starts a long task in a parallel thread. As it progresses, the status is
 printed at the windows’s titlebar.</p>
 
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
-<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">BoxResult</span>, <span class="ident">GetCurrentThreadId</span>, <span class="ident">Sleep</span>};
+<span class="kw">use</span> <span class="ident">winsafe</span>::{<span class="ident">gui</span>, <span class="ident">ErrResult</span>, <span class="ident">GetCurrentThreadId</span>, <span class="ident">Sleep</span>};
 
 <span class="kw">let</span> <span class="ident">wnd</span>: <span class="ident">gui::WindowMain</span>; <span class="comment">// initialized somewhere</span>
 <span class="kw">let</span> <span class="ident">btn</span>: <span class="ident">gui::Button</span>;
 
 <span class="ident">btn</span>.<span class="ident">on</span>().<span class="ident">bn_clicked</span>({
     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>();
-    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="macro">println!</span>(<span class="string">&quot;Click event at {:#x}&quot;</span>, <span class="ident">GetCurrentThreadId</span>());
 
         <span class="ident">std::thread::spawn</span>({
@@ -150,7 +150,7 @@ printed at the windows’s titlebar.</p>
 
                 <span class="ident">wnd</span>.<span class="ident">run_ui_thread</span>({
                     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>();
-                    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+                    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
                         <span class="macro">println!</span>(<span class="string">&quot;Updating UI at {:#x}&quot;</span>, <span class="ident">GetCurrentThreadId</span>());
                         <span class="ident">wnd</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowText</span>(<span class="string">&quot;Status... 50%&quot;</span>)<span class="question-mark">?</span>;
                         <span class="prelude-val">Ok</span>(())
@@ -162,7 +162,7 @@ printed at the windows’s titlebar.</p>
 
                 <span class="ident">wnd</span>.<span class="ident">run_ui_thread</span>({
                     <span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="ident">wnd</span>.<span class="ident">clone</span>();
-                    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+                    <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
                         <span class="macro">println!</span>(<span class="string">&quot;Updating UI at {:#x}&quot;</span>, <span class="ident">GetCurrentThreadId</span>());
                         <span class="ident">wnd</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowText</span>(<span class="string">&quot;Status... 100%&quot;</span>)<span class="question-mark">?</span>;
                         <span class="prelude-val">Ok</span>(())
@@ -174,7 +174,7 @@ printed at the windows’s titlebar.</p>
         <span class="prelude-val">Ok</span>(())
     }
 });</pre></div>
-</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.run_main" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/winsafe/gui/window_main.rs.html#173-188" title="goto source code">[src]</a></div><a href="#method.run_main" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.run_main" class="fnname">run_main</a>(&amp;self, cmd_show: <a class="enum" href="https://doc.rust-lang.org/1.55.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../co/struct.SW.html" title="struct winsafe::co::SW">SW</a>&gt;) -&gt; <a class="type" href="../type.BoxResult.html" title="type winsafe::BoxResult">BoxResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.i32.html">i32</a>&gt;</h4></div></summary><div class="docblock"><p>Physically creates the window, then runs the main application loop. This
+</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.run_main" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/winsafe/gui/window_main.rs.html#173-188" title="goto source code">[src]</a></div><a href="#method.run_main" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.run_main" class="fnname">run_main</a>(&amp;self, cmd_show: <a class="enum" href="https://doc.rust-lang.org/1.55.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../co/struct.SW.html" title="struct winsafe::co::SW">SW</a>&gt;) -&gt; <a class="type" href="../type.ErrResult.html" title="type winsafe::ErrResult">ErrResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.55.0/std/primitive.i32.html">i32</a>&gt;</h4></div></summary><div class="docblock"><p>Physically creates the window, then runs the main application loop. This
 method will block until the window is closed.</p>
 <p>The <code>cmd_show</code> parameter defaults to
 <a href="../co/struct.SW.html#associatedconstant.SHOW"><code>co::SW::SHOW</code></a>.</p>

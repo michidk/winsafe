@@ -141,117 +141,61 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
-<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::HwndPlace</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::base::Base</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles</span>::{<span class="ident">HDWP</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg::wm</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs</span>::{<span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
 
-<span class="doccomment">/// In [`Resizer::new`](crate::gui::Resizer::new), determines how the child</span>
-<span class="doccomment">/// controls will be adjusted automatically when the parent window is resized.</span>
+<span class="doccomment">/// Specifies the horizontal behavior of the control when the parent window is</span>
+<span class="doccomment">/// resized.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Resz</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Horz</span> {
 	<span class="doccomment">/// Nothing will be done when parent window is resized.</span>
-	<span class="ident">Nothing</span>,
-	<span class="doccomment">/// When parent window resizes, the control will move anchored at</span>
-	<span class="doccomment">/// right/bottom. Size of the control will remain fixed.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// When parent window resizes, the control will move anchored at right.</span>
+	<span class="doccomment">/// Size of the control will remain fixed.</span>
 	<span class="ident">Repos</span>,
-	<span class="doccomment">/// When parent window resizes, the control will be resized. Position will</span>
-	<span class="doccomment">/// remain fixed.</span>
+	<span class="doccomment">/// When parent window resizes, the control width will stretch/shrink</span>
+	<span class="doccomment">/// accordingly. Position will remain fixed.</span>
 	<span class="ident">Resize</span>,
 }
 
-<span class="kw">struct</span> <span class="ident">Ctrl</span> { <span class="comment">// each child control kept internally in the Resizer</span>
+<span class="doccomment">/// Specifies the vertical behavior of the control when the parent window is</span>
+<span class="doccomment">/// resized.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Vert</span> {
+	<span class="doccomment">/// Nothing will be done when parent window is resized.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// When parent window resizes, the control will move anchored at bottom.</span>
+	<span class="doccomment">/// Size of the control will remain fixed.</span>
+	<span class="ident">Repos</span>,
+	<span class="doccomment">/// When parent window resizes, the control height will stretch/shrink</span>
+	<span class="doccomment">/// accordingly. Position will remain fixed.</span>
+	<span class="ident">Resize</span>,
+}
+
+<span class="kw">struct</span> <span class="ident">Ctrl</span> {
 	<span class="ident">hwnd_ptr</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>,
 	<span class="ident">rc_orig</span>: <span class="ident">RECT</span>, <span class="comment">// original coordinates relative to parent</span>
-	<span class="ident">horz</span>: <span class="ident">Resz</span>,
-	<span class="ident">vert</span>: <span class="ident">Resz</span>,
+	<span class="ident">horz</span>: <span class="ident">Horz</span>,
+	<span class="ident">vert</span>: <span class="ident">Vert</span>,
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="doccomment">/// When the parent window is resized, automatically adjusts position and size</span>
-<span class="doccomment">/// of child controls.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resizer</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">struct</span> <span class="ident">Resizer</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Resizer</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">Resizer</span> {}
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of Resizer</span>
 	<span class="ident">ctrls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ctrl</span><span class="op">&gt;</span>,
@@ -259,137 +203,55 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Resizer</span> {
-	<span class="doccomment">/// Instantiates a new `Resizer`, receiving the controls along with their</span>
-	<span class="doccomment">/// horizontal and vertical behaviors when the owner window is resized.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::gui::{Button, Edit, Resizer, Resz, WindowMain};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let wnd: WindowMain; // initialized somewhere</span>
-	<span class="doccomment">/// let txt_name: Edit;</span>
-	<span class="doccomment">/// let txt_surname: Edit;</span>
-	<span class="doccomment">/// let txt_another: Edit;</span>
-	<span class="doccomment">/// let btn_click: Button;</span>
-	<span class="doccomment">/// let rads_countries: gui::RadioGroup,</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let layout_resizer = Resizer::new(&amp;wnd, &amp;[</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">///     // The first parameter of the tuple is the horizontal behavior,</span>
-	<span class="doccomment">///     // the second one is the vertical behavior,</span>
-	<span class="doccomment">///     // and the third specifies all controls to which the behaviors apply.</span>
-	<span class="doccomment">///     //</span>
-	<span class="doccomment">///     // Horizontally: stretch or shrink.</span>
-	<span class="doccomment">///     // Vertically: don&#39;t move or stretch/shrink; do nothing.</span>
-	<span class="doccomment">///     (Resz::Resize, Resz::Nothing, &amp;[&amp;txt_name, &amp;txt_surname]),</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">///     // Horizontally: don&#39;t move or stretch/shrink; do nothing.</span>
-	<span class="doccomment">///     // Vertically: move up or down.</span>
-	<span class="doccomment">///     (Resz::Resize, Resz::Repos, &amp;[&amp;txt_another]),</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">///     // Horizontally: move left or right.</span>
-	<span class="doccomment">///     // Vertically: move up or down.</span>
-	<span class="doccomment">///     (Resz::Repos, Resz::Repos, &amp;[&amp;btn_click]),</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">///     // Add all radio buttons of the radio group at once.</span>
-	<span class="doccomment">///     (Resz::Repos, Resz::Repos, &amp;rads_countries.as_child_vec()),</span>
-	<span class="doccomment">/// ]);</span>
-	<span class="doccomment">/// ```</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Panics if no child controls are passed.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">children</span>: <span class="kw-2">&amp;</span>[(<span class="ident">Resz</span>, <span class="ident">Resz</span>, <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Child</span>])]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Resizer</span>
-	{
-		<span class="kw">if</span> <span class="ident">children</span>.<span class="ident">is_empty</span>() {
-			<span class="macro">panic!</span>(<span class="string">&quot;Cannot create a Resizer without child controls.&quot;</span>);
-		}
-
-		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-
-		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">ctrls</span>: <span class="ident">Vec::with_capacity</span>(<span class="number">16</span>), <span class="comment">// arbitrary, prealloc for speed</span>
+					<span class="ident">ctrls</span>: <span class="ident">Vec::with_capacity</span>(<span class="number">10</span>), <span class="comment">// arbitrary</span>
 					<span class="ident">sz_parent_orig</span>: <span class="ident">SIZE::default</span>(),
 				},
 			)),
-		);
-
-		<span class="kw">let</span> <span class="ident">ptr_parent</span> <span class="op">=</span> <span class="ident">NonNull::from</span>(<span class="ident">parent_base_ref</span>);
-		<span class="kw">let</span> <span class="ident">rc_children</span> <span class="op">=</span> <span class="ident">Rc::new</span>(
-			<span class="ident">children</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">horz</span>, <span class="ident">vert</span>, <span class="ident">children</span>)<span class="op">|</span>
-				(
-					<span class="kw-2">*</span><span class="ident">horz</span>,
-					<span class="kw-2">*</span><span class="ident">vert</span>,
-					<span class="ident">children</span>.<span class="ident">iter</span>()
-						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">dyn_child</span><span class="op">|</span> <span class="ident">NonNull::from</span>(<span class="ident">dyn_child</span>.<span class="ident">hwnd_ref</span>()))
-						.<span class="ident">collect</span>(),
-				),
-			).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
-		);
-
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
-			<span class="comment">// Children are effectively added during WM_CREATE or WM_INITDIALOG.</span>
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">add_children</span>(<span class="ident">ptr_parent</span>, <span class="ident">rc_children</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
-		});
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_size</span>({
-			<span class="comment">// Children are resized/repositioned during WM_SIZE.</span>
-			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(()) }
-		});
-
-		<span class="ident">new_self</span>
+		)
 	}
 
-	<span class="kw">fn</span> <span class="ident">add_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">ptr_parent</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">Base</span><span class="op">&gt;</span>,
-		<span class="ident">rc_children</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Resz</span>, <span class="ident">Resz</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">parent_base_ref</span>: <span class="kw-2">&amp;</span><span class="ident">Base</span>, <span class="ident">hwnd_ref</span>: <span class="kw-2">&amp;</span><span class="ident">HWND</span>,
+		<span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="ident">ctrls</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">ctrls</span>;
-		<span class="ident">ctrls</span>.<span class="ident">reserve</span>(<span class="ident">rc_children</span>.<span class="ident">len</span>());
+		<span class="comment">// Note that, in order to have valid HWNDs, this method must be called</span>
+		<span class="comment">// after the parent and the control have been created.</span>
 
-		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">ptr_parent</span>.<span class="ident">as_ref</span>() };
-		<span class="kw">let</span> <span class="ident">rc_parent</span> <span class="op">=</span> <span class="ident">parent_base_ref</span>.<span class="ident">hwnd_ref</span>().<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>;
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">sz_parent_orig</span> <span class="op">=</span> <span class="ident">SIZE::new</span>(<span class="ident">rc_parent</span>.<span class="ident">right</span>, <span class="ident">rc_parent</span>.<span class="ident">bottom</span>); <span class="comment">// save original parent size</span>
-
-		<span class="kw">for</span> (<span class="ident">horz</span>, <span class="ident">vert</span>, <span class="ident">children</span>) <span class="kw">in</span> <span class="ident">rc_children</span>.<span class="ident">iter</span>() {
-			<span class="kw">for</span> <span class="ident">child_hwnd_ptr</span> <span class="kw">in</span> <span class="ident">children</span>.<span class="ident">iter</span>() {
-				<span class="kw">let</span> <span class="ident">child_hwnd_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">child_hwnd_ptr</span>.<span class="ident">as_ref</span>() };
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_orig</span> <span class="op">=</span> <span class="ident">child_hwnd_ref</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
-				<span class="ident">parent_base_ref</span>.<span class="ident">hwnd_ref</span>().<span class="ident">ScreenToClientRc</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc_orig</span>)<span class="question-mark">?</span>; <span class="comment">// control client coordinates relative to parent</span>
-
-				<span class="ident">ctrls</span>.<span class="ident">push</span>(<span class="ident">Ctrl</span> {
-					<span class="ident">hwnd_ptr</span>: <span class="kw-2">*</span><span class="ident">child_hwnd_ptr</span>,
-					<span class="ident">rc_orig</span>,
-					<span class="ident">horz</span>: <span class="kw-2">*</span><span class="ident">horz</span>,
-					<span class="ident">vert</span>: <span class="kw-2">*</span><span class="ident">vert</span>,
-				});
-			}
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ctrls</span>.<span class="ident">is_empty</span>() { <span class="comment">// first control being added?</span>
+			<span class="kw">let</span> <span class="ident">rc_parent</span> <span class="op">=</span> <span class="ident">parent_base_ref</span>.<span class="ident">hwnd_ref</span>().<span class="ident">GetClientRect</span>()<span class="question-mark">?</span>;
+			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">sz_parent_orig</span> <span class="op">=</span> <span class="ident">SIZE::new</span>(<span class="ident">rc_parent</span>.<span class="ident">right</span>, <span class="ident">rc_parent</span>.<span class="ident">bottom</span>); <span class="comment">// save original parent size</span>
 		}
+
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_orig</span> <span class="op">=</span> <span class="ident">hwnd_ref</span>.<span class="ident">GetWindowRect</span>()<span class="question-mark">?</span>;
+		<span class="ident">parent_base_ref</span>.<span class="ident">hwnd_ref</span>().<span class="ident">ScreenToClientRc</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc_orig</span>)<span class="question-mark">?</span>; <span class="comment">// control client coordinates relative to parent</span>
+
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">ctrls</span>.<span class="ident">push</span>(<span class="ident">Ctrl</span> {
+			<span class="ident">hwnd_ptr</span>: <span class="ident">NonNull::from</span>(<span class="ident">hwnd_ref</span>),
+			<span class="ident">rc_orig</span>: <span class="ident">rc_orig</span>,
+			<span class="ident">horz</span>,
+			<span class="ident">vert</span>,
+		});
 
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="doccomment">/// Resizes all registered children according to the defined rules.</span>
-	<span class="kw">fn</span> <span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">size_parm</span>: <span class="kw-2">&amp;</span><span class="ident">wm::Size</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ctrls</span>.<span class="ident">is_empty</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">size_parm</span>.<span class="ident">request</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::SIZE_R::MINIMIZED</span> {
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(()); <span class="comment">// if no controls, or if minimized, no need to process</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">wm::Size</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ctrls</span>.<span class="ident">is_empty</span>() <span class="comment">// no controls</span>
+			<span class="op">|</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">request</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::SIZE_R::MINIMIZED</span> { <span class="comment">// we&#39;re minimized</span>
+			<span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 		}
 
 		<span class="kw">let</span> <span class="ident">hdwp</span> <span class="op">=</span> <span class="ident">HDWP::BeginDeferWindowPos</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">ctrls</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">parent_cx</span> <span class="op">=</span> <span class="ident">size_parm</span>.<span class="ident">client_area</span>.<span class="ident">cx</span>;
-		<span class="kw">let</span> <span class="ident">parent_cy</span> <span class="op">=</span> <span class="ident">size_parm</span>.<span class="ident">client_area</span>.<span class="ident">cy</span>;
-
 		<span class="kw">for</span> <span class="ident">ctrl</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ctrls</span>.<span class="ident">iter</span>() {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uflags</span> <span class="op">=</span> <span class="ident">co::SWP::NOZORDER</span>;
-			<span class="kw">if</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Resz::Repos</span> <span class="op">&amp;&amp;</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Resz::Repos</span> { <span class="comment">// reposition both vert &amp; horz</span>
+			<span class="kw">if</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Horz::Repos</span> <span class="op">&amp;&amp;</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Vert::Repos</span> { <span class="comment">// reposition both vert &amp; horz</span>
 				<span class="ident">uflags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::SWP::NOSIZE</span>;
-			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Resz::Resize</span> <span class="op">&amp;&amp;</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Resz::Resize</span> { <span class="comment">// resize both vert &amp; horz</span>
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Horz::Resize</span> <span class="op">&amp;&amp;</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Vert::Resize</span> { <span class="comment">// resize both vert &amp; horz</span>
 				<span class="ident">uflags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::SWP::NOMOVE</span>;
 			}
 
@@ -398,21 +260,21 @@
 				<span class="ident">HwndPlace::None</span>,
 				<span class="ident">POINT::new</span>(
 					<span class="kw">match</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> {
-						<span class="ident">Resz::Repos</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parent_cx</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cx</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span>,
+						<span class="ident">Horz::Repos</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cx</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cx</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span>,
 						<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span> <span class="comment">// keep original x pos</span>
 					},
 					<span class="kw">match</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> {
-						<span class="ident">Resz::Repos</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parent_cy</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cy</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span>,
+						<span class="ident">Vert::Repos</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cy</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cy</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span>,
 						<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span> <span class="comment">// keep original y pos</span>
 					},
 				),
 				<span class="ident">SIZE::new</span>(
 					<span class="kw">match</span> <span class="ident">ctrl</span>.<span class="ident">horz</span> {
-						<span class="ident">Resz::Resize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parent_cx</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cx</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span>,
+						<span class="ident">Horz::Resize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cx</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cx</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span>,
 						<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">right</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">left</span> <span class="comment">// keep original width</span>
 					},
 					<span class="kw">match</span> <span class="ident">ctrl</span>.<span class="ident">vert</span> {
-						<span class="ident">Resz::Resize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parent_cy</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cy</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span>,
+						<span class="ident">Vert::Resize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">client_area</span>.<span class="ident">cy</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sz_parent_orig</span>.<span class="ident">cy</span> <span class="op">+</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span>,
 						<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span><span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">bottom</span> <span class="op">-</span> <span class="ident">ctrl</span>.<span class="ident">rc_orig</span>.<span class="ident">top</span> <span class="comment">// keep original height</span>
 					},
 				),

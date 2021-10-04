@@ -230,6 +230,22 @@
 <span id="230">230</span>
 <span id="231">231</span>
 <span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
@@ -237,6 +253,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::ButtonEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>, <span class="ident">multiply_dpi</span>, <span class="ident">ui_font</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles::HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">bm</span>, <span class="ident">wm</span>};
@@ -266,7 +283,7 @@
 <span class="macro">impl_child!</span>(<span class="ident">RadioButton</span>);
 
 <span class="kw">impl</span> <span class="ident">RadioButton</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">RadioButtonOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">RadioButtonOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">RadioButtonOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
@@ -280,7 +297,7 @@
 		)
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioButton</span> {
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 
 		<span class="self">Self</span>(
@@ -292,7 +309,7 @@
 		)
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
@@ -312,13 +329,16 @@
 					<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">button_style</span>.<span class="ident">into</span>(),
 				)<span class="question-mark">?</span>;
 
-				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span>{ <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
+				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
 				<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">selected</span> { <span class="self">self</span>.<span class="ident">select</span>(<span class="bool-val">true</span>); }
 			},
 			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>)<span class="question-mark">?</span>; <span class="comment">// may panic</span>
 			},
 		}
+
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>().<span class="ident">resizer_add</span>(
+			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>(), <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)<span class="question-mark">?</span>;
 
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::SetDontClick</span> { <span class="ident">dont_click</span>: <span class="bool-val">true</span> });
 		<span class="prelude-val">Ok</span>(())
@@ -420,6 +440,14 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to an auto-generated ID.</span>
 	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+	<span class="doccomment">/// Horizontal behavior when the parent is resized.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to `Horz::None`.</span>
+	<span class="kw">pub</span> <span class="ident">horz_resize</span>: <span class="ident">Horz</span>,
+	<span class="doccomment">/// Vertical behavior when the parent is resized.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to `Vert::None`.</span>
+	<span class="kw">pub</span> <span class="ident">vert_resize</span>: <span class="ident">Vert</span>,
 
 	<span class="doccomment">/// Initial selection state.</span>
 	<span class="doccomment">///</span>
@@ -437,6 +465,8 @@
 			<span class="ident">window_style</span>: <span class="ident">co::WS::CHILD</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span>,
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span>,
 			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
+			<span class="ident">horz_resize</span>: <span class="ident">Horz::None</span>,
+			<span class="ident">vert_resize</span>: <span class="ident">Vert::None</span>,
 			<span class="ident">selected</span>: <span class="bool-val">false</span>,
 		}
 	}
@@ -459,6 +489,8 @@
 			<span class="ident">window_style</span>: <span class="self">self</span>.<span class="ident">window_style</span>,
 			<span class="ident">window_ex_style</span>: <span class="self">self</span>.<span class="ident">window_ex_style</span>,
 			<span class="ident">ctrl_id</span>: <span class="self">self</span>.<span class="ident">ctrl_id</span>,
+			<span class="ident">horz_resize</span>: <span class="self">self</span>.<span class="ident">horz_resize</span>,
+			<span class="ident">vert_resize</span>: <span class="self">self</span>.<span class="ident">vert_resize</span>,
 			<span class="ident">selected</span>: <span class="self">self</span>.<span class="ident">selected</span>,
 		}
 	}

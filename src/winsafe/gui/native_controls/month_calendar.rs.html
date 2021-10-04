@@ -181,6 +181,33 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -190,6 +217,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::MonthCalendarEvents</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles::HWND</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg::mcm</span>;
@@ -221,7 +249,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">MonthCalendarOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">MonthCalendarOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
-		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
+		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(
@@ -233,9 +261,9 @@
 			),
 		);
 
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">create_or_initdlg</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
 
 		<span class="ident">new_self</span>
@@ -243,7 +271,10 @@
 
 	<span class="doccomment">/// Instantiates a new `MonthCalendar` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+		<span class="ident">horz_resize</span>: <span class="ident">Horz</span>, <span class="ident">vert_resize</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MonthCalendar</span>
+	{
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
@@ -258,13 +289,19 @@
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(<span class="ident">horz_resize</span>, <span class="ident">vert_resize</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
 
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="ident">horz</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Horz::Resize</span> {
+			<span class="macro">panic!</span>(<span class="string">&quot;MonthCalendar cannot be resized with Horz::Resize.&quot;</span>);
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">vert</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Vert::Resize</span> {
+			<span class="macro">panic!</span>(<span class="string">&quot;MonthCalendar cannot be resized with Vert::Resize.&quot;</span>);
+		}
+
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
@@ -284,11 +321,12 @@
 				<span class="ident">our_hwnd</span>.<span class="ident">SetWindowPos</span>(<span class="ident">HwndPlace::None</span>, <span class="ident">POINT::default</span>(),
 					<span class="ident">SIZE::new</span>(<span class="ident">bounding_rect</span>.<span class="ident">right</span>, <span class="ident">bounding_rect</span>.<span class="ident">bottom</span>),
 					<span class="ident">co::SWP::NOZORDER</span> <span class="op">|</span> <span class="ident">co::SWP::NOMOVE</span>)<span class="question-mark">?</span>;
-
-				<span class="prelude-val">Ok</span>(())
 			},
-			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()), <span class="comment">// may panic</span>
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>, <span class="comment">// may panic</span>
 		}
+
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>().<span class="ident">resizer_add</span>(
+			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>(), <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
 	}
 
 	<span class="macro">pub_fn_hwnd!</span>();
@@ -343,16 +381,32 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to an auto-generated ID.</span>
 	<span class="kw">pub</span> <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+	<span class="doccomment">/// Horizontal behavior when the parent is resized.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to `Horz::None`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** A `MonthCalendar` cannot be resized horizontally, so it will</span>
+	<span class="doccomment">/// panic if you use `Horz::Resize`.</span>
+	<span class="kw">pub</span> <span class="ident">horz_resize</span>: <span class="ident">Horz</span>,
+	<span class="doccomment">/// Vertical behavior when the parent is resized.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Defaults to `Vert::None`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** A `MonthCalendar` cannot be resized vertically, so it will</span>
+	<span class="doccomment">/// panic if you use `Vert::Resize`.</span>
+	<span class="kw">pub</span> <span class="ident">vert_resize</span>: <span class="ident">Vert</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MonthCalendarOpts</span> {
 	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">position</span>: <span class="ident">POINT::new</span>(<span class="number">0</span>, <span class="number">0</span>),
-			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
 			<span class="ident">month_calendar_style</span>: <span class="ident">co::MCS::NoValue</span>,
 			<span class="ident">window_style</span>: <span class="ident">co::WS::CHILD</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span> <span class="op">|</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>,
 			<span class="ident">window_ex_style</span>: <span class="ident">co::WS_EX::LEFT</span>,
+			<span class="ident">ctrl_id</span>: <span class="number">0</span>,
+			<span class="ident">horz_resize</span>: <span class="ident">Horz::None</span>,
+			<span class="ident">vert_resize</span>: <span class="ident">Vert::None</span>,
 		}
 	}
 }

@@ -75,10 +75,11 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">BoxResult</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums::HwndPlace</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::base::Base</span>;
@@ -103,7 +104,6 @@
 				},
 			),
 		);
-		<span class="ident">dlg</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">ui_thread_message_handler</span>();
 		<span class="ident">dlg</span>.<span class="ident">default_message_handlers</span>();
 		<span class="ident">dlg</span>
 	}
@@ -113,9 +113,9 @@
 	}
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
 	{
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">run_ui_thread</span>(<span class="ident">func</span>);
+		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">run_ui_thread</span>(<span class="ident">func</span>);
 	}
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">show_modal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
@@ -123,6 +123,8 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">default_message_handlers</span>();
+
 		<span class="self">self</span>.<span class="ident">base_ref</span>().<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {

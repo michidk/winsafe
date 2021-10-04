@@ -187,14 +187,17 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::ops::Index</span>;
+<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::RadioGroupEvents</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 
@@ -232,19 +235,17 @@
 		}
 
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">opts</span>.<span class="ident">len</span>());
 
-		<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">radio_opts</span>) <span class="kw">in</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radio_opts</span> <span class="op">=</span> <span class="ident">radio_opts</span>.<span class="ident">manual_clone</span>();
-			<span class="kw">if</span> <span class="ident">idx</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="comment">// first radio?</span>
-				<span class="ident">radio_opts</span>.<span class="ident">window_style</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>;
+		<span class="kw">let</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="ident">opt</span>)<span class="op">|</span> {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radio_opt</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">manual_clone</span>();
+			<span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="comment">// first radio?</span>
+				<span class="ident">radio_opt</span>.<span class="ident">window_style</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>;
 			}
+			<span class="ident">RadioButton::new</span>(<span class="ident">parent</span>, <span class="ident">radio_opt</span>)
+		}).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-			<span class="kw">let</span> <span class="ident">new_radio</span> <span class="op">=</span> <span class="ident">RadioButton::new</span>(<span class="ident">parent</span>, <span class="ident">radio_opts</span>);
-			<span class="ident">ctrl_ids</span>.<span class="ident">push</span>(<span class="ident">new_radio</span>.<span class="ident">ctrl_id</span>());
-			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">new_radio</span>);
-		}
+		<span class="kw">let</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">opt</span><span class="op">|</span> <span class="ident">opt</span>.<span class="ident">ctrl_id</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">opt</span><span class="op">|</span> (<span class="ident">opt</span>.<span class="ident">horz_resize</span>, <span class="ident">opt</span>.<span class="ident">vert_resize</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>());
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
@@ -255,9 +256,10 @@
 			)),
 		);
 
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">creation_wm</span>(), {
+		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">create_or_initdlg</span>(), {
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
+			<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">horz_verts</span>.<span class="ident">clone</span>();
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(<span class="ident">horz_verts</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
 
 		<span class="ident">new_self</span>
@@ -269,38 +271,38 @@
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Panics if no control IDs are passed.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_ids</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
-		<span class="kw">if</span> <span class="ident">ctrl_ids</span>.<span class="ident">is_empty</span>() {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrls</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u16</span>, <span class="ident">Horz</span>, <span class="ident">Vert</span>)]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
+		<span class="kw">if</span> <span class="ident">ctrls</span>.<span class="ident">is_empty</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
 
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">ctrl_ids</span>.<span class="ident">len</span>());
 
-		<span class="kw">for</span> <span class="ident">ctrl_id</span> <span class="kw">in</span> <span class="ident">ctrl_ids</span>.<span class="ident">iter</span>() {
-			<span class="ident">radios</span>.<span class="ident">push</span>(<span class="ident">RadioButton::new_dlg</span>(<span class="ident">parent</span>, <span class="kw-2">*</span><span class="ident">ctrl_id</span>));
-		}
+		<span class="kw">let</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">ctrls</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">ctrl_id</span>, <span class="kw">_</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">RadioButton::new_dlg</span>(<span class="ident">parent</span>, <span class="kw-2">*</span><span class="ident">ctrl_id</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">ctrls</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">ctrl_id</span>, <span class="kw">_</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">ctrls</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">horz</span>, <span class="ident">vert</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">horz</span>, <span class="kw-2">*</span><span class="ident">vert</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>());
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">radios</span>,
-					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>.<span class="ident">to_vec</span>()),
+					<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_ids</span>),
 				},
 			)),
 		);
 
 		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>()<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
+			<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">horz_verts</span>.<span class="ident">clone</span>();
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">me</span>.<span class="ident">create</span>(<span class="ident">horz_verts</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
 
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">for</span> <span class="ident">radio</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">radios</span>.<span class="ident">iter_mut</span>() {
-			<span class="ident">radio</span>.<span class="ident">create</span>()<span class="question-mark">?</span>;
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz_vert</span>: <span class="kw-2">&amp;</span>[(<span class="ident">Horz</span>, <span class="ident">Vert</span>)]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">radio</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">radios</span>.<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>() {
+			<span class="ident">radio</span>.<span class="ident">create</span>(<span class="ident">horz_vert</span>[<span class="ident">i</span>].<span class="number">0</span>, <span class="ident">horz_vert</span>[<span class="ident">i</span>].<span class="number">1</span>)<span class="question-mark">?</span>;
 		}
 		<span class="prelude-val">Ok</span>(())
 	}

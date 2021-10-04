@@ -88,6 +88,8 @@
 <span id="88">88</span>
 <span id="89">89</span>
 <span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
@@ -146,6 +148,12 @@
 		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::ResetContent</span> {})
 	}
 
+	<span class="doccomment">/// Sets the currently selected index, or clears it, by sending a</span>
+	<span class="doccomment">/// [`cb::SetCurSel`](crate::msg::cb::SetCurSel) message.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::SetCurSel</span> { <span class="ident">index</span> });
+	}
+
 	<span class="doccomment">/// Retrieves the index of the currently selected item, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetCurSel`](crate::msg::cb::GetCurSel) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
@@ -160,23 +168,19 @@
 			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">text</span>(<span class="ident">idx</span>))
 	}
 
-	<span class="doccomment">/// Sets the currently selected index, or clears it, by sending a</span>
-	<span class="doccomment">/// [`cb::SetCurSel`](crate::msg::cb::SetCurSel) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::SetCurSel</span> { <span class="ident">index</span> });
-	}
-
 	<span class="doccomment">/// Retrieves the text at the given position, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetLbText`](crate::msg::cb::GetLbText) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span> })
-			.<span class="ident">ok</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">len</span><span class="op">|</span> {
+			.<span class="ident">ok</span>()
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">len</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
 				<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbText</span>{
 					<span class="ident">index</span>,
 					<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>,
-				}).<span class="ident">ok</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">to_string</span>())
-			}).<span class="ident">flatten</span>()
+				}).<span class="ident">ok</span>()
+					.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">to_string</span>())
+			})
 	}
 }
 </pre></div>
