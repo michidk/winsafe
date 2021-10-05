@@ -1260,6 +1260,32 @@
 <span id="1260">1260</span>
 <span id="1261">1261</span>
 <span id="1262">1262</span>
+<span id="1263">1263</span>
+<span id="1264">1264</span>
+<span id="1265">1265</span>
+<span id="1266">1266</span>
+<span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
@@ -1938,6 +1964,26 @@
 		<span class="doccomment">/// maximum tracking size.</span>
 	}
 
+	<span class="doccomment">/// [`WM_GETTEXT`](crate::msg::wm::GetText) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Copies the text that corresponds to a window into a buffer provided by</span>
+	<span class="doccomment">/// the caller.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_text</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::GetText</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	{
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::GETTEXT</span>, <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">wm::GetText::from_generic_wm</span>(<span class="ident">p</span>))<span class="question-mark">?</span> <span class="kw">as</span> <span class="kw">_</span>)));
+	}
+
+	<span class="doccomment">/// [`WM_GETTEXTLENGTH`](crate::msg::wm::GetTextLength) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Determines the length, in characters, of the text associated with a</span>
+	<span class="doccomment">/// window.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_get_text_length</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	{
+		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::GETTEXTLENGTH</span>, <span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">func</span>()<span class="question-mark">?</span> <span class="kw">as</span> <span class="kw">_</span>)));
+	}
+
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_get_title_bar_info_ex</span>, <span class="ident">co::WM::GETTITLEBARINFOEX</span>, <span class="ident">wm::GetTitleBarInfoEx</span>,
 		<span class="doccomment">/// [`WM_GETTITLEBARINFOEX`](crate::msg::wm::GetTitleBarInfoEx) message.</span>
 		<span class="doccomment">///</span>
@@ -2450,6 +2496,12 @@
 		<span class="doccomment">/// case, the `WM_SYSKEYUP` message is sent to the active window. The</span>
 		<span class="doccomment">/// window that receives the message can distinguish between these two</span>
 		<span class="doccomment">/// contexts by checking the context code in the lParam parameter.</span>
+	}
+
+	<span class="macro">pub_fn_wm_retbool_param!</span> { <span class="ident">wm_set_text</span>, <span class="ident">co::WM::SETTEXT</span>, <span class="ident">wm::SetText</span>,
+		<span class="doccomment">/// [`WM_SETTEXT`](crate::msg::wm::SetText) message.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Sets the text of a window.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_theme_changed</span>, <span class="ident">co::WM::THEMECHANGED</span>,
