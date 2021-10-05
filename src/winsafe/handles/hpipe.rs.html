@@ -56,6 +56,9 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -99,11 +102,14 @@
 
 	<span class="doccomment">/// [`ReadFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// `buffer` will be automatically resized to `num_bytes_to_read`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ReadFile</span>(<span class="self">self</span>,
+		<span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">num_bytes_to_read</span>: <span class="ident">u32</span>,
-		<span class="ident">overlapped</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">OVERLAPPED</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>
+		<span class="ident">overlapped</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">OVERLAPPED</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="ident">HFILE</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">ptr</span> }.<span class="ident">ReadFile</span>(<span class="ident">num_bytes_to_read</span>, <span class="ident">overlapped</span>)
+		<span class="ident">HFILE</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">ptr</span> }.<span class="ident">ReadFile</span>(<span class="ident">buffer</span>, <span class="ident">num_bytes_to_read</span>, <span class="ident">overlapped</span>)
 	}
 
 	<span class="doccomment">/// [`WriteFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile)</span>

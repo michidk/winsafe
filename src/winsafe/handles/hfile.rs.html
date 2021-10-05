@@ -257,6 +257,9 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -431,24 +434,27 @@
 
 	<span class="doccomment">/// [`ReadFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// `buffer` will be automatically resized to `num_bytes_to_read`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ReadFile</span>(<span class="self">self</span>,
+		<span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">num_bytes_to_read</span>: <span class="ident">u32</span>,
-		<span class="ident">overlapped</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">OVERLAPPED</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>
+		<span class="ident">overlapped</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">OVERLAPPED</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">num_bytes_to_read</span> <span class="kw">as</span> <span class="kw">_</span>];
+		<span class="ident">buffer</span>.<span class="ident">resize</span>(<span class="ident">num_bytes_to_read</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0x00</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes_read</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::ReadFile</span>(
 					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">buffer</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">num_bytes_to_read</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytes_read</span>,
 					<span class="ident">overlapped</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				)
 			},
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>)
+		)
 	}
 
 	<span class="doccomment">/// [`SetEndOfFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setendoffile)</span>
