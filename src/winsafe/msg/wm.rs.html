@@ -2198,6 +2198,37 @@
 <span id="2198">2198</span>
 <span id="2199">2199</span>
 <span id="2200">2200</span>
+<span id="2201">2201</span>
+<span id="2202">2202</span>
+<span id="2203">2203</span>
+<span id="2204">2204</span>
+<span id="2205">2205</span>
+<span id="2206">2206</span>
+<span id="2207">2207</span>
+<span id="2208">2208</span>
+<span id="2209">2209</span>
+<span id="2210">2210</span>
+<span id="2211">2211</span>
+<span id="2212">2212</span>
+<span id="2213">2213</span>
+<span id="2214">2214</span>
+<span id="2215">2215</span>
+<span id="2216">2216</span>
+<span id="2217">2217</span>
+<span id="2218">2218</span>
+<span id="2219">2219</span>
+<span id="2220">2220</span>
+<span id="2221">2221</span>
+<span id="2222">2222</span>
+<span id="2223">2223</span>
+<span id="2224">2224</span>
+<span id="2225">2225</span>
+<span id="2226">2226</span>
+<span id="2227">2227</span>
+<span id="2228">2228</span>
+<span id="2229">2229</span>
+<span id="2230">2230</span>
+<span id="2231">2231</span>
 </pre><pre class="rust">
 <span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -2976,6 +3007,23 @@
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `u32`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// use winsafe::{msg::wm, HWND, WString};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let hwnd: HWND; // initialized somewhere</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let needed_len = hwnd.SendMessage(wm::GetTextLength {});</span>
+<span class="doccomment">/// let mut buf = WString::new_alloc_buffer(needed_len as _);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// hwnd.SendMessage(wm::GetText {</span>
+<span class="doccomment">///     buffer: buf.as_mut_slice(),</span>
+<span class="doccomment">/// });</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// println!(&quot;Text: {}&quot;, buf.to_string());</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetText</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u16</span>],
 }
@@ -3944,6 +3992,20 @@
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `bool`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// use winsafe::{msg::wm, HWND, WString};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let hwnd: HWND; // initialized somewhere</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let new_text = WString::from_str(&quot;some text&quot;);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// hwnd.SendMessage(wm::SetText {</span>
+<span class="doccomment">///     text: unsafe { new_text.as_ptr() },</span>
+<span class="doccomment">/// });</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetText</span> {
 	<span class="kw">pub</span> <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>,
 }
