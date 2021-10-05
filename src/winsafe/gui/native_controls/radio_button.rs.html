@@ -247,16 +247,7 @@
 <span id="247">247</span>
 <span id="248">248</span>
 <span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
-
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::enums</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>};
@@ -278,8 +269,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, you must use</span>
 <span class="doccomment">/// [`RadioGroup`](crate::gui::RadioGroup).</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RadioButton</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RadioButton</span>(<span class="ident">Obj</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of RadioButton</span>
 	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
@@ -300,13 +290,11 @@
 		<span class="kw">let</span> <span class="ident">ctrl_id</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>;
 
 		<span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
-				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
-					<span class="ident">opts_id</span>: <span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>),
-					<span class="ident">events</span>: <span class="ident">ButtonEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
-				},
-			),
+			<span class="ident">Obj</span> {
+				<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
+				<span class="ident">opts_id</span>: <span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>),
+				<span class="ident">events</span>: <span class="ident">ButtonEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
+			},
 		)
 	}
 
@@ -314,13 +302,11 @@
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 
 		<span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
-				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
-					<span class="ident">opts_id</span>: <span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>),
-					<span class="ident">events</span>: <span class="ident">ButtonEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
-				},
-			),
+			<span class="ident">Obj</span> {
+				<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
+				<span class="ident">opts_id</span>: <span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>),
+				<span class="ident">events</span>: <span class="ident">ButtonEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
+			},
 		)
 	}
 
