@@ -39,6 +39,25 @@
 <span id="39">39</span>
 <span id="40">40</span>
 <span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
@@ -47,7 +66,26 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles::HWND</span>;
 
 <span class="doccomment">/// Trait to any child control.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Child</span> {
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Implementing `Child` for your custom control:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// using winsafe::{gui, HWND};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// #[derive(Clone)]</span>
+<span class="doccomment">/// pub struct MyCustomControl {</span>
+<span class="doccomment">///     wnd: gui::WindowControl,</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// impl gui::Child for MyCustomControl {</span>
+<span class="doccomment">///     fn hwnd_ref(&amp;self) -&gt; &amp;HWND {</span>
+<span class="doccomment">///         self.wnd.hwnd_ref()</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Child</span>: <span class="ident">Clone</span> {
 	<span class="doccomment">/// Returns a reference to the [`HWND`](crate::HWND) of the child control.</span>
 	<span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span>;
 }
@@ -57,7 +95,7 @@
 <span class="doccomment">/// **Note:** This is a</span>
 <span class="doccomment">/// [sealed trait](https://rust-lang.github.io/api-guidelines/future-proofing.html#c-sealed)</span>
 <span class="doccomment">/// which cannot be implemented outside the library.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Parent</span>: <span class="ident">private::Sealed</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Parent</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">private::Sealed</span> {
 	<span class="doccomment">/// Returns a reference to the `Any` trait, allowing downcasting.</span>
 	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>;
 }
@@ -70,7 +108,7 @@
 	<span class="kw">impl</span> <span class="ident">Sealed</span> <span class="kw">for</span> <span class="kw">crate</span><span class="ident">::gui::WindowModal</span> {}
 }
 
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Base</span> {
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Base</span> {
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">w</span>) <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">WindowMain</span><span class="op">&gt;</span>() {
 		<span class="ident">w</span>.<span class="ident">base_ref</span>()
 	} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">w</span>) <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">WindowModal</span><span class="op">&gt;</span>() {

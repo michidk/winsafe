@@ -308,6 +308,7 @@
 <span id="308">308</span>
 <span id="309">309</span>
 <span id="310">310</span>
+<span id="311">311</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -362,7 +363,7 @@
 <span class="kw">impl</span> <span class="ident">CheckBox</span> {
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CheckBox</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CheckBox</span> {
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">CheckBoxOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
@@ -388,7 +389,7 @@
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 		<span class="ident">horz_resize</span>: <span class="ident">Horz</span>, <span class="ident">vert_resize</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CheckBox</span>
 	{
 		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
@@ -493,9 +494,9 @@
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message, then sends a</span>
 	<span class="doccomment">/// [`wm::Command`](crate::msg::wm::Command) message to the parent, so it</span>
 	<span class="doccomment">/// can handle the event.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check_state_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="ident">CheckState</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check_state_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="ident">CheckState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">set_check_state</span>(<span class="ident">state</span>);
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::Command</span> {
+		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetParent</span>()<span class="question-mark">?</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::Command</span> {
 			<span class="ident">event</span>: <span class="ident">AccelMenuCtrl::Ctrl</span>(
 				<span class="ident">AccelMenuCtrlData</span> {
 					<span class="ident">notif_code</span>: <span class="ident">co::BN::CLICKED</span>.<span class="ident">into</span>(),
@@ -504,6 +505,7 @@
 				},
 			),
 		});
+		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="doccomment">/// Sets the text by calling [`SetWindowText`](crate::HWND::SetWindowText).</span>
