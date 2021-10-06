@@ -1297,7 +1297,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
 	<span class="doccomment">/// Message was not handled because no function was found.</span>
 	<span class="ident">NotHandled</span>,
 	<span class="doccomment">/// Message handled, and return value is meaningful.</span>
@@ -1335,7 +1335,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">WindowEvents</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowEvents</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WindowEvents</span> {
 		<span class="self">Self</span>(
 			<span class="ident">VeryUnsafeCell::new</span>(
 				<span class="ident">Obj</span> {
@@ -1349,7 +1349,7 @@
 	}
 
 	<span class="doccomment">/// Tells whether no functions have been added.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">msgs</span>.<span class="ident">is_empty</span>()
 			<span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">tmrs</span>.<span class="ident">is_empty</span>()
 			<span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">cmds</span>.<span class="ident">is_empty</span>()
@@ -1358,7 +1358,7 @@
 
 	<span class="doccomment">/// Searches for the last added user function for the given message, and</span>
 	<span class="doccomment">/// runs if it exists, returning the result.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_one_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">process_one_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">ProcessResult</span><span class="op">&gt;</span>
 	{
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
@@ -1412,7 +1412,7 @@
 
 	<span class="doccomment">/// Searches for all user functions for the given message, and runs all of</span>
 	<span class="doccomment">/// them, discarding the results.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_all_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">process_all_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
 			<span class="ident">co::WM::NOTIFY</span> <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="ident">wm_nfy</span> <span class="op">=</span> <span class="ident">wm::Notify::from_generic_wm</span>(<span class="ident">wm_any</span>);
@@ -1443,14 +1443,14 @@
 	}
 
 	<span class="doccomment">/// Raw add message.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">msgs</span>.<span class="ident">insert</span>(<span class="ident">ident</span>, <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// Raw add notification.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::gui</span>) <span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">nfys</span>.<span class="ident">insert</span>((<span class="ident">id_from</span>, <span class="ident">code</span>), <span class="ident">Box::new</span>(<span class="ident">func</span>));
