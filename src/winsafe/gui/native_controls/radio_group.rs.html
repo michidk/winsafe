@@ -193,7 +193,6 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
-<span id="196">196</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::ops::Index</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
@@ -202,9 +201,9 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::RadioGroupEvents</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">RadioGroupEvents</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 
 <span class="doccomment">/// A group of native [`RadioButton`](crate::gui::RadioButton) controls.</span>
@@ -216,8 +215,7 @@
 	<span class="ident">parent_events</span>: <span class="ident">RadioGroupEvents</span>,
 }
 
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {}
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {}
+<span class="macro">impl_send_sync!</span>(<span class="ident">RadioGroup</span>);
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {

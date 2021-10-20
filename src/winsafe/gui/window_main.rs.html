@@ -187,15 +187,18 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::ErrResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs</span>::{<span class="ident">InitCommonControls</span>, <span class="ident">IsWindowsVistaOrGreater</span>, <span class="ident">SetProcessDPIAware</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::base::Base</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::dlg_main::DlgMain</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::WindowEvents</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::events::WindowEventsAll</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::privs</span>::{<span class="ident">create_ui_font</span>, <span class="ident">delete_ui_font</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::raw_main</span>::{<span class="ident">WindowMainOpts</span>, <span class="ident">RawMain</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::gui::traits</span>::{<span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::handles::HWND</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -231,6 +234,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// use winsafe::prelude::*;</span>
 <span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// fn main() {</span>
@@ -281,6 +285,7 @@
 <span class="doccomment">/// ```rust,ignore</span>
 <span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// use winsafe::prelude::*;</span>
 <span class="doccomment">/// use winsafe::gui;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// const ID_DLG_MAIN: i32 = 101; // in our .res file, this is the dialog ID</span>
@@ -315,11 +320,13 @@
 	<span class="ident">raw_dlg</span>: <span class="ident">RawDlg</span>,
 }
 
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
-<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {}
-
+<span class="macro">impl_send_sync!</span>(<span class="ident">WindowMain</span>);
 <span class="macro">impl_debug!</span>(<span class="ident">WindowMain</span>);
 <span class="macro">impl_parent!</span>(<span class="ident">WindowMain</span>);
+
+<span class="macro">impl_window!</span>(<span class="ident">WindowMain</span>);
+<span class="macro">impl_uithread!</span>(<span class="ident">WindowMain</span>);
+<span class="macro">impl_parentevents!</span>(<span class="ident">WindowMain</span>);
 
 <span class="kw">impl</span> <span class="ident">WindowMain</span> {
 	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be created with</span>
@@ -347,9 +354,6 @@
 	}
 
 	<span class="macro">fn_base_ref!</span>();
-	<span class="macro">pub_fn_hwnd!</span>();
-	<span class="macro">pub_fn_on!</span>();
-	<span class="macro">pub_fn_run_ui_thread!</span>();
 
 	<span class="doccomment">/// Physically creates the window, then runs the main application loop. This</span>
 	<span class="doccomment">/// method will block until the window is closed.</span>
