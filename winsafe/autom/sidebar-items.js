@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["vt","Automation COM virtual tables."]],"struct":[["IDispatch","`IDispatch` COM interface over `IDispatchVT`."],["ITypeInfo","`ITypeInfo` COM interface over `ITypeInfoVT`."]]});

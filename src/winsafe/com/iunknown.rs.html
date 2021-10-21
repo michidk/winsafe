@@ -69,43 +69,45 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
-<span id="88">88</span>
-<span id="89">89</span>
-<span id="90">90</span>
-<span id="91">91</span>
 </pre><pre class="rust">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::hr_to_winresult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::IID</span>;
+
+<span class="doccomment">/// A pointer to a COM virtual table.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ComPtr</span>(<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::com</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IUnknownVT</span>);
+
+<span class="kw">impl</span> <span class="ident">ComPtr</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::com</span>) <span class="kw">fn</span> <span class="ident">null</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="ident">ComPtr</span>(<span class="ident">std::ptr::null_mut</span>())
+	}
+}
+
+<span class="doccomment">/// Trait to any</span>
+<span class="doccomment">/// [COM](https://docs.microsoft.com/en-us/windows/win32/com/component-object-model--com--portal)</span>
+<span class="doccomment">/// object, which encapsulates a COM interface pointer.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ComInterface</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ComPtr</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// The COM interface ID.</span>
+	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span>;
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// [`IUnknown`](crate::IUnknown) virtual table, base to all COM virtual tables.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IUnknownVT</span> {
-	<span class="kw">pub</span> <span class="ident">QueryInterface</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">AddRef</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">Release</span>: <span class="kw">fn</span>(<span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">QueryInterface</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">AddRef</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">Release</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
 }
 
 <span class="doccomment">/// [`IUnknown`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nn-unknwn-iunknown)</span>
-<span class="doccomment">/// COM interface over [`IUnknownVT`](crate::IUnknownVT). It&#39;s the base to</span>
-<span class="doccomment">/// all COM interfaces.</span>
+<span class="doccomment">/// COM interface over [`IUnknownVT`](crate::IUnknownVT). It&#39;s the base to all</span>
+<span class="doccomment">/// COM interfaces.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// The `clone` method calls</span>
 <span class="doccomment">/// [`AddRef`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-addref)</span>
@@ -114,73 +116,31 @@
 <span class="doccomment">/// Automatically calls</span>
 <span class="doccomment">/// [`Release`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)</span>
 <span class="doccomment">/// when the object goes out of scope.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IUnknown</span> {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ppvt</span>: <span class="ident">PPVT</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IUnknown</span>(<span class="ident">ComPtr</span>);
+
+<span class="macro">impl_iunknown!</span>(<span class="ident">IUnknown</span>, <span class="number">0x00000000</span>, <span class="number">0x0000</span>, <span class="number">0x0000</span>, <span class="number">0xc000</span>, <span class="number">0x000000000046</span>);
+
+<span class="doccomment">/// Exposes the [`IUnknown`](crate::IUnknown) methods.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IUnknownT</span>: <span class="ident">ComInterface</span> <span class="op">+</span> <span class="ident">Clone</span> {
+	<span class="doccomment">/// Returns the pointer to the underlying COM virtual table.</span>
+	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ComPtr</span>;
+
+	<span class="doccomment">/// [`IUnknown::QueryInterface`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-queryinterface(refiid_void))</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">fn</span> <span class="ident">QueryInterface</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ComInterface</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
+		<span class="kw">unsafe</span> {
+			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IUnknownVT</span>);
+			<span class="ident">hr_to_winresult</span>(
+				(<span class="ident">vt</span>.<span class="ident">QueryInterface</span>)(
+					<span class="self">self</span>.<span class="ident">ptr</span>(),
+					<span class="kw-2">&amp;</span><span class="ident">T::IID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				),
+			)
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">T::from</span>(<span class="ident">ppv_queried</span>))
+	}
 }
-
-<span class="kw">impl</span> <span class="ident">ComInterface</span> <span class="kw">for</span> <span class="ident">IUnknown</span> {
-	<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident">IID</span> <span class="op">=</span> <span class="ident">IID::new</span>(<span class="number">0x00000000</span>, <span class="number">0x0000</span>, <span class="number">0x0000</span>, <span class="number">0xc000</span>, <span class="number">0x000000000046</span>);
-}
-
-<span class="macro">macro_rules!</span> <span class="ident">impl_IUnknown</span> {
-	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::hr_to_winresult</span>;
-
-		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
-		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
-
-		<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PPVT</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ppvt</span>: <span class="ident">PPVT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-				<span class="self">Self</span> { <span class="ident">ppvt</span> }
-			}
-		}
-
-		<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-				<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">ppvt</span>.<span class="ident">is_null</span>() {
-					<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">iunknown_vt</span>().<span class="ident">Release</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>); <span class="comment">// call Release()</span>
-					<span class="kw">if</span> <span class="ident">count</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-						<span class="self">self</span>.<span class="ident">ppvt</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
-					}
-				}
-			}
-		}
-
-		<span class="kw">impl</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-				(<span class="self">self</span>.<span class="ident">iunknown_vt</span>().<span class="ident">AddRef</span>)(<span class="self">self</span>.<span class="ident">ppvt</span>); <span class="comment">// call AddRef()</span>
-				<span class="self">Self</span> { <span class="ident">ppvt</span>: <span class="self">self</span>.<span class="ident">ppvt</span> }
-			}
-		}
-
-		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">fn</span> <span class="ident">iunknown_vt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">crate</span><span class="ident">::com::IUnknownVT</span> {
-				<span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>) }
-			}
-
-			<span class="doccomment">/// Returns the raw pointer to pointer to the COM virtual table.</span>
-			<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vt</span> {
-				<span class="self">self</span>.<span class="ident">ppvt</span> <span class="kw">as</span> <span class="kw">_</span>
-			}
-
-			<span class="doccomment">/// [`IUnknown::QueryInterface`](https://docs.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-queryinterface(refiid_void))</span>
-			<span class="doccomment">/// method.</span>
-			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryInterface</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ComInterface</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
-				<span class="ident">hr_to_winresult</span>(
-					(<span class="self">self</span>.<span class="ident">iunknown_vt</span>().<span class="ident">QueryInterface</span>)(
-						<span class="self">self</span>.<span class="ident">ppvt</span>,
-						<span class="kw-2">&amp;</span><span class="ident">T::IID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					),
-				).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">T::from</span>(<span class="ident">ppv_queried</span>))
-			}
-		}
-	};
-}
-
-<span class="macro">impl_IUnknown!</span>(<span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>);
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>

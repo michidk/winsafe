@@ -1746,7 +1746,7 @@
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CommandLineToArgv</span>(<span class="ident">cmd_line</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_args</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_args</span> <span class="op">=</span> <span class="ident">i32::default</span>();
 	<span class="kw">let</span> <span class="ident">lp_arr</span> <span class="op">=</span> <span class="kw">unsafe</span> {
 		<span class="ident">shell32::CommandLineToArgvW</span>(
 			<span class="ident">WString::from_str</span>(<span class="ident">cmd_line</span>).<span class="ident">as_ptr</span>(),
@@ -2140,7 +2140,7 @@
 <span class="doccomment">/// [`GetFileVersionInfoSize`](https://docs.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfosizew)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileVersionInfoSize</span>(<span class="ident">file_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dw_handle</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dw_handle</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">version::GetFileVersionInfoSizeW</span>(
 			<span class="ident">WString::from_str</span>(<span class="ident">file_name</span>).<span class="ident">as_ptr</span>(),
@@ -2155,7 +2155,7 @@
 <span class="doccomment">/// [`GetFirmwareType`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getfirmwaretype)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFirmwareType</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::FIRMWARE_TYPE</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ft</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ft</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::GetFirmwareType</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ft</span>) })
 		.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">co::FIRMWARE_TYPE</span>(<span class="ident">ft</span>))
 }
@@ -2682,7 +2682,7 @@
 <span class="doccomment">/// println!(&quot;Operation lasted {:.2} ms&quot;, duration_ms);</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryPerformanceCounter</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">perf_count</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">perf_count</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> { <span class="ident">kernel32::QueryPerformanceCounter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">perf_count</span>) },
 	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">perf_count</span>)
@@ -2691,7 +2691,7 @@
 <span class="doccomment">/// [`QueryPerformanceFrequency`](https://docs.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryPerformanceFrequency</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 	<span class="ident">bool_to_winresult</span>(
 		<span class="kw">unsafe</span> { <span class="ident">kernel32::QueryPerformanceFrequency</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">freq</span>) },
 	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">freq</span>)
@@ -2957,8 +2957,8 @@
 	<span class="ident">task_config</span>: <span class="kw-2">&amp;</span><span class="ident">TASKDIALOGCONFIG</span>,
 	<span class="ident">verification_flag_checked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bool</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">co::DLGID</span>, <span class="ident">u16</span>)<span class="op">&gt;</span>
 {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_button</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_radio_button</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_button</span> <span class="op">=</span> <span class="ident">i32::default</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_radio_button</span> <span class="op">=</span> <span class="ident">i32::default</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pf_bool</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>;
 
 	<span class="ident">hr_to_winresult</span>(

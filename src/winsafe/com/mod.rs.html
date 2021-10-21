@@ -18,35 +18,27 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
 </pre><pre class="rust">
-<span class="doccomment">//! COM interfaces.</span>
-
 <span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">mod</span> <span class="ident">macros</span>;
 
-<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">mod</span> <span class="ident">iunknown</span>; <span class="comment">// 1st level interface</span>
-
-<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">mod</span> <span class="ident">idispatch</span>; <span class="comment">// 2nd level interfaces</span>
-<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">mod</span> <span class="ident">ipersist</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">mod</span> <span class="ident">itypeinfo</span>;
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dshow&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">dshow</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;shell&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">shell</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;autom&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">autom</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dshow&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">dshow</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;idl&quot;</span>)]</span>   <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">idl</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;shell&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">shell</span>;
 
 <span class="kw">mod</span> <span class="ident">funcs</span>;
-<span class="kw">mod</span> <span class="ident">traits</span>;
+<span class="kw">mod</span> <span class="ident">iunknown</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">funcs</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">idispatch</span>::{<span class="ident">IDispatch</span>, <span class="ident">IDispatchVT</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ipersist</span>::{<span class="ident">IPersist</span>, <span class="ident">IPersistVT</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">itypeinfo</span>::{<span class="ident">ITypeInfo</span>, <span class="ident">ITypeInfoVT</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">iunknown</span>::{<span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">traits</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknown</span>, <span class="ident">IUnknownVT</span>};
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">prelude</span> {
+	<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span><span class="ident">::iunknown</span>::{<span class="ident">ComInterface</span>, <span class="ident">IUnknownT</span>};
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;autom&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span><span class="ident">::autom::prelude</span>::<span class="kw-2">*</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dshow&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span><span class="ident">::dshow::prelude</span>::<span class="kw-2">*</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;idl&quot;</span>)]</span>   <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span><span class="ident">::idl::prelude</span>::<span class="kw-2">*</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;shell&quot;</span>)]</span> <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span><span class="ident">::shell::prelude</span>::<span class="kw-2">*</span>;
+}
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>

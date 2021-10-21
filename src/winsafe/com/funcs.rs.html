@@ -99,17 +99,12 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
 </pre><pre class="rust">
-<span class="doccomment">//! Win32 COM free functions.</span>
-
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown::IUnknown</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::traits</span>::{<span class="ident">ComInterface</span>, <span class="ident">PPVT</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::com::iunknown</span>::{<span class="ident">ComInterface</span>, <span class="ident">ComPtr</span>, <span class="ident">IUnknown</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::ole32</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::privs::hr_to_winresult</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::structs::CLSID</span>;
@@ -138,8 +133,8 @@
 	<span class="ident">iunk_outer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">IUnknown</span><span class="op">&gt;</span>,
 	<span class="ident">cls_context</span>: <span class="ident">co::CLSCTX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_outer</span>: <span class="ident">PPVT</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_outer</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 
 	<span class="ident">hr_to_winresult</span>(
 		<span class="kw">unsafe</span> {
@@ -154,9 +149,9 @@
 		},
 	).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">iunk_outer</span>) <span class="op">=</span> <span class="ident">iunk_outer</span> {
-			<span class="kw-2">*</span><span class="ident">iunk_outer</span> <span class="op">=</span> <span class="ident">IUnknown::from</span>(<span class="ident">ppv_outer</span>); <span class="comment">// create outer IUnknown if due</span>
+			<span class="kw-2">*</span><span class="ident">iunk_outer</span> <span class="op">=</span> <span class="ident">IUnknown::from</span>(<span class="ident">ppv_outer</span>); <span class="comment">// create outer Unknown if due</span>
 		}
-		<span class="ident">T::from</span>(<span class="ident">ppv</span>) <span class="comment">// return new IUnknown-derived object</span>
+		<span class="ident">T::from</span>(<span class="ident">ppv</span>) <span class="comment">// return new Unknown-derived object</span>
 	})
 }
 
@@ -176,7 +171,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// // program runs...</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// CoUninitialize().</span>
+<span class="doccomment">/// CoUninitialize();</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CoInitializeEx</span>(<span class="ident">coinit</span>: <span class="ident">co::COINIT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::ERROR</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">co::ERROR</span>(
@@ -189,6 +184,7 @@
 		<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 	}
 }
+
 
 <span class="doccomment">/// [`CoTaskMemFree`](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cotaskmemfree)</span>
 <span class="doccomment">/// function.</span>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IPersistVT","`IPersist` virtual table."]]});
