@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\various\w_string.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>w_string.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\various\w_string.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>w_string.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -498,13 +498,12 @@
 <span id="498">498</span>
 <span id="499">499</span>
 <span id="500">500</span>
-</pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::aliases::WinResult</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi::kernel32</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::funcs::MultiByteToWideChar</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::MultiByteToWideChar</span>;
 
 <span class="doccomment">/// String encodings that can be guessed by</span>
 <span class="doccomment">/// [`WString::guess_encoding`](crate::WString::guess_encoding).</span>
@@ -535,16 +534,16 @@
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">Encoding</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="kw">match</span> <span class="self">self</span> {
-			<span class="self">Self</span><span class="ident">::Unknown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Unknown&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Ansi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;ANSI&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Win1252</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Windows 1252&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Utf8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-8&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Utf16be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-16 BE&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Utf16le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-16 LE&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Utf32be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-32 BE&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Utf32le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-32 LE&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Scsu</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;SCSU&quot;</span>,
-			<span class="self">Self</span><span class="ident">::Bocu1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;BOCU1&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Unknown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Unknown&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Ansi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;ANSI&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Win1252</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Windows 1252&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Utf8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-8&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Utf16be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-16 BE&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Utf16le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-16 LE&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Utf32be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-32 BE&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Utf32le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UTF-32 LE&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Scsu</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;SCSU&quot;</span>,
+			<span class="ident"><span class="self">Self</span>::Bocu1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;BOCU1&quot;</span>,
 		})
 	}
 }
@@ -597,7 +596,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The string will be stored with a terminating null.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WString</span> {
-		<span class="self">Self</span><span class="ident">::from_opt_str</span>(<span class="prelude-val">Some</span>(<span class="ident">s</span>))
+		<span class="ident"><span class="self">Self</span>::from_opt_str</span>(<span class="prelude-val">Some</span>(<span class="ident">s</span>))
 	}
 
 	<span class="doccomment">/// Creates and stores a new UTF-16 string from a</span>
@@ -633,7 +632,7 @@
 	<span class="doccomment">/// The string will be stored with a terminating null.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_wchars_count</span>(<span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>, <span class="ident">num_chars</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WString</span> {
 		<span class="kw">if</span> <span class="ident">src</span>.<span class="ident">is_null</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">num_chars</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-			<span class="self">Self</span><span class="ident">::default</span>()
+			<span class="ident"><span class="self">Self</span>::default</span>()
 		} <span class="kw">else</span> {
 			<span class="kw">let</span> <span class="ident">tot_chars</span> <span class="op">=</span> <span class="ident">num_chars</span> <span class="op">+</span> <span class="number">1</span>; <span class="comment">// add room for terminating null</span>
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf16</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x0000</span>; <span class="ident">tot_chars</span>];
@@ -651,9 +650,9 @@
 	<span class="doccomment">/// The string will be stored with a terminating null.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_wchars_nullt</span>(<span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WString</span> {
 		<span class="kw">if</span> <span class="ident">src</span>.<span class="ident">is_null</span>() {
-			<span class="self">Self</span><span class="ident">::default</span>()
+			<span class="ident"><span class="self">Self</span>::default</span>()
 		} <span class="kw">else</span> {
-			<span class="self">Self</span><span class="ident">::from_wchars_count</span>(<span class="ident">src</span>, <span class="kw">unsafe</span> { <span class="ident">kernel32::lstrlenW</span>(<span class="ident">src</span>) } <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident"><span class="self">Self</span>::from_wchars_count</span>(<span class="ident">src</span>, <span class="kw">unsafe</span> { <span class="ident">kernel32::lstrlenW</span>(<span class="ident">src</span>) } <span class="kw">as</span> <span class="kw">_</span>)
 		}
 	}
 
@@ -661,13 +660,13 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The string will be stored with a terminating null.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_wchars_slice</span>(<span class="ident">src</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WString</span> {
-		<span class="self">Self</span><span class="ident">::from_wchars_count</span>(<span class="ident">src</span>.<span class="ident">as_ptr</span>(), <span class="ident">src</span>.<span class="ident">len</span>())
+		<span class="ident"><span class="self">Self</span>::from_wchars_count</span>(<span class="ident">src</span>.<span class="ident">as_ptr</span>(), <span class="ident">src</span>.<span class="ident">len</span>())
 	}
 
 	<span class="doccomment">/// Creates a new UTF-16 buffer allocated with an specific length. All</span>
 	<span class="doccomment">/// UTF-16 chars will be set to zero.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_alloc_buffer</span>(<span class="ident">num_chars</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WString</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">me</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">me</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::default</span>();
 		<span class="ident">me</span>.<span class="ident">realloc_buffer</span>(<span class="ident">num_chars</span>);
 		<span class="ident">me</span>
 	}
@@ -936,16 +935,16 @@
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">WString::default</span>());
 		}
 
-		<span class="kw">let</span> (<span class="ident">encoding</span>, <span class="ident">sz_bom</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::guess_encoding</span>(<span class="ident">data</span>);
+		<span class="kw">let</span> (<span class="ident">encoding</span>, <span class="ident">sz_bom</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::guess_encoding</span>(<span class="ident">data</span>);
 		<span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">data</span>[<span class="ident">sz_bom</span>..]; <span class="comment">// skip BOM, if any</span>
 
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">vec_u16</span>: <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="ident">encoding</span> {
-				<span class="ident">Encoding::Ansi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::parse_ansi_str</span>(<span class="ident">data</span>),
+				<span class="ident">Encoding::Ansi</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::parse_ansi_str</span>(<span class="ident">data</span>),
 				<span class="ident">Encoding::Win1252</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MultiByteToWideChar</span>(<span class="ident">co::CP::WINDOWS_1252</span>, <span class="ident">co::MBC::NoValue</span>, <span class="ident">data</span>)<span class="question-mark">?</span>,
 				<span class="ident">Encoding::Utf8</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MultiByteToWideChar</span>(<span class="ident">co::CP::UTF8</span>, <span class="ident">co::MBC::NoValue</span>, <span class="ident">data</span>)<span class="question-mark">?</span>,
-				<span class="ident">Encoding::Utf16be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::parse_utf16_str</span>(<span class="ident">data</span>, <span class="bool-val">true</span>),
-				<span class="ident">Encoding::Utf16le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::parse_utf16_str</span>(<span class="ident">data</span>, <span class="bool-val">false</span>),
+				<span class="ident">Encoding::Utf16be</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::parse_utf16_str</span>(<span class="ident">data</span>, <span class="bool-val">true</span>),
+				<span class="ident">Encoding::Utf16le</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::parse_utf16_str</span>(<span class="ident">data</span>, <span class="bool-val">false</span>),
 				<span class="ident">Encoding::Utf32be</span>
 				<span class="op">|</span> <span class="ident">Encoding::Utf32le</span>
 				<span class="op">|</span> <span class="ident">Encoding::Scsu</span>
@@ -999,7 +998,7 @@
 		<span class="ident">str16</span>
 	}
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>
