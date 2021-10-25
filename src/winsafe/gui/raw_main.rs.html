@@ -253,6 +253,20 @@
 <span id="253">253</span>
 <span id="254">254</span>
 <span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
@@ -263,24 +277,38 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">WindowEventsAll</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::multiply_dpi</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_base::RawBase</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsWindow</span>, <span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">RawMain</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
-
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of RawMain</span>
 	<span class="ident">base</span>: <span class="ident">RawBase</span>,
 	<span class="ident">opts</span>: <span class="ident">WindowMainOpts</span>,
-	<span class="ident">hchild_prev_focus</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span>, <span class="comment">// WM_ACTIVATE woes</span>
+	<span class="ident">hchild_prev_focus</span>: <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HWND</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// WM_ACTIVATE woes</span>
 }
+
+<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">Obj</span> {
+	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
+		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">RawMain</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">RawMain</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">AsWindow</span> <span class="kw">for</span> <span class="ident">RawMain</span> {
+	<span class="kw">fn</span> <span class="ident">as_window</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Window</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">clone</span>()
 	}
 }
 
@@ -301,13 +329,13 @@
 <span class="kw">impl</span> <span class="ident">RawMain</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">opts</span>: <span class="ident">WindowMainOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawMain</span> {
 		<span class="kw">let</span> <span class="ident">wnd</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(<span class="ident">VeryUnsafeCell::new</span>(
+			<span class="ident">Arc::new</span>(
 				<span class="ident">Obj</span> {
 					<span class="ident">base</span>: <span class="ident">RawBase::new</span>(<span class="prelude-val">None</span>), <span class="comment">// no parent</span>
 					<span class="ident">opts</span>,
-					<span class="ident">hchild_prev_focus</span>: <span class="prelude-val">None</span>,
+					<span class="ident">hchild_prev_focus</span>: <span class="ident">VeryUnsafeCell::new</span>(<span class="prelude-val">None</span>),
 				},
-			)),
+			),
 		);
 		<span class="ident">wnd</span>.<span class="ident">default_message_handlers</span>();
 		<span class="ident">wnd</span>
@@ -384,10 +412,10 @@
 					<span class="kw">if</span> <span class="ident">p</span>.<span class="ident">event</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WA::INACTIVE</span> {
 						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>) <span class="op">=</span> <span class="ident">HWND::GetFocus</span>() {
 							<span class="kw">if</span> <span class="ident">self2</span>.<span class="ident">base_ref</span>().<span class="ident">hwnd_ref</span>().<span class="ident">IsChild</span>(<span class="ident">hwnd_cur_focus</span>) {
-								<span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">as_mut</span>().<span class="ident">hchild_prev_focus</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>); <span class="comment">// save previously focused control</span>
+								<span class="kw-2">*</span><span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">hchild_prev_focus</span>.<span class="ident">as_mut</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>); <span class="comment">// save previously focused control</span>
 							}
 						}
-					} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_prev_focus</span>) <span class="op">=</span> <span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">hchild_prev_focus</span> {
+					} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_prev_focus</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="ident">self2</span>.<span class="number">0</span>.<span class="ident">hchild_prev_focus</span> {
 						<span class="ident">hwnd_prev_focus</span>.<span class="ident">SetFocus</span>(); <span class="comment">// put focus back</span>
 					}
 				}

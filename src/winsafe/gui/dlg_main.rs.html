@@ -116,6 +116,20 @@
 <span id="116">116</span>
 <span id="117">117</span>
 <span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
@@ -125,12 +139,9 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::dlg_base::DlgBase</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">WindowEventsAll</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsWindow</span>, <span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">DlgMain</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of DlgMain</span>
 	<span class="ident">base</span>: <span class="ident">DlgBase</span>,
@@ -138,9 +149,26 @@
 	<span class="ident">accel_table_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">Obj</span> {
+	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
+		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">DlgMain</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
+
 <span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">DlgMain</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">AsWindow</span> <span class="kw">for</span> <span class="ident">DlgMain</span> {
+	<span class="kw">fn</span> <span class="ident">as_window</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Window</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">clone</span>()
 	}
 }
 

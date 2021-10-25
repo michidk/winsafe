@@ -200,6 +200,13 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -243,6 +250,8 @@
 	}
 }
 
+<span class="comment">//------------------------------------------------------------------------------</span>
+
 <span class="doccomment">/// Any window. Exposes the underlying window handle.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Window</span> {
 	<span class="doccomment">/// Returns the underlying handle for this control.</span>
@@ -254,6 +263,11 @@
 	<span class="doccomment">/// [`WM_INITDIALOG`](crate::gui::events::prelude::EventsView::wm_init_dialog)</span>
 	<span class="doccomment">/// events.</span>
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span>;
+}
+
+<span class="doccomment">/// Converts a concrete window into an upcasted reference.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AsWindow</span>: <span class="ident">Window</span> {
+	<span class="kw">fn</span> <span class="ident">as_window</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Window</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Allows running code in the original UI thread.</span>
@@ -368,7 +382,7 @@
 	<span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span>;
 }
 
-<span class="doccomment">/// Retrieves a concrete native control as a trait.</span>
+<span class="doccomment">/// Converts a concrete native control into an upcasted reference.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AsNativeControl</span>: <span class="ident">NativeControl</span> {
 	<span class="kw">fn</span> <span class="ident">as_native_control</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">NativeControl</span><span class="op">&gt;</span>;
 }
