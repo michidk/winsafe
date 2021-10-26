@@ -67,6 +67,7 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
+<span id="70">70</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -76,6 +77,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::GUID</span>;
 
 <span class="doccomment">/// [`IMFGetService`](crate::dshow::IMFGetService) virtual table.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMFGetServiceVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
 	<span class="kw">pub</span> <span class="ident">GetService</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
@@ -130,7 +132,7 @@
 					<span class="self">self</span>.<span class="ident">ptr</span>(),
 					<span class="ident">service_guid</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="ident">T::IID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>,
 				),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">T::from</span>(<span class="ident">ppv_queried</span>))

@@ -57,6 +57,7 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
+<span id="60">60</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -67,6 +68,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::LCID</span>;
 
 <span class="doccomment">/// [`IDispatch`](crate::autom::IDispatch) virtual table.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IDispatchVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
 	<span class="kw">pub</span> <span class="ident">GetTypeInfoCount</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
@@ -110,7 +112,7 @@
 					<span class="self">self</span>.<span class="ident">ptr</span>(),
 					<span class="ident">info_type</span>,
 					<span class="ident">lcid</span>.<span class="number">0</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>,
 				),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">ITypeInfo::from</span>(<span class="ident">ppv_queried</span>))

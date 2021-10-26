@@ -70,6 +70,7 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -84,6 +85,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
 
 <span class="doccomment">/// [`ITypeInfo`](crate::autom::ITypeInfo) virtual table.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITypeInfoVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
 	<span class="kw">pub</span> <span class="ident">GetTypeAttr</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
@@ -99,7 +101,7 @@
 	<span class="kw">pub</span> <span class="ident">GetDllEntry</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i32</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 	<span class="kw">pub</span> <span class="ident">GetRefTypeInfo</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 	<span class="kw">pub</span> <span class="ident">AddressOfMember</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i32</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">CreateInstance</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">CreateInstance</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 	<span class="kw">pub</span> <span class="ident">GetMops</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 	<span class="kw">pub</span> <span class="ident">GetContainingTypeLib</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
 	<span class="kw">pub</span> <span class="ident">ReleaseTypeAttr</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
@@ -134,9 +136,9 @@
 				(<span class="ident">vt</span>.<span class="ident">CreateInstance</span>)(
 					<span class="self">self</span>.<span class="ident">ptr</span>(),
 					<span class="ident">iunk_outer</span>.<span class="ident">as_ref</span>()
-						.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_outer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+						.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_outer</span>),
 					<span class="kw-2">&amp;</span><span class="ident">T::IID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>,
 				),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">T::from</span>(<span class="ident">ppv_queried</span>))

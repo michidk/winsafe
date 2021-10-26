@@ -102,6 +102,7 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
+<span id="105">105</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -112,6 +113,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
 <span class="doccomment">/// [`IPin`](crate::dshow::IPin) virtual table.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IPinVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
 	<span class="kw">pub</span> <span class="ident">Connect</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
@@ -160,7 +162,7 @@
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IPinVT</span>);
 			<span class="ident">hr_to_winresult</span>(
-				(<span class="ident">vt</span>.<span class="ident">ConnectedTo</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+				(<span class="ident">vt</span>.<span class="ident">ConnectedTo</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IPin::from</span>(<span class="ident">ppv_queried</span>))
 	}
