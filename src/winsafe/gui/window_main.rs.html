@@ -195,40 +195,9 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{
 	<span class="ident">InitCommonControls</span>,
@@ -237,13 +206,10 @@
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::dlg_main::DlgMain</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::WindowEventsAll</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">create_ui_font</span>, <span class="ident">delete_ui_font</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_main</span>::{<span class="ident">RawMain</span>, <span class="ident">WindowMainOpts</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsAny</span>, <span class="ident">Main</span>, <span class="ident">Parent</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits_sealed</span>::{<span class="ident">SealedBase</span>, <span class="ident">SealedParent</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsAny</span>, <span class="ident">Main</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits_sealed::SealedBase</span>;
 
 <span class="doccomment">/// Keeps a raw or dialog window.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -373,32 +339,12 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">hwnd</span>()
-	}
-}
-
 <span class="kw">impl</span> <span class="ident">SealedBase</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">as_base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Base</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_dlg</span> {
 			<span class="ident">RawDlg::Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="number">0</span>.<span class="ident">raw_base</span>.<span class="ident">base</span>,
 			<span class="ident">RawDlg::Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">d</span>.<span class="number">0</span>.<span class="ident">dlg_base</span>.<span class="ident">base</span>,
 		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">SealedParent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">add_to_resizer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">add_to_resizer</span>(<span class="ident">hchild</span>, <span class="ident">horz</span>, <span class="ident">vert</span>)
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">Parent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
-		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">on</span>()
 	}
 }
 
@@ -418,14 +364,6 @@
 
 		<span class="ident">delete_ui_font</span>()<span class="question-mark">?</span>; <span class="comment">// cleanup</span>
 		<span class="ident">res</span>
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">UiThread</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-	{
-		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">run_ui_thread</span>(<span class="ident">func</span>);
 	}
 }
 
