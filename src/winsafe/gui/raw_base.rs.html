@@ -182,28 +182,13 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums</span>::{<span class="ident">AtomStr</span>, <span class="ident">IdIdcStr</span>, <span class="ident">IdMenu</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">RegisterClassEx</span>, <span class="ident">SetLastError</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEventsAll</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::ProcessResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::post_quit_error</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">ATOM</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
@@ -211,61 +196,45 @@
 
 <span class="doccomment">/// Base to all ordinary windows.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">RawBase</span> {
-	<span class="ident">base</span>: <span class="ident">Base</span>,
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="ident">base</span>: <span class="ident">Base</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">RawBase</span> {
 	<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
-			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
+			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
 		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">RawBase</span> {
-	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
-		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">UiThread</span> <span class="kw">for</span> <span class="ident">RawBase</span> {
-	<span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-	{
-		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">run_ui_thread</span>(<span class="ident">func</span>);
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">ParentEvents</span> <span class="kw">for</span> <span class="ident">RawBase</span> {
-	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
-		<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">on</span>()
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">RawBase</span> {
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent_base_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawBase</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent_base</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">base</span>: <span class="ident">Base::new</span>(<span class="ident">parent_base_ref</span>, <span class="bool-val">false</span>),
+			<span class="ident">base</span>: <span class="ident">Base::new</span>(<span class="bool-val">false</span>, <span class="ident">parent_base</span>),
 		}
 	}
 
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">base_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Base</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">base</span>
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">focus_first_child</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="comment">// https://stackoverflow.com/a/2835220/6923555</span>
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">hchild</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">GetWindow</span>(<span class="ident">co::GW::CHILD</span>) {
-			<span class="ident">hchild</span>.<span class="ident">SetFocus</span>();
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">delegate_focus_to_first_child</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hwnd_cur_focus</span>) <span class="op">=</span> <span class="ident">HWND::GetFocus</span>() {
+			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">hwnd_cur_focus</span> {
+				<span class="comment">// https://stackoverflow.com/a/2835220/6923555</span>
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">hchild_first</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">GetWindow</span>(<span class="ident">co::GW::CHILD</span>) {
+					<span class="ident">hchild_first</span>.<span class="ident">SetFocus</span>(); <span class="comment">// if window receives focus, delegate to first child</span>
+				}
+			}
 		}
+		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="doccomment">/// Fills `WNDCLASSEX` with the given values, and generates the class name.</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">fill_wndclassex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-		<span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>, <span class="ident">class_style</span>: <span class="ident">co::CS</span>,
+		<span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>,
+		<span class="ident">class_style</span>: <span class="ident">co::CS</span>,
 		<span class="ident">class_icon</span>: <span class="ident">HICON</span>, <span class="ident">class_icon_sm</span>: <span class="ident">HICON</span>,
-		<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>, <span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
-		<span class="ident">wcx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">class_name_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>,
+		<span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
+		<span class="ident">wcx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+		<span class="ident">class_name_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident"><span class="self">Self</span>::window_proc</span>);
 		<span class="ident">wcx</span>.<span class="ident">hInstance</span> <span class="op">=</span> <span class="ident">hinst</span>;
@@ -327,7 +296,7 @@
 		<span class="ident">ex_styles</span>: <span class="ident">co::WS_EX</span>,
 		<span class="ident">styles</span>: <span class="ident">co::WS</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>().<span class="ident">is_null</span>() {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot create window twice.&quot;</span>);
 		}
 
@@ -338,9 +307,12 @@
 			<span class="ident">AtomStr::Atom</span>(<span class="ident">class_name</span>),
 			<span class="ident">title</span>, <span class="ident">styles</span>,
 			<span class="ident">pos</span>, <span class="ident">sz</span>,
-			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">parent</span>.<span class="ident">hwnd_ref</span>()),
+			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="ident">parent</span>.<span class="ident">hwnd</span>()),
 			<span class="ident">hmenu</span>,
-			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_hinstance</span>()<span class="question-mark">?</span>,
+			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map_or_else</span>(
+				<span class="op">|</span><span class="op">|</span> <span class="ident">HINSTANCE::GetModuleHandle</span>(<span class="prelude-val">None</span>),
+				<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">parent</span>.<span class="ident">hwnd</span>().<span class="ident">hinstance</span>()),
+			)<span class="question-mark">?</span>,
 			<span class="prelude-val">Some</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// pass pointer to self</span>
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
@@ -363,7 +335,7 @@
 				<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_ncc</span>.<span class="ident">createstruct</span>.<span class="ident">lpCreateParams</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
 				<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// store</span>
 				<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
-				<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">hwnd</span>); <span class="comment">// store HWND in struct field</span>
+				<span class="kw-2">*</span><span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_mut</span>() <span class="op">=</span> <span class="ident">hwnd</span>; <span class="comment">// store HWND in struct field</span>
 				<span class="ident">ptr_self</span>
 			},
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="comment">// retrieve</span>
@@ -380,11 +352,11 @@
 		<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_privileged_messages</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// Execute user closure, if any.</span>
-		<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_one_message</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_user_message</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
 			<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
-			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">HWND::NULL</span>); <span class="comment">// clear stored HWND</span>
+			<span class="kw-2">*</span><span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_mut</span>() <span class="op">=</span> <span class="ident">HWND::NULL</span>; <span class="comment">// clear stored HWND</span>
 		}
 
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">process_result</span> {

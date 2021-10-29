@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["EventsView","Exposes the methods of `WindowEvents`."],["EventsViewAll","Exposes the methods of `WindowEventsAll`."]]});

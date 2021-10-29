@@ -216,31 +216,54 @@
 <span id="216">216</span>
 <span id="217">217</span>
 <span id="218">218</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">TreeViewEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">TreeViewEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::tree_view_items::TreeViewItems</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">baseref_from_parent</span>, <span class="ident">Child</span>, <span class="ident">Parent</span>, <span class="ident">Window</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
+	<span class="ident">AsAny</span>,
+	<span class="ident">Child</span>,
+	<span class="ident">NativeControl</span>,
+	<span class="ident">NativeControlEvents</span>,
+	<span class="ident">Parent</span>,
+	<span class="ident">Window</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::tvm</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
-
-<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of TreeView</span>
-	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
-	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">TreeViewOpts</span><span class="op">&gt;</span>,
-	<span class="ident">events</span>: <span class="ident">TreeViewEvents</span>,
-}
-
-<span class="macro">impl_obj_window!</span>(<span class="ident">Obj</span>);
-<span class="macro">impl_obj_child!</span>(<span class="ident">Obj</span>);
-<span class="macro">impl_obj_nativecontrol!</span>(<span class="ident">Obj</span>);
-
-<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [tree view](https://docs.microsoft.com/en-us/windows/win32/controls/tree-view-controls)</span>
@@ -248,66 +271,96 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TreeView</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
-<span class="macro">impl_send_sync!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_debug!</span>(<span class="ident">TreeView</span>);
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of TreeView</span>
+	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
+	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">TreeViewOpts</span><span class="op">&gt;</span>,
+	<span class="ident">events</span>: <span class="ident">TreeViewEvents</span>,
+}
 
-<span class="macro">impl_ctl_window!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_aswindow!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_child!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_nativecontrol!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_asnativecontrol!</span>(<span class="ident">TreeView</span>);
-<span class="macro">impl_ctl_nativecontrolevents!</span>(<span class="ident">TreeView</span>, <span class="ident">TreeViewEvents</span>);
-<span class="macro">impl_ctl_focus!</span>(<span class="ident">TreeView</span>);
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">TreeView</span> {}
+
+<span class="kw">impl</span> <span class="ident">AsAny</span> <span class="kw">for</span> <span class="ident">TreeView</span> {
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">TreeView</span> {
+	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">TreeView</span> {
+	<span class="kw">fn</span> <span class="ident">ctrl_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
+			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">ctrl_id</span>,
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">NativeControl</span> <span class="kw">for</span> <span class="ident">TreeView</span> {
+	<span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">on_subclass</span>()
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">NativeControlEvents</span><span class="op">&lt;</span><span class="ident">TreeViewEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TreeView</span> {
+	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">TreeViewEvents</span> {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control creation.&quot;</span>);
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the parent window creation.&quot;</span>);
+		}
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">events</span>
+	}
+}
 
 <span class="kw">impl</span> <span class="ident">TreeView</span> {
 	<span class="doccomment">/// Instantiates a new `TreeView` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">TreeViewOpts</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeView</span> {
-		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">TreeViewOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
-
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>),
-					<span class="ident">events</span>: <span class="ident">TreeViewEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">TreeViewEvents::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>(), <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
 
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm</span>(<span class="ident">parent_base_ref</span>.<span class="ident">create_or_initdlg</span>(), {
+		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">wmcreate_or_wminitdialog</span>(), {
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
 		});
-
 		<span class="ident">new_self</span>
 	}
 
 	<span class="doccomment">/// Instantiates a new `TreeView` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>,
+		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 		<span class="ident">horz_resize</span>: <span class="ident">Horz</span>, <span class="ident">vert_resize</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeView</span>
 	{
-		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="ident">baseref_from_parent</span>(<span class="ident">parent</span>);
-
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_base_ref</span>),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>),
-					<span class="ident">events</span>: <span class="ident">TreeViewEvents::new</span>(<span class="ident">parent_base_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">TreeViewEvents::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>(), <span class="ident">ctrl_id</span>),
 				},
 			),
 		);
 
-		<span class="ident">parent_base_ref</span>.<span class="ident">privileged_events_ref</span>().<span class="ident">wm_init_dialog</span>({
+		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz_resize</span>, <span class="ident">vert_resize</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
 		});
-
 		<span class="ident">new_self</span>
 	}
 
@@ -332,8 +385,7 @@
 			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>, <span class="comment">// may panic</span>
 		}
 
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>().<span class="ident">resizer_add</span>(
-			<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base_ref</span>(), <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd_ref</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">add_to_resizer</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
 	}
 
 	<span class="doccomment">/// Exposes the item methods.</span>

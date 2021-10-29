@@ -168,19 +168,6 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
@@ -188,35 +175,97 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">DispatchMessage</span>, <span class="ident">GetMessage</span>, <span class="ident">TranslateMessage</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{
 	<span class="ident">EventsView</span>,
-	<span class="ident">ProcessResult</span>,
 	<span class="ident">sealed_events_wm::SealedEventsWm</span>,
+	<span class="ident">ProcessResult</span>,
 	<span class="ident">WindowEventsAll</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">post_quit_error</span>, <span class="ident">QUIT_ERROR</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Resizer</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">ParentEvents</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HACCEL</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::WndMsg</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::MSG</span>;
 
 <span class="doccomment">/// Base to `RawBase` and `DlgBase`.</span>
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">Base</span> {
+<span class="doccomment">///</span>
+<span class="doccomment">/// While the parent module is private, the struct is public so it can be used</span>
+<span class="doccomment">/// in sealed traits.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Base</span> {
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">is_dialog</span>: <span class="ident">bool</span>,
-	<span class="ident">parent_ptr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">Base</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// parent of this window</span>
+	<span class="ident">parent_ptr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NonNull</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">user_events</span>: <span class="ident">WindowEventsAll</span>, <span class="comment">// ordinary window events, inserted by user: only last added is executed (overwrite previous)</span>
 	<span class="ident">privileged_events</span>: <span class="ident">WindowEventsAll</span>, <span class="comment">// inserted internally to automate tasks: all will be executed</span>
 	<span class="ident">resizer</span>: <span class="ident">Resizer</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">Base</span> {
-	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
+<span class="kw">impl</span> <span class="ident">Base</span> {
+	<span class="kw">const</span> <span class="ident">WM_UI_THREAD</span>: <span class="ident">co::WM</span> <span class="op">=</span> <span class="ident">co::WM</span>(<span class="ident">co::WM::APP</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0x3fff</span>);
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(
+		<span class="ident">is_dialog</span>: <span class="ident">bool</span>,
+		<span class="ident">parent_base</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+	{
+		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span> {
+			<span class="ident">hwnd</span>: <span class="ident">HWND::NULL</span>,
+			<span class="ident">is_dialog</span>,
+			<span class="ident">parent_ptr</span>: <span class="ident">parent_base</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent_base</span><span class="op">|</span> <span class="ident">NonNull::from</span>(<span class="ident">parent_base</span>)),
+			<span class="ident">user_events</span>: <span class="ident">WindowEventsAll::new</span>(),
+			<span class="ident">privileged_events</span>: <span class="ident">WindowEventsAll::new</span>(),
+			<span class="ident">resizer</span>: <span class="ident">Resizer::new</span>(),
+		};
+		<span class="ident">new_self</span>.<span class="ident">default_message_handlers</span>();
+		<span class="ident">new_self</span>
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>
 	}
-}
 
-<span class="kw">impl</span> <span class="ident">UiThread</span> <span class="kw">for</span> <span class="ident">Base</span> {
-	<span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">hwnd_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HWND</span> {
+		<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">hwnd</span>
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">wmcreate_or_wminitdialog</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WM</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_dialog</span> { <span class="ident">co::WM::INITDIALOG</span> } <span class="kw">else</span> { <span class="ident">co::WM::CREATE</span> }
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">parent_base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="self">Self</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">parent_ptr</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">ptr</span>.<span class="ident">as_ref</span>() })
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add event after window creation.&quot;</span>);
+		}
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">user_events</span>
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">process_user_message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">ProcessResult</span><span class="op">&gt;</span>
+	{
+		<span class="self">self</span>.<span class="ident">user_events</span>.<span class="ident">process_one_message</span>(<span class="ident">wm_any</span>)
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">privileged_on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
+			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add privileged event after window creation.&quot;</span>);
+		}
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">privileged_events</span>
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">process_privileged_messages</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
+		<span class="self">self</span>.<span class="ident">privileged_events</span>.<span class="ident">process_all_messages</span>(<span class="ident">wm_any</span>)
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">add_to_resizer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
+		<span class="self">self</span>.<span class="ident">resizer</span>.<span class="ident">add</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="ident">hchild</span>, <span class="ident">horz</span>, <span class="ident">vert</span>)
+	}
+
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
 	{
 		<span class="comment">// This method is analog to SendMessage (synchronous), but intended to</span>
@@ -234,83 +283,8 @@
 			<span class="ident">lparam</span>: <span class="ident">ptr_pack</span> <span class="kw">as</span> <span class="kw">_</span>,
 		});
 	}
-}
 
-<span class="kw">impl</span> <span class="ident">ParentEvents</span> <span class="kw">for</span> <span class="ident">Base</span> {
-	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
-			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add event after window is created.&quot;</span>);
-		}
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">user_events</span>
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">Base</span> {
-	<span class="kw">const</span> <span class="ident">WM_UI_THREAD</span>: <span class="ident">co::WM</span> <span class="op">=</span> <span class="ident">co::WM</span>(<span class="ident">co::WM::APP</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">0x3fff</span>);
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">parent_base_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>, <span class="ident">is_dialog</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Base</span>
-	{
-		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>: <span class="ident">HWND::NULL</span>,
-			<span class="ident">is_dialog</span>,
-			<span class="ident">parent_ptr</span>: <span class="ident">parent_base_ref</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">pb_ref</span><span class="op">|</span> <span class="ident">NonNull::from</span>(<span class="ident">pb_ref</span>)),
-			<span class="ident">user_events</span>: <span class="ident">WindowEventsAll::new</span>(),
-			<span class="ident">privileged_events</span>: <span class="ident">WindowEventsAll::new</span>(),
-			<span class="ident">resizer</span>: <span class="ident">Resizer::new</span>(),
-		}
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">hwnd_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">HWND</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">hwnd</span>
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">set_hwnd</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">hwnd</span>: <span class="ident">HWND</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd</span> <span class="op">=</span> <span class="ident">hwnd</span>;
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">create_or_initdlg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WM</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_dialog</span> { <span class="ident">co::WM::INITDIALOG</span> } <span class="kw">else</span> { <span class="ident">co::WM::CREATE</span> }
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">parent_base_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">parent_ptr</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">ptr</span>.<span class="ident">as_ref</span>() })
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">parent_hinstance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">parent_base_ref</span>().<span class="ident">map_or_else</span>(
-			<span class="op">|</span><span class="op">|</span> <span class="ident">HINSTANCE::GetModuleHandle</span>(<span class="prelude-val">None</span>),
-			<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">parent</span>.<span class="ident">hwnd_ref</span>().<span class="ident">hinstance</span>()),
-		)
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">privileged_events_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">is_null</span>() {
-			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add privileged event after window is created.&quot;</span>);
-		}
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">privileged_events</span>
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">process_one_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-		<span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">ProcessResult</span><span class="op">&gt;</span>
-	{
-		<span class="self">self</span>.<span class="ident">user_events</span>.<span class="ident">process_one_message</span>(<span class="ident">wm_any</span>)
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">process_privileged_messages</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-		<span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="self">self</span>.<span class="ident">privileged_events</span>.<span class="ident">process_all_messages</span>(<span class="ident">wm_any</span>)
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">resizer_add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">parent_base_ref</span>: <span class="kw-2">&amp;</span><span class="ident">Base</span>, <span class="ident">hwnd_ref</span>: <span class="kw-2">&amp;</span><span class="ident">HWND</span>,
-		<span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
-		<span class="self">self</span>.<span class="ident">resizer</span>.<span class="ident">add</span>(<span class="ident">parent_base_ref</span>, <span class="ident">hwnd_ref</span>, <span class="ident">horz</span>, <span class="ident">vert</span>)
-	}
-
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">privileged_events</span>.<span class="ident">wm_size</span>({
 			<span class="kw">let</span> <span class="ident">resizer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resizer</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> { <span class="ident">resizer</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(()) }

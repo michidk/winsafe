@@ -44,31 +44,37 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-</pre><pre class="rust"><code><span class="doccomment">/// Stores closures, associating them with an identifier.</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
+
+<span class="doccomment">/// Stores closures, associating them with an identifier.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">FuncStore</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">F</span><span class="op">&gt;</span> {
-	<span class="ident">elems</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">K</span>, <span class="ident">F</span>)<span class="op">&gt;</span>,
+	<span class="ident">elems</span>: <span class="ident">VeryUnsafeCell</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">K</span>, <span class="ident">F</span>)<span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">FuncStore</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">F</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Creates a new, empty store.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FuncStore</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">F</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FuncStore</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">F</span><span class="op">&gt;</span> {
 		<span class="self">Self</span> {
-			<span class="ident">elems</span>: <span class="ident">Vec::default</span>(),
+			<span class="ident">elems</span>: <span class="ident">VeryUnsafeCell::new</span>(<span class="ident">Vec::default</span>()),
 		}
 	}
 
 	<span class="doccomment">/// Inserts a new function into the store, associated to the given</span>
 	<span class="doccomment">/// identifier.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>, <span class="ident">func</span>: <span class="ident">F</span>) {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">is_empty</span>() {
-			<span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">reserve</span>(<span class="number">16</span>); <span class="comment">// arbitrary, prealloc for speed</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>, <span class="ident">func</span>: <span class="ident">F</span>) {
+		<span class="kw">let</span> <span class="ident">elems</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">as_mut</span>();
+		<span class="kw">if</span> <span class="ident">elems</span>.<span class="ident">is_empty</span>() {
+			<span class="ident">elems</span>.<span class="ident">reserve</span>(<span class="number">16</span>); <span class="comment">// arbitrary, prealloc for speed</span>
 		}
-		<span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">push</span>((<span class="ident">id</span>, <span class="ident">func</span>));
+		<span class="ident">elems</span>.<span class="ident">push</span>((<span class="ident">id</span>, <span class="ident">func</span>));
 	}
 
 	<span class="doccomment">/// Finds the last added function associated to the given identifier, if</span>
 	<span class="doccomment">/// any.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">F</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">F</span><span class="op">&gt;</span> {
 		<span class="comment">// Linear search, more performant for small collections.</span>
 		<span class="comment">// Searches backwards, so the function added last will be chosen.</span>
 		<span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">iter</span>().<span class="ident">rev</span>()
@@ -78,7 +84,7 @@
 
 	<span class="doccomment">/// Finds all the functions associated to the given identifier, if any, and</span>
 	<span class="doccomment">/// returns an iterator to t</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">F</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">find_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">K</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">F</span><span class="op">&gt;</span> {
 		<span class="comment">// https://depth-first.com/articles/2020/06/22/returning-rust-iterators</span>
 		<span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">iter</span>()
 			.<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="ident">elem</span>.<span class="number">0</span> <span class="op">=</span><span class="op">=</span> <span class="ident">id</span>)
@@ -86,7 +92,7 @@
 	}
 
 	<span class="doccomment">/// Tells whether no functions have been added.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">elems</span>.<span class="ident">is_empty</span>()
 	}
 }
