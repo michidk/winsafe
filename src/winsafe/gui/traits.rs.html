@@ -178,6 +178,28 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
@@ -190,7 +212,27 @@
 <span class="doccomment">/// [`Any`](https://doc.rust-lang.org/std/any/trait.Any.html) trait.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AsAny</span> {
 	<span class="doccomment">/// Converts a reference to the</span>
-	<span class="doccomment">/// [`Any`](https://doc.rust-lang.org/std/any/trait.Any.html) trait.</span>
+	<span class="doccomment">/// [`Any`](https://doc.rust-lang.org/std/any/trait.Any.html) trait. This is</span>
+	<span class="doccomment">/// useful when storing a collection of polymorphic controls, because `Any`</span>
+	<span class="doccomment">/// allows downcasting.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use std::sync::Arc;</span>
+	<span class="doccomment">/// use winsafe::prelude::*;</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let parent: gui::WindowMain; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let ctrls: Vec&lt;Arc&lt;dyn gui::NativeControl&gt;&gt; = vec![</span>
+	<span class="doccomment">///     Arc::new( gui::Edit::new(&amp;parent, gui::EditOpts::default()) ),</span>
+	<span class="doccomment">///     Arc::new( gui::Button::new(&amp;parent, gui::ButtonOpts::default()) ),</span>
+	<span class="doccomment">/// ];</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let edit = ctrls[0].as_any().downcast_ref::&lt;gui::Edit&gt;()?;</span>
+	<span class="doccomment">/// edit.set_text(&quot;Foo&quot;)?;</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>;
 }
 
@@ -250,7 +292,9 @@
 
 <span class="doccomment">/// Any child window.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Child</span>: <span class="ident">Window</span> {
-	<span class="doccomment">/// Returns the control ID.</span>
+	<span class="doccomment">/// Returns the control ID, which is defined at control creation.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The control ID should be unique within a parent.</span>
 	<span class="kw">fn</span> <span class="ident">ctrl_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span>;
 }
 

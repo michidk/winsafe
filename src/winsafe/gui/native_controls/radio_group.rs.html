@@ -185,6 +185,13 @@
 <span id="185">185</span>
 <span id="186">186</span>
 <span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::Index</span>;
 <span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
@@ -265,8 +272,15 @@
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-		<span class="kw">let</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">opt</span><span class="op">|</span> <span class="ident">opt</span>.<span class="ident">ctrl_id</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">opt</span><span class="op">|</span> (<span class="ident">opt</span>.<span class="ident">horz_resize</span>, <span class="ident">opt</span>.<span class="ident">vert_resize</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>());
+		<span class="kw">let</span> <span class="ident">ctrl_ids</span> <span class="op">=</span> <span class="ident">radios</span>.<span class="ident">iter</span>()
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">ctrl_id</span>()) <span class="comment">// when the radio is created, the ctrl ID is defined</span>
+			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+
+		<span class="kw">let</span> <span class="ident">horz_verts</span> <span class="op">=</span> <span class="ident">Rc::new</span>(
+			<span class="ident">opts</span>.<span class="ident">iter</span>()
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">opt</span><span class="op">|</span> (<span class="ident">opt</span>.<span class="ident">horz_resize</span>, <span class="ident">opt</span>.<span class="ident">vert_resize</span>))
+				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+		);
 
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(
