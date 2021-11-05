@@ -207,11 +207,29 @@
 <span id="207">207</span>
 <span id="208">208</span>
 <span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">kernel32</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INFINITE</span>, <span class="ident">MAX_PATH</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
@@ -396,6 +414,24 @@
 				)
 			},
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">to_string</span>())
+	}
+
+	<span class="doccomment">/// [`SetUserObjectInformation`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setuserobjectinformationw)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// **Note:** The `pv_info` type varies according to `index`. If you set it</span>
+	<span class="doccomment">/// wrong, you&#39;re likely to cause a buffer overrun.</span>
+	<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">SetUserObjectInformation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="self">self</span>,
+		<span class="ident">index</span>: <span class="ident">co::UOI</span>, <span class="ident">pv_info</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
+		<span class="ident">bool_to_winresult</span>(
+			<span class="ident">user32::SetUserObjectInformationW</span>(
+				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="ident">index</span>.<span class="number">0</span>,
+				<span class="ident">pv_info</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			),
+		)
 	}
 
 	<span class="doccomment">/// [`WaitForSingleObject`](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject)</span>

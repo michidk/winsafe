@@ -320,23 +320,6 @@
 <span id="320">320</span>
 <span id="321">321</span>
 <span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -353,6 +336,7 @@
 	<span class="ident">NativeControl</span>,
 	<span class="ident">NativeControlEvents</span>,
 	<span class="ident">Parent</span>,
+	<span class="ident">TextControl</span>,
 	<span class="ident">Window</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
@@ -426,6 +410,8 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">events</span>
 	}
 }
+
+<span class="kw">impl</span> <span class="ident">TextControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
 
 <span class="kw">impl</span> <span class="ident">CheckBox</span> {
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be created on the parent window</span>
@@ -528,11 +514,6 @@
 		<span class="self">self</span>.<span class="ident">check_state</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">CheckState::Checked</span>
 	}
 
-	<span class="doccomment">/// Resizes the control to exactly fit current text.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resize_to_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">resize_to_given_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">text</span>()<span class="question-mark">?</span>)
-	}
-
 	<span class="doccomment">/// Sets the current check state by sending a</span>
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="ident">CheckState</span>) {
@@ -563,25 +544,10 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="doccomment">/// Sets the text by calling [`SetWindowText`](crate::HWND::SetWindowText).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowText</span>(<span class="ident">text</span>)
-	}
-
 	<span class="doccomment">/// Calls [`set_text`](crate::gui::CheckBox::set_text) and resizes the</span>
 	<span class="doccomment">/// control to exactly fit the new text.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text_and_resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">set_text</span>(<span class="ident">text</span>)<span class="question-mark">?</span>;
-		<span class="self">self</span>.<span class="ident">resize_to_given_text</span>(<span class="ident">text</span>)
-	}
-
-	<span class="doccomment">/// Retrieves the text by calling</span>
-	<span class="doccomment">/// [`HWND::GetWindowText`](crate::HWND::GetWindowText).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetWindowText</span>()
-	}
-
-	<span class="kw">fn</span> <span class="ident">resize_to_given_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">bound_box</span> <span class="op">=</span> <span class="ident">calc_text_bound_box_check</span>(<span class="ident">text</span>)<span class="question-mark">?</span>;
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowPos</span>(
 			<span class="ident">HwndPlace::None</span>, <span class="ident">POINT::default</span>(), <span class="ident">bound_box</span>,
