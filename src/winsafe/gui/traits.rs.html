@@ -185,12 +185,33 @@
 <span id="185">185</span>
 <span id="186">186</span>
 <span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums::HwndFocus</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">WindowEvents</span>, <span class="ident">WindowEventsAll</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits_sealed</span>::{<span class="ident">SealedBase</span>, <span class="ident">SealedParent</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
 
 <span class="doccomment">/// Used to convert a reference to the</span>
 <span class="doccomment">/// [`Any`](https://doc.rust-lang.org/std/any/trait.Any.html) trait.</span>
@@ -291,6 +312,23 @@
 	<span class="doccomment">/// [`HWND::GetWindowText`](crate::HWND::GetWindowText).</span>
 	<span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetWindowText</span>()
+	}
+}
+
+<span class="doccomment">/// Any child window which can be focused.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FocusControl</span>: <span class="ident">Child</span> {
+	<span class="doccomment">/// Focus the control by sending a</span>
+	<span class="doccomment">/// [`wm::NextDlgCtl`](crate::msg::wm::NextDlgCtl) message. This is</span>
+	<span class="doccomment">/// preferable to the [`HWND::SetFocus`](crate::HWND::SetFocus) method,</span>
+	<span class="doccomment">/// because it takes care of border highlighting, like the native</span>
+	<span class="doccomment">/// [`Button`](crate::gui::Button) control needs.</span>
+	<span class="kw">fn</span> <span class="ident">focus</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(
+			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetParent</span>()<span class="question-mark">?</span>
+				.<span class="ident">SendMessage</span>(<span class="ident">wm::NextDlgCtl</span> {
+					<span class="ident">hwnd_focus</span>: <span class="ident">HwndFocus::Hwnd</span>(<span class="self">self</span>.<span class="ident">hwnd</span>()),
+				}),
+		)
 	}
 }
 
