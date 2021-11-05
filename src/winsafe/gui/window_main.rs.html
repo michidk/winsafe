@@ -234,6 +234,13 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
@@ -250,7 +257,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">create_ui_font</span>, <span class="ident">delete_ui_font</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_main</span>::{<span class="ident">RawMain</span>, <span class="ident">WindowMainOpts</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsAny</span>, <span class="ident">Main</span>, <span class="ident">Parent</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsAny</span>, <span class="ident">Parent</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits_sealed</span>::{<span class="ident">SealedBase</span>, <span class="ident">SealedParent</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HPROCESS</span>, <span class="ident">HWND</span>};
 
@@ -411,32 +418,6 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Main</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
-	<span class="kw">fn</span> <span class="ident">run_main</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co::SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="ident">IsWindowsVistaOrGreater</span>()<span class="question-mark">?</span> {
-			<span class="ident">SetProcessDPIAware</span>()<span class="question-mark">?</span>;
-		}
-
-		<span class="ident">InitCommonControls</span>();
-
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b_val</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>; <span class="comment">// false</span>
-		<span class="kw">unsafe</span> {
-			<span class="ident">HPROCESS::GetCurrentProcess</span>().<span class="ident">SetUserObjectInformation</span>( <span class="comment">// SetTimer() safety</span>
-				<span class="ident">co::UOI::TIMERPROC_EXCEPTION_SUPPRESSION</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b_val</span>)<span class="question-mark">?</span>;
-		}
-
-		<span class="ident">create_ui_font</span>()<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_dlg</span> {
-			<span class="ident">RawDlg::Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>),
-			<span class="ident">RawDlg::Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>),
-		};
-
-		<span class="ident">delete_ui_font</span>()<span class="question-mark">?</span>; <span class="comment">// cleanup</span>
-		<span class="ident">res</span>
-	}
-}
-
 <span class="kw">impl</span> <span class="ident">UiThread</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">run_ui_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
@@ -468,6 +449,39 @@
 				<span class="ident">DlgMain::new</span>(<span class="ident">dialog_id</span>, <span class="ident">icon_id</span>, <span class="ident">accel_table_id</span>),
 			),
 		}
+	}
+
+	<span class="doccomment">/// Physically creates the window, then runs the main application loop. This</span>
+	<span class="doccomment">/// method will block until the window is closed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The `cmd_show` parameter defaults to</span>
+	<span class="doccomment">/// [`co::SW::SHOW`](crate::co::SW::SHOW).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if the window is already created.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_main</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cmd_show</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">co::SW</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="ident">IsWindowsVistaOrGreater</span>()<span class="question-mark">?</span> {
+			<span class="ident">SetProcessDPIAware</span>()<span class="question-mark">?</span>;
+		}
+
+		<span class="ident">InitCommonControls</span>();
+
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b_val</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>; <span class="comment">// false</span>
+		<span class="kw">unsafe</span> {
+			<span class="ident">HPROCESS::GetCurrentProcess</span>().<span class="ident">SetUserObjectInformation</span>( <span class="comment">// SetTimer() safety</span>
+				<span class="ident">co::UOI::TIMERPROC_EXCEPTION_SUPPRESSION</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b_val</span>)<span class="question-mark">?</span>;
+		}
+
+		<span class="ident">create_ui_font</span>()<span class="question-mark">?</span>;
+
+		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_dlg</span> {
+			<span class="ident">RawDlg::Raw</span>(<span class="ident">r</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">r</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>),
+			<span class="ident">RawDlg::Dlg</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>.<span class="ident">run_main</span>(<span class="ident">cmd_show</span>),
+		};
+
+		<span class="ident">delete_ui_font</span>()<span class="question-mark">?</span>; <span class="comment">// cleanup</span>
+		<span class="ident">res</span>
 	}
 }
 </code></pre></div>
