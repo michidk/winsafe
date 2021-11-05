@@ -89,20 +89,26 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::gdi32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleGdi</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">RECT</span>, <span class="ident">SIZE</span>};
 
-<span class="macro">pub_struct_handle_gdi!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [region](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hrgn)</span>
-	<span class="doccomment">/// GDI object.</span>
-	<span class="ident">HRGN</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [region](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hrgn)</span>
+<span class="doccomment">/// GDI object.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HRGN</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HRGN</span>);
+<span class="kw">impl</span> <span class="ident">HandleGdi</span> <span class="kw">for</span> <span class="ident">HRGN</span> {}
 
 <span class="kw">impl</span> <span class="ident">HRGN</span> {
 	<span class="doccomment">/// [`CreateRectRgn`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createrectrgn)</span>
@@ -116,7 +122,7 @@
 				<span class="ident">bounds</span>.<span class="ident">left</span>, <span class="ident">bounds</span>.<span class="ident">top</span>, <span class="ident">bounds</span>.<span class="ident">right</span>, <span class="ident">bounds</span>.<span class="ident">bottom</span>,
 			).<span class="ident">as_mut</span>()
 		}
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -127,7 +133,7 @@
 	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::HRGN::DeleteObject) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateRectRgnIndirect</span>(<span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreateRectRgnIndirect</span>(<span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -144,14 +150,14 @@
 				<span class="ident">bounds</span>.<span class="ident">left</span>, <span class="ident">bounds</span>.<span class="ident">top</span>, <span class="ident">bounds</span>.<span class="ident">right</span>, <span class="ident">bounds</span>.<span class="ident">top</span>,
 				<span class="ident">size</span>.<span class="ident">cx</span>, <span class="ident">size</span>.<span class="ident">cy</span>,
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`OffsetClipRgn`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-offsetcliprgn)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OffsetClipRgn</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">gdi32::OffsetClipRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">gdi32::OffsetClipRgn</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">x</span>, <span class="ident">y</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::REGION</span>(<span class="ident">ret</span>)),
 		}
@@ -160,7 +166,7 @@
 	<span class="doccomment">/// [`OffsetRgn`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-offsetrgn)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OffsetRgn</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::REGION</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">gdi32::OffsetRgn</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">gdi32::OffsetRgn</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">x</span>, <span class="ident">y</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">ret</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::REGION</span>(<span class="ident">ret</span>)),
 		}
@@ -169,15 +175,13 @@
 	<span class="doccomment">/// [`PtInRegion`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-ptinregion)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PtInRegion</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">gdi32::PtInRegion</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+		<span class="kw">unsafe</span> { <span class="ident">gdi32::PtInRegion</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`RectInRegion`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-rectinregion)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">RectInRegion</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> {
-			<span class="ident">gdi32::RectInRegion</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
-		}
+		<span class="kw">unsafe</span> { <span class="ident">gdi32::RectInRegion</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 }
 </code></pre></div>

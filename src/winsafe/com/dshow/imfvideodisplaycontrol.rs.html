@@ -276,7 +276,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::funcs::CoTaskMemFree</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HANDLE</span>, <span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">Handle</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">BITMAPINFOHEADER</span>, <span class="ident">COLORREF</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
 
@@ -460,7 +460,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="ident">HWND::NULL</span>;
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMFVideoDisplayControlVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetVideoWindow</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hwnd</span>.<span class="ident">ptr</span>))
+			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetVideoWindow</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hwnd</span>.<span class="number">0</span>))
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">hwnd</span>)
 	}
 
@@ -532,7 +532,7 @@
 	<span class="kw">fn</span> <span class="ident">SetVideoWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_video</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMFVideoDisplayControlVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">SetVideoWindow</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_video</span>.<span class="ident">ptr</span>))
+			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">SetVideoWindow</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_video</span>.<span class="number">0</span>))
 		}
 	}
 }

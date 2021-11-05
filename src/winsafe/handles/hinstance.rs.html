@@ -477,19 +477,6 @@
 <span id="477">477</span>
 <span id="478">478</span>
 <span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">DLGPROC</span>, <span class="ident">WinResult</span>};
@@ -511,12 +498,14 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">ATOM</span>, <span class="ident">LANGID</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to an</span>
-	<span class="doccomment">/// [instance](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hinstance),</span>
-	<span class="doccomment">/// same as `HMODULE`.</span>
-	<span class="ident">HINSTANCE</span>
-}
+<span class="doccomment">/// Handle to an</span>
+<span class="doccomment">/// [instance](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hinstance),</span>
+<span class="doccomment">/// same as `HMODULE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HINSTANCE</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HINSTANCE</span>);
 
 <span class="kw">impl</span> <span class="ident">HINSTANCE</span> {
 	<span class="doccomment">/// [`CreateDialogParam`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createdialogparamw)</span>
@@ -530,13 +519,13 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::CreateDialogParamW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
-				<span class="ident">hwnd_parent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">hwnd_parent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 				<span class="ident">dialog_proc</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">init_param</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HWND</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HWND</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -551,9 +540,9 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::DialogBoxParamW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
-				<span class="ident">hwnd_parent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">hwnd_parent</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 				<span class="ident">dialog_proc</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">init_param</span>.<span class="ident">unwrap_or_default</span>(),
 			)
@@ -572,7 +561,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::EnumResourceLanguagesW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">resource_type</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident"><span class="self">Self</span>::enum_resource_languages_proc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -599,7 +588,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::EnumResourceNamesW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">resource_type</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident"><span class="self">Self</span>::enum_resource_names_proc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="ident">func</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -623,7 +612,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::EnumResourceTypesW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident"><span class="self">Self</span>::enum_resource_types_proc</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="ident">func</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				)
@@ -648,7 +637,7 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::FindResourceW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
 				<span class="ident">resource_type</span>.<span class="ident">as_ptr</span>(),
 			).<span class="ident">as_mut</span>()
@@ -667,7 +656,7 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::FindResourceExW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
 				<span class="ident">resource_type</span>.<span class="ident">as_ptr</span>(),
 				<span class="ident">language</span>.<span class="ident">unwrap_or</span>(<span class="ident">LANGID::new</span>(<span class="ident">co::LANG::NEUTRAL</span>, <span class="ident">co::SUBLANG::NEUTRAL</span>)).<span class="number">0</span>,
@@ -679,7 +668,7 @@
 	<span class="doccomment">/// [`FreeLibrary`](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FreeLibrary</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::FreeLibrary</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::FreeLibrary</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`GetClassInfoEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclassinfoexw)</span>
@@ -701,7 +690,7 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::GetClassInfoExW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">WString::from_str</span>(<span class="ident">class_name</span>).<span class="ident">as_ptr</span>(),
 				<span class="ident">wcx</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
@@ -729,7 +718,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="ident">MAX_PATH</span>];
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">kernel32::GetModuleFileNameW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>(),
 				<span class="ident">buf</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			)
@@ -753,10 +742,9 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetModuleHandle</span>(<span class="ident">module_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HINSTANCE</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">kernel32::GetModuleHandleW</span>(
-				<span class="ident">WString::from_opt_str</span>(<span class="ident">module_name</span>).<span class="ident">as_ptr</span>()
-			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			<span class="ident">kernel32::GetModuleHandleW</span>(<span class="ident">WString::from_opt_str</span>(<span class="ident">module_name</span>).<span class="ident">as_ptr</span>())
+				.<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -766,10 +754,8 @@
 		<span class="ident">proc_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">kernel32::GetProcAddress</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">str_to_iso88591</span>(<span class="ident">proc_name</span>).<span class="ident">as_ptr</span>(),
-			).<span class="ident">as_ref</span>()
+			<span class="ident">kernel32::GetProcAddress</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">str_to_iso88591</span>(<span class="ident">proc_name</span>).<span class="ident">as_ptr</span>())
+				.<span class="ident">as_ref</span>()
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -778,11 +764,8 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadAccelerators</span>(<span class="self">self</span>, <span class="ident">table_name</span>: <span class="ident">IdStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::LoadAcceleratorsW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">table_name</span>.<span class="ident">as_ptr</span>(),
-			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HACCEL</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadAcceleratorsW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">table_name</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HACCEL</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -801,11 +784,8 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadCursor</span>(<span class="self">self</span>, <span class="ident">resource_id</span>: <span class="ident">IdIdcStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-				<span class="ident">user32::LoadCursorW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">resource_id</span>.<span class="ident">as_ptr</span>(),
-			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadCursorW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">resource_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -824,11 +804,8 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadIcon</span>(<span class="self">self</span>, <span class="ident">icon_id</span>: <span class="ident">IdIdiStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::LoadIconW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">icon_id</span>.<span class="ident">as_ptr</span>(),
-			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadIconW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">icon_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -838,9 +815,8 @@
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">sz</span>: <span class="ident">SIZE</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>)
-				.<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBITMAP</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBITMAP</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -850,9 +826,8 @@
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">2</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>)
-				.<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">2</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HCURSOR</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -862,9 +837,8 @@
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
-			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">1</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>)
-				.<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span> })
+			<span class="ident">user32::LoadImageW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">name</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">1</span>, <span class="ident">cx</span>, <span class="ident">cy</span>, <span class="ident">load</span>.<span class="number">0</span>).<span class="ident">as_mut</span>()
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HICON</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -877,15 +851,15 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::LoadLibraryW</span>(<span class="ident">WString::from_str</span>(<span class="ident">lib_file_name</span>).<span class="ident">as_ptr</span>())
 				.<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`LoadMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadmenuw)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadMenu</span>(<span class="self">self</span>, <span class="ident">resource_id</span>: <span class="ident">IdStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::LoadMenuW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">resource_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HMENU</span> { <span class="ident">ptr</span> })
+		<span class="kw">unsafe</span> { <span class="ident">user32::LoadMenuW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">resource_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HMENU</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -895,7 +869,7 @@
 	<span class="doccomment">/// For an example, see</span>
 	<span class="doccomment">/// [`HINSTANCE::LockResource`](crate::HINSTANCE::LockResource).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LoadResource</span>(<span class="self">self</span>, <span class="ident">res_info</span>: <span class="ident">HRSRC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRSRCMEM</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">kernel32::LoadResource</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">res_info</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
+		<span class="kw">unsafe</span> { <span class="ident">kernel32::LoadResource</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">res_info</span>.<span class="ident">ptr</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HRSRCMEM</span> { <span class="ident">ptr</span> })
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
@@ -906,7 +880,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pData</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::LoadStringW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pData</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span>  <span class="kw">_</span>, <span class="number">0</span>,
 			)
@@ -976,7 +950,7 @@
 	<span class="doccomment">/// For an example, see</span>
 	<span class="doccomment">/// [`HINSTANCE::LockResource`](crate::HINSTANCE::LockResource).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SizeofResource</span>(<span class="self">self</span>, <span class="ident">res_info</span>: <span class="ident">HRSRC</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::SizeofResource</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">res_info</span>.<span class="ident">ptr</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::SizeofResource</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">res_info</span>.<span class="ident">ptr</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">sz</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">sz</span>)
 		}

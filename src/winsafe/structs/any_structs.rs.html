@@ -2102,8 +2102,8 @@
 <span class="kw">impl</span> <span class="ident">HELPINFO</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hItemHandle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">iContextType</span> {
-			<span class="ident">co::HELPINFO::WINDOW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span> }),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span> }),
+			<span class="ident">co::HELPINFO::WINDOW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	}
 }
@@ -2883,7 +2883,7 @@
 				<span class="ident">IconIdTdicon::Id</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
 			}
 		} <span class="kw">else</span> {
-			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span> })
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">HICON</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span>))
 		}
 	}
 
@@ -2891,7 +2891,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
 			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
@@ -2911,7 +2911,7 @@
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span>) {
 			<span class="ident">IconId::Id</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} <span class="kw">else</span> {
-			<span class="ident">IconId::Icon</span>(<span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span> })
+			<span class="ident">IconId::Icon</span>(<span class="ident">HICON</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span>))
 		}
 	}
 
@@ -2919,7 +2919,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconId</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
 			<span class="ident">IconId::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconId::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconId::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">IconId::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
@@ -3142,14 +3142,14 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> {
 			<span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace::Place</span>(<span class="ident">co::HWND_PLACE</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span>)),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw">_</span> }),
+			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	}
 
 	<span class="doccomment">/// Sets the `hwndInsertAfter` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">hwnd</span>: <span class="ident">HwndPlace</span>) {
 		<span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">hwnd</span> {
-			<span class="ident">HwndPlace::Hwnd</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">HwndPlace::Hwnd</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">HwndPlace::Place</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>.<span class="ident">into</span>(),
 			<span class="ident">HwndPlace::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
 		};

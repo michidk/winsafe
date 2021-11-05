@@ -150,6 +150,10 @@
 <span id="150">150</span>
 <span id="151">151</span>
 <span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
@@ -159,14 +163,18 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleClose</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::PROCESSENTRY32</span>;
 
-<span class="macro">pub_struct_handle_closeable!</span> {
-	<span class="doccomment">/// Handle to a process list</span>
-	<span class="doccomment">/// [snapshot](https://docs.microsoft.com/en-us/windows/win32/toolhelp/taking-a-snapshot-and-viewing-processes).</span>
-	<span class="doccomment">/// Originally just a `HANDLE`.</span>
-	<span class="ident">HPROCESSLIST</span>
-}
+<span class="doccomment">/// Handle to a process list</span>
+<span class="doccomment">/// [snapshot](https://docs.microsoft.com/en-us/windows/win32/toolhelp/taking-a-snapshot-and-viewing-processes).</span>
+<span class="doccomment">/// Originally just a `HANDLE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HPROCESSLIST</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HPROCESSLIST</span>);
+<span class="kw">impl</span> <span class="ident">HandleClose</span> <span class="kw">for</span> <span class="ident">HPROCESSLIST</span> {}
 
 <span class="kw">impl</span> <span class="ident">HPROCESSLIST</span> {
 	<span class="doccomment">/// [`CreateToolhelp32Snapshot`](https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot)</span>
@@ -183,7 +191,7 @@
 				<span class="ident">flags</span>.<span class="number">0</span>,
 				<span class="ident">th32_process_id</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -194,7 +202,7 @@
 	<span class="doccomment">/// simpler.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32First</span>(<span class="self">self</span>, <span class="ident">pe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">kernel32::Process32FirstW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">kernel32::Process32FirstW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::NO_MORE_FILES</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
@@ -211,7 +219,7 @@
 	<span class="doccomment">/// simpler.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Process32Next</span>(<span class="self">self</span>, <span class="ident">pe</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PROCESSENTRY32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">kernel32::Process32NextW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
+			<span class="ident">kernel32::Process32NextW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">pe</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::NO_MORE_FILES</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),

@@ -157,6 +157,7 @@
 <span id="157">157</span>
 <span id="158">158</span>
 <span id="159">159</span>
+<span id="160">160</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -164,22 +165,25 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::Handle</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::WIN32_FIND_DATA</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various</span>::{<span class="ident">path</span>, <span class="ident">WString</span>};
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [file search](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew).</span>
-	<span class="doccomment">/// Originally just a `HANDLE`.</span>
-	<span class="ident">HFINDFILE</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [file search](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew).</span>
+<span class="doccomment">/// Originally just a `HANDLE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HFINDFILE</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HFINDFILE</span>);
 
 <span class="kw">impl</span> <span class="ident">HFINDFILE</span> {
 	<span class="doccomment">/// [`FindClose`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findclose)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FindClose</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::FindClose</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::FindClose</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`FindFirstFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew)</span>
@@ -200,7 +204,7 @@
 				<span class="ident">wfd</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			).<span class="ident">as_mut</span>()
 		} {
-			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span> { <span class="ident">ptr</span> }, <span class="bool-val">true</span>)), <span class="comment">// first file found</span>
+			<span class="prelude-val">Some</span>(<span class="ident">ptr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span>(<span class="ident">ptr</span>), <span class="bool-val">true</span>)), <span class="comment">// first file found</span>
 			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::FILE_NOT_FOUND</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident"><span class="self">Self</span>::NULL</span>, <span class="bool-val">false</span>)), <span class="comment">// not an error, first file not found</span>
 				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
@@ -214,9 +218,7 @@
 	<span class="doccomment">/// This method is rather tricky, consider using</span>
 	<span class="doccomment">/// [`HFINDFILE::iter`](crate::HFINDFILE::iter).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FindNextFile</span>(<span class="self">self</span>, <span class="ident">wfd</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WIN32_FIND_DATA</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">kernel32::FindNextFileW</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">wfd</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
-		} {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::FindNextFileW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">wfd</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::NO_MORE_FILES</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>), <span class="comment">// not an error, no further files found</span>
 				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),

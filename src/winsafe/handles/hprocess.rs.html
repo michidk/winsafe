@@ -225,12 +225,17 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleClose</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INFINITE</span>, <span class="ident">MAX_PATH</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
 	<span class="ident">FILETIME</span>,
@@ -240,12 +245,15 @@
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="macro">pub_struct_handle_closeable!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [process](https://docs.microsoft.com/en-us/windows/win32/procthread/processes-and-threads).</span>
-	<span class="doccomment">/// Originally just a `HANDLE`.</span>
-	<span class="ident">HPROCESS</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [process](https://docs.microsoft.com/en-us/windows/win32/procthread/processes-and-threads).</span>
+<span class="doccomment">/// Originally just a `HANDLE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HPROCESS</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HPROCESS</span>);
+<span class="kw">impl</span> <span class="ident">HandleClose</span> <span class="kw">for</span> <span class="ident">HPROCESS</span> {}
 
 <span class="kw">impl</span> <span class="ident">HPROCESS</span> {
 	<span class="doccomment">/// [`CreateProcess`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)</span>
@@ -302,7 +310,7 @@
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">kernel32::FlushInstructionCache</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">base_address</span>, <span class="ident">size</span>)
+				<span class="ident">kernel32::FlushInstructionCache</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">base_address</span>, <span class="ident">size</span>)
 			},
 		)
 	}
@@ -316,7 +324,7 @@
 	<span class="doccomment">/// [`GetCurrentProcess`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess)</span>
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCurrentProcess</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HPROCESS</span> {
-		<span class="self">Self</span> { <span class="ident">ptr</span>: <span class="kw">unsafe</span> { <span class="ident">kernel32::GetCurrentProcess</span>() } }
+		<span class="self">Self</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::GetCurrentProcess</span>() })
 	}
 
 	<span class="doccomment">/// [`GetExitCodeProcess`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodeprocess)</span>
@@ -324,14 +332,14 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetExitCodeProcess</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exit_code</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">kernel32::GetExitCodeProcess</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exit_code</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">kernel32::GetExitCodeProcess</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exit_code</span>) },
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">exit_code</span>)
 	}
 
 	<span class="doccomment">/// [`GetGuiResources`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getguiresources)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetGuiResources</span>(<span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">co::GR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetGuiResources</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">flags</span>.<span class="number">0</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetGuiResources</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">flags</span>.<span class="number">0</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">count</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">count</span>),
 		}
@@ -340,7 +348,7 @@
 	<span class="doccomment">/// [`GetProcessId`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessid)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetProcessId</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetProcessId</span>(<span class="self">self</span>.<span class="ident">ptr</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetProcessId</span>(<span class="self">self</span>.<span class="number">0</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">id</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>),
 		}
@@ -357,7 +365,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::GetProcessTimes</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">creation</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">exit</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">kernel</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -371,7 +379,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsWow64Process</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wow64</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::IsWow64Process</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wow64</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::IsWow64Process</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wow64</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">wow64</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>),
 		}
@@ -392,7 +400,7 @@
 				<span class="ident">inherit_handle</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">process_id</span>,
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -407,7 +415,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::QueryFullProcessImageNameW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">flags</span>.<span class="number">0</span>,
 					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>(),
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>,
@@ -426,7 +434,7 @@
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="ident">user32::SetUserObjectInformationW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">index</span>.<span class="number">0</span>,
 				<span class="ident">pv_info</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>,
@@ -442,7 +450,7 @@
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">co::WAIT</span>(
 				<span class="ident">kernel32::WaitForSingleObject</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">milliseconds</span>.<span class="ident">unwrap_or</span>(<span class="ident">INFINITE</span>),
 				),
 			)

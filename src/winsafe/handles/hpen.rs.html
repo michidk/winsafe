@@ -40,20 +40,28 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::gdi32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleGdi</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">LOGPEN</span>};
 
-<span class="macro">pub_struct_handle_gdi!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [pen](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hpen)</span>
-	<span class="doccomment">/// GDI object.</span>
-	<span class="ident">HPEN</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [pen](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hpen)</span>
+<span class="doccomment">/// GDI object.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HPEN</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HPEN</span>);
+<span class="kw">impl</span> <span class="ident">HandleGdi</span> <span class="kw">for</span> <span class="ident">HPEN</span> {}
 
 <span class="kw">impl</span> <span class="ident">HPEN</span> {
 	<span class="doccomment">/// [`CreatePen`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createpen)</span>
@@ -62,7 +70,7 @@
 		<span class="ident">style</span>: <span class="ident">co::PS</span>, <span class="ident">width</span>: <span class="ident">i32</span>, <span class="ident">color</span>: <span class="ident">COLORREF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreatePen</span>(<span class="ident">style</span>.<span class="number">0</span>, <span class="ident">width</span>, <span class="ident">color</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -70,7 +78,7 @@
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreatePenIndirect</span>(<span class="ident">lp</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LOGPEN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreatePenIndirect</span>(<span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -78,7 +86,7 @@
 	<span class="doccomment">/// static method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetStockObject</span>(<span class="ident">sp</span>: <span class="ident">co::STOCK_PEN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPEN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::GetStockObject</span>(<span class="ident">sp</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 }

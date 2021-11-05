@@ -2284,7 +2284,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::ACTIVATE</span>,
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">event</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">is_minimized</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -2294,7 +2294,7 @@
 		<span class="self">Self</span> {
 			<span class="ident">event</span>: <span class="ident">co::WA</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			<span class="ident">is_minimized</span>: <span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>,
-			<span class="ident">hwnd</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -2354,7 +2354,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::APPCOMMAND</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_owner</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_owner</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">into</span>(), <span class="self">self</span>.<span class="ident">app_command</span>.<span class="number">0</span> <span class="op">|</span> <span class="self">self</span>.<span class="ident">u_device</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -2363,7 +2363,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">AppCommand</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd_owner</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd_owner</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">app_command</span>: <span class="ident">co::APPCOMMAND</span>(<span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">&amp;</span> <span class="op">!</span><span class="ident">FAPPCOMMAND_MASK</span>),
 			<span class="ident">u_device</span>: <span class="ident">co::FAPPCOMMAND</span>(<span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">&amp;</span> <span class="ident">FAPPCOMMAND_MASK</span>),
 			<span class="ident">keys</span>: <span class="ident">co::MK</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
@@ -2393,7 +2393,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::CAPTURECHANGED</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_gaining_mouse</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_gaining_mouse</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -2402,7 +2402,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">CaptureChanged</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd_gaining_mouse</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd_gaining_mouse</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -2445,7 +2445,7 @@
 			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">event</span> {
 				<span class="ident">AccelMenuCtrl::Accel</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::CMD::Accelerator</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">AccelMenuCtrl::Menu</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::CMD::Menu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">AccelMenuCtrl::Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>.<span class="ident">ctrl_hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">AccelMenuCtrl::Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>.<span class="ident">ctrl_hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			},
 		}
 	}
@@ -2461,7 +2461,7 @@
 					<span class="ident">AccelMenuCtrlData</span> {
 						<span class="ident">notif_code</span>: <span class="ident">co::CMD</span>(<span class="ident">code</span>),
 						<span class="ident">ctrl_id</span>: <span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-						<span class="ident">ctrl_hwnd</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+						<span class="ident">ctrl_hwnd</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 					},
 				),
 			},
@@ -2488,7 +2488,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::CONTEXTMENU</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">cursor_pos</span>),
 		}
 	}
@@ -2497,7 +2497,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">ContextMenu</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">cursor_pos</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
 		}
 	}
@@ -2655,7 +2655,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::DROPFILES</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hdrop</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hdrop</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -2664,7 +2664,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">DropFiles</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hdrop</span>: <span class="ident">HDROP</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hdrop</span>: <span class="ident">HDROP</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -2766,8 +2766,8 @@
 		<span class="self">Self</span> {
 			<span class="ident">reason</span>,
 			<span class="ident">handle</span>: <span class="kw">match</span> <span class="ident">reason</span> {
-				<span class="ident">co::MSGF::DIALOGBOX</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> }),
-				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="ident">co::MSGF::DIALOGBOX</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
+				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			},
 		}
 	}
@@ -2827,7 +2827,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::ERASEBKGND</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hdc</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hdc</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -2836,7 +2836,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">EraseBkgnd</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hdc</span>: <span class="ident">HDC</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hdc</span>: <span class="ident">HDC</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -2924,7 +2924,7 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HFONT</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HFONT</span> { <span class="ident">ptr</span>: <span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span> })
+		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HFONT</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
@@ -2952,7 +2952,7 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span> })
+		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HMENU</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
@@ -3164,7 +3164,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::HSCROLL</span>,
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">scroll_box_pos</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
 		}
 	}
 }
@@ -3176,7 +3176,7 @@
 			<span class="ident">request</span>: <span class="ident">co::SB_REQ</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			<span class="ident">hcontrol</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">lparam</span> {
 				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			},
 		}
 	}
@@ -3201,7 +3201,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::INITDIALOG</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_focus</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_focus</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">additional_data</span>,
 		}
 	}
@@ -3210,7 +3210,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">InitDialog</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd_focus</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd_focus</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">additional_data</span>: <span class="ident">p</span>.<span class="ident">lparam</span>,
 		}
 	}
@@ -3236,7 +3236,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::INITMENUPOPUP</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">item_pos</span>, <span class="self">self</span>.<span class="ident">is_window_menu</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -3245,7 +3245,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">InitMenuPopup</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">item_pos</span>: <span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">is_window_menu</span>: <span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>,
 		}
@@ -3278,7 +3278,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::KILLFOCUS</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -3289,7 +3289,7 @@
 		<span class="self">Self</span> {
 			<span class="ident">hwnd</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">wparam</span> {
 				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			},
 		}
 	}
@@ -3339,7 +3339,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::MENUCOMMAND</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">item_index</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3348,7 +3348,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">item_index</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3373,7 +3373,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::MENUDRAG</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3382,7 +3382,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">position</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3407,7 +3407,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::MENURBUTTONUP</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3416,7 +3416,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">position</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3624,7 +3624,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::NCPAINT</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">updated_hrgn</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">updated_hrgn</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -3633,7 +3633,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">NcPaint</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">updated_hrgn</span>: <span class="ident">HRGN</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">updated_hrgn</span>: <span class="ident">HRGN</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3657,7 +3657,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::NEXTDLGCTL</span>,
 			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd_focus</span> {
-				<span class="ident">HwndFocus::Hwnd</span>(<span class="ident">hctl</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hctl</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">HwndFocus::Hwnd</span>(<span class="ident">hctl</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hctl</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 				<span class="ident">HwndFocus::FocusNext</span>(<span class="ident">next</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">if</span> <span class="ident">next</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="number">1</span> },
 			},
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd_focus</span> {
@@ -3672,7 +3672,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">hwnd_focus</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">wparam</span> {
-				<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::Hwnd</span>(<span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndFocus::FocusNext</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>),
 			},
 		}
@@ -3702,7 +3702,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::NOTIFY</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">nmhdr</span>.<span class="ident">hwndFrom</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">nmhdr</span>.<span class="ident">hwndFrom</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">nmhdr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -3771,7 +3771,7 @@
 			<span class="ident">event</span>,
 			<span class="ident">child_id</span>: <span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">data</span>: <span class="kw">match</span> <span class="ident">event</span> {
-				<span class="ident">co::WMPN::CREATE</span> <span class="op">|</span> <span class="ident">co::WMPN::DESTROY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPointId::Hwnd</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="ident">co::WMPN::CREATE</span> <span class="op">|</span> <span class="ident">co::WMPN::DESTROY</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPointId::Hwnd</span>(<span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 				<span class="ident">co::WMPN::POINTERDOWN</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPointId::Id</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 				<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPointId::Point</span>(<span class="ident">lp_to_point</span>(<span class="ident">p</span>)),
 			},
@@ -3839,7 +3839,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SETCURSOR</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">hit_test</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">mouse_msg</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -3848,7 +3848,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">SetCursor</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">hit_test</span>: <span class="ident">co::HT</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			<span class="ident">mouse_msg</span>: <span class="ident">HIWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
@@ -3873,7 +3873,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SETFOCUS</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_losing_focus</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd_losing_focus</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -3882,7 +3882,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">SetFocus</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd_losing_focus</span>: <span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hwnd_losing_focus</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3906,7 +3906,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SETFONT</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hfont</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hfont</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">redraw</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -3915,7 +3915,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">SetFont</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hfont</span>: <span class="ident">HFONT</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hfont</span>: <span class="ident">HFONT</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">redraw</span>: <span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>,
 		}
 	}
@@ -3934,14 +3934,14 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span> })
+		<span class="ident">zero_as_none</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HICON</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SETICON</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">size</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hicon</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3950,7 +3950,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">size</span>: <span class="ident">co::ICON_SZ</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">hicon</span>: <span class="ident">HICON</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hicon</span>: <span class="ident">HICON</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -4331,7 +4331,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::UNINITMENUPOPUP</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hmenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(<span class="number">0</span>, <span class="self">self</span>.<span class="ident">which</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
@@ -4340,7 +4340,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">UninitMenuPopup</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hmenu</span>: <span class="ident">HMENU</span> { <span class="ident">ptr</span>: <span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">hmenu</span>: <span class="ident">HMENU</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">which</span>: <span class="ident">co::MF</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
@@ -4367,7 +4367,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::VSCROLL</span>,
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">scroll_box_pos</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
 		}
 	}
 }
@@ -4379,7 +4379,7 @@
 			<span class="ident">request</span>: <span class="ident">co::SB_REQ</span>(<span class="ident">LOWORD</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			<span class="ident">hcontrol</span>: <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">lparam</span> {
 				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }),
+				<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">HWND</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			},
 		}
 	}

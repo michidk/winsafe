@@ -1761,7 +1761,7 @@
 		<span class="ident">strs</span>.<span class="ident">push</span>(<span class="ident">WString::from_wchars_nullt</span>(<span class="kw-2">*</span><span class="ident">lp</span>).<span class="ident">to_string</span>());
 	}
 
-	(<span class="ident">HLOCAL</span> { <span class="ident">ptr</span>: <span class="ident">lp_arr</span> <span class="kw">as</span> <span class="kw">_</span> })
+	(<span class="ident">HLOCAL</span>(<span class="ident">lp_arr</span> <span class="kw">as</span> <span class="kw">_</span>))
 		.<span class="ident">LocalFree</span>()
 		.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">strs</span>)
 }
@@ -2237,7 +2237,7 @@
 	<span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="ident">user32::GetMessageW</span>(
 			<span class="ident">msg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">hwnd</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+			<span class="ident">hwnd</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 			<span class="ident">msg_filter_min</span>, <span class="ident">msg_filter_max</span>,
 		)
 	} {
@@ -2648,7 +2648,7 @@
 	<span class="kw">unsafe</span> {
 		<span class="ident">user32::PeekMessageW</span>(
 			<span class="ident">msg</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">hwnd</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+			<span class="ident">hwnd</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 			<span class="ident">msg_filter_min</span>,
 			<span class="ident">msg_filter_max</span>,
 			<span class="ident">remove_msg</span>.<span class="number">0</span>,
@@ -2999,7 +2999,7 @@
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::UnregisterClassW</span>(
 				<span class="ident">WString::from_str</span>(<span class="ident">class_name</span>).<span class="ident">as_ptr</span>(),
-				<span class="ident">hinst</span>.<span class="ident">ptr</span>,
+				<span class="ident">hinst</span>.<span class="number">0</span>,
 			)
 		},
 	)

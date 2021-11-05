@@ -51,6 +51,8 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -62,11 +64,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [deferred window position](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hdwp).</span>
-	<span class="ident">HDWP</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [deferred window position](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hdwp).</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HDWP</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HDWP</span>);
 
 <span class="kw">impl</span> <span class="ident">HDWP</span> {
 	<span class="doccomment">/// [`BeginDeferWindowPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-begindeferwindowpos)</span>
@@ -76,7 +80,7 @@
 	<span class="doccomment">/// [`HDWP::EndDeferWindowPos`](crate::HDWP::EndDeferWindowPos) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">BeginDeferWindowPos</span>(<span class="ident">num_windows</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HDWP</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32::BeginDeferWindowPos</span>(<span class="ident">num_windows</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -88,20 +92,20 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">user32::DeferWindowPos</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">hwnd</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
+				<span class="ident">hwnd</span>.<span class="number">0</span>,
 				<span class="ident">hwnd_insert_after</span>.<span class="ident">as_ptr</span>(),
 				<span class="ident">top_left</span>.<span class="ident">x</span>, <span class="ident">top_left</span>.<span class="ident">y</span>, <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>,
 				<span class="ident">flags</span>.<span class="number">0</span>,
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`EndDeferWindowPos`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enddeferwindowpos)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EndDeferWindowPos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::EndDeferWindowPos</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::EndDeferWindowPos</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 }
 </code></pre></div>

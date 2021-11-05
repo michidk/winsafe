@@ -109,20 +109,28 @@
 <span id="109">109</span>
 <span id="110">110</span>
 <span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">HIDWORD</span>, <span class="ident">LODWORD</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleClose</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::bool_to_winresult</span>;
 
-<span class="macro">pub_struct_handle_closeable!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [file mapping](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-createfilemappingw).</span>
-	<span class="doccomment">/// Originally just a `HANDLE`.</span>
-	<span class="ident">HFILEMAP</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [file mapping](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-createfilemappingw).</span>
+<span class="doccomment">/// Originally just a `HANDLE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HFILEMAP</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HFILEMAP</span>);
+<span class="kw">impl</span> <span class="ident">HandleClose</span> <span class="kw">for</span> <span class="ident">HFILEMAP</span> {}
 
 <span class="kw">impl</span> <span class="ident">HFILEMAP</span> {
 	<span class="doccomment">/// [`MapViewOfFile`](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile)</span>
@@ -138,7 +146,7 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::MapViewOfFile</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">desired_access</span>.<span class="number">0</span>,
 				<span class="ident">HIDWORD</span>(<span class="ident">offset</span>),
 				<span class="ident">LODWORD</span>(<span class="ident">offset</span>),

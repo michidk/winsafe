@@ -546,6 +546,9 @@
 <span id="546">546</span>
 <span id="547">547</span>
 <span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::convert::TryInto</span>;
@@ -554,24 +557,27 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums::RegistryValue</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::advapi32</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::Handle</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::FILETIME</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [registry key](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hkey).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This handle also exposes several</span>
-	<span class="doccomment">/// [predefined registry keys](https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys),</span>
-	<span class="doccomment">/// like `HKEY::CURRENT_USER`, which are always open and ready to be used.</span>
-	<span class="doccomment">/// Usually, they are the starting point to open a registry key.</span>
-	<span class="ident">HKEY</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [registry key](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hkey).</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This handle also exposes several</span>
+<span class="doccomment">/// [predefined registry keys](https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys),</span>
+<span class="doccomment">/// like `HKEY::CURRENT_USER`, which are always open and ready to be used.</span>
+<span class="doccomment">/// Usually, they are the starting point to open a registry key.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HKEY</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HKEY</span>);
 
 <span class="macro">macro_rules!</span> <span class="ident">predef_key</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// Predefined registry key, always open.</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="self">Self</span> <span class="op">=</span> <span class="self">Self</span> { <span class="ident">ptr</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> };
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="self">Self</span> <span class="op">=</span> <span class="self">Self</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>);
 	};
 }
 
@@ -590,7 +596,7 @@
 	<span class="doccomment">/// [`RegCloseKey`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regclosekey)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseKey</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">advapi32::RegCloseKey</span>(<span class="self">self</span>.<span class="ident">ptr</span>) <span class="kw">as</span> <span class="kw">_</span> }) {
+		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">advapi32::RegCloseKey</span>(<span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span> }) {
 			<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
 			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 		}
@@ -635,7 +641,7 @@
 			<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegEnumKeyExW</span>(
-						<span class="self">self</span>.<span class="ident">ptr</span>,
+						<span class="self">self</span>.<span class="number">0</span>,
 						<span class="ident">index</span>,
 						<span class="ident">name_buf</span>.<span class="ident">as_mut_ptr</span>(),
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len_buf</span>,
@@ -696,7 +702,7 @@
 			<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegEnumValueW</span>(
-						<span class="self">self</span>.<span class="ident">ptr</span>,
+						<span class="self">self</span>.<span class="number">0</span>,
 						<span class="ident">index</span>,
 						<span class="ident">name_buf</span>.<span class="ident">as_mut_ptr</span>(),
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len_buf</span>,
@@ -760,7 +766,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegGetValueW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
@@ -780,7 +786,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegGetValueW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
@@ -839,11 +845,11 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegOpenKeyExW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">options</span>.<span class="number">0</span>,
 					<span class="ident">access_rights</span>.<span class="number">0</span>,
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hKey</span>.<span class="ident">ptr</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hKey</span>.<span class="number">0</span>,
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>
 		) {
@@ -890,7 +896,7 @@
 			<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi32::RegQueryInfoKeyW</span>(
-						<span class="self">self</span>.<span class="ident">ptr</span>,
+						<span class="self">self</span>.<span class="number">0</span>,
 						<span class="ident">class_ptr</span>,
 						<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">class_len</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
@@ -963,7 +969,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegQueryValueExW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">raw_data_type</span>,
@@ -982,7 +988,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegQueryValueExW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
@@ -1036,7 +1042,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetKeyValueW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
@@ -1080,7 +1086,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi32::RegSetValueExW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
 					<span class="number">0</span>,
 					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,

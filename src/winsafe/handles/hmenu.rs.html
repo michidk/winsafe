@@ -491,6 +491,8 @@
 <span id="491">491</span>
 <span id="492">492</span>
 <span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -504,11 +506,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">MENUINFO</span>, <span class="ident">MENUITEMINFO</span>, <span class="ident">POINT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [menu](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hmenu).</span>
-	<span class="ident">HMENU</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [menu](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hmenu).</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HMENU</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HMENU</span>);
 
 <span class="kw">impl</span> <span class="ident">HMENU</span> {
 	<span class="doccomment">/// [`AppendMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-appendmenuw)</span>
@@ -522,7 +526,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::AppendMenuW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">flags</span>.<span class="number">0</span>,
 					<span class="ident">new_item</span>.<span class="ident">as_usize</span>(),
 					<span class="ident">content</span>.<span class="ident">as_ptr</span>(),
@@ -584,7 +588,7 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::CheckMenuItem</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 				(<span class="ident">id_or_pos</span>.<span class="ident">mf_flag</span>() <span class="op">|</span> <span class="kw">if</span> <span class="ident">check</span> {
 					<span class="ident">co::MF::CHECKED</span>
@@ -616,7 +620,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::CheckMenuRadioItem</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">first</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">last</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">check</span>.<span class="ident">id_or_pos_u32</span>(),
@@ -633,7 +637,7 @@
 	<span class="doccomment">/// [`HMENU::DestroyMenu`](crate::HMENU::DestroyMenu) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateMenu</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32::CreateMenu</span>().<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -644,7 +648,7 @@
 	<span class="doccomment">/// [`HMENU::DestroyMenu`](crate::HMENU::DestroyMenu) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreatePopupMenu</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">user32::CreatePopupMenu</span>().<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -654,7 +658,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::DeleteMenu</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">mf_flag</span>().<span class="number">0</span>,
 				)
@@ -665,7 +669,7 @@
 	<span class="doccomment">/// [`DestroyMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DestroyMenu</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::DestroyMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::DestroyMenu</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`EnableMenuItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablemenuitem)</span>
@@ -713,7 +717,7 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::EnableMenuItem</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 				(<span class="ident">id_or_pos</span>.<span class="ident">mf_flag</span>()
 					<span class="op">|</span> <span class="kw">if</span> <span class="ident">enable</span> { <span class="ident">co::MF::ENABLED</span> } <span class="kw">else</span> { <span class="ident">co::MF::DISABLED</span> }).<span class="number">0</span>,
@@ -730,7 +734,7 @@
 		<span class="ident">by_pos</span>: <span class="ident">bool</span>, <span class="ident">flags</span>: <span class="ident">co::GMDI</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IdPos</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">user32::GetMenuDefaultItem</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">by_pos</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">flags</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">i32</span>
+			<span class="ident">user32::GetMenuDefaultItem</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">by_pos</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">flags</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">i32</span>
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">n</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="ident">by_pos</span> { <span class="ident">IdPos::Pos</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>) } <span class="kw">else</span> { <span class="ident">IdPos::Id</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>) }),
@@ -741,14 +745,14 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuInfo</span>(<span class="self">self</span>, <span class="ident">mi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MENUINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::GetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::GetMenuInfo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">mi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
 	<span class="doccomment">/// [`GetMenuItemCount`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenuitemcount)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuItemCount</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetMenuItemCount</span>(<span class="self">self</span>.<span class="ident">ptr</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetMenuItemCount</span>(<span class="self">self</span>.<span class="number">0</span>) } {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">count</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">count</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
@@ -762,7 +766,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::GetMenuItemInfoW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">mii</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -774,7 +778,7 @@
 	<span class="doccomment">/// [`GetMenuItemID`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmenuitemid)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuItemID</span>(<span class="self">self</span>, <span class="ident">nPos</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetMenuItemID</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">nPos</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::GetMenuItemID</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">nPos</span>) } {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
 			<span class="ident">id</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>),
 		}
@@ -785,7 +789,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMenuState</span>(<span class="self">self</span>, <span class="ident">id_or_pos</span>: <span class="ident">IdPos</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::MF</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::GetMenuState</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 				<span class="ident">id_or_pos</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="kw">_</span>,
 			) <span class="kw">as</span> <span class="ident">i32</span>
@@ -807,7 +811,7 @@
 
 			<span class="kw">let</span> <span class="ident">nchars</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw">unsafe</span> {
 				<span class="ident">user32::GetMenuStringW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">buf</span>.<span class="ident">as_mut_ptr</span>(),
 					<span class="ident">buf</span>.<span class="ident">buffer_size</span>() <span class="kw">as</span> <span class="kw">_</span>,
@@ -831,8 +835,8 @@
 	<span class="doccomment">/// [`GetSubMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsubmenu)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSubMenu</span>(<span class="self">self</span>, <span class="ident">pos</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::GetSubMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">pos</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		<span class="kw">unsafe</span> { <span class="ident">user32::GetSubMenu</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">pos</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 	}
 
 	<span class="doccomment">/// [`InsertMenuItem`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-insertmenuitemw)</span>
@@ -843,7 +847,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::InsertMenuItemW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">mii</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -855,7 +859,7 @@
 	<span class="doccomment">/// [`IsMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-ismenu)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">IsMenu</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="kw">unsafe</span> { <span class="ident">user32::IsMenu</span>(<span class="self">self</span>.<span class="ident">ptr</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
+		<span class="kw">unsafe</span> { <span class="ident">user32::IsMenu</span>(<span class="self">self</span>.<span class="number">0</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`RemoveMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-removemenu)</span>
@@ -864,7 +868,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::RemoveMenu</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">mf_flag</span>().<span class="number">0</span>,
 				)
@@ -878,7 +882,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetMenuDefaultItem</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="kw">_</span>,
 				)
@@ -890,7 +894,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetMenuInfo</span>(<span class="self">self</span>, <span class="ident">mi</span>: <span class="kw-2">&amp;</span><span class="ident">MENUINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> { <span class="ident">user32::SetMenuInfo</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">mi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
+			<span class="kw">unsafe</span> { <span class="ident">user32::SetMenuInfo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">mi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
 	}
 
@@ -904,11 +908,11 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetMenuItemBitmaps</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">mf_flag</span>().<span class="number">0</span>,
-					<span class="ident">hbmp_unchecked</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
-					<span class="ident">hbmp_checked</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+					<span class="ident">hbmp_unchecked</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
+					<span class="ident">hbmp_checked</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 				)
 			},
 		)
@@ -922,7 +926,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">user32::SetMenuItemInfoW</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">id_or_pos</span>.<span class="ident">id_or_pos_u32</span>(),
 					<span class="ident">id_or_pos</span>.<span class="ident">is_by_pos</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">mii</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -941,11 +945,11 @@
 	{
 		<span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">unsafe</span> {
 			<span class="ident">user32::TrackPopupMenu</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">flags</span>.<span class="number">0</span>,
 				<span class="ident">location</span>.<span class="ident">x</span>, <span class="ident">location</span>.<span class="ident">y</span>,
 				<span class="number">0</span>,
-				<span class="ident">hwnd</span>.<span class="ident">ptr</span>,
+				<span class="ident">hwnd</span>.<span class="number">0</span>,
 				<span class="ident">std::ptr::null</span>(),
 			)
 		};

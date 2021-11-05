@@ -266,7 +266,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">HIDWORD</span>, <span class="ident">LODWORD</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HFILEMAP</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HandleClose</span>, <span class="ident">HFILEMAP</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INVALID_HANDLE_VALUE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
 	<span class="ident">BY_HANDLE_FILE_INFORMATION</span>,
@@ -275,12 +275,15 @@
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="macro">pub_struct_handle_closeable!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [file](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hfile).</span>
-	<span class="doccomment">/// Originally just a `HANDLE`.</span>
-	<span class="ident">HFILE</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [file](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hfile).</span>
+<span class="doccomment">/// Originally just a `HANDLE`.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HFILE</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HFILE</span>);
+<span class="kw">impl</span> <span class="ident">HandleClose</span> <span class="kw">for</span> <span class="ident">HFILE</span> {}
 
 <span class="kw">impl</span> <span class="ident">HFILE</span> {
 	<span class="doccomment">/// [`CreateFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)</span>
@@ -343,11 +346,11 @@
 				<span class="ident">security_attrs</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				<span class="ident">creation_disposition</span>.<span class="number">0</span>,
 				<span class="ident">flags_and_attrs</span>.<span class="number">0</span>,
-				<span class="ident">hfile_template</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">hfile_template</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 			) <span class="kw">as</span> <span class="kw">_</span>
 		} {
 			<span class="ident">INVALID_HANDLE_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span> { <span class="ident">ptr</span>: <span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span> }, <span class="ident">GetLastError</span>())),
+			<span class="ident">ptr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="self">Self</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">GetLastError</span>())),
 		}
 	}
 
@@ -364,14 +367,14 @@
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">kernel32::CreateFileMappingW</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">mapping_attrs</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">lp</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 				<span class="ident">protect</span>.<span class="number">0</span>,
 				<span class="ident">max_size</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">HIDWORD</span>(<span class="ident">n</span>)),
 				<span class="ident">max_size</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">LODWORD</span>(<span class="ident">n</span>)),
 				<span class="ident">mapping_name</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null</span>(), <span class="op">|</span><span class="ident">lp</span><span class="op">|</span> <span class="ident">WString::from_str</span>(<span class="ident">lp</span>).<span class="ident">as_ptr</span>()),
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFILEMAP</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HFILEMAP</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
@@ -382,10 +385,7 @@
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">kernel32::GetFileInformationByHandle</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
-					<span class="ident">fi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
-				)
+				<span class="ident">kernel32::GetFileInformationByHandle</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">fi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
 			},
 		)
 	}
@@ -394,7 +394,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileSizeEx</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz_buf</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetFileSizeEx</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz_buf</span>) } {
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetFileSizeEx</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz_buf</span>) } {
 			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">sz_buf</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
@@ -403,7 +403,7 @@
 	<span class="doccomment">/// [`GetFileType`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfiletype)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetFileType</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::FILE_TYPE</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">co::FILE_TYPE</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::GetFileType</span>(<span class="self">self</span>.<span class="ident">ptr</span>) }) {
+		<span class="kw">match</span> <span class="ident">co::FILE_TYPE</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::GetFileType</span>(<span class="self">self</span>.<span class="number">0</span>) }) {
 			<span class="ident">co::FILE_TYPE::UNKNOWN</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
 				<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">co::FILE_TYPE::UNKNOWN</span>), <span class="comment">// actual unknown type</span>
 				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
@@ -421,7 +421,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::LockFile</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">LODWORD</span>(<span class="ident">offset</span>),
 					<span class="ident">HIDWORD</span>(<span class="ident">offset</span>),
 					<span class="ident">LODWORD</span>(<span class="ident">num_bytes_to_lock</span>),
@@ -446,7 +446,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::ReadFile</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">buffer</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">num_bytes_to_read</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytes_read</span>,
@@ -459,7 +459,7 @@
 	<span class="doccomment">/// [`SetEndOfFile`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setendoffile)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetEndOfFile</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::SetEndOfFile</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::SetEndOfFile</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`SetFilePointerEx`](https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex)</span>
@@ -473,7 +473,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::SetFilePointerEx</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">distance_to_move</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_offset</span>,
 					<span class="ident">move_method</span>.<span class="number">0</span>,
@@ -490,7 +490,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::UnlockFile</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">LODWORD</span>(<span class="ident">offset</span>),
 					<span class="ident">HIDWORD</span>(<span class="ident">offset</span>),
 					<span class="ident">LODWORD</span>(<span class="ident">num_bytes_to_lock</span>),
@@ -512,7 +512,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">kernel32::WriteFile</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">buffer</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bytes_written</span>,

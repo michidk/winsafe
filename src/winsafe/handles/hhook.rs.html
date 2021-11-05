@@ -45,6 +45,8 @@
 <span id="45">45</span>
 <span id="46">46</span>
 <span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">HOOKPROC</span>, <span class="ident">WinResult</span>};
@@ -54,11 +56,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HINSTANCE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::bool_to_winresult</span>;
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to a</span>
-	<span class="doccomment">/// [hook](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hhook).</span>
-	<span class="ident">HHOOK</span>
-}
+<span class="doccomment">/// Handle to a</span>
+<span class="doccomment">/// [hook](https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types#hhook).</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HHOOK</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HHOOK</span>);
 
 <span class="kw">impl</span> <span class="ident">HHOOK</span> {
 	<span class="doccomment">/// [`CallNextHookEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-callnexthookex)</span>
@@ -66,7 +70,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CallNextHookEx</span>(<span class="self">self</span>,
 		<span class="ident">code</span>: <span class="ident">co::WH</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span>
 	{
-		<span class="kw">unsafe</span> { <span class="ident">user32::CallNextHookEx</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">code</span>.<span class="number">0</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>) }
+		<span class="kw">unsafe</span> { <span class="ident">user32::CallNextHookEx</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">code</span>.<span class="number">0</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>) }
 	}
 
 	<span class="doccomment">/// [`SetWindowsHookEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexw)</span>
@@ -79,17 +83,17 @@
 			<span class="ident">user32::SetWindowsHookExW</span>(
 				<span class="ident">hook_id</span>.<span class="number">0</span>,
 				<span class="ident">proc</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">module</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="ident">module</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 				<span class="ident">thread_id</span>.<span class="ident">unwrap_or_default</span>(),
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`UnhookWindowsHookEx`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-unhookwindowshookex)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">UnhookWindowsHookEx</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::UnhookWindowsHookEx</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::UnhookWindowsHookEx</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 }
 </code></pre></div>

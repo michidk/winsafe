@@ -234,11 +234,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>, <span class="ident">SHFILEINFO</span>};
 
-<span class="macro">pub_struct_handle!</span> {
-	<span class="doccomment">/// Handle to an</span>
-	<span class="doccomment">/// [image list](https://docs.microsoft.com/en-us/windows/win32/controls/image-lists).</span>
-	<span class="ident">HIMAGELIST</span>
-}
+<span class="doccomment">/// Handle to an</span>
+<span class="doccomment">/// [image list](https://docs.microsoft.com/en-us/windows/win32/controls/image-lists).</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HIMAGELIST</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>);
+
+<span class="macro">impl_handle!</span>(<span class="ident">HIMAGELIST</span>);
 
 <span class="kw">impl</span> <span class="ident">HIMAGELIST</span> {
 	<span class="doccomment">/// [`ImageList_Add`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_add)</span>
@@ -251,9 +253,9 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">comctl32::ImageList_Add</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
-				<span class="ident">hbmp_image</span>.<span class="ident">ptr</span>,
-				<span class="ident">hbmp_mask</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">ptr</span>),
+				<span class="self">self</span>.<span class="number">0</span>,
+				<span class="ident">hbmp_image</span>.<span class="number">0</span>,
+				<span class="ident">hbmp_mask</span>.<span class="ident">map_or</span>(<span class="ident">std::ptr::null_mut</span>(), <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span>),
 			)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -306,7 +308,7 @@
 		<span class="ident">hbmp_image</span>: <span class="ident">HBITMAP</span>, <span class="ident">color_mask</span>: <span class="ident">COLORREF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
-			<span class="ident">comctl32::ImageList_AddMasked</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">hbmp_image</span>.<span class="ident">ptr</span>, <span class="ident">color_mask</span>.<span class="number">0</span>)
+			<span class="ident">comctl32::ImageList_AddMasked</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">hbmp_image</span>.<span class="number">0</span>, <span class="ident">color_mask</span>.<span class="number">0</span>)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
 			<span class="ident">idx</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -322,7 +324,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::ImageList_BeginDrag</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">track</span> <span class="kw">as</span> <span class="kw">_</span>,
 					<span class="ident">hotspot</span>.<span class="ident">x</span>, <span class="ident">hotspot</span>.<span class="ident">y</span>,
 				)
@@ -357,20 +359,20 @@
 				<span class="ident">initial_size</span>,
 				<span class="ident">grow_size</span>,
 			).<span class="ident">as_mut</span>()
-		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span> { <span class="ident">ptr</span> })
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
 	}
 
 	<span class="doccomment">/// [`ImageList_Destroy`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_destroy)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">Destroy</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_Destroy</span>(<span class="self">self</span>.<span class="ident">ptr</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_Destroy</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`ImageList_DragMove`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_dragmove)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DragMove</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_DragMove</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">x</span>, <span class="ident">y</span>) })
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_DragMove</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">x</span>, <span class="ident">y</span>) })
 	}
 
 	<span class="doccomment">/// [`ImageList_DragShowNolock`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_dragshownolock)</span>
@@ -393,7 +395,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">SIZE::default</span>();
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
-				<span class="ident">comctl32::ImageList_GetIconSize</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>.<span class="ident">cy</span>)
+				<span class="ident">comctl32::ImageList_GetIconSize</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>.<span class="ident">cx</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>.<span class="ident">cy</span>)
 			}
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">sz</span>)
 	}
@@ -401,7 +403,7 @@
 	<span class="doccomment">/// [`ImageList_GetImageCount`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_getimagecount)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetImageCount</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-		<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_GetImageCount</span>(<span class="self">self</span>.<span class="ident">ptr</span>) <span class="kw">as</span> <span class="kw">_</span> }
+		<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_GetImageCount</span>(<span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span> }
 	}
 
 	<span class="doccomment">/// [`ImageList_Remove`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_remove)</span>
@@ -410,7 +412,7 @@
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">comctl32::ImageList_Remove</span>(
-					<span class="self">self</span>.<span class="ident">ptr</span>,
+					<span class="self">self</span>.<span class="number">0</span>,
 					<span class="ident">index</span>.<span class="ident">map_or</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>),
 				)
 			},
@@ -430,9 +432,9 @@
 	{
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">comctl32::ImageList_ReplaceIcon</span>(
-				<span class="self">self</span>.<span class="ident">ptr</span>,
+				<span class="self">self</span>.<span class="number">0</span>,
 				<span class="ident">index</span>.<span class="ident">map_or</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>),
-				<span class="ident">hicon_new</span>.<span class="ident">ptr</span>,
+				<span class="ident">hicon_new</span>.<span class="number">0</span>,
 			)
 		} {
 			<span class="op">-</span><span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -444,9 +446,7 @@
 	<span class="doccomment">/// methods.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetImageCount</span>(<span class="self">self</span>, <span class="ident">new_count</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
-			<span class="kw">unsafe</span> {
-				<span class="ident">comctl32::ImageList_SetImageCount</span>(<span class="self">self</span>.<span class="ident">ptr</span>, <span class="ident">new_count</span>)
-			},
+			<span class="kw">unsafe</span> { <span class="ident">comctl32::ImageList_SetImageCount</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">new_count</span>) },
 		)
 	}
 }
