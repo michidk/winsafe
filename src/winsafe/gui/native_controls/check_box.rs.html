@@ -322,6 +322,20 @@
 <span id="322">322</span>
 <span id="323">323</span>
 <span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -329,8 +343,16 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>, <span class="ident">HwndPlace</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ButtonEvents</span>, <span class="ident">EventsView</span>, <span class="ident">WindowEvents</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>, <span class="ident">multiply_dpi</span>, <span class="ident">ui_font</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>,
+	<span class="ident">OptsId</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{
+	<span class="ident">auto_ctrl_id</span>,
+	<span class="ident">calc_text_bound_box_check</span>,
+	<span class="ident">multiply_dpi_or_dtu</span>,
+	<span class="ident">ui_font</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
 	<span class="ident">AsAny</span>,
@@ -468,13 +490,15 @@
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
-				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+				<span class="ident">multiply_dpi_or_dtu</span>(
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
 				<span class="kw">if</span> <span class="ident">sz</span>.<span class="ident">cx</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">sz</span>.<span class="ident">cy</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
 					<span class="ident">sz</span> <span class="op">=</span> <span class="ident">calc_text_bound_box_check</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>)<span class="question-mark">?</span>; <span class="comment">// resize to fit text</span>
 				} <span class="kw">else</span> {
-					<span class="ident">multiply_dpi</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>; <span class="comment">// user-defined size</span>
+					<span class="ident">multiply_dpi_or_dtu</span>(
+						<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>; <span class="comment">// user-defined size</span>
 				}
 
 				<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
@@ -569,17 +593,21 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to empty string.</span>
 	<span class="kw">pub</span> <span class="ident">text</span>: <span class="ident">String</span>,
-	<span class="doccomment">/// Control position within parent client area, in pixels, to be</span>
+	<span class="doccomment">/// Control position within parent client area, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 0 x 0.</span>
 	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
-	<span class="doccomment">/// Control size, in pixels, to be</span>
+	<span class="doccomment">/// Control size, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to the size needed to fit the text.</span>
 	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">SIZE</span>,

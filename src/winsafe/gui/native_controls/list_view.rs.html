@@ -408,6 +408,10 @@
 <span id="408">408</span>
 <span id="409">409</span>
 <span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -416,16 +420,15 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetAsyncKeyState</span>, <span class="ident">GetCursorPos</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{
-	<span class="ident">EventsView</span>,
-	<span class="ident">ListViewEvents</span>,
-	<span class="ident">sealed_events_wm_nfy::SealedEventsWmNfy</span>,
-	<span class="ident">WindowEvents</span>,
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">ListViewEvents</span>, <span class="ident">WindowEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::sealed_events_wm_nfy::SealedEventsWmNfy</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>,
+	<span class="ident">OptsId</span>,
 };
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::list_view_columns::ListViewColumns</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::list_view_items::ListViewItems</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
 	<span class="ident">AsAny</span>,
@@ -558,7 +561,8 @@
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
-				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
+				<span class="ident">multiply_dpi_or_dtu</span>(
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
 
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
 					<span class="string">&quot;SysListView32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
@@ -729,17 +733,21 @@
 <span class="doccomment">/// Options to create a [`ListView`](crate::gui::ListView) programmatically with</span>
 <span class="doccomment">/// [`ListView::new`](crate::gui::ListView::new).</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewOpts</span> {
-	<span class="doccomment">/// Control position within parent client area, in pixels, to be</span>
+	<span class="doccomment">/// Control position within parent client area, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 0 x 0.</span>
 	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
-	<span class="doccomment">/// Control size, in pixels, to be</span>
+	<span class="doccomment">/// Control size, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 50 x 50.</span>
 	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">SIZE</span>,

@@ -200,6 +200,41 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Global objects used within `gui` module.</span>
 
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
@@ -208,6 +243,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetSystemMetrics</span>, <span class="ident">PostQuitMessage</span>, <span class="ident">SystemParametersInfo</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">Handle</span>, <span class="ident">HandleGdi</span>, <span class="ident">HFONT</span>, <span class="ident">HTHEME</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">NONCLIENTMETRICS</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
@@ -300,6 +336,40 @@
 		}
 	}
 	<span class="prelude-val">Ok</span>(())
+}
+
+<span class="doccomment">/// If parent is a dialog, converts Dialog Template Units to pixels; otherwise</span>
+<span class="doccomment">/// multiplies by current DPI factor.</span>
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">multiply_dpi_or_dtu</span>(
+	<span class="ident">parent_base</span>: <span class="kw-2">&amp;</span><span class="ident">Base</span>,
+	<span class="ident">pt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">POINT</span><span class="op">&gt;</span>, <span class="ident">sz</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SIZE</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+{
+	<span class="kw">if</span> <span class="ident">parent_base</span>.<span class="ident">is_dialog</span>() {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
+		<span class="ident">pt</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">pt</span><span class="op">|</span> {
+			<span class="ident">rc</span>.<span class="ident">left</span> <span class="op">=</span> <span class="ident">pt</span>.<span class="ident">x</span>;
+			<span class="ident">rc</span>.<span class="ident">top</span> <span class="op">=</span> <span class="ident">pt</span>.<span class="ident">y</span>;
+		});
+		<span class="ident">sz</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">sz</span><span class="op">|</span> {
+			<span class="ident">rc</span>.<span class="ident">right</span> <span class="op">=</span> <span class="ident">sz</span>.<span class="ident">cx</span>;
+			<span class="ident">rc</span>.<span class="ident">bottom</span> <span class="op">=</span> <span class="ident">sz</span>.<span class="ident">cy</span>;
+		});
+
+		<span class="ident">parent_base</span>.<span class="ident">hwnd</span>().<span class="ident">MapDialogRect</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rc</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">pt</span>, <span class="kw-2">mut</span> <span class="ident">sz</span>) <span class="op">=</span> (<span class="ident">pt</span>, <span class="ident">sz</span>);
+		<span class="ident">pt</span>.<span class="ident">as_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">pt</span><span class="op">|</span> {
+			<span class="ident">pt</span>.<span class="ident">x</span> <span class="op">=</span> <span class="ident">rc</span>.<span class="ident">left</span>;
+			<span class="ident">pt</span>.<span class="ident">y</span> <span class="op">=</span> <span class="ident">rc</span>.<span class="ident">top</span>;
+		});
+		<span class="ident">sz</span>.<span class="ident">as_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">sz</span><span class="op">|</span> {
+			<span class="ident">sz</span>.<span class="ident">cx</span> <span class="op">=</span> <span class="ident">rc</span>.<span class="ident">right</span>;
+			<span class="ident">sz</span>.<span class="ident">cy</span> <span class="op">=</span> <span class="ident">rc</span>.<span class="ident">bottom</span>;
+		});
+		<span class="prelude-val">Ok</span>(())
+
+	} <span class="kw">else</span> {
+		<span class="ident">multiply_dpi</span>(<span class="ident">pt</span>, <span class="ident">sz</span>)
+	}
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>

@@ -217,6 +217,7 @@
 <span id="217">217</span>
 <span id="218">218</span>
 <span id="219">219</span>
+<span id="220">220</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -226,7 +227,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">StatusBarEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control::BaseNativeControl</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::status_bar_parts::StatusBarParts</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
 	<span class="ident">AsAny</span>,
 	<span class="ident">Child</span>,
@@ -361,7 +362,8 @@
 		<span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parts_info</span>.<span class="ident">as_mut</span>().<span class="ident">iter_mut</span>() {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="ident">StatusBarPart::Fixed</span>(<span class="ident">width</span>) <span class="op">=</span> <span class="ident">part</span> { <span class="comment">// adjust fixed-width parts to DPI</span>
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">col_cx</span> <span class="op">=</span> <span class="ident">SIZE::new</span>(<span class="kw-2">*</span><span class="ident">width</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="number">0</span>);
-				<span class="ident">multiply_dpi</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">col_cx</span>))<span class="question-mark">?</span>;
+				<span class="ident">multiply_dpi_or_dtu</span>(
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">col_cx</span>))<span class="question-mark">?</span>;
 				<span class="kw-2">*</span><span class="ident">width</span> <span class="op">=</span> <span class="ident">col_cx</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="kw">_</span>;
 			}
 		}

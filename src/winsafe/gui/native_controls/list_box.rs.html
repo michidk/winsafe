@@ -236,6 +236,14 @@
 <span id="236">236</span>
 <span id="237">237</span>
 <span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -244,8 +252,11 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">ListBoxEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::list_box_items::ListBoxItems</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>, <span class="ident">ui_font</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>,
+	<span class="ident">OptsId</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>, <span class="ident">ui_font</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
 	<span class="ident">AsAny</span>,
@@ -369,7 +380,8 @@
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
-				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
+				<span class="ident">multiply_dpi_or_dtu</span>(
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
 					<span class="string">&quot;ListBox&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
@@ -401,17 +413,21 @@
 <span class="doccomment">/// Options to create a [`ListBox`](crate::gui::ListBox) programmatically with</span>
 <span class="doccomment">/// [`ListBox::new`](crate::gui::ListBox::new).</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListBoxOpts</span> {
-	<span class="doccomment">/// Control position within parent client area, in pixels, to be</span>
+	<span class="doccomment">/// Control position within parent client area, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 0 x 0.</span>
 	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
-	<span class="doccomment">/// Control size, in pixels, to be</span>
+	<span class="doccomment">/// Control size, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 50 x 50.</span>
 	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">SIZE</span>,

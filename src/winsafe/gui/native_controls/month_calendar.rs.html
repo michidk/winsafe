@@ -239,6 +239,12 @@
 <span id="239">239</span>
 <span id="240">240</span>
 <span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -246,8 +252,11 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums::HwndPlace</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">MonthCalendarEvents</span>, <span class="ident">WindowEvents</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>,
+	<span class="ident">OptsId</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
 	<span class="ident">AsAny</span>,
@@ -373,7 +382,8 @@
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
-				<span class="ident">multiply_dpi</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+				<span class="ident">multiply_dpi_or_dtu</span>(
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
 					<span class="string">&quot;SysMonthCal32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">SIZE::new</span>(<span class="number">0</span>, <span class="number">0</span>),
@@ -415,10 +425,12 @@
 <span class="doccomment">/// programmatically with</span>
 <span class="doccomment">/// [`MonthCalendar::new`](crate::gui::MonthCalendar::new).</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MonthCalendarOpts</span> {
-	<span class="doccomment">/// Control position within parent client area, in pixels, to be</span>
+	<span class="doccomment">/// Control position within parent client area, to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will be adjusted to match current system DPI.</span>
+	<span class="doccomment">/// If the parent window is a dialog, the values are in Dialog Template</span>
+	<span class="doccomment">/// Units; otherwise in pixels, which will be multiplied to match current</span>
+	<span class="doccomment">/// system DPI.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Defaults to 0 x 0.</span>
 	<span class="kw">pub</span> <span class="ident">position</span>: <span class="ident">POINT</span>,
