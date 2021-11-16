@@ -244,6 +244,10 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -345,7 +349,9 @@
 
 		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">wmcreate_or_wminitdialog</span>(), {
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="number">0</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
+				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="number">0</span>)
 		});
 
 		<span class="ident">new_self</span>
@@ -354,8 +360,9 @@
 	<span class="doccomment">/// Instantiates a new `ListBox` object, to be loaded from a dialog resource</span>
 	<span class="doccomment">/// with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
-		<span class="ident">horz_resize</span>: <span class="ident">Horz</span>, <span class="ident">vert_resize</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListBox</span>
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>,
+		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
+		<span class="ident">resize_behavior</span>: (<span class="ident">Horz</span>, <span class="ident">Vert</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListBox</span>
 	{
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
 			<span class="ident">Arc::new</span>(
@@ -369,9 +376,10 @@
 
 		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> { <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz_resize</span>, <span class="ident">vert_resize</span>)<span class="question-mark">?</span>; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) }
+			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
+				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>)
 		});
-
 		<span class="ident">new_self</span>
 	}
 
