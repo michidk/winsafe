@@ -372,7 +372,7 @@
 </pre><pre class="rust"><code><span class="doccomment">/// Base to all const type macros, with basic impls.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_base</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
@@ -470,10 +470,10 @@
 <span class="doccomment">/// Declares multiple public constant values for the given const type.</span>
 <span class="macro">macro_rules!</span> <span class="ident">impl_pub_const_values</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
@@ -488,10 +488,10 @@
 <span class="doccomment">/// Declares multiple private constant values for the given const type.</span>
 <span class="macro">macro_rules!</span> <span class="ident">impl_const_values</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
@@ -506,16 +506,16 @@
 <span class="doccomment">/// Declares the type of a constant, along with values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const_base!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 		}
@@ -527,10 +527,10 @@
 		}
 
 		<span class="comment">// All public const values.</span>
-		<span class="macro">impl_pub_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>,
+		<span class="macro">impl_pub_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 	};
@@ -540,24 +540,24 @@
 <span class="doccomment">/// `Debug` and `Display` impls.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_no_debug_display</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const_base!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 		}
 
 		<span class="comment">// All public const values.</span>
-		<span class="macro">impl_pub_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>,
+		<span class="macro">impl_pub_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 	};
@@ -567,26 +567,26 @@
 <span class="doccomment">/// [`WM`](crate::co::WM) constant type, along with private and public values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_wm</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="ident">u32</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">u32</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="op">=</span><span class="op">&gt;</span>
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 
@@ -597,10 +597,10 @@
 		}
 
 		<span class="comment">// All private const values.</span>
-		<span class="macro">impl_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>,
+		<span class="macro">impl_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>
 			)<span class="op">*</span>
 		}
 	};
@@ -611,21 +611,21 @@
 <span class="doccomment">/// values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_cmd</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="ident">u16</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">u16</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="op">=</span><span class="op">&gt;</span>
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 
@@ -642,26 +642,26 @@
 <span class="doccomment">/// public values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_nm</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="ident">i32</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">i32</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="op">=</span><span class="op">&gt;</span>
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 
@@ -672,10 +672,10 @@
 		}
 
 		<span class="comment">// All private const values.</span>
-		<span class="macro">impl_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>,
+		<span class="macro">impl_const_values!</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">privvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">privval</span>
 			)<span class="op">*</span>
 		}
 	};
@@ -685,21 +685,21 @@
 <span class="doccomment">/// [`WS`](crate::co::WS) constant type, along with public values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_ws</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>:<span class="ident">ty</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ntype</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="op">=</span><span class="op">&gt;</span>
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 
@@ -715,21 +715,21 @@
 <span class="doccomment">/// [`WS_EX`](crate::co::WS_EX) constant type, along with public values.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_struct_const_wsex</span> {
 	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>,
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>;
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
 		<span class="op">=</span><span class="op">&gt;</span>
 		$(
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span>
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>:<span class="ident">expr</span>
 		)<span class="op">*</span>
 	) <span class="op">=</span><span class="op">&gt;</span> {
 		<span class="macro">pub_struct_const!</span> {
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="ident">u32</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">u32</span>;
 			$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>)<span class="op">*</span>
 			<span class="op">=</span><span class="op">&gt;</span>
 			$(
 				$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvaldoc</span>]</span>)<span class="op">*</span>
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubvalname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubval</span>
 			)<span class="op">*</span>
 		}
 
