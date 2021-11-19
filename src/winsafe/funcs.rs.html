@@ -1581,6 +1581,20 @@
 <span id="1581">1581</span>
 <span id="1582">1582</span>
 <span id="1583">1583</span>
+<span id="1584">1584</span>
+<span id="1585">1585</span>
+<span id="1586">1586</span>
+<span id="1587">1587</span>
+<span id="1588">1588</span>
+<span id="1589">1589</span>
+<span id="1590">1590</span>
+<span id="1591">1591</span>
+<span id="1592">1592</span>
+<span id="1593">1593</span>
+<span id="1594">1594</span>
+<span id="1595">1595</span>
+<span id="1596">1596</span>
+<span id="1597">1597</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Win32 free functions.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
@@ -1601,6 +1615,7 @@
 	<span class="ident">version</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">HLOCAL</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::MsgSend</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
 	<span class="ident">hr_to_winresult</span>,
@@ -2684,6 +2699,19 @@
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostQuitMessage</span>(<span class="ident">exit_code</span>: <span class="ident">i32</span>) {
 	<span class="kw">unsafe</span> { <span class="ident">user32::PostQuitMessage</span>(<span class="ident">exit_code</span>) }
+}
+
+<span class="doccomment">/// [`PostThreadMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postthreadmessagew)</span>
+<span class="doccomment">/// function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostThreadMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="ident">thread_id</span>: <span class="ident">u32</span>, <span class="ident">msg</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
+	<span class="ident">bool_to_winresult</span>(
+		<span class="kw">unsafe</span> {
+			<span class="ident">user32::PostThreadMessageW</span>(
+				<span class="ident">thread_id</span>, <span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>, <span class="ident">wm_any</span>.<span class="ident">wparam</span>, <span class="ident">wm_any</span>.<span class="ident">lparam</span>,
+			)
+		}
+	)
 }
 
 <span class="doccomment">/// [`QueryPerformanceCounter`](https://docs.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter)</span>

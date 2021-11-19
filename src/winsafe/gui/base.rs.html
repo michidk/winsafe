@@ -191,6 +191,14 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
@@ -297,16 +305,18 @@
 	{
 		<span class="kw">let</span> <span class="ident">hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hwnd</span>;
 		<span class="ident">std::thread::spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">func</span>() {
-				<span class="comment">// https://users.rust-lang.org/t/sending-a-boxed-trait-over-ffi/21708/2</span>
-				<span class="kw">let</span> <span class="ident">pack</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Box::new</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>)));
+			<span class="ident">func</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="ident">pack</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Box::new</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>)));
 				<span class="kw">let</span> <span class="ident">ptr_pack</span> <span class="op">=</span> <span class="ident">Box::into_raw</span>(<span class="ident">pack</span>);
-				<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">WndMsg</span> {
-					<span class="ident">msg_id</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>,
-					<span class="ident">wparam</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-					<span class="ident">lparam</span>: <span class="ident">ptr_pack</span> <span class="kw">as</span> <span class="kw">_</span>,
-				});
-			}
+				<span class="ident">hwnd</span>.<span class="ident">GetAncestor</span>(<span class="ident">co::GA::ROOTOWNER</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">hwnd</span><span class="op">|</span> {
+						<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">WndMsg</span> {
+							<span class="ident">msg_id</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>,
+							<span class="ident">wparam</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+							<span class="ident">lparam</span>: <span class="ident">ptr_pack</span> <span class="kw">as</span> <span class="kw">_</span>,
+						});
+					});
+			});
 		});
 	}
 
@@ -322,11 +332,17 @@
 		<span class="comment">// https://users.rust-lang.org/t/sending-a-boxed-trait-over-ffi/21708/2</span>
 		<span class="kw">let</span> <span class="ident">pack</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">Box::new</span>(<span class="ident">func</span>));
 		<span class="kw">let</span> <span class="ident">ptr_pack</span> <span class="op">=</span> <span class="ident">Box::into_raw</span>(<span class="ident">pack</span>);
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">WndMsg</span> {
-			<span class="ident">msg_id</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>,
-			<span class="ident">wparam</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="ident">ptr_pack</span> <span class="kw">as</span> <span class="kw">_</span>,
-		});
+
+		<span class="comment">// Bypass any modals and send straight to main window. This avoids any</span>
+		<span class="comment">// blind spots of unhandled messages by a modal being created/destroyed.</span>
+		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">GetAncestor</span>(<span class="ident">co::GA::ROOTOWNER</span>)
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">hwnd</span><span class="op">|</span> {
+				<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">WndMsg</span> {
+					<span class="ident">msg_id</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>,
+					<span class="ident">wparam</span>: <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">lparam</span>: <span class="ident">ptr_pack</span> <span class="kw">as</span> <span class="kw">_</span>,
+				});
+			});
 	}
 
 	<span class="kw">fn</span> <span class="ident">default_message_handlers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
@@ -342,7 +358,7 @@
 				<span class="kw">let</span> <span class="ident">pack</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Box::from_raw</span>(<span class="ident">ptr_pack</span>) };
 				<span class="ident">pack</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">post_quit_error</span>(<span class="ident">err</span>));
 			}
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// return value is not meaningful</span>
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// return value is not meaningful for privileged events</span>
 		});
 	}
 
