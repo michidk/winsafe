@@ -125,6 +125,7 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
+<span id="128">128</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HandleClose</span>, <span class="ident">HFILE</span>};
@@ -206,14 +207,13 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">off</span><span class="op">|</span> <span class="ident">off</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
-	<span class="doccomment">/// Reads the given number of bytes from the file into a new `Vec`.</span>
+	<span class="doccomment">/// Reads bytes from the file.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Note that the bytes will start being read from the current offset of the</span>
 	<span class="doccomment">/// internal file pointer, which is then incremented by `num_bytes`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">num_bytes</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0x00</span>; <span class="ident">num_bytes</span>];
-		<span class="self">self</span>.<span class="ident">hfile</span>.<span class="ident">ReadFile</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>, <span class="ident">num_bytes</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-		<span class="prelude-val">Ok</span>(<span class="ident">buf</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">hfile</span>.<span class="ident">ReadFile</span>(<span class="ident">buffer</span>, <span class="prelude-val">None</span>)
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
 	<span class="doccomment">/// Reads all the bytes from the file into a new `Vec`.</span>
@@ -221,7 +221,9 @@
 	<span class="doccomment">/// The internal file pointer will be rewound to the beginning of the file.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">rewind_pointer</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read</span>(<span class="self">self</span>.<span class="ident">size</span>()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">size</span>()<span class="question-mark">?</span>];
+		<span class="kw">let</span> <span class="ident">bytes_read</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>)<span class="question-mark">?</span>;
+		<span class="ident">data</span>.<span class="ident">resize</span>(<span class="ident">bytes_read</span>, <span class="number">0</span>);
 		<span class="self">self</span>.<span class="ident">rewind_pointer</span>()<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">data</span>)
 	}
