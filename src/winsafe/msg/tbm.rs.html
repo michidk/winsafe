@@ -143,8 +143,6 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Toolbar control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-toolbar-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`TBM`](crate::co::TBM) prefix.</span>
@@ -153,6 +151,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums::ResStrs</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros::zero_as_err</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">TBADDBITMAP</span>, <span class="ident">TBBUTTON</span>};
 
 <span class="doccomment">/// [`TB_ADDBITMAP`](https://docs.microsoft.com/en-us/windows/win32/controls/tb-addbitmap)</span>
@@ -174,7 +173,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::ADDBITMAP</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">num_images</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -195,17 +194,14 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="kw">match</span> <span class="ident">v</span> {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co::ERROR::BAD_ARGUMENTS</span>),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-		}
+		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::ADDBUTTONS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">buttons</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">buttons</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">buttons</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -228,7 +224,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::ADDSTRING</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">texts</span> {
@@ -260,7 +256,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::BUTTONCOUNT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
@@ -284,7 +280,7 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::TBM::BUTTONSTRUCTSIZE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">size</span> <span class="kw">as</span> <span class="kw">_</span>,

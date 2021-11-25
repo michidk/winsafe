@@ -270,8 +270,6 @@
 <span id="270">270</span>
 <span id="271">271</span>
 <span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Progress bar control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-progress-bar-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`PBM`](crate::co::PBM) prefix.</span>
@@ -280,6 +278,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">HIWORD</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros::zero_as_err</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::PBRANGE</span>;
 
 <span class="doccomment">/// [`PBM_DELTAPOS`](https://docs.microsoft.com/en-us/windows/win32/controls/pbm-deltapos)</span>
@@ -297,7 +296,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::DELTAPOS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">advance_amount</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -319,7 +318,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::GETPOS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
@@ -344,11 +343,11 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::GETRANGE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">return_low</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">ranges</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">ranges</span>.<span class="ident">as_mut</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -366,7 +365,7 @@
 		<span class="ident">co::PBST</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::GETSTATE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
@@ -391,7 +390,7 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETMARQUEE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">turn_on</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -415,7 +414,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETPOS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">position</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -437,13 +436,10 @@
 	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">u16</span>, <span class="ident">u16</span>)<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="kw">match</span> <span class="ident">v</span> <span class="kw">as</span> <span class="ident">u32</span> {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">co::ERROR::BAD_ARGUMENTS</span>),
-			<span class="ident">v</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident">LOWORD</span>(<span class="ident">v</span>), <span class="ident">HIWORD</span>(<span class="ident">v</span>))),
-		}
+		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> (<span class="ident">LOWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">HIWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)))
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETPOS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,
@@ -468,7 +464,7 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETRANGE32</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">min</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -492,7 +488,7 @@
 		<span class="ident">co::PBST</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETSTATE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">state</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -516,7 +512,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::SETSTEP</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">step</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -538,7 +534,7 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::PBM::STEPIT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="number">0</span>,

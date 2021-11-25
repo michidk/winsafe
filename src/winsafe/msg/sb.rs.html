@@ -278,7 +278,7 @@
 		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">HICON</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>))
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::GETICON</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -302,11 +302,11 @@
 		<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::GETPARTS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">right_edges</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span>.<span class="ident">len</span>()),
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">right_edges</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">right_edges</span>.<span class="ident">as_mut</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">re</span><span class="op">|</span> <span class="ident">re</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -327,11 +327,11 @@
 		(<span class="ident">LOWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">co::SBT</span>(<span class="ident">HIWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)))
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::GETTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_mut_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -351,7 +351,7 @@
 		(<span class="ident">LOWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">co::SBT</span>(<span class="ident">HIWORD</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>)))
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::GETTEXTLENGTH</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -376,11 +376,11 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::GETTIPTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_mut_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -401,7 +401,7 @@
 		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::SETICON</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -425,7 +425,7 @@
 		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::SETPARTS</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">right_edges</span>.<span class="ident">len</span>(),
@@ -451,7 +451,7 @@
 		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::SETTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="ident">MAKEWORD</span>(<span class="self">self</span>.<span class="ident">part_index</span>, <span class="number">0</span>), <span class="self">self</span>.<span class="ident">draw_operation</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
@@ -474,7 +474,7 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::SETTIPTEXT</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">part_index</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -496,7 +496,7 @@
 		()
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::SB::SIMPLE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">display_simple</span> <span class="kw">as</span> <span class="kw">_</span>,
