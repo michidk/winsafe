@@ -640,21 +640,21 @@
 <span class="doccomment">/// [`EM_GETLINE`](https://docs.microsoft.com/en-us/windows/win32/controls/em-getline)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The message will retrieve at most `text.len() - 1` characters for the line,</span>
-<span class="doccomment">/// because there must be room for a terminating null. There is no documented</span>
-<span class="doccomment">/// way to know the size of the line: the safe way to deal with this is simply</span>
-<span class="doccomment">/// retrieving the length of the whole text with</span>
+<span class="doccomment">/// The message will retrieve at most `buffer.len() - 1` characters for the</span>
+<span class="doccomment">/// line, because there must be room for a terminating null. There is no</span>
+<span class="doccomment">/// documented way to know the size of the line: the safe way to deal with this</span>
+<span class="doccomment">/// is simply retrieving the length of the whole text with</span>
 <span class="doccomment">/// [`HWND::GetWindowTextLength`](crate::HWND::GetWindowTextLength) and adding</span>
 <span class="doccomment">/// `1`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Returns the number of chars copied to the buffer, not counting the</span>
-<span class="doccomment">/// terminating null, or `None` if no chars were copied. There is no documented</span>
-<span class="doccomment">/// way to differentiate between an error and an empty line.</span>
+<span class="doccomment">/// Returns the number of chars copied to `buffer`, not counting the terminating</span>
+<span class="doccomment">/// null, or `None` if no chars were copied. There is no documented way to</span>
+<span class="doccomment">/// differentiate between an error and an empty line.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Return type: `Option&lt;u32&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetLine</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u16</span>,
-	<span class="kw">pub</span> <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>,
+	<span class="kw">pub</span> <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetLine</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -665,9 +665,9 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
-		<span class="self">self</span>.<span class="ident">text</span>.<span class="ident">fill_with_zero</span>();
-		<span class="kw">let</span> <span class="ident">buf_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">buffer_size</span>() <span class="op">-</span> <span class="number">1</span>; <span class="comment">// leave room for terminating null</span>
-		<span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_mut_slice</span>()
+		<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">fill_with_zero</span>();
+		<span class="kw">let</span> <span class="ident">buf_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">buffer_size</span>() <span class="op">-</span> <span class="number">1</span>; <span class="comment">// leave room for terminating null</span>
+		<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">as_mut_slice</span>()
 			.<span class="ident">iter_mut</span>()
 			.<span class="ident">next</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">wchar</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">wchar</span> <span class="op">=</span> <span class="ident">buf_len</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// leave room for terminating null</span>
@@ -675,7 +675,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::EM::GETLINE</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">text</span>.<span class="ident">as_mut_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">as_mut_ptr</span>() } <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }

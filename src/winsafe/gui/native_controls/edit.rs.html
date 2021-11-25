@@ -284,6 +284,66 @@
 <span id="284">284</span>
 <span id="285">285</span>
 <span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
@@ -309,6 +369,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">Handle</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">em</span>, <span class="ident">wm</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [edit](https://docs.microsoft.com/en-us/windows/win32/controls/about-edit-controls)</span>
@@ -439,6 +500,24 @@
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">add_to_resizer</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
 	}
 
+	<span class="doccomment">/// Returns an iterator over the lines in the Edit.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::prelude::*;</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let my_edit: gui::Edit; // initialized somewhere</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// for line in my_edit.iter_lines()? {</span>
+	<span class="doccomment">///     println!(&quot;{}&quot;, line);</span>
+	<span class="doccomment">/// }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_lines</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="ident">LinesIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>())
+	}
+
 	<span class="doccomment">/// Sets the selection range of the text by sending an</span>
 	<span class="doccomment">/// [`em::SetSel`](crate::msg::em::SetSel) message.</span>
 	<span class="doccomment">///</span>
@@ -466,6 +545,47 @@
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_selection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">start</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">end</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">em::SetSel</span> { <span class="ident">start</span>, <span class="ident">end</span> });
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
+
+<span class="kw">struct</span> <span class="ident">LinesIter</span> {
+	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
+	<span class="ident">buf</span>: <span class="ident">WString</span>,
+	<span class="ident">total</span>: <span class="ident">usize</span>,
+	<span class="ident">current</span>: <span class="ident">usize</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">LinesIter</span> {
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">String</span>;
+
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">total</span> {
+			<span class="kw">return</span> <span class="prelude-val">None</span>;
+		}
+
+		<span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">em::GetLine</span> {
+			<span class="ident">index</span>: <span class="self">self</span>.<span class="ident">current</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buf</span>,
+		}) {
+			<span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">buf</span>.<span class="ident">to_string</span>(),
+			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
+		};
+
+		<span class="self">self</span>.<span class="ident">current</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+		<span class="prelude-val">Some</span>(<span class="ident">line</span>)
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">LinesIter</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+			<span class="ident">hwnd</span>,
+			<span class="ident">buf</span>: <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">hwnd</span>.<span class="ident">GetWindowTextLength</span>()<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>),
+			<span class="ident">total</span>: <span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">em::GetLineCount</span> {}) <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">current</span>: <span class="number">0</span>,
+		})
 	}
 }
 
@@ -516,7 +636,7 @@
 	<span class="doccomment">/// Suggestions:</span>
 	<span class="doccomment">/// * add `ES::PASSWORD` for a password input;</span>
 	<span class="doccomment">/// * add `ES::NUMBER` to accept only numbers;</span>
-	<span class="doccomment">/// * replace with `ES::MULTILINE | ES:WANTRETURN | ES:AUTOVSCROLL | ES::NOHIDESEL` for a multi-line edit.</span>
+	<span class="doccomment">/// * replace with `ES::MULTILINE | ES::WANTRETURN | ES::AUTOVSCROLL | ES::NOHIDESEL` for a multi-line edit.</span>
 	<span class="kw">pub</span> <span class="ident">edit_style</span>: <span class="ident">co::ES</span>,
 	<span class="doccomment">/// Window styles to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
