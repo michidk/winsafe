@@ -316,18 +316,6 @@
 <span id="316">316</span>
 <span id="317">317</span>
 <span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -407,17 +395,17 @@
 		<span class="ident">TreeViewItem</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 			<span class="ident">htreeitem</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 
 	<span class="doccomment">/// Returns an iterator over the selected items.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">TreeViewItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="prelude-val">None</span>, <span class="ident">co::TVGN::CARET</span>)
 	}
 
 	<span class="doccomment">/// Returns an iterator over the root items.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_root</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_root</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">TreeViewChildItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="prelude-val">None</span>)
 	}
 }
@@ -434,7 +422,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">htreeitem</span>: <span class="ident">HTREEITEM</span>,
-	<span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -464,7 +452,7 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">htreeitem</span><span class="op">|</span> <span class="ident">TreeViewItem</span> {
 				<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 				<span class="ident">htreeitem</span>,
-				<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+				<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 			})
 	}
 
@@ -521,17 +509,17 @@
 	}
 
 	<span class="doccomment">/// Returns an iterator over the child items.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">TreeViewChildItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="self">self</span>))
 	}
 
 	<span class="doccomment">/// Returns an iterator over the next sibling items.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_next_siblings</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_next_siblings</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">TreeViewItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="self">self</span>), <span class="ident">co::TVGN::NEXT</span>)
 	}
 
 	<span class="doccomment">/// Returns an iterator over the previous sibling items.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_prev_siblings</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_prev_siblings</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">TreeViewItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="self">self</span>), <span class="ident">co::TVGN::PREVIOUS</span>)
 	}
 
@@ -544,7 +532,7 @@
 		}).<span class="ident">map</span>(<span class="op">|</span><span class="ident">htreeitem</span><span class="op">|</span> <span class="ident">TreeViewItem</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 			<span class="ident">htreeitem</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 		})
 	}
 
@@ -582,7 +570,6 @@
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">current</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">relationship</span>: <span class="ident">co::TVGN</span>,
-	<span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">TreeViewItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -595,7 +582,7 @@
 		}).<span class="ident">map</span>(<span class="op">|</span><span class="ident">htreeitem</span><span class="op">|</span> <span class="ident">TreeViewItem</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 			<span class="ident">htreeitem</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 		});
 
 		<span class="self">self</span>.<span class="ident">current</span>
@@ -608,12 +595,7 @@
 		<span class="ident">current</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">relationship</span>: <span class="ident">co::TVGN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
 	{
-		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>,
-			<span class="ident">current</span>,
-			<span class="ident">relationship</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
-		}
+		<span class="self">Self</span> { <span class="ident">hwnd</span>, <span class="ident">current</span>, <span class="ident">relationship</span> }
 	}
 }
 
@@ -621,7 +603,6 @@
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">current</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">first_call</span>: <span class="ident">bool</span>,
-	<span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">TreeViewChildItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -635,7 +616,7 @@
 			}).<span class="ident">map</span>(<span class="op">|</span><span class="ident">htreeitem</span><span class="op">|</span> <span class="ident">TreeViewItem</span> {
 				<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 				<span class="ident">htreeitem</span>,
-				<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+				<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 			});
 			<span class="self">self</span>.<span class="ident">first_call</span> <span class="op">=</span> <span class="bool-val">false</span>;
 
@@ -650,12 +631,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TreeViewChildItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">current</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>,
-			<span class="ident">current</span>,
-			<span class="ident">first_call</span>: <span class="bool-val">true</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
-		}
+		<span class="self">Self</span> { <span class="ident">hwnd</span>, <span class="ident">current</span>, <span class="ident">first_call</span>: <span class="bool-val">true</span> }
 	}
 }
 </code></pre></div>

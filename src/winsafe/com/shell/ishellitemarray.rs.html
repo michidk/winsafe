@@ -145,8 +145,12 @@
 <span id="145">145</span>
 <span id="146">146</span>
 <span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::mem::ManuallyDrop</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -222,7 +226,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let ish_arr: shell::IShellItemArray; // initialized somewhere</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for ish_item in ish_arr.iter() {</span>
+	<span class="doccomment">/// for ish_item in ish_arr.iter()? {</span>
 	<span class="doccomment">///     let ish_item = ish_item?;</span>
 	<span class="doccomment">///     println!(&quot;Path: {}&quot;,</span>
 	<span class="doccomment">///         ish_item.GetDisplayName(shell::co::SIGDN::FILESYSPATH)?);</span>
@@ -238,58 +242,60 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let ish_arr: shell::IShellItemArray; // initialized somewhere</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let paths = ish_arr.iter()</span>
+	<span class="doccomment">/// let paths = ish_arr.iter()?</span>
 	<span class="doccomment">///     .map(|shi|</span>
 	<span class="doccomment">///         shi.and_then(|shi|</span>
-	<span class="doccomment">///             shi.GetDisplayName(shell::co::SIGDN::FILESYSPATH)</span>
-	<span class="doccomment">///         )</span>
+	<span class="doccomment">///             shi.GetDisplayName(shell::co::SIGDN::FILESYSPATH),</span>
+	<span class="doccomment">///         ),</span>
 	<span class="doccomment">///     )</span>
 	<span class="doccomment">///     .collect::&lt;WinResult&lt;Vec&lt;_&gt;&gt;&gt;()?;</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident">Box::new</span>(<span class="ident">ShellItemIter::new</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ptr</span>() }))
+	<span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">ShellItemIter::new</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ptr</span>() })<span class="question-mark">?</span>))
 	}
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="kw">struct</span> <span class="ident">ShellItemIter</span> {
+<span class="kw">struct</span> <span class="ident">ShellItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">array</span>: <span class="ident">ManuallyDrop</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span>,
-	<span class="ident">index</span>: <span class="ident">u32</span>,
-	<span class="ident">count</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="ident">count</span>: <span class="ident">u32</span>,
+	<span class="ident">current</span>: <span class="ident">u32</span>,
+	<span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ShellItemIter</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ShellItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">count</span>.<span class="ident">is_none</span>() { <span class="comment">// first iteration</span>
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">GetCount</span>() {
-				<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-					<span class="self">self</span>.<span class="ident">count</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="number">0</span>); <span class="comment">// prevent further iterations</span>
-					<span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>))
-				},
-				<span class="prelude-val">Ok</span>(<span class="ident">count</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">count</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">count</span>),
-			}
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span> {
+			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
 
-		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>.<span class="ident">unwrap</span>();
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">index</span> <span class="op">=</span><span class="op">=</span> <span class="ident">count</span> {
-			<span class="prelude-val">None</span>
-		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-			<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">array</span>.<span class="ident">GetItemAt</span>(<span class="self">self</span>.<span class="ident">index</span> <span class="op">-</span> <span class="number">1</span>))
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">GetItemAt</span>(<span class="self">self</span>.<span class="ident">current</span>) {
+			<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>; <span class="comment">// no further iterations will be made</span>
+				<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>))
+			},
+			<span class="prelude-val">Ok</span>(<span class="ident">shell_item</span>) <span class="op">=</span><span class="op">&gt;</span> {
+				<span class="self">self</span>.<span class="ident">current</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+				<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">shell_item</span>))
+			},
 		}
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">ShellItemIter</span> {
-	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">com_ptr</span>: <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">array</span>: <span class="ident">ManuallyDrop::new</span>(<span class="ident">IShellItemArray</span>(<span class="ident">com_ptr</span>)),
-			<span class="ident">index</span>: <span class="number">0</span>,
-			<span class="ident">count</span>: <span class="prelude-val">None</span>,
-		}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ShellItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">com_ptr</span>: <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">ManuallyDrop::new</span>(<span class="ident">IShellItemArray</span>(<span class="ident">com_ptr</span>));
+		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">GetCount</span>()<span class="question-mark">?</span>;
+
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+			<span class="ident">array</span>,
+			<span class="ident">count</span>,
+			<span class="ident">current</span>: <span class="number">0</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
+		})
 	}
 }
 </code></pre></div>

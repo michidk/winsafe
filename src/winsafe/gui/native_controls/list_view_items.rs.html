@@ -459,8 +459,6 @@
 <span id="459">459</span>
 <span id="460">460</span>
 <span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
@@ -476,7 +474,7 @@
 <span class="doccomment">/// control.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ListViewItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -598,7 +596,7 @@
 		<span class="ident">ListViewItem</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 			<span class="ident">index</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 
@@ -629,7 +627,7 @@
 	<span class="doccomment">///         item.index(), item.text(0));</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">ListViewItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="ident">co::LVNI::ALL</span>)
 	}
 
@@ -648,7 +646,7 @@
 	<span class="doccomment">///         item.index(), item.text(0));</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_selected</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">ListViewItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="ident">co::LVNI::ALL</span> <span class="op">|</span> <span class="ident">co::LVNI::SELECTED</span>)
 	}
 
@@ -696,7 +694,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">index</span>: <span class="ident">u32</span>,
-	<span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -894,7 +892,6 @@
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="ident">current</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">relationship</span>: <span class="ident">co::LVNI</span>,
-	<span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ListViewItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -907,7 +904,7 @@
 		}).<span class="ident">map</span>(<span class="op">|</span><span class="ident">index</span><span class="op">|</span> <span class="ident">ListViewItem</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>,
 			<span class="ident">index</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
 		});
 
 		<span class="self">self</span>.<span class="ident">current</span>
@@ -920,7 +917,6 @@
 			<span class="ident">hwnd</span>,
 			<span class="ident">current</span>: <span class="prelude-val">None</span>,
 			<span class="ident">relationship</span>,
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 }
