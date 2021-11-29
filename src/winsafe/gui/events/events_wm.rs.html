@@ -1135,6 +1135,9 @@
 <span id="1135">1135</span>
 <span id="1136">1136</span>
 <span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::func_store::FuncStore</span>;
@@ -1991,14 +1994,11 @@
 		<span class="doccomment">/// window.</span>
 	}
 
-	<span class="doccomment">/// [`WM_QUERYOPEN`](crate::msg::wm::QueryOpen) message.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Sent to an icon when the user requests that the window be restored to</span>
-	<span class="doccomment">/// its previous size and position.</span>
-	<span class="kw">fn</span> <span class="ident">wm_query_open</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
-		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	{
-		<span class="self">self</span>.<span class="ident">add_msg</span>(<span class="ident">co::WM::QUERYOPEN</span>, <span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">func</span>()<span class="question-mark">?</span> <span class="kw">as</span> <span class="kw">_</span>)));
+	<span class="macro">pub_fn_retbool!</span> { <span class="ident">wm_query_open</span>, <span class="ident">co::WM::QUERYOPEN</span>,
+		<span class="doccomment">/// [`WM_QUERYOPEN`](crate::msg::wm::QueryOpen) message.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Sent to an icon when the user requests that the window be restored</span>
+		<span class="doccomment">/// to its previous size and position.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_r_button_dbl_clk</span>, <span class="ident">co::WM::RBUTTONDBLCLK</span>, <span class="ident">wm::RButtonDblClk</span>,
@@ -2213,6 +2213,12 @@
 		<span class="doccomment">/// [`WM_UNINITMENUPOPUP`](crate::msg::wm::UninitMenuPopup) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when a drop-down menu or submenu has been destroyed.</span>
+	}
+
+	<span class="macro">pub_fn_retbool!</span> { <span class="ident">wm_undo</span>, <span class="ident">co::WM::UNDO</span>,
+		<span class="doccomment">/// [`WM_UNDO`](crate::msg::wm::Undo) message.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Sent to undo the last operation.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_v_scroll</span>, <span class="ident">co::WM::VSCROLL</span>, <span class="ident">wm::VScroll</span>,
