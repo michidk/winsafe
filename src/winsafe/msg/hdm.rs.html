@@ -296,6 +296,31 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Header control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-header-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`HDM`](crate::co::HDM) prefix.</span>
@@ -305,7 +330,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HIMAGELIST</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros::zero_as_err</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::RECT</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">HDITEM</span>, <span class="ident">RECT</span>};
 
 <span class="doccomment">/// [`HDM_CLEARFILTER`](https://docs.microsoft.com/en-us/windows/win32/controls/hdm-clearfilter)</span>
 <span class="doccomment">/// message parameters.</span>
@@ -468,6 +493,31 @@
 			<span class="ident">msg_id</span>: <span class="ident">co::HDM::GETIMAGELIST</span>.<span class="ident">into</span>(),
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">which</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="number">0</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// [`HDM_GETITEM`](https://docs.microsoft.com/en-us/windows/win32/controls/hdm-getitem)</span>
+<span class="doccomment">/// message parameters.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">hditem</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">HDITEM</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">GetItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+
+	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
+		<span class="ident">zero_as_err</span>(<span class="ident">v</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
+		<span class="ident">WndMsg</span> {
+			<span class="ident">msg_id</span>: <span class="ident">co::HDM::GETITEM</span>.<span class="ident">into</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">index</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hditem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
