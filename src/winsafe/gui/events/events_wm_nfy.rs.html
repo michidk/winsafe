@@ -238,6 +238,8 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
@@ -377,9 +379,10 @@
 	<span class="doccomment">/// specific command notifications, which will give you the correct message</span>
 	<span class="doccomment">/// parameters. This generic method should be used only when you have a</span>
 	<span class="doccomment">/// custom, non-standard window notification.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">co::CMD</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::CMD</span><span class="op">&gt;</span>, <span class="ident">ctrl_id</span>: <span class="ident">u16</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
+		<span class="kw">let</span> <span class="ident">code</span>: <span class="ident">co::CMD</span> <span class="op">=</span> <span class="ident">code</span>.<span class="ident">into</span>();
 		<span class="self">self</span>.<span class="ident">cmds</span>.<span class="ident">insert</span>((<span class="ident">code</span>, <span class="ident">ctrl_id</span>), <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 
@@ -437,9 +440,10 @@
 <span class="kw">impl</span> <span class="ident">EventsView</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {}
 
 <span class="kw">impl</span> <span class="ident">sealed_events_wm_nfy::SealedEventsWmNfy</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {
-	<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
+		<span class="kw">let</span> <span class="ident">code</span>: <span class="ident">co::NM</span> <span class="op">=</span> <span class="ident">code</span>.<span class="ident">into</span>();
 		<span class="self">self</span>.<span class="ident">nfys</span>.<span class="ident">insert</span>((<span class="ident">id_from</span>, <span class="ident">code</span>), <span class="ident">Box::new</span>(<span class="ident">func</span>));
 	}
 }
@@ -453,7 +457,7 @@
 
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SealedEventsWmNfy</span> {
 		<span class="doccomment">/// Raw add notification.</span>
-		<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+		<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
 	}
 }
@@ -472,7 +476,7 @@
 	<span class="doccomment">/// specific notifications, which will give you the correct notification</span>
 	<span class="doccomment">/// struct. This generic method should be used only when you have a custom,</span>
 	<span class="doccomment">/// non-standard window notification.</span>
-	<span class="kw">fn</span> <span class="ident">wm_notify</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">i32</span>, <span class="ident">code</span>: <span class="ident">co::NM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="kw">fn</span> <span class="ident">wm_notify</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">i32</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="self">self</span>.<span class="ident">add_nfy</span>(<span class="ident">id_from</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">code</span>, <span class="kw">move</span> <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">func</span>(<span class="ident">p</span>)<span class="question-mark">?</span>))); <span class="comment">// return value is meaningful</span>
