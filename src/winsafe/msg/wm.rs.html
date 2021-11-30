@@ -2254,9 +2254,6 @@
 <span id="2254">2254</span>
 <span id="2255">2255</span>
 <span id="2256">2256</span>
-<span id="2257">2257</span>
-<span id="2258">2258</span>
-<span id="2259">2259</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
 <span class="doccomment">//! whose constants have [`WM`](crate::co::WM) prefix.</span>
@@ -3306,7 +3303,7 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::KILLFOCUS</span>,
-			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 			<span class="ident">lparam</span>: <span class="number">0</span>,
 		}
 	}
@@ -4320,10 +4317,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::TIMER</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">timer_id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">timer_proc</span> {
-				<span class="prelude-val">Some</span>(<span class="ident">proc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">proc</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
-			},
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">timer_proc</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">proc</span><span class="op">|</span> <span class="ident">proc</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -4423,7 +4417,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::VSCROLL</span>,
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">scroll_box_pos</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }

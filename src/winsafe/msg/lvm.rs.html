@@ -1303,15 +1303,6 @@
 <span id="1303">1303</span>
 <span id="1304">1304</span>
 <span id="1305">1305</span>
-<span id="1306">1306</span>
-<span id="1307">1307</span>
-<span id="1308">1308</span>
-<span id="1309">1309</span>
-<span id="1310">1310</span>
-<span id="1311">1311</span>
-<span id="1312">1312</span>
-<span id="1313">1313</span>
-<span id="1314">1314</span>
 </pre><pre class="rust"><code><span class="doccomment">//! List view control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`LVM`](crate::co::LVM) prefix.</span>
@@ -1355,19 +1346,10 @@
 	<span class="kw">fn</span> <span class="ident">as_generic_wm</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WndMsg</span> {
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::LVM::APPROXIMATEVIEWRECT</span>.<span class="ident">into</span>(),
-			<span class="ident">wparam</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">num_items</span> {
-				<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
-				<span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">num</span> <span class="kw">as</span> <span class="ident">isize</span>,
-			} <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">num_items</span>.<span class="ident">map_or</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(
-				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">proposed_x</span> {
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
-					<span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>,
-				} <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">proposed_y</span> {
-					<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="op">-</span><span class="number">1</span>,
-					<span class="prelude-val">Some</span>(<span class="ident">y</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>,
-				} <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="self">self</span>.<span class="ident">proposed_x</span>.<span class="ident">map_or</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="self">self</span>.<span class="ident">proposed_y</span>.<span class="ident">map_or</span>(<span class="op">-</span><span class="number">1</span>, <span class="op">|</span><span class="ident">y</span><span class="op">|</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="kw">_</span>,
 			) <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
