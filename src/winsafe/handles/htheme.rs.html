@@ -180,12 +180,12 @@
 <span id="180">180</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::uxtheme</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">Handle</span>, <span class="ident">HDC</span>, <span class="ident">HRGN</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HDC</span>, <span class="ident">HRGN</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">RECT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
 
 <span class="doccomment">/// Handle to a</span>
 <span class="doccomment">/// [theme](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/).</span>
@@ -198,17 +198,17 @@
 <span class="kw">impl</span> <span class="ident">HTHEME</span> {
 	<span class="doccomment">/// [`CloseThemeData`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-closethemedata)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseThemeData</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">hr_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">uxtheme::CloseThemeData</span>(<span class="self">self</span>.<span class="number">0</span>) })
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseThemeData</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">ok_to_hrresult</span>(<span class="kw">unsafe</span> { <span class="ident">uxtheme::CloseThemeData</span>(<span class="self">self</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`DrawThemeBackground`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-drawthemebackground)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DrawThemeBackground</span>(<span class="self">self</span>,
 		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>,
-		<span class="ident">rc</span>: <span class="ident">RECT</span>, <span class="ident">rc_clip</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">rc</span>: <span class="ident">RECT</span>, <span class="ident">rc_clip</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
-		<span class="ident">hr_to_winresult</span>(
+		<span class="ident">ok_to_hrresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::DrawThemeBackground</span>(
 					<span class="self">self</span>.<span class="number">0</span>,
@@ -231,11 +231,11 @@
 	<span class="doccomment">/// [`GetThemeBackgroundContentRect`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemebackgroundcontentrect)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundContentRect</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">bounds</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">bounds</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_content</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
 
-		<span class="ident">hr_to_winresult</span>(
+		<span class="ident">ok_to_hrresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundContentRect</span>(
 					<span class="self">self</span>.<span class="number">0</span>,
@@ -252,11 +252,11 @@
 	<span class="doccomment">/// [`GetThemeBackgroundExtent`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemebackgroundextent)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundExtent</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc_content</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc_content</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">RECT</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rc_extent</span> <span class="op">=</span> <span class="ident">RECT::default</span>();
 
-		<span class="ident">hr_to_winresult</span>(
+		<span class="ident">ok_to_hrresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundExtent</span>(
 					<span class="self">self</span>.<span class="number">0</span>,
@@ -274,13 +274,13 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
-	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::HRGN::DeleteObject) call.</span>
+	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeBackgroundRegion</span>(<span class="self">self</span>,
-		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span>
+		<span class="ident">hdc</span>: <span class="ident">HDC</span>, <span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">rc</span>: <span class="ident">RECT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hrgn</span> <span class="op">=</span> <span class="ident">HRGN::NULL</span>;
 
-		<span class="ident">hr_to_winresult</span>(
+		<span class="ident">ok_to_hrresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeBackgroundRegion</span>(
 					<span class="self">self</span>.<span class="number">0</span>,
@@ -297,11 +297,11 @@
 	<span class="doccomment">/// [`GetThemeColor`](https://docs.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemecolor)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThemeColor</span>(<span class="self">self</span>,
-		<span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">prop</span>: <span class="ident">co::TMT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">COLORREF</span><span class="op">&gt;</span>
+		<span class="ident">part_state</span>: <span class="ident">co::VS</span>, <span class="ident">prop</span>: <span class="ident">co::TMT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">COLORREF</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">color</span> <span class="op">=</span> <span class="ident">COLORREF</span>(<span class="number">0</span>);
 
-		<span class="ident">hr_to_winresult</span>(
+		<span class="ident">ok_to_hrresult</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">uxtheme::GetThemeColor</span>(
 					<span class="self">self</span>.<span class="number">0</span>,

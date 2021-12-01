@@ -229,13 +229,15 @@
 <span id="229">229</span>
 <span id="230">230</span>
 <span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">kernel32</span>, <span class="ident">user32</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HandleClose</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::prelude::HandleClose</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">INFINITE</span>, <span class="ident">MAX_PATH</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
 	<span class="ident">FILETIME</span>,
@@ -262,8 +264,9 @@
 	<span class="doccomment">/// **Note:** Process and thread handles are returned in the</span>
 	<span class="doccomment">/// [`PROCESS_INFORMATION`](crate::PROCESS_INFORMATION) struct, and they</span>
 	<span class="doccomment">/// must be paired with their respective</span>
-	<span class="doccomment">/// [`HPROCESS::CloseHandle`](crate::HPROCESS::CloseHandle) and</span>
-	<span class="doccomment">/// [`HTHREAD::CloseHandle`](crate::HTHREAD::CloseHandle) calls.</span>
+	<span class="doccomment">/// [`HPROCESS::CloseHandle`](crate::prelude::HandleClose::CloseHandle) and</span>
+	<span class="doccomment">/// [`HTHREAD::CloseHandle`](crate::prelude::HandleClose::CloseHandle)</span>
+	<span class="doccomment">/// calls.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateProcess</span>(
 		<span class="ident">application_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
 		<span class="ident">command_line</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
@@ -389,7 +392,8 @@
 	<span class="doccomment">/// static method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
-	<span class="doccomment">/// [`HPROCESS::CloseHandle`](crate::HPROCESS::CloseHandle) call.</span>
+	<span class="doccomment">/// [`HPROCESS::CloseHandle`](crate::prelude::HandleClose::CloseHandle)</span>
+	<span class="doccomment">/// call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenProcess</span>(
 		<span class="ident">desired_access</span>: <span class="ident">co::PROCESS</span>,
 		<span class="ident">inherit_handle</span>: <span class="ident">bool</span>, <span class="ident">process_id</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HPROCESS</span><span class="op">&gt;</span>

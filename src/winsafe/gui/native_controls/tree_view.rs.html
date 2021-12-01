@@ -261,9 +261,9 @@
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">HrResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">EventsView</span>, <span class="ident">TreeViewEvents</span>, <span class="ident">WindowEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">prelude::EventsView</span>, <span class="ident">TreeViewEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
 	<span class="ident">BaseNativeControl</span>,
 	<span class="ident">OptsId</span>,
@@ -280,7 +280,7 @@
 	<span class="ident">Parent</span>,
 	<span class="ident">Window</span>,
 };
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">Handle</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::tvm</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 
@@ -383,13 +383,12 @@
 		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>({
 			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
 				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>)
 		});
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) <span class="op">=</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
@@ -412,6 +411,7 @@
 		}
 
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">add_to_resizer</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
 	}
 
 	<span class="doccomment">/// Exposes the item methods.</span>
@@ -425,7 +425,7 @@
 	<span class="doccomment">/// Sets or unsets the given extended list view styles by sending a</span>
 	<span class="doccomment">/// [`tvm::SetExtendedStyle`](crate::msg::tvm::SetExtendedStyle) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_extended_style</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">set</span>: <span class="ident">bool</span>, <span class="ident">ex_style</span>: <span class="ident">co::TVS_EX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">set</span>: <span class="ident">bool</span>, <span class="ident">ex_style</span>: <span class="ident">co::TVS_EX</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">tvm::SetExtendedStyle</span> {
 			<span class="ident">mask</span>: <span class="ident">ex_style</span>,

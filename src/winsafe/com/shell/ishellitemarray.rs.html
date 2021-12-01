@@ -153,23 +153,23 @@
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::mem::ManuallyDrop</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::ishellitem::IShellItem</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRES</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 
 <span class="doccomment">/// [`IShellItemArray`](crate::shell::IShellItemArray) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IShellItemArrayVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">BindToHandler</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>, <span class="ident">PCVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetPropertyStore</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetPropertyDescriptionList</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetAttributes</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetCount</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetItemAt</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">EnumItems</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">BindToHandler</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>, <span class="ident">PCVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetPropertyStore</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetPropertyDescriptionList</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetAttributes</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetCount</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetItemAt</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">EnumItems</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IShellItemArray`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ishellitemarray)</span>
@@ -188,11 +188,11 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IShellItemArrayT</span>: <span class="ident">IUnknownT</span> {
 	<span class="doccomment">/// [`IShellItemArray::GetCount`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitemarray-getcount)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">GetCount</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetCount</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IShellItemArrayVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetCount</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">count</span>))
+			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">GetCount</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">count</span>))
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">count</span>)
 	}
 
@@ -201,11 +201,11 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Prefer using</span>
 	<span class="doccomment">/// [`IShellItemArrayT::iter`](crate::prelude::IShellItemArrayT::iter).</span>
-	<span class="kw">fn</span> <span class="ident">GetItemAt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetItemAt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IShellItemArrayVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetItemAt</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
+			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">GetItemAt</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItem::from</span>(<span class="ident">ppv_queried</span>))
 	}
 
@@ -238,7 +238,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe:{shell, WinResult};</span>
+	<span class="doccomment">/// use winsafe:{HrResult, shell};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let ish_arr: shell::IShellItemArray; // initialized somewhere</span>
 	<span class="doccomment">///</span>
@@ -248,9 +248,9 @@
 	<span class="doccomment">///             shi.GetDisplayName(shell::co::SIGDN::FILESYSPATH),</span>
 	<span class="doccomment">///         ),</span>
 	<span class="doccomment">///     )</span>
-	<span class="doccomment">///     .collect::&lt;WinResult&lt;Vec&lt;_&gt;&gt;&gt;()?;</span>
+	<span class="doccomment">///     .collect::&lt;HrResult&lt;Vec&lt;_&gt;&gt;&gt;()?;</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">ShellItemIter::new</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">ptr</span>() })<span class="question-mark">?</span>))
 	}
 }
@@ -265,7 +265,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ShellItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IShellItem</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span> {
@@ -286,7 +286,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ShellItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">com_ptr</span>: <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">com_ptr</span>: <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">ManuallyDrop::new</span>(<span class="ident">IShellItemArray</span>(<span class="ident">com_ptr</span>));
 		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">GetCount</span>()<span class="question-mark">?</span>;
 

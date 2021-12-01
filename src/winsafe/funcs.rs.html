@@ -1589,27 +1589,19 @@
 <span id="1589">1589</span>
 <span id="1590">1590</span>
 <span id="1591">1591</span>
-<span id="1592">1592</span>
-<span id="1593">1593</span>
-<span id="1594">1594</span>
-<span id="1595">1595</span>
-<span id="1596">1596</span>
-<span id="1597">1597</span>
-<span id="1598">1598</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Win32 free functions.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">HrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{
 	<span class="ident">advapi32</span>,
 	<span class="ident">BOOL</span>,
 	<span class="ident">comctl32</span>,
 	<span class="ident">comdlg32</span>,
-	<span class="ident">HRESULT</span>,
 	<span class="ident">kernel32</span>,
 	<span class="ident">shell32</span>,
 	<span class="ident">user32</span>,
@@ -1619,7 +1611,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::MsgSend</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{
 	<span class="ident">bool_to_winresult</span>,
-	<span class="ident">hr_to_winresult</span>,
+	<span class="ident">ok_to_hrresult</span>,
 	<span class="ident">INVALID_FILE_ATTRIBUTES</span>,
 	<span class="ident">MAX_COMPUTERNAME_LENGTH</span>,
 	<span class="ident">MAX_PATH</span>,
@@ -2421,12 +2413,6 @@
 	(<span class="ident">v</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 
-<span class="doccomment">/// [`HRESULT_FROM_WIN32`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_from_win32)</span>
-<span class="doccomment">/// function. Originally a macro.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">HRESULT_FROM_WIN32</span>(<span class="ident">hr</span>: <span class="ident">HRESULT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::ERROR</span> {
-	<span class="ident">co::ERROR</span>((<span class="ident">hr</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&amp;</span> <span class="number">0xffff</span>)
-}
-
 <span class="doccomment">/// [`InitCommonControls`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-initcommoncontrols)</span>
 <span class="doccomment">/// function.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">InitCommonControls</span>() {
@@ -3008,13 +2994,13 @@
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">TaskDialogIndirect</span>(
 	<span class="ident">task_config</span>: <span class="kw-2">&amp;</span><span class="ident">TASKDIALOGCONFIG</span>,
-	<span class="ident">verification_flag_checked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bool</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">co::DLGID</span>, <span class="ident">u16</span>)<span class="op">&gt;</span>
+	<span class="ident">verification_flag_checked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bool</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>(<span class="ident">co::DLGID</span>, <span class="ident">u16</span>)<span class="op">&gt;</span>
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_button</span> <span class="op">=</span> <span class="ident">i32::default</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pn_radio_button</span> <span class="op">=</span> <span class="ident">i32::default</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pf_bool</span>: <span class="ident">BOOL</span> <span class="op">=</span> <span class="number">0</span>;
 
-	<span class="ident">hr_to_winresult</span>(
+	<span class="ident">ok_to_hrresult</span>(
 		<span class="kw">unsafe</span> {
 			<span class="ident">comctl32::TaskDialogIndirect</span>(
 				<span class="ident">task_config</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,

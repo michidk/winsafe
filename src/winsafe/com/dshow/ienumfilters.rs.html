@@ -68,24 +68,23 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
-<span id="71">71</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::dshow::ibasefilter::IBaseFilter</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::HRESULT</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">hr_to_winresult</span>, <span class="ident">hr_to_winresult_bool</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::HRES</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">ok_to_hrresult</span>, <span class="ident">okfalse_to_hrresult</span>};
 
 <span class="doccomment">/// [`IEnumFilters`](crate::dshow::IEnumFilters) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IEnumFiltersVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">Next</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Skip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Reset</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Clone</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Next</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">Skip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">Reset</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">Clone</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IEnumFilters`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-ienumfilters)</span>
@@ -103,40 +102,39 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IEnumFiltersT</span>: <span class="ident">IUnknownT</span> {
 	<span class="doccomment">/// [`IEnumFilters::Next`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-ienumfilters-next)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Next</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IBaseFilter</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Next</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IBaseFilter</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fetched</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IEnumFiltersVT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">Next</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fetched</span>),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IBaseFilter::from</span>(<span class="ident">ppv_queried</span>)) {
 			<span class="prelude-val">Ok</span>(<span class="ident">filter</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">filter</span>)),
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">if</span> <span class="ident">e</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::ERROR::S_FALSE</span> {
-				<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// no filter found</span>
-			} <span class="kw">else</span> {
-				<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="comment">// actual error</span>
+			<span class="prelude-val">Err</span>(<span class="ident">hr</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">hr</span> {
+				<span class="ident">co::HRESULT::S_FALSE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>), <span class="comment">// no filter found</span>
+				<span class="ident">hr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">hr</span>), <span class="comment">// actual error</span>
 			},
 		}
 	}
 
 	<span class="doccomment">/// [`IEnumFilters::Reset`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-ienumfilters-reset)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Reset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Reset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IEnumFiltersVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">Reset</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
+			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">Reset</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
 		}
 	}
 
 	<span class="doccomment">/// [`IEnumFilters::Skip`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-ienumfilters-skip)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Skip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">count</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Skip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">count</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IEnumFiltersVT</span>);
-			<span class="ident">hr_to_winresult_bool</span>((<span class="ident">vt</span>.<span class="ident">Skip</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">count</span>))
+			<span class="ident">okfalse_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">Skip</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">count</span>))
 		}
 	}
 }

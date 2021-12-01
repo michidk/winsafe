@@ -132,31 +132,31 @@
 <span id="132">132</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown::ComPtr</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::itaskbarlist::ITaskbarListT</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::itaskbarlist2</span>::{<span class="ident">ITaskbarList2T</span>, <span class="ident">ITaskbarList2VT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HANDLE</span>, <span class="ident">HRESULT</span>, <span class="ident">PCSTR</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HANDLE</span>, <span class="ident">HRES</span>, <span class="ident">PCSTR</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 
 <span class="doccomment">/// [`ITaskbarList3`](crate::shell::ITaskbarList3) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ITaskbarList3VT</span> {
 	<span class="kw">pub</span> <span class="ident">ITaskbarList2VT</span>: <span class="ident">ITaskbarList2VT</span>,
-	<span class="kw">pub</span> <span class="ident">SetProgressValue</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u64</span>, <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetProgressState</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">RegisterTab</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">UnregisterTab</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetTabOrder</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetTabActive</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ThumbBarAddButtons</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ThumbBarUpdateButtons</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">ThumbBarSetImageList</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetOverlayIcon</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetThumbnailTooltip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetThumbnailClip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">SetProgressValue</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u64</span>, <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetProgressState</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">RegisterTab</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">UnregisterTab</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetTabOrder</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetTabActive</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">ThumbBarAddButtons</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">ThumbBarUpdateButtons</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">u32</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">ThumbBarSetImageList</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetOverlayIcon</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">HANDLE</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetThumbnailTooltip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">PCSTR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetThumbnailClip</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`ITaskbarList3`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-itaskbarlist3)</span>
@@ -189,10 +189,10 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ITaskbarList3T</span>: <span class="ident">ITaskbarList2T</span> {
 	<span class="doccomment">/// [`ITaskbarList3::RegisterTab`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-registertab)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">RegisterTab</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_mdi</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">RegisterTab</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_mdi</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ITaskbarList3VT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">RegisterTab</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_tab</span>.<span class="number">0</span>, <span class="ident">hwnd_mdi</span>.<span class="number">0</span>),
 			)
 		}
@@ -201,11 +201,11 @@
 	<span class="doccomment">/// [`ITaskbarList3::SetProgressState`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setprogressstate)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">fn</span> <span class="ident">SetProgressState</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">tbpf_flags</span>: <span class="ident">shell::co::TBPF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">tbpf_flags</span>: <span class="ident">shell::co::TBPF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ITaskbarList3VT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">SetProgressState</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd</span>.<span class="number">0</span>, <span class="ident">tbpf_flags</span>.<span class="number">0</span>),
 			)
 		}
@@ -228,11 +228,11 @@
 	<span class="doccomment">/// obj.SetProgressValue(hwnd, 50, 100)?;</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">fn</span> <span class="ident">SetProgressValue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">completed</span>: <span class="ident">u64</span>, <span class="ident">total</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">completed</span>: <span class="ident">u64</span>, <span class="ident">total</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ITaskbarList3VT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">SetProgressValue</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd</span>.<span class="number">0</span>, <span class="ident">completed</span>, <span class="ident">total</span>),
 			)
 		}
@@ -240,10 +240,10 @@
 
 	<span class="doccomment">/// [`ITaskbarList3::SetTabActive`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settabactive)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">SetTabActive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_mdi</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">SetTabActive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_mdi</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ITaskbarList3VT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">SetTabActive</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_tab</span>.<span class="number">0</span>, <span class="ident">hwnd_mdi</span>.<span class="number">0</span>, <span class="number">0</span>),
 			)
 		}
@@ -252,11 +252,11 @@
 	<span class="doccomment">/// [`ITaskbarList3::SetTabOrder`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-settaborder)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">fn</span> <span class="ident">SetTabOrder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_insert_before</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">hwnd_tab</span>: <span class="ident">HWND</span>, <span class="ident">hwnd_insert_before</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ITaskbarList3VT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">SetTabOrder</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_tab</span>.<span class="number">0</span>, <span class="ident">hwnd_insert_before</span>.<span class="number">0</span>),
 			)
 		}

@@ -40,17 +40,17 @@
 <span id="40">40</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRES</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::CLSID</span>;
 
 <span class="doccomment">/// [`IPersist`](crate::idl::IPersist) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IPersistVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">GetClassID</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetClassID</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PVOID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IPersist`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nn-objidl-ipersist)</span>
@@ -68,11 +68,11 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IPersistT</span>: <span class="ident">IUnknownT</span> {
 	<span class="doccomment">/// [`IPersist::GetClassID`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nf-objidl-ipersist-getclassid)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">CLSID</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">CLSID</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="op">=</span> <span class="ident">CLSID::new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IPersistVT</span>);
-			<span class="ident">hr_to_winresult</span>(
+			<span class="ident">ok_to_hrresult</span>(
 				(<span class="ident">vt</span>.<span class="ident">GetClassID</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">clsid</span>)

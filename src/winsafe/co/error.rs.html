@@ -2918,21 +2918,65 @@
 <span id="2918">2918</span>
 <span id="2919">2919</span>
 <span id="2920">2920</span>
+<span id="2921">2921</span>
+<span id="2922">2922</span>
+<span id="2923">2923</span>
+<span id="2924">2924</span>
+<span id="2925">2925</span>
+<span id="2926">2926</span>
+<span id="2927">2927</span>
+<span id="2928">2928</span>
+<span id="2929">2929</span>
+<span id="2930">2930</span>
+<span id="2931">2931</span>
+<span id="2932">2932</span>
+<span id="2933">2933</span>
+<span id="2934">2934</span>
+<span id="2935">2935</span>
+<span id="2936">2936</span>
+<span id="2937">2937</span>
+<span id="2938">2938</span>
+<span id="2939">2939</span>
+<span id="2940">2940</span>
+<span id="2941">2941</span>
+<span id="2942">2942</span>
+<span id="2943">2943</span>
+<span id="2944">2944</span>
+<span id="2945">2945</span>
+<span id="2946">2946</span>
+<span id="2947">2947</span>
+<span id="2948">2948</span>
+<span id="2949">2949</span>
+<span id="2950">2950</span>
+<span id="2951">2951</span>
+<span id="2952">2952</span>
+<span id="2953">2953</span>
+<span id="2954">2954</span>
+<span id="2955">2955</span>
+<span id="2956">2956</span>
+<span id="2957">2957</span>
+<span id="2958">2958</span>
+<span id="2959">2959</span>
+<span id="2960">2960</span>
+<span id="2961">2961</span>
+<span id="2962">2962</span>
+<span id="2963">2963</span>
+<span id="2964">2964</span>
+<span id="2965">2965</span>
+<span id="2966">2966</span>
+<span id="2967">2967</span>
+<span id="2968">2968</span>
+<span id="2969">2969</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>, <span class="ident">non_upper_case_globals</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HLOCAL</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::LANGID</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co::FormattedError</span>;
 
 <span class="macro">const_no_debug_display!</span> { <span class="ident">ERROR</span>: <span class="ident">u32</span>;
 	<span class="doccomment">/// A Windows</span>
 	<span class="doccomment">/// [system error code](https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes)</span>
 	<span class="doccomment">/// (`u32`) retrieved by</span>
-	<span class="doccomment">/// [`GetLastError`](crate::GetLastError) function, or an</span>
-	<span class="doccomment">/// [`HRESULT`](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/0642cb2f-2075-4469-918c-4441e69c548a).</span>
+	<span class="doccomment">/// [`GetLastError`](crate::GetLastError) function.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Implements the</span>
 	<span class="doccomment">/// [`Error`](https://doc.rust-lang.org/beta/std/error/trait.Error.html)</span>
@@ -2942,8 +2986,8 @@
 	<span class="doccomment">/// [`Debug`](https://doc.rust-lang.org/std/fmt/trait.Debug.html) and</span>
 	<span class="doccomment">/// [`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) traits</span>
 	<span class="doccomment">/// to show the error code along with the error description, taken from</span>
-	<span class="doccomment">/// [`ERROR::FormatMessage`](crate::co::ERROR::FormatMessage). For example,</span>
-	<span class="doccomment">/// the code below:</span>
+	<span class="doccomment">/// [`FormattedError`](crate::co::FormattedError) trait. For example, the</span>
+	<span class="doccomment">/// code below:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::co::ERROR;</span>
@@ -5564,7 +5608,138 @@
 	<span class="ident">STATE_SETTING_NAME_SIZE_LIMIT_EXCEEDED</span> <span class="number">15817</span>
 	<span class="ident">STATE_CONTAINER_NAME_SIZE_LIMIT_EXCEEDED</span> <span class="number">15818</span>
 	<span class="ident">API_UNAVAILABLE</span> <span class="number">15841</span>
+}
 
+<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
+		<span class="prelude-val">None</span>
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}] {}&quot;</span>,
+				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
+		} <span class="kw">else</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#06x} {}] {}&quot;</span>,
+				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">FormattedError</span> <span class="kw">for</span> <span class="ident">ERROR</span> {}
+
+<span class="kw">impl</span> <span class="ident">ERROR</span> {
+	<span class="doccomment">/// [`HRESULT_FROM_WIN32`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_from_win32)</span>
+	<span class="doccomment">/// method. Originally a macro.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_hresult</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span> {
+			<span class="ident">HRESULT</span>(<span class="self">self</span>.<span class="number">0</span>)
+		} <span class="kw">else</span> {
+			<span class="ident">HRESULT</span>((<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0x0000_ffff</span>) <span class="op">|</span> <span class="ident">co::FACILITY::WIN32</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span> <span class="op">|</span> <span class="number">0x8000_0000</span>)
+		}
+	}
+}
+
+<span class="macro">const_no_debug_display!</span> { <span class="ident">CDERR</span>: <span class="ident">u32</span>;
+	<span class="doccomment">/// Common dialog box</span>
+	<span class="doccomment">/// [error codes](https://docs.microsoft.com/en-us/windows/win32/api/commdlg/nf-commdlg-commdlgextendederror).</span>
+	<span class="doccomment">/// Also includes `PDERR`, `CFERR, `FNERR` and `FRERR` prefixes.</span>
+	<span class="op">=</span><span class="op">&gt;</span>
+	<span class="op">=</span><span class="op">&gt;</span>
+	<span class="doccomment">/// None of the actual values (zero).</span>
+	<span class="ident">NoValue</span> <span class="number">0</span>
+	<span class="ident">DIALOGFAILURE</span> <span class="number">0xffff</span>
+	<span class="ident">FINDRESFAILURE</span> <span class="number">0x0006</span>
+	<span class="ident">INITIALIZATION</span> <span class="number">0x0002</span>
+	<span class="ident">LOADRESFAILURE</span> <span class="number">0x0007</span>
+	<span class="ident">LOADSTRFAILURE</span> <span class="number">0x0005</span>
+	<span class="ident">LOCKRESFAILURE</span> <span class="number">0x0008</span>
+	<span class="ident">MEMALLOCFAILURE</span> <span class="number">0x0009</span>
+	<span class="ident">MEMLOCKFAILURE</span> <span class="number">0x000a</span>
+	<span class="ident">NOHINSTANCE</span> <span class="number">0x0004</span>
+	<span class="ident">NOHOOK</span> <span class="number">0x000b</span>
+	<span class="ident">NOTEMPLATE</span> <span class="number">0x0003</span>
+	<span class="ident">REGISTERMSGFAIL</span> <span class="number">0x000c</span>
+	<span class="ident">STRUCTSIZE</span> <span class="number">0x0001</span>
+	<span class="ident">PD_CREATEICFAILURE</span> <span class="number">0x100a</span>
+	<span class="ident">PD_DEFAULTDIFFERENT</span> <span class="number">0x100c</span>
+	<span class="ident">PD_DNDMMISMATCH</span> <span class="number">0x1009</span>
+	<span class="ident">PD_GETDEVMODEFAIL</span> <span class="number">0x1005</span>
+	<span class="ident">PD_INITFAILURE</span> <span class="number">0x1006</span>
+	<span class="ident">PD_LOADDRVFAILURE</span> <span class="number">0x1004</span>
+	<span class="ident">PD_NODEFAULTPRN</span> <span class="number">0x1008</span>
+	<span class="ident">PD_NODEVICES</span> <span class="number">0x1007</span>
+	<span class="ident">PD_PARSEFAILURE</span> <span class="number">0x1002</span>
+	<span class="ident">PD_PRINTERNOTFOUND</span> <span class="number">0x100b</span>
+	<span class="ident">PD_RETDEFFAILURE</span> <span class="number">0x1003</span>
+	<span class="ident">PD_SETUPFAILURE</span> <span class="number">0x1001</span>
+	<span class="ident">CF_MAXLESSTHANMIN</span> <span class="number">0x2002</span>
+	<span class="ident">CF_NOFONTS</span> <span class="number">0x2001</span>
+	<span class="ident">FN_BUFFERTOOSMALL</span> <span class="number">0x3003</span>
+	<span class="ident">FN_INVALIDFILENAME</span> <span class="number">0x3002</span>
+	<span class="ident">FN_SUBCLASSFAILURE</span> <span class="number">0x3001</span>
+	<span class="ident">FR_BUFFERLENGTHZERO</span> <span class="number">0x4001</span>
+}
+
+<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
+	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
+		<span class="prelude-val">None</span>
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}]&quot;</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>)
+		} <span class="kw">else</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#06x} {}]&quot;</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>)
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
+	}
+}
+
+<span class="macro">const_no_debug_display!</span> { <span class="ident">HRESULT</span>: <span class="ident">u32</span>;
+	<span class="doccomment">/// Native COM</span>
+	<span class="doccomment">/// [error codes](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/0642cb2f-2075-4469-918c-4441e69c548a)</span>
+	<span class="doccomment">/// (`i32`).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Implements the</span>
+	<span class="doccomment">/// [`Error`](https://doc.rust-lang.org/beta/std/error/trait.Error.html)</span>
+	<span class="doccomment">/// trait.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Implements the</span>
+	<span class="doccomment">/// [`Debug`](https://doc.rust-lang.org/std/fmt/trait.Debug.html) and</span>
+	<span class="doccomment">/// [`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) traits</span>
+	<span class="doccomment">/// to show the error code along with the error description, taken from</span>
+	<span class="doccomment">/// [`FormattedError`](crate::co::FormattedError) trait. For example, the</span>
+	<span class="doccomment">/// code below:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// use winsafe::co::HRESULT;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// println!(&quot;{}&quot;, HRESULT::E_INVALIDARG);</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Will print:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// [0x80070057 2147942487] The parameter is incorrect.</span>
+	<span class="doccomment">/// ```</span>
+	<span class="op">=</span><span class="op">&gt;</span>
+	<span class="op">=</span><span class="op">&gt;</span>
 	<span class="doccomment">/// Operation successful.</span>
 	<span class="ident">S_OK</span> <span class="number">0</span>
 	<span class="ident">S_FALSE</span> <span class="number">1</span>
@@ -5716,13 +5891,13 @@
 	<span class="ident">MF_E_TRANSFORM_TYPE_NOT_SET</span> <span class="number">0xc00d_6d60</span>
 }
 
-<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
 	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
 		<span class="prelude-val">None</span>
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
 			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}] {}&quot;</span>,
@@ -5734,108 +5909,31 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">ERROR</span> {
-	<span class="doccomment">/// Returns the textual description of the system error, by calling</span>
-	<span class="doccomment">/// [`FormatMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessagew)</span>
-	<span class="doccomment">/// function.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">FormatMessage</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-		<span class="kw">unsafe</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ptr_buf</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
-			<span class="kw">match</span> <span class="ident">kernel32::FormatMessageW</span>(
-				<span class="ident">co::FORMAT_MESSAGE::ALLOCATE_BUFFER</span>.<span class="number">0</span>
-					<span class="op">|</span> <span class="ident">co::FORMAT_MESSAGE::FROM_SYSTEM</span>.<span class="number">0</span>
-					<span class="op">|</span> <span class="ident">co::FORMAT_MESSAGE::IGNORE_INSERTS</span>.<span class="number">0</span>,
-				<span class="ident">std::ptr::null</span>(),
-				<span class="self">self</span>.<span class="number">0</span>,
-				<span class="ident">LANGID::new</span>(<span class="ident">co::LANG::NEUTRAL</span>, <span class="ident">co::SUBLANG::DEFAULT</span>).<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-				(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ptr_buf</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>) <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// pass pointer to pointer</span>
-				<span class="number">0</span>,
-				<span class="ident">std::ptr::null_mut</span>(),
-			) {
-				<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>( <span class="comment">// never fails, returns a message instead</span>
-					<span class="string">&quot;FormatMessage failed to format error {:#06x}: error {:#06x}.&quot;</span>,
-					<span class="self">self</span>.<span class="number">0</span>, <span class="ident">GetLastError</span>(),
-				),
-				<span class="ident">nchars</span> <span class="op">=</span><span class="op">&gt;</span> {
-					<span class="kw">let</span> <span class="ident">final_str</span> <span class="op">=</span> <span class="ident">WString::from_wchars_count</span>(<span class="ident">ptr_buf</span>, <span class="ident">nchars</span> <span class="kw">as</span> <span class="kw">_</span>);
-					<span class="kw">match</span> (<span class="ident">HLOCAL</span>(<span class="ident">ptr_buf</span> <span class="kw">as</span> <span class="kw">_</span>)).<span class="ident">LocalFree</span>() {
-						<span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">final_str</span>.<span class="ident">to_string</span>(),
-						<span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(
-							<span class="string">&quot;LocalFree failed after formatting error {:#06x}: error {:#06x}.&quot;</span>,
-							<span class="self">self</span>.<span class="number">0</span>, <span class="ident">err</span>.<span class="number">0</span>),
-					}
-				},
-			}
-		}
+<span class="kw">impl</span> <span class="ident">FormattedError</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {}
+
+<span class="kw">impl</span> <span class="ident">HRESULT</span> {
+	<span class="doccomment">/// [`HRESULT_CODE`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_code)</span>
+	<span class="doccomment">/// method. Originally a macro.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+		(<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="ident">u16</span>
 	}
-}
 
-<span class="macro">const_no_debug_display!</span> { <span class="ident">CDERR</span>: <span class="ident">u32</span>;
-	<span class="doccomment">/// Common dialog box</span>
-	<span class="doccomment">/// [error codes](https://docs.microsoft.com/en-us/windows/win32/api/commdlg/nf-commdlg-commdlgextendederror).</span>
-	<span class="doccomment">/// Also includes `PDERR`, `CFERR, `FNERR` and `FRERR` prefixes.</span>
-	<span class="op">=</span><span class="op">&gt;</span>
-	<span class="op">=</span><span class="op">&gt;</span>
-	<span class="doccomment">/// None of the actual values (zero).</span>
-	<span class="ident">NoValue</span> <span class="number">0</span>
-	<span class="ident">DIALOGFAILURE</span> <span class="number">0xffff</span>
-	<span class="ident">FINDRESFAILURE</span> <span class="number">0x0006</span>
-	<span class="ident">INITIALIZATION</span> <span class="number">0x0002</span>
-	<span class="ident">LOADRESFAILURE</span> <span class="number">0x0007</span>
-	<span class="ident">LOADSTRFAILURE</span> <span class="number">0x0005</span>
-	<span class="ident">LOCKRESFAILURE</span> <span class="number">0x0008</span>
-	<span class="ident">MEMALLOCFAILURE</span> <span class="number">0x0009</span>
-	<span class="ident">MEMLOCKFAILURE</span> <span class="number">0x000a</span>
-	<span class="ident">NOHINSTANCE</span> <span class="number">0x0004</span>
-	<span class="ident">NOHOOK</span> <span class="number">0x000b</span>
-	<span class="ident">NOTEMPLATE</span> <span class="number">0x0003</span>
-	<span class="ident">REGISTERMSGFAIL</span> <span class="number">0x000c</span>
-	<span class="ident">STRUCTSIZE</span> <span class="number">0x0001</span>
-	<span class="ident">PD_CREATEICFAILURE</span> <span class="number">0x100a</span>
-	<span class="ident">PD_DEFAULTDIFFERENT</span> <span class="number">0x100c</span>
-	<span class="ident">PD_DNDMMISMATCH</span> <span class="number">0x1009</span>
-	<span class="ident">PD_GETDEVMODEFAIL</span> <span class="number">0x1005</span>
-	<span class="ident">PD_INITFAILURE</span> <span class="number">0x1006</span>
-	<span class="ident">PD_LOADDRVFAILURE</span> <span class="number">0x1004</span>
-	<span class="ident">PD_NODEFAULTPRN</span> <span class="number">0x1008</span>
-	<span class="ident">PD_NODEVICES</span> <span class="number">0x1007</span>
-	<span class="ident">PD_PARSEFAILURE</span> <span class="number">0x1002</span>
-	<span class="ident">PD_PRINTERNOTFOUND</span> <span class="number">0x100b</span>
-	<span class="ident">PD_RETDEFFAILURE</span> <span class="number">0x1003</span>
-	<span class="ident">PD_SETUPFAILURE</span> <span class="number">0x1001</span>
-	<span class="ident">CF_MAXLESSTHANMIN</span> <span class="number">0x2002</span>
-	<span class="ident">CF_NOFONTS</span> <span class="number">0x2001</span>
-	<span class="ident">FN_BUFFERTOOSMALL</span> <span class="number">0x3003</span>
-	<span class="ident">FN_INVALIDFILENAME</span> <span class="number">0x3002</span>
-	<span class="ident">FN_SUBCLASSFAILURE</span> <span class="number">0x3001</span>
-	<span class="ident">FR_BUFFERLENGTHZERO</span> <span class="number">0x4001</span>
-}
-
-<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
-	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
-		<span class="prelude-val">None</span>
+	<span class="doccomment">/// [`HRESULT_FACILITY`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_facility)</span>
+	<span class="doccomment">/// method. Originally a macro.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">facility</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::FACILITY</span> {
+		<span class="ident">co::FACILITY</span>((<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="op">&amp;</span> <span class="number">0x1fff</span>)
 	}
-}
 
-<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}]&quot;</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>)
-		} <span class="kw">else</span> {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#06x} {}]&quot;</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>)
-		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">CDERR</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
-		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
+	<span class="doccomment">/// [`HRESULT_SEVERITY`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_severity)</span>
+	<span class="doccomment">/// method. Originally a macro.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">severity</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+		((<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>) <span class="op">&amp;</span> <span class="number">0x1</span>) <span class="kw">as</span> <span class="ident">u8</span>
 	}
 }
 </code></pre></div>

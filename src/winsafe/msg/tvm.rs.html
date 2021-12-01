@@ -748,15 +748,13 @@
 <span id="748">748</span>
 <span id="749">749</span>
 <span id="750">750</span>
-<span id="751">751</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Tree view control</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-tree-view-control-reference-messages),</span>
 <span class="doccomment">//! whose constants have [`TVM`](crate::co::TVM) prefix.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">HrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HIMAGELIST</span>, <span class="ident">HTREEITEM</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::traits::Handle</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HIMAGELIST</span>, <span class="ident">HTREEITEM</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros</span>::{<span class="ident">zero_as_err</span>, <span class="ident">zero_as_none</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::CLR_DEFAULT</span>;
@@ -1331,19 +1329,19 @@
 <span class="doccomment">/// [`TVM_SETEXTENDEDSTYLE`](https://docs.microsoft.com/en-us/windows/win32/controls/tvm-setextendedstyle)</span>
 <span class="doccomment">/// message parameters.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Return type: `WinResult&lt;()&gt;`.</span>
+<span class="doccomment">/// Return type: `HrResult&lt;()&gt;`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetExtendedStyle</span> {
 	<span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">co::TVS_EX</span>,
 	<span class="kw">pub</span> <span class="ident">mask</span>: <span class="ident">co::TVS_EX</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="ident">SetExtendedStyle</span> {
-	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::RetType</span> {
-		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>) {
-			<span class="ident">co::ERROR::S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-			<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		<span class="kw">match</span> <span class="ident">co::HRESULT</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="kw">_</span>) {
+			<span class="ident">co::HRESULT::S_OK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+			<span class="ident">hr</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">hr</span>),
 		}
 	}
 

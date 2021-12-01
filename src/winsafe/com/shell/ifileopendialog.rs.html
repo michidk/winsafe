@@ -87,20 +87,20 @@
 <span id="87">87</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown::ComPtr</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::ifiledialog</span>::{<span class="ident">IFileDialogT</span>, <span class="ident">IFileDialogVT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::imodalwindow::IModalWindowT</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::shell::ishellitemarray::IShellItemArray</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::HRESULT</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::HRES</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 
 <span class="doccomment">/// [`IFileOpenDialog`](crate::shell::IFileOpenDialog) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileOpenDialogVT</span> {
 	<span class="kw">pub</span> <span class="ident">IFileDialogVT</span>: <span class="ident">IFileDialogVT</span>,
-	<span class="kw">pub</span> <span class="ident">GetResults</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetSelectedItems</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">GetResults</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetSelectedItems</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IFileOpenDialog`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileopendialog)</span>
@@ -142,7 +142,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,ignore</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::{shell, shell::co::SIGDN, WinResult};</span>
+	<span class="doccomment">/// use winsafe::{HrResult, shell, shell::co::SIGDN};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let fo: shell::IFileOpenDialog; // initialized somewhere</span>
 	<span class="doccomment">///</span>
@@ -152,23 +152,23 @@
 	<span class="doccomment">///             shi.GetDisplayName(SIGDN::FILESYSPATH)</span>
 	<span class="doccomment">///         ),</span>
 	<span class="doccomment">///     )</span>
-	<span class="doccomment">///     .collect::&lt;WinResult&lt;Vec&lt;_&gt;&gt;&gt;()?,</span>
+	<span class="doccomment">///     .collect::&lt;HrResult&lt;Vec&lt;_&gt;&gt;&gt;()?,</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">fn</span> <span class="ident">GetResults</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetResults</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IFileOpenDialogVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetResults</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
+			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">GetResults</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItemArray::from</span>(<span class="ident">ppv_queried</span>))
 	}
 
 	<span class="doccomment">/// [`IFileOpenDialog::GetSelectedItems`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifileopendialog-getselecteditems)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">GetSelectedItems</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetSelectedItems</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IShellItemArray</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IFileOpenDialogVT</span>);
-			<span class="ident">hr_to_winresult</span>((<span class="ident">vt</span>.<span class="ident">GetSelectedItems</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
+			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">GetSelectedItems</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span>))
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">IShellItemArray::from</span>(<span class="ident">ppv_queried</span>))
 	}
 }

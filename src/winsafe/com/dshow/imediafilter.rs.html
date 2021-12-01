@@ -61,22 +61,22 @@
 <span id="61">61</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown::ComPtr</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl::ipersist</span>::{<span class="ident">IPersistT</span>, <span class="ident">IPersistVT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRESULT</span>, <span class="ident">PVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::hr_to_winresult_bool</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRES</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::okfalse_to_hrresult</span>;
 
 <span class="doccomment">/// [`IMediaFilter`](crate::dshow::IMediaFilter) virtual table.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMediaFilterVT</span> {
 	<span class="kw">pub</span> <span class="ident">IPersistVT</span>: <span class="ident">IPersistVT</span>,
-	<span class="kw">pub</span> <span class="ident">Stop</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">Pause</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-   <span class="kw">pub</span> <span class="ident">Run</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetState</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i64</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">SetSyncSource</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
-	<span class="kw">pub</span> <span class="ident">GetSyncSource</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRESULT</span>,
+	<span class="kw">pub</span> <span class="ident">Stop</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">Pause</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+   <span class="kw">pub</span> <span class="ident">Run</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetState</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">i64</span>, <span class="ident">PVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetSyncSource</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetSyncSource</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IMediaFilter`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nn-strmif-imediafilter)</span>
@@ -95,28 +95,28 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IMediaFilterT</span>: <span class="ident">IPersistT</span> {
 	<span class="doccomment">/// [`IMediaFilter::Pause`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediafilter-pause)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Pause</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Pause</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMediaFilterVT</span>);
-			<span class="ident">hr_to_winresult_bool</span>((<span class="ident">vt</span>.<span class="ident">Pause</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
+			<span class="ident">okfalse_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">Pause</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
 		}
 	}
 
 	<span class="doccomment">/// [`IMediaFilter::Run`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediafilter-run)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">start</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">start</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMediaFilterVT</span>);
-			<span class="ident">hr_to_winresult_bool</span>((<span class="ident">vt</span>.<span class="ident">Run</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">start</span>))
+			<span class="ident">okfalse_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">Run</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">start</span>))
 		}
 	}
 
 	<span class="doccomment">/// [`IMediaFilter::Stop`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediafilter-stop)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">Stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMediaFilterVT</span>);
-			<span class="ident">hr_to_winresult_bool</span>((<span class="ident">vt</span>.<span class="ident">Stop</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
+			<span class="ident">okfalse_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">Stop</span>)(<span class="self">self</span>.<span class="ident">ptr</span>()))
 		}
 	}
 }
