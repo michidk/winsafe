@@ -595,14 +595,50 @@
 <span id="595">595</span>
 <span id="596">596</span>
 <span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">gdi32</span>, <span class="ident">msimg32</span>, <span class="ident">user32</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs::GetLastError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetLastError</span>, <span class="ident">MulDiv</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HBRUSH</span>, <span class="ident">HFONT</span>, <span class="ident">HMONITOR</span>, <span class="ident">HPEN</span>, <span class="ident">HRGN</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">bool_to_winresult</span>, <span class="ident">CLR_INVALID</span>, <span class="ident">GDI_ERROR</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{
+	<span class="ident">bool_to_winresult</span>,
+	<span class="ident">CLR_INVALID</span>,
+	<span class="ident">GDI_ERROR</span>,
+	<span class="ident">HIMETRIC_PER_INCH</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">TEXTMETRIC</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
@@ -833,6 +869,20 @@
 		)
 	}
 
+	<span class="doccomment">/// Converts HIMETRIC units to pixels.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Equivalent to</span>
+	<span class="doccomment">/// [`AtlHiMetricToPixel`](https://docs.microsoft.com/en-us/cpp/atl/reference/pixel-himetric-conversion-global-functions?view=msvc-170#atlhimetrictopixel)</span>
+	<span class="doccomment">/// ATL function.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">HiMetricToPixel</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">i32</span>) {
+		<span class="comment">// http://www.verycomputer.com/5_5f2f75dc2d090ee8_1.htm</span>
+		<span class="comment">// https://forums.codeguru.com/showthread.php?109554-Unresizable-activeX-control</span>
+		(
+			<span class="ident">MulDiv</span>(<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSX</span>), <span class="ident">HIMETRIC_PER_INCH</span>),
+			<span class="ident">MulDiv</span>(<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSY</span>), <span class="ident">HIMETRIC_PER_INCH</span>),
+		)
+	}
+
 	<span class="doccomment">/// [`LineTo`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-lineto)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">LineTo</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -892,6 +942,18 @@
 					<span class="ident">radial_2</span>.<span class="ident">y</span>, <span class="ident">radial_2</span>.<span class="ident">y</span>,
 				)
 			},
+		)
+	}
+
+	<span class="doccomment">/// Converts pixels to HIMETRIC units.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Equivalent to</span>
+	<span class="doccomment">/// [`AtlPixelToHiMetric`](https://docs.microsoft.com/en-us/cpp/atl/reference/pixel-himetric-conversion-global-functions?view=msvc-170#atlpixeltohimetric)</span>
+	<span class="doccomment">/// ATL function.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PixelToHiMetric</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">i32</span>) {
+		(
+			<span class="ident">MulDiv</span>(<span class="ident">x</span>, <span class="ident">HIMETRIC_PER_INCH</span>, <span class="self">self</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSX</span>)),
+			<span class="ident">MulDiv</span>(<span class="ident">y</span>, <span class="ident">HIMETRIC_PER_INCH</span>, <span class="self">self</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSY</span>)),
 		)
 	}
 

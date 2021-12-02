@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["vt","Automation COM virtual tables."]],"struct":[["IDispatch","`IDispatch` COM interface over `IDispatchVT`."],["ITypeInfo","`ITypeInfo` COM interface over `ITypeInfoVT`."]],"trait":[["IDispatchT","Exposes the `IDispatch` methods."],["ITypeInfoT","Exposes the `ITypeInfo` methods."]]});
+initSidebarItems({"mod":[["vt","Automation COM virtual tables."]],"struct":[["IDispatch","`IDispatch` COM interface over `IDispatchVT`."],["ITypeInfo","`ITypeInfo` COM interface over `ITypeInfoVT`."]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IPersistVT","`IPersist` virtual table."]]});
+initSidebarItems({"struct":[["IPersistVT","`IPersist` virtual table."],["IPictureVT","`IPicture` virtual table."]]});

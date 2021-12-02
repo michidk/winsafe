@@ -236,6 +236,7 @@
 <span id="236">236</span>
 <span id="237">237</span>
 <span id="238">238</span>
+<span id="239">239</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Global objects used within `gui` module.</span>
 
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
@@ -314,7 +315,7 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">DPI</span>: <span class="ident">POINT</span> <span class="op">=</span> <span class="ident">POINT</span> { <span class="ident">x</span>: <span class="number">0</span>, <span class="ident">y</span>: <span class="number">0</span> };
+<span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">DPI</span>: <span class="ident">POINT</span> <span class="op">=</span> <span class="ident">POINT::new</span>(<span class="number">0</span>, <span class="number">0</span>);
 
 <span class="doccomment">/// Multiplies the given coordinates by current system DPI.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">multiply_dpi</span>(
@@ -325,6 +326,7 @@
 			<span class="kw">let</span> <span class="ident">screen_dc</span> <span class="op">=</span> <span class="ident">HWND::NULL</span>.<span class="ident">GetDC</span>()<span class="question-mark">?</span>;
 			<span class="ident">DPI</span>.<span class="ident">x</span> <span class="op">=</span> <span class="ident">screen_dc</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSX</span>); <span class="comment">// cache</span>
 			<span class="ident">DPI</span>.<span class="ident">y</span> <span class="op">=</span> <span class="ident">screen_dc</span>.<span class="ident">GetDeviceCaps</span>(<span class="ident">co::GDC::LOGPIXELSY</span>);
+			<span class="ident">HWND::NULL</span>.<span class="ident">ReleaseDC</span>(<span class="ident">screen_dc</span>)<span class="question-mark">?</span>;
 		}
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pt</span>) <span class="op">=</span> <span class="ident">pt</span> {
