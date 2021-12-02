@@ -2674,10 +2674,6 @@
 <span id="2674">2674</span>
 <span id="2675">2675</span>
 <span id="2676">2676</span>
-<span id="2677">2677</span>
-<span id="2678">2678</span>
-<span id="2679">2679</span>
-<span id="2680">2680</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>, <span class="ident">non_upper_case_globals</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
@@ -2711,7 +2707,41 @@
 	<span class="doccomment">/// ```text</span>
 	<span class="doccomment">/// [0x001c 28] The printer is out of paper.</span>
 	<span class="doccomment">/// ```</span>
-	<span class="op">=</span><span class="op">&gt;</span>
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}] {}&quot;</span>,
+				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
+		} <span class="kw">else</span> {
+			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#06x} {}] {}&quot;</span>,
+				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">FormattedError</span> <span class="kw">for</span> <span class="ident">ERROR</span> {}
+
+<span class="kw">impl</span> <span class="ident">ERROR</span> {
+	<span class="doccomment">/// [`HRESULT_FROM_WIN32`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_from_win32)</span>
+	<span class="doccomment">/// method. Originally a macro.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_hresult</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::HRESULT</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span> {
+			<span class="ident">co::HRESULT</span>(<span class="self">self</span>.<span class="number">0</span>)
+		} <span class="kw">else</span> {
+			<span class="ident">co::HRESULT</span>((<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0x0000_ffff</span>) <span class="op">|</span> <span class="ident">co::FACILITY::WIN32</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span> <span class="op">|</span> <span class="number">0x8000_0000</span>)
+		}
+	}
+}
+
+<span class="macro">const_values!</span> { <span class="ident">ERROR</span>
 	<span class="op">=</span><span class="op">&gt;</span>
 	<span class="doccomment">/// The operation completed successfully.</span>
 	<span class="ident">SUCCESS</span> <span class="number">0</span>
@@ -5319,44 +5349,6 @@
 	<span class="ident">STATE_SETTING_NAME_SIZE_LIMIT_EXCEEDED</span> <span class="number">15817</span>
 	<span class="ident">STATE_CONTAINER_NAME_SIZE_LIMIT_EXCEEDED</span> <span class="number">15818</span>
 	<span class="ident">API_UNAVAILABLE</span> <span class="number">15841</span>
-}
-
-<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
-	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
-		<span class="prelude-val">None</span>
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}] {}&quot;</span>,
-				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
-		} <span class="kw">else</span> {
-			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#06x} {}] {}&quot;</span>,
-				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
-		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">ERROR</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
-		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">FormattedError</span> <span class="kw">for</span> <span class="ident">ERROR</span> {}
-
-<span class="kw">impl</span> <span class="ident">ERROR</span> {
-	<span class="doccomment">/// [`HRESULT_FROM_WIN32`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_from_win32)</span>
-	<span class="doccomment">/// method. Originally a macro.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_hresult</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::HRESULT</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0</span> {
-			<span class="ident">co::HRESULT</span>(<span class="self">self</span>.<span class="number">0</span>)
-		} <span class="kw">else</span> {
-			<span class="ident">co::HRESULT</span>((<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0x0000_ffff</span>) <span class="op">|</span> <span class="ident">co::FACILITY::WIN32</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span> <span class="op">|</span> <span class="number">0x8000_0000</span>)
-		}
-	}
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
