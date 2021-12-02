@@ -60,17 +60,8 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">std::hash::Hash</span>;
 <span class="kw">use</span> <span class="ident">std::ops</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
@@ -80,18 +71,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::LANGID</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
 
-<span class="doccomment">/// Any native Windows constant.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NativeConstant</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Hash</span>
-	<span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Concrete</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Concrete</span><span class="op">&gt;</span>
-	<span class="op">+</span> <span class="ident">fmt::LowerHex</span> <span class="op">+</span> <span class="ident">fmt::UpperHex</span> <span class="op">+</span> <span class="ident">fmt::Binary</span> <span class="op">+</span> <span class="ident">fmt::Octal</span>
+<span class="doccomment">/// Any native Windows bitflag constant.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NativeBitflag</span>: <span class="ident">Sized</span>
 	<span class="op">+</span> <span class="ident">ops::BitAnd</span> <span class="op">+</span> <span class="ident">ops::BitAndAssign</span>
 	<span class="op">+</span> <span class="ident">ops::BitOr</span> <span class="op">+</span> <span class="ident">ops::BitOrAssign</span>
 	<span class="op">+</span> <span class="ident">ops::BitXor</span> <span class="op">+</span> <span class="ident">ops::BitXorAssign</span>
 	<span class="op">+</span> <span class="ident">ops::Not</span>
 {
-	<span class="doccomment">/// The underlying concrete type for this constant type.</span>
-	<span class="kw">type</span> <span class="ident">Concrete</span>;
-
 	<span class="doccomment">/// Tells whether other bitflag style is present.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Equivalent to `(val &amp; other) != 0`.</span>
@@ -100,7 +86,7 @@
 
 <span class="doccomment">/// A system error which can be formatted with</span>
 <span class="doccomment">/// [`FormatMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessagew).</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FormattedError</span>: <span class="ident">NativeConstant</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FormattedError</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the textual description of the system error, by calling</span>
 	<span class="doccomment">/// [`FormatMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessagew)</span>
 	<span class="doccomment">/// function.</span>
