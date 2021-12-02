@@ -1775,7 +1775,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CHOOSECOLOR</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `lpCustColors` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpCustColors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lpCustColors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">COLORREF</span>; <span class="number">16</span>]<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">lpCustColors</span>.<span class="ident">as_mut</span>() }
 	}
 
@@ -1914,19 +1914,19 @@
 }
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="ident">union</span> <span class="ident">DEVMODE_union0</span> {
+<span class="kw">union</span> <span class="ident">DEVMODE_union0</span> {
 	<span class="ident">printer</span>: <span class="ident">DEVMODE_printer</span>,
 	<span class="ident">display</span>: <span class="ident">DEVMODE_display</span>,
 }
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="ident">union</span> <span class="ident">DEVMODE_union1</span> {
+<span class="kw">union</span> <span class="ident">DEVMODE_union1</span> {
 	<span class="ident">dmDisplayFlags</span>: <span class="ident">co::DMDISPLAYFLAGS</span>,
 	<span class="ident">dnNup</span>: <span class="ident">co::DMNUP</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">DEVMODE</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std::mem::zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
 		<span class="ident">obj</span>.<span class="ident">dmSpecVersion</span> <span class="op">=</span> <span class="ident">DM_SPECVERSION</span>;
 		<span class="ident">obj</span>.<span class="ident">dmDriverVersion</span> <span class="op">=</span> <span class="ident">DM_SPECVERSION</span>;
@@ -1943,13 +1943,13 @@
 	<span class="doccomment">/// Sets the `dmDisplayFlags` or the `dmNup` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_dmDisplayFlags_dmNup</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">DispfNup</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">DispfNup::Dispf</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">dmDisplayFlags</span> <span class="op">=</span> <span class="ident">val</span>,
-			<span class="ident">DispfNup::Nup</span>(<span class="ident">val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">dnNup</span> <span class="op">=</span> <span class="ident">val</span>,
+			<span class="ident">DispfNup::Dispf</span>(<span class="ident">val</span>) =&gt; <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">dmDisplayFlags</span> <span class="op">=</span> <span class="ident">val</span>,
+			<span class="ident">DispfNup::Nup</span>(<span class="ident">val</span>) =&gt; <span class="self">self</span>.<span class="ident">union1</span>.<span class="ident">dnNup</span> <span class="op">=</span> <span class="ident">val</span>,
 		}
 	}
 
 	<span class="doccomment">/// Returns the `dmOrientation` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmOrientation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMORIENT</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmOrientation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMORIENT</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmOrientation</span> }
 	}
 
@@ -1959,7 +1959,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmPaperSize` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperSize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMPAPER</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperSize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMPAPER</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmPaperSize</span> }
 	}
 
@@ -1969,7 +1969,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmPaperLength` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperLength</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperLength</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i16</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmPaperLength</span> }
 	}
 
@@ -1979,7 +1979,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmPaperWidth` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperWidth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPaperWidth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i16</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmPaperWidth</span> }
 	}
 
@@ -1989,7 +1989,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmScale` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmScale</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmScale</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i16</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmScale</span> }
 	}
 
@@ -1999,7 +1999,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmCopies` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmCopies</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmCopies</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i16</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmCopies</span> }
 	}
 
@@ -2009,7 +2009,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmDefaultSource` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDefaultSource</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMBIN</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDefaultSource</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMBIN</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmDefaultSource</span> }
 	}
 
@@ -2019,7 +2019,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmPrintQuality` printer field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPrintQuality</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMRES</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPrintQuality</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMRES</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">printer</span>.<span class="ident">dmPrintQuality</span> }
 	}
 
@@ -2029,7 +2029,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dmPosition` display field, which is part of an union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPosition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">POINT</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmPosition</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">POINT</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">display</span>.<span class="ident">dmPosition</span> }
 	}
 
@@ -2040,7 +2040,7 @@
 
 	<span class="doccomment">/// Returns the `dmDisplayOrientation` display field, which is part of an</span>
 	<span class="doccomment">/// union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDisplayOrientation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMDO</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDisplayOrientation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMDO</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">display</span>.<span class="ident">dmDisplayOrientation</span> }
 	}
 
@@ -2051,7 +2051,7 @@
 
 	<span class="doccomment">/// Returns the `dmDisplayFixedOutput` display field, which is part of an</span>
 	<span class="doccomment">/// union.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDisplayFixedOutput</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::DMDFO</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dmDisplayFixedOutput</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::DMDFO</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">union0</span>.<span class="ident">display</span>.<span class="ident">dmDisplayFixedOutput</span> }
 	}
 
@@ -2139,10 +2139,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HELPINFO</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hItemHandle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndHmenu</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hItemHandle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HwndHmenu</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">iContextType</span> {
-			<span class="ident">co::HELPINFO::WINDOW</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
+			<span class="ident">co::HELPINFO::WINDOW</span> =&gt; <span class="ident">HwndHmenu::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
+			<span class="kw">_</span> =&gt; <span class="ident">HwndHmenu::Hmenu</span>(<span class="ident">HMENU</span>(<span class="self">self</span>.<span class="ident">hItemHandle</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	}
 }
@@ -2368,7 +2368,7 @@
 
 <span class="kw">impl</span> <span class="ident">NMHDR</span> {
 	<span class="doccomment">/// `Returns the `idFrom` field, the ID of the control sending the message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">idFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">idFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
 		<span class="self">self</span>.<span class="ident">idFrom</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
 
@@ -2401,7 +2401,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">NONCLIENTMETRICS</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std::mem::zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
 		<span class="ident">obj</span>.<span class="ident">cbSize</span> <span class="op">=</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="kw">_</span>;
 
@@ -2503,20 +2503,20 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">POINT</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;x {}, y {}&quot;</span>, <span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>)
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">POINT</span> {
 	<span class="doccomment">/// Creates a new `POINT`.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">POINT</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) -&gt; <span class="ident">POINT</span> {
 		<span class="self">Self</span> { <span class="ident">x</span>, <span class="ident">y</span> }
 	}
 
 	<span class="doccomment">/// Tells whether the struct contains exactly the given values.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="self">self</span>.<span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="ident">x</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">=</span><span class="op">=</span> <span class="ident">y</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) -&gt; <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">x</span> <span class="op">==</span> <span class="ident">x</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">==</span> <span class="ident">y</span>
 	}
 }
 
@@ -2566,7 +2566,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">RECT</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;left {}, top {}, right {}, bottom {}&quot;</span>,
 			<span class="self">self</span>.<span class="ident">left</span>, <span class="self">self</span>.<span class="ident">top</span>, <span class="self">self</span>.<span class="ident">right</span>, <span class="self">self</span>.<span class="ident">bottom</span>)
 	}
@@ -2574,8 +2574,8 @@
 
 <span class="kw">impl</span> <span class="ident">RECT</span> {
 	<span class="doccomment">/// Tells whether the struct contains exactly the given values.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">left</span>: <span class="ident">i32</span>, <span class="ident">top</span>: <span class="ident">i32</span>, <span class="ident">right</span>: <span class="ident">i32</span>, <span class="ident">bottom</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="self">self</span>.<span class="ident">left</span> <span class="op">=</span><span class="op">=</span> <span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">top</span> <span class="op">=</span><span class="op">=</span> <span class="ident">top</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">right</span> <span class="op">=</span><span class="op">=</span> <span class="ident">right</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">bottom</span> <span class="op">=</span><span class="op">=</span> <span class="ident">bottom</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">left</span>: <span class="ident">i32</span>, <span class="ident">top</span>: <span class="ident">i32</span>, <span class="ident">right</span>: <span class="ident">i32</span>, <span class="ident">bottom</span>: <span class="ident">i32</span>) -&gt; <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">left</span> <span class="op">==</span> <span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">top</span> <span class="op">==</span> <span class="ident">top</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">right</span> <span class="op">==</span> <span class="ident">right</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">bottom</span> <span class="op">==</span> <span class="ident">bottom</span>
 	}
 }
 
@@ -2679,7 +2679,7 @@
 	<span class="macro">pub_fn_bool_get_set!</span>(<span class="ident">fAnyOperationsAborted</span>, <span class="ident">set_fAnyOperationsAborted</span>);
 
 	<span class="doccomment">/// Retrieves the `pFrom` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
  		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pFrom</span>.<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">p</span>))
 	}
@@ -2693,7 +2693,7 @@
 	}
 
 	<span class="doccomment">/// Retrieves the `pTo` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pTo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pTo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">pTo</span>.<span class="ident">as_mut</span>() }
 		  .<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">parse_multi_z_str</span>(<span class="ident">p</span>))
 	}
@@ -2719,20 +2719,20 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">SIZE</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;cx {}, cy {}&quot;</span>, <span class="self">self</span>.<span class="ident">cx</span>, <span class="self">self</span>.<span class="ident">cy</span>)
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">SIZE</span> {
 	<span class="doccomment">/// Creates a new `SIZE`.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SIZE</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>) -&gt; <span class="ident">SIZE</span> {
 		<span class="self">Self</span> { <span class="ident">cx</span>, <span class="ident">cy</span> }
 	}
 
 	<span class="doccomment">/// Tells whether the struct contains exactly the given values.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="self">self</span>.<span class="ident">cx</span> <span class="op">=</span><span class="op">=</span> <span class="ident">cx</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">cy</span> <span class="op">=</span><span class="op">=</span> <span class="ident">cy</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>) -&gt; <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">cx</span> <span class="op">==</span> <span class="ident">cx</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">cy</span> <span class="op">==</span> <span class="ident">cy</span>
 	}
 }
 
@@ -2770,7 +2770,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">lpTitle</span>, <span class="ident">set_lpTitle</span>);
 
 	<span class="doccomment">/// Returns the `wShowWindow` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wShowWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::SW</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wShowWindow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::SW</span> {
 		<span class="ident">co::SW</span>(<span class="self">self</span>.<span class="ident">wShowWindow</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
@@ -2793,22 +2793,22 @@
 
 <span class="kw">impl</span> <span class="ident">STYLESTRUCT</span> {
 	<span class="doccomment">/// Returns the [`WS`](crate::co::WS) of `styleOld` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WS</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::WS</span> {
 		<span class="ident">co::WS</span>(<span class="self">self</span>.<span class="ident">styleOld</span>)
 	}
 
 	<span class="doccomment">/// Returns the [`WS_EX`](crate::co::WS_EX) of `styleOld` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WS_EX</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleOld_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::WS_EX</span> {
 		<span class="ident">co::WS_EX</span>(<span class="self">self</span>.<span class="ident">styleOld</span>)
 	}
 
 	<span class="doccomment">/// Returns the [`WS`](crate::co::WS) of `styleNew` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WS</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WS</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::WS</span> {
 		<span class="ident">co::WS</span>(<span class="self">self</span>.<span class="ident">styleNew</span>)
 	}
 
 	<span class="doccomment">/// Returns the [`WS_EX`](crate::co::WS_EX) of `styleNew` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::WS_EX</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">styleNew_WSEX</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::WS_EX</span> {
 		<span class="ident">co::WS_EX</span>(<span class="self">self</span>.<span class="ident">styleNew</span>)
 	}
 }
@@ -2913,7 +2913,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszWindowTitle</span>, <span class="ident">set_pszWindowTitle</span>);
 
 	<span class="doccomment">/// Returns the `pszMainIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IconIdTdicon</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IconIdTdicon</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span>) {
 			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0xfffc</span> {
 				<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">co::TD_ICON</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="kw">_</span>))
@@ -2928,10 +2928,10 @@
 	<span class="doccomment">/// Sets the `pszMainIcon` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconIdTdicon</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">IconIdTdicon::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconIdTdicon::None</span> =&gt; <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconIdTdicon::Icon</span>(<span class="ident">hicon</span>) =&gt; <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconIdTdicon::Id</span>(<span class="ident">id</span>) =&gt; <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconIdTdicon::Tdicon</span>(<span class="ident">tdi</span>) =&gt; <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 
@@ -2945,7 +2945,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;i</span>, <span class="ident">pszCollapsedControlText</span>, <span class="ident">set_pszCollapsedControlText</span>);
 
 	<span class="doccomment">/// Returns the `pszFooterIcon` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IconId</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IconId</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span>) {
 			<span class="ident">IconId::Id</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} <span class="kw">else</span> {
@@ -2956,9 +2956,9 @@
 	<span class="doccomment">/// Sets the `pszFooterIcon` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">IconId</span>) {
 		<span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">IconId::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
-			<span class="ident">IconId::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IconId::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident">IconId::None</span> =&gt; <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident">IconId::Icon</span>(<span class="ident">hicon</span>) =&gt; <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">hicon</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IconId::Id</span>(<span class="ident">id</span>) =&gt; <span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="op">=</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 
@@ -3055,7 +3055,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">VS_FIXEDFILEINFO</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">std::mem::zeroed</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() };
 		<span class="ident">obj</span>.<span class="ident">dwSignature</span> <span class="op">=</span> <span class="number">0xfeef_04bd</span>;
 		<span class="ident">obj</span>
@@ -3064,7 +3064,7 @@
 
 <span class="kw">impl</span> <span class="ident">VS_FIXEDFILEINFO</span> {
 	<span class="doccomment">/// Returns the `dwFileVersionMS` and `dwFileVersionLS` fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwFileVersion</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u16</span>; <span class="number">4</span>] {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwFileVersion</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">u16</span>; <span class="number">4</span>] {
 		[<span class="ident">HIWORD</span>(<span class="self">self</span>.<span class="ident">dwFileVersionMS</span>), <span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="ident">dwFileVersionMS</span>),
 			<span class="ident">HIWORD</span>(<span class="self">self</span>.<span class="ident">dwFileVersionLS</span>), <span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="ident">dwFileVersionLS</span>)]
 	}
@@ -3076,7 +3076,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dwProductVersionMS` and `dwProductVersionLS` fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwProductVersion</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u16</span>; <span class="number">4</span>] {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwProductVersion</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">u16</span>; <span class="number">4</span>] {
 		[<span class="ident">HIWORD</span>(<span class="self">self</span>.<span class="ident">dwProductVersionMS</span>), <span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="ident">dwProductVersionMS</span>),
 			<span class="ident">HIWORD</span>(<span class="self">self</span>.<span class="ident">dwProductVersionLS</span>), <span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="ident">dwProductVersionLS</span>)]
 	}
@@ -3088,7 +3088,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `dwFileDateMS` and `dwFileDateLS` fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwFileDate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dwFileDate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
 		<span class="ident">MAKEQWORD</span>(<span class="self">self</span>.<span class="ident">dwFileDateLS</span>, <span class="self">self</span>.<span class="ident">dwFileDateMS</span>)
 	}
 
@@ -3122,7 +3122,7 @@
 	<span class="macro">pub_fn_string_arr_get_set!</span>(<span class="ident">cAlternateFileName</span>, <span class="ident">set_cAlternateFileName</span>);
 
 	<span class="doccomment">/// Returns the nFileSizeHigh and nFileSizeLow fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nFileSize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nFileSize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
 		<span class="ident">MAKEQWORD</span>(<span class="self">self</span>.<span class="ident">nFileSizeLow</span>, <span class="self">self</span>.<span class="ident">nFileSizeHigh</span>)
 	}
 }
@@ -3177,19 +3177,19 @@
 
 <span class="kw">impl</span> <span class="ident">WINDOWPOS</span> {
 	<span class="doccomment">/// Returns the `hwndInsertAfter` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HwndPlace</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HwndPlace</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwndInsertAfter</span> {
-			<span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace::Place</span>(<span class="ident">co::HWND_PLACE</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span>)),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">HwndPlace::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw">_</span>)),
+			<span class="number">0</span> <span class="op">|</span> <span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">1</span> <span class="op">|</span> <span class="op">-</span><span class="number">2</span> =&gt; <span class="ident">HwndPlace::Place</span>(<span class="ident">co::HWND_PLACE</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span>)),
+			<span class="kw">_</span> =&gt; <span class="ident">HwndPlace::Hwnd</span>(<span class="ident">HWND</span>(<span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	}
 
 	<span class="doccomment">/// Sets the `hwndInsertAfter` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_hwndInsertAfter</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">hwnd</span>: <span class="ident">HwndPlace</span>) {
 		<span class="self">self</span>.<span class="ident">hwndInsertAfter</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">hwnd</span> {
-			<span class="ident">HwndPlace::Hwnd</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">HwndPlace::Place</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>.<span class="ident">into</span>(),
-			<span class="ident">HwndPlace::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+			<span class="ident">HwndPlace::Hwnd</span>(<span class="ident">h</span>) =&gt; <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">HwndPlace::Place</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>.<span class="ident">into</span>(),
+			<span class="ident">HwndPlace::None</span> =&gt; <span class="number">0</span>,
 		};
 	}
 }

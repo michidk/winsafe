@@ -80,7 +80,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IMFGetServiceVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">GetService</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetService</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">PCVOID</span>, <span class="ident">PCVOID</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) -&gt; <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IMFGetService`](https://docs.microsoft.com/en-us/windows/win32/api/mfidl/nn-mfidl-imfgetservice)</span>
@@ -123,7 +123,7 @@
 	<span class="doccomment">///         &amp;dshow::guid::MR_VIDEO_RENDER_SERVICE,</span>
 	<span class="doccomment">///     )?;</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">fn</span> <span class="ident">GetService</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ComInterface</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">service_guid</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">GetService</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ComInterface</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">service_guid</span>: <span class="kw-2">&amp;</span><span class="ident">GUID</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IMFGetServiceVT</span>);

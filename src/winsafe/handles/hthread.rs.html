@@ -140,7 +140,7 @@
 		<span class="ident">stack_size</span>: <span class="ident">u64</span>,
 		<span class="ident">start_addr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
 		<span class="ident">parameter</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>,
-		<span class="ident">flags</span>: <span class="ident">co::THREAD_CREATE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">HTHREAD</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
+		<span class="ident">flags</span>: <span class="ident">co::THREAD_CREATE</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">HTHREAD</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">thread_id</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="kw">unsafe</span> {
@@ -164,13 +164,13 @@
 
 	<span class="doccomment">/// [`GetCurrentThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthread)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCurrentThread</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HTHREAD</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetCurrentThread</span>() -&gt; <span class="ident">HTHREAD</span> {
 		<span class="self">Self</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::GetCurrentThread</span>() })
 	}
 
 	<span class="doccomment">/// [`GetExitCodeThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodethread)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetExitCodeThread</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetExitCodeThread</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exit_code</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> { <span class="ident">kernel32::GetExitCodeThread</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">exit_code</span>) },
@@ -179,19 +179,19 @@
 
 	<span class="doccomment">/// [`GetProcessIdOfThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessidofthread)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetProcessIdOfThread</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetProcessIdOfThread</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetProcessIdOfThread</span>(<span class="self">self</span>.<span class="number">0</span>) } {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">id</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>),
+			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="ident">id</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">id</span>),
 		}
 	}
 
 	<span class="doccomment">/// [`GetThreadId`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadid)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThreadId</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetThreadId</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel32::GetThreadId</span>(<span class="self">self</span>.<span class="number">0</span>) } {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">id</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>),
+			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="ident">id</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">id</span>),
 		}
 	}
 
@@ -201,7 +201,7 @@
 		<span class="ident">creation</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
 		<span class="ident">exit</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
 		<span class="ident">kernel</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>,
-		<span class="ident">user</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+		<span class="ident">user</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FILETIME</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> {

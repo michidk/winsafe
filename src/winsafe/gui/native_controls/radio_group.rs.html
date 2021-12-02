@@ -223,7 +223,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">String::with_capacity</span>(<span class="self">self</span>.<span class="ident">count</span>() <span class="op">*</span> <span class="number">40</span>); <span class="comment">// arbitrary</span>
 		<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">radio</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="ident">out</span> <span class="op">+</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;[{}] HWND {}, ID {} &quot;</span>,
@@ -239,13 +239,13 @@
 <span class="kw">impl</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
 	<span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">RadioButton</span>;
 
-	<span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Output</span> {
+	<span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Output</span> {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>[<span class="ident">i</span>]
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">NativeControlEvents</span><span class="op">&lt;</span><span class="ident">RadioGroupEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
-	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">RadioGroupEvents</span> {
+	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">RadioGroupEvents</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">index</span>(<span class="number">0</span>).<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control creation.&quot;</span>);
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">parent_ptr</span>.<span class="ident">as_ref</span>() }.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
@@ -263,7 +263,7 @@
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Panics if `opts` is empty</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="kw-2">&amp;</span>[<span class="ident">RadioButtonOpts</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="kw-2">&amp;</span>[<span class="ident">RadioButtonOpts</span>]) -&gt; <span class="ident">RadioGroup</span> {
 		<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">is_empty</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
@@ -271,7 +271,7 @@
 		<span class="kw">let</span> <span class="ident">radios</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>()
 			.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="ident">opt</span>)<span class="op">|</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">radio_opt</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">manual_clone</span>();
-				<span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="comment">// first radio?</span>
+				<span class="kw">if</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> { <span class="comment">// first radio?</span>
 					<span class="ident">radio_opt</span>.<span class="ident">window_style</span> <span class="op">|</span><span class="op">=</span> <span class="ident">co::WS::TABSTOP</span> <span class="op">|</span> <span class="ident">co::WS::GROUP</span>;
 				}
 				<span class="ident">RadioButton::new</span>(<span class="ident">parent</span>, <span class="ident">radio_opt</span>)
@@ -314,7 +314,7 @@
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Panics if `ctrls` is empty.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrls</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u16</span>, <span class="ident">Horz</span>, <span class="ident">Vert</span>)]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RadioGroup</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrls</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u16</span>, <span class="ident">Horz</span>, <span class="ident">Vert</span>)]) -&gt; <span class="ident">RadioGroup</span> {
 		<span class="kw">if</span> <span class="ident">ctrls</span>.<span class="ident">is_empty</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
@@ -346,7 +346,7 @@
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz_vert</span>: <span class="kw-2">&amp;</span>[(<span class="ident">Horz</span>, <span class="ident">Vert</span>)]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz_vert</span>: <span class="kw-2">&amp;</span>[(<span class="ident">Horz</span>, <span class="ident">Vert</span>)]) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">radio</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">as_mut</span>().<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>() {
 			<span class="ident">radio</span>.<span class="ident">create</span>(<span class="ident">horz_vert</span>[<span class="ident">i</span>].<span class="number">0</span>, <span class="ident">horz_vert</span>[<span class="ident">i</span>].<span class="number">1</span>)<span class="question-mark">?</span>;
 		}
@@ -369,19 +369,19 @@
 	<span class="doccomment">///     single_radio.hwnd().SetWindowText(&quot;One&quot;)?;</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">RadioButton</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">RadioButton</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">iter</span>()
 	}
 
 	<span class="doccomment">/// Returns the currently checked [`RadioButton`](crate::gui::RadioButton) of</span>
 	<span class="doccomment">/// this group, if any.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RadioButton</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">RadioButton</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">checked_index</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>[<span class="ident">idx</span>])
 	}
 
 	<span class="doccomment">/// Returns the index of the currently selected</span>
 	<span class="doccomment">/// [`RadioButton`](crate::gui::RadioButton) of this group, if any.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">checked_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">checked_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
 		<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">radio</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="kw">if</span> <span class="ident">radio</span>.<span class="ident">is_selected</span>() {
 				<span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>);
@@ -392,7 +392,7 @@
 
 	<span class="doccomment">/// Returns the number of [`RadioButton`](crate::gui::RadioButton) controls</span>
 	<span class="doccomment">/// in this group.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">len</span>()
 	}
 }

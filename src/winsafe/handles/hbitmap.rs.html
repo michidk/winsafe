@@ -72,7 +72,7 @@
 	<span class="doccomment">/// [`HBITMAP::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateBitmap</span>(
 		<span class="ident">sz</span>: <span class="ident">SIZE</span>, <span class="ident">num_planes</span>: <span class="ident">u32</span>,
-		<span class="ident">bit_count</span>: <span class="ident">u32</span>, <span class="ident">bits</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
+		<span class="ident">bit_count</span>: <span class="ident">u32</span>, <span class="ident">bits</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> {
 			<span class="ident">gdi32::CreateBitmap</span>(<span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">num_planes</span>, <span class="ident">bit_count</span>, <span class="ident">bits</span> <span class="kw">as</span> <span class="kw">_</span>)
@@ -83,7 +83,7 @@
 
 	<span class="doccomment">/// [`GetObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getobjectw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetObject</span>(<span class="self">self</span>, <span class="ident">pv</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">BITMAP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetObject</span>(<span class="self">self</span>, <span class="ident">pv</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">BITMAP</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">gdi32::GetObjectW</span>(
 				<span class="self">self</span>.<span class="number">0</span>,
@@ -91,8 +91,8 @@
 				<span class="ident">pv</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		} {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(()),
 		}
 	}
 }

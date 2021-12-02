@@ -55,7 +55,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IModalWindowVT</span> {
 	<span class="kw">pub</span> <span class="ident">IUnknownVT</span>: <span class="ident">IUnknownVT</span>,
-	<span class="kw">pub</span> <span class="ident">Show</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">Show</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>) -&gt; <span class="ident">u32</span>,
 }
 
 <span class="doccomment">/// [`IModalWindow`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-imodalwindow)</span>
@@ -75,16 +75,16 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns false if user clicked Cancel.</span>
-	<span class="kw">fn</span> <span class="ident">Show</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_owner</span>: <span class="ident">HWND</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">Show</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hwnd_owner</span>: <span class="ident">HWND</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IModalWindowVT</span>);
 				(<span class="ident">vt</span>.<span class="ident">Show</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hwnd_owner</span>.<span class="number">0</span>)
 			},
 		) {
-			<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
-			<span class="ident">co::ERROR::CANCELLED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
-			<span class="ident">e</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">to_hresult</span>()),
+			<span class="ident">co::ERROR::SUCCESS</span> =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
+			<span class="ident">co::ERROR::CANCELLED</span> =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
+			<span class="ident">e</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">to_hresult</span>()),
 		}
 	}
 }

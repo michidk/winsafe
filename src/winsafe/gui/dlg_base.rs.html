@@ -157,7 +157,7 @@
 
 <span class="kw">impl</span> <span class="ident">DlgBase</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">parent_base</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>, <span class="ident">dialog_id</span>: <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DlgBase</span>
+		<span class="ident">parent_base</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Base</span><span class="op">&gt;</span>, <span class="ident">dialog_id</span>: <span class="ident">u16</span>) -&gt; <span class="ident">DlgBase</span>
 	{
 		<span class="self">Self</span> {
 			<span class="ident">base</span>: <span class="ident">Base::new</span>(<span class="bool-val">true</span>, <span class="ident">parent_base</span>),
@@ -165,7 +165,7 @@
 		}
 	}
 
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">create_dialog_param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">create_dialog_param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot create dialog twice.&quot;</span>);
 		}
@@ -183,7 +183,7 @@
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">dialog_box_param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">dialog_box_param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot create dialog twice.&quot;</span>);
 		}
@@ -202,19 +202,19 @@
 	}
 
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">dialog_proc</span>(
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span>
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) -&gt; <span class="ident">isize</span>
 	{
 		<span class="ident"><span class="self">Self</span>::dialog_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>)
 			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">err</span>); <span class="bool-val">true</span> <span class="kw">as</span> <span class="kw">_</span> })
 	}
 
 	<span class="kw">fn</span> <span class="ident">dialog_proc_proc</span>(
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
 
 		<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
-			<span class="ident">co::WM::INITDIALOG</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="comment">// first message being handled</span>
+			<span class="ident">co::WM::INITDIALOG</span> =&gt; { <span class="comment">// first message being handled</span>
 				<span class="kw">let</span> <span class="ident">wm_idlg</span> <span class="op">=</span> <span class="ident">wm::InitDialog::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_idlg</span>.<span class="ident">additional_data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>;
 				<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="ident">ptr_self</span> <span class="kw">as</span> <span class="kw">_</span>); <span class="comment">// store</span>
@@ -222,7 +222,7 @@
 				<span class="kw-2">*</span><span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_mut</span>() <span class="op">=</span> <span class="ident">hwnd</span>; <span class="comment">// store HWND in struct field</span>
 				<span class="ident">ptr_self</span>
 			},
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="comment">// retrieve</span>
+			<span class="kw">_</span> =&gt; <span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="comment">// retrieve</span>
 		};
 
 		<span class="comment">// If no pointer stored, then no processing is done.</span>
@@ -235,7 +235,7 @@
 		<span class="kw">let</span> <span class="ident">ref_self</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">ptr_self</span> };
 		<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_privileged_messages</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::INITDIALOG</span> {
+		<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">==</span> <span class="ident">co::WM::INITDIALOG</span> {
 			<span class="comment">// Child controls are created in privileged closures, so we set the</span>
 			<span class="comment">// system font only now.</span>
 			<span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="comment">// on the window itself</span>
@@ -254,15 +254,15 @@
 		<span class="comment">// Execute user closure, if any.</span>
 		<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_user_message</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
+		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">==</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
 			<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::DWLP_USER</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
 			<span class="kw-2">*</span><span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">hwnd_mut</span>() <span class="op">=</span> <span class="ident">HWND::NULL</span>; <span class="comment">// clear stored HWND</span>
 		}
 
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">process_result</span> {
-			<span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">res</span>,
-			<span class="ident">ProcessResult::HandledWithoutRet</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>, <span class="comment">// TRUE</span>
-			<span class="ident">ProcessResult::NotHandled</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>, <span class="comment">// FALSE</span>
+			<span class="ident">ProcessResult::HandledWithRet</span>(<span class="ident">res</span>) =&gt; <span class="ident">res</span>,
+			<span class="ident">ProcessResult::HandledWithoutRet</span> =&gt; <span class="number">1</span>, <span class="comment">// TRUE</span>
+			<span class="ident">ProcessResult::NotHandled</span> =&gt; <span class="number">0</span>, <span class="comment">// FALSE</span>
 		})
 	}
 }

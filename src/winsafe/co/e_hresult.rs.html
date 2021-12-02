@@ -3339,6 +3339,12 @@
 <span id="3339">3339</span>
 <span id="3340">3340</span>
 <span id="3341">3341</span>
+<span id="3342">3342</span>
+<span id="3343">3343</span>
+<span id="3344">3344</span>
+<span id="3345">3345</span>
+<span id="3346">3346</span>
+<span id="3347">3347</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co::prelude::FormattedError</span>;
 
@@ -3371,8 +3377,14 @@
 	<span class="doccomment">/// ```</span>
 }
 
+<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
+	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
+		<span class="prelude-val">None</span>
+	}
+}
+
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">0xffff</span> {
 			<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{:#010x} {}] {}&quot;</span>,
 				<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">FormatMessage</span>())
@@ -3384,7 +3396,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">HRESULT</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">std::fmt::Debug</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="self">self</span>, <span class="ident">f</span>) <span class="comment">// delegate to Debug trait</span>
 	}
 }
@@ -3394,25 +3406,25 @@
 <span class="kw">impl</span> <span class="ident">HRESULT</span> {
 	<span class="doccomment">/// [`HRESULT_CODE`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_code)</span>
 	<span class="doccomment">/// method. Originally a macro.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code</span>(<span class="self">self</span>) -&gt; <span class="ident">u16</span> {
 		(<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0xffff</span>) <span class="kw">as</span> <span class="ident">u16</span>
 	}
 
 	<span class="doccomment">/// [`HRESULT_FACILITY`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_facility)</span>
 	<span class="doccomment">/// method. Originally a macro.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">facility</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::FACILITY</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">facility</span>(<span class="self">self</span>) -&gt; <span class="ident">co::FACILITY</span> {
 		<span class="ident">co::FACILITY</span>((<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="op">&amp;</span> <span class="number">0x1fff</span>)
 	}
 
 	<span class="doccomment">/// [`HRESULT_SEVERITY`](https://docs.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_severity)</span>
 	<span class="doccomment">/// method. Originally a macro.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">severity</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">severity</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
 		((<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>) <span class="op">&amp;</span> <span class="number">0x1</span>) <span class="kw">as</span> <span class="ident">u8</span>
 	}
 }
 
 <span class="macro">const_values!</span> { <span class="ident">HRESULT</span>
-	<span class="op">=</span><span class="op">&gt;</span>
+	=&gt;
 	<span class="doccomment">/// Operation successful.</span>
 	<span class="ident">S_OK</span> <span class="number">0</span>
 	<span class="ident">S_FALSE</span> <span class="number">1</span>

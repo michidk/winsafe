@@ -71,11 +71,11 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IFileSaveDialogVT</span> {
 	<span class="kw">pub</span> <span class="ident">IFileDialogVT</span>: <span class="ident">IFileDialogVT</span>,
-	<span class="kw">pub</span> <span class="ident">SetSaveAsItem</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
-	<span class="kw">pub</span> <span class="ident">SetProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
-	<span class="kw">pub</span> <span class="ident">SetCollectedProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">BOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
-	<span class="kw">pub</span> <span class="ident">GetProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
-	<span class="kw">pub</span> <span class="ident">ApplyProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">ComPtr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetSaveAsItem</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) -&gt; <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>) -&gt; <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">SetCollectedProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">BOOL</span>) -&gt; <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">GetProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">ComPtr</span>) -&gt; <span class="ident">HRES</span>,
+	<span class="kw">pub</span> <span class="ident">ApplyProperties</span>: <span class="kw">fn</span>(<span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">ComPtr</span>, <span class="ident">HANDLE</span>, <span class="ident">ComPtr</span>) -&gt; <span class="ident">HRES</span>,
 }
 
 <span class="doccomment">/// [`IFileSaveDialog`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifilesavedialog)</span>
@@ -109,7 +109,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IFileSaveDialogT</span>: <span class="ident">IFileDialogT</span> {
 	<span class="doccomment">/// [`IFileSaveDialog::SetSaveAsItem`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifilesavedialog-setsaveasitem)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">SetSaveAsItem</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">psi</span>: <span class="ident">IShellItem</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">SetSaveAsItem</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">psi</span>: <span class="ident">IShellItem</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">IFileSaveDialogVT</span>);
 			<span class="ident">ok_to_hrresult</span>((<span class="ident">vt</span>.<span class="ident">SetSaveAsItem</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">psi</span>.<span class="ident">ptr</span>()))

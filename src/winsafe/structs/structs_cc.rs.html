@@ -1131,7 +1131,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszFormat</span>, <span class="ident">set_pszFormat</span>);
 
 	<span class="doccomment">/// Returns the `pszDisplay` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszDisplay</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszDisplay</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
 		<span class="ident">WString::from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszDisplay</span>).<span class="ident">to_string</span>()
 	}
 
@@ -1493,20 +1493,20 @@
 
 <span class="kw">impl</span> <span class="ident">TBADDBITMAP</span> {
 	<span class="doccomment">/// Returns the `hInst` and `nID` fields.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BmpIdbRes</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BmpIdbRes</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hInst</span> {
-			<span class="ident">HINST_COMMCTRL</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">BmpIdbRes::Idb</span>(<span class="ident">co::IDB</span>(<span class="self">self</span>.<span class="ident">nID</span>)),
-			<span class="ident">HINSTANCE::NULL</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">BmpIdbRes::Bmp</span>(<span class="ident">HBITMAP</span>(<span class="self">self</span>.<span class="ident">nID</span> <span class="kw">as</span> <span class="kw">_</span> )),
-			<span class="ident">hInst</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">BmpIdbRes::Res</span>(<span class="ident">IdStr::from_ptr</span>(<span class="self">self</span>.<span class="ident">nID</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">hInst</span>),
+			<span class="ident">HINST_COMMCTRL</span> =&gt; <span class="ident">BmpIdbRes::Idb</span>(<span class="ident">co::IDB</span>(<span class="self">self</span>.<span class="ident">nID</span>)),
+			<span class="ident">HINSTANCE::NULL</span> =&gt; <span class="ident">BmpIdbRes::Bmp</span>(<span class="ident">HBITMAP</span>(<span class="self">self</span>.<span class="ident">nID</span> <span class="kw">as</span> <span class="kw">_</span> )),
+			<span class="ident">hInst</span> =&gt; <span class="ident">BmpIdbRes::Res</span>(<span class="ident">IdStr::from_ptr</span>(<span class="self">self</span>.<span class="ident">nID</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">hInst</span>),
 		}
 	}
 
 	<span class="doccomment">/// Sets the `hInst` and `nID` fields.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_nID</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="kw-2">&amp;</span><span class="ident">BmpIdbRes</span>) {
 		<span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">BmpIdbRes::Idb</span>(<span class="ident">idb</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINST_COMMCTRL</span>, <span class="ident">nID</span>: <span class="ident">idb</span>.<span class="number">0</span> },
-			<span class="ident">BmpIdbRes::Bmp</span>(<span class="ident">bmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINSTANCE::NULL</span>, <span class="ident">nID</span>: <span class="ident">bmp</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span> },
-			<span class="ident">BmpIdbRes::Res</span>(<span class="ident">res</span>, <span class="ident">hInst</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="kw-2">*</span><span class="ident">hInst</span>, <span class="ident">nID</span>: <span class="ident">res</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">BmpIdbRes::Idb</span>(<span class="ident">idb</span>) =&gt; <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINST_COMMCTRL</span>, <span class="ident">nID</span>: <span class="ident">idb</span>.<span class="number">0</span> },
+			<span class="ident">BmpIdbRes::Bmp</span>(<span class="ident">bmp</span>) =&gt; <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="ident">HINSTANCE::NULL</span>, <span class="ident">nID</span>: <span class="ident">bmp</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">BmpIdbRes::Res</span>(<span class="ident">res</span>, <span class="ident">hInst</span>) =&gt; <span class="self">Self</span> { <span class="ident">hInst</span>: <span class="kw-2">*</span><span class="ident">hInst</span>, <span class="ident">nID</span>: <span class="ident">res</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
 		}
 	}
 }
@@ -1530,7 +1530,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TBBUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `iString` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iString</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IndexStr</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iString</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IndexStr</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">iString</span> <span class="kw">as</span> <span class="kw">_</span>) {
 			<span class="ident">IndexStr::Index</span>(<span class="self">self</span>.<span class="ident">iString</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} <span class="kw">else</span> {
@@ -1541,8 +1541,8 @@
 	<span class="doccomment">/// Sets the `iString` field.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_iString</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">IndexStr</span>) {
 		<span class="self">self</span>.<span class="ident">iString</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">val</span> {
-			<span class="ident">IndexStr::Index</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IndexStr::Str</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">s</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident">IndexStr::Index</span>(<span class="ident">i</span>) =&gt; <span class="kw-2">*</span><span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IndexStr::Str</span>(<span class="ident">s</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">s</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
 		};
 	}
 }
@@ -1560,7 +1560,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TVINSERTSTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `hInsertAfter` field.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeitemTvi</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeitemTvi</span> {
 		<span class="ident">TreeitemTvi::from_isize</span>(<span class="self">self</span>.<span class="ident">hInsertAfter</span>)
 	}
 

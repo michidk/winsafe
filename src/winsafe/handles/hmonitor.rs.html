@@ -76,7 +76,7 @@
 	<span class="doccomment">/// let mut mi = MONITORINFO::default();</span>
 	<span class="doccomment">/// hmon.GetMonitorInfo(&amp;mut mi)?;</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMonitorInfo</span>(<span class="self">self</span>, <span class="ident">mi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MONITORINFO</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetMonitorInfo</span>(<span class="self">self</span>, <span class="ident">mi</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">MONITORINFO</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(
 			<span class="kw">unsafe</span> { <span class="ident">user32::GetMonitorInfoW</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">mi</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) },
 		)
@@ -84,13 +84,13 @@
 
 	<span class="doccomment">/// [`MonitorFromPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfrompoint)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MonitorFromPoint</span>(<span class="ident">pt</span>: <span class="ident">POINT</span>, <span class="ident">flags</span>: <span class="ident">co::MONITOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HMONITOR</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MonitorFromPoint</span>(<span class="ident">pt</span>: <span class="ident">POINT</span>, <span class="ident">flags</span>: <span class="ident">co::MONITOR</span>) -&gt; <span class="ident">HMONITOR</span> {
 		<span class="self">Self</span>(<span class="kw">unsafe</span> { <span class="ident">user32::MonitorFromPoint</span>(<span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">pt</span>.<span class="ident">y</span>, <span class="ident">flags</span>.<span class="number">0</span>) })
 	}
 
 	<span class="doccomment">/// [`MonitorFromRect`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfromrect)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MonitorFromRect</span>(<span class="ident">rc</span>: <span class="ident">RECT</span>, <span class="ident">flags</span>: <span class="ident">co::MONITOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HMONITOR</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">MonitorFromRect</span>(<span class="ident">rc</span>: <span class="ident">RECT</span>, <span class="ident">flags</span>: <span class="ident">co::MONITOR</span>) -&gt; <span class="ident">HMONITOR</span> {
 		<span class="self">Self</span>(<span class="kw">unsafe</span> { <span class="ident">user32::MonitorFromRect</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">flags</span>.<span class="number">0</span>) })
 	}
 }

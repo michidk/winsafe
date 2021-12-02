@@ -185,7 +185,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ATOM</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">u16</span>);
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">ATOM</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
 	}
 }
@@ -197,13 +197,13 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">COLORREF</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">u32</span>);
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">co::CLR</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">COLORREF</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">co::CLR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">co::CLR</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span>(<span class="ident">v</span>.<span class="number">0</span>)
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">COLORREF</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
 		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;R {}, G {}, B {}&quot;</span>,
 			<span class="self">self</span>.<span class="ident">GetRValue</span>(), <span class="self">self</span>.<span class="ident">GetGValue</span>(), <span class="self">self</span>.<span class="ident">GetBValue</span>())
 	}
@@ -219,7 +219,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let color = COLORREF::new(0xff, 0x80, 0x00);</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">red</span>: <span class="ident">u8</span>, <span class="ident">green</span>: <span class="ident">u8</span>, <span class="ident">blue</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">COLORREF</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">red</span>: <span class="ident">u8</span>, <span class="ident">green</span>: <span class="ident">u8</span>, <span class="ident">blue</span>: <span class="ident">u8</span>) -&gt; <span class="ident">COLORREF</span> {
 		<span class="self">Self</span>(<span class="ident">red</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">|</span> ((<span class="ident">green</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>) <span class="op">|</span> ((<span class="ident">blue</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>))
 	}
 
@@ -235,7 +235,7 @@
 	<span class="doccomment">///     (0x00, 0xa0, 0x40),</span>
 	<span class="doccomment">/// ]);</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_array</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">rgbs</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u8</span>, <span class="ident">u8</span>, <span class="ident">u8</span>); <span class="ident">N</span>]) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">COLORREF</span>; <span class="ident">N</span>] {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_array</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">rgbs</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u8</span>, <span class="ident">u8</span>, <span class="ident">u8</span>); <span class="ident">N</span>]) -&gt; [<span class="ident">COLORREF</span>; <span class="ident">N</span>] {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> [<span class="ident"><span class="self">Self</span>::new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="ident">N</span>];
 		<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">rgb</span>) <span class="kw">in</span> <span class="ident">rgbs</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="ident">arr</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">rgb</span>.<span class="number">0</span>, <span class="ident">rgb</span>.<span class="number">1</span>, <span class="ident">rgb</span>.<span class="number">2</span>);
@@ -246,21 +246,21 @@
 	<span class="doccomment">/// Retrieves the red intensity. Originally</span>
 	<span class="doccomment">/// [`GetRValue`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getrvalue)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetRValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetRValue</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
 		<span class="ident">LOBYTE</span>(<span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="number">0</span>))
 	}
 
 	<span class="doccomment">/// Retrieves the green intensity. Originally</span>
 	<span class="doccomment">/// [`GetGValue`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getgvalue)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetGValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetGValue</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
 		<span class="ident">LOBYTE</span>(<span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span>))
 	}
 
 	<span class="doccomment">/// Retrieves the blue intensity. Originally</span>
 	<span class="doccomment">/// [`GetBValue`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getbvalue)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetBValue</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">GetBValue</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
 		<span class="ident">LOBYTE</span>(<span class="ident">LOWORD</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>))
 	}
 }
@@ -272,7 +272,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LANGID</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">u16</span>);
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LANGID</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">u16</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">LANGID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">LANGID</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">v</span>.<span class="number">0</span>
 	}
 }
@@ -291,21 +291,21 @@
 	<span class="doccomment">/// Creates a new `LANGID`. Originally</span>
 	<span class="doccomment">/// [`MAKELANGID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lang</span>: <span class="ident">co::LANG</span>, <span class="ident">sublang</span>: <span class="ident">co::SUBLANG</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LANGID</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lang</span>: <span class="ident">co::LANG</span>, <span class="ident">sublang</span>: <span class="ident">co::SUBLANG</span>) -&gt; <span class="ident">LANGID</span> {
 		<span class="self">Self</span>((<span class="ident">sublang</span>.<span class="number">0</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">10</span>) <span class="op">|</span> <span class="ident">lang</span>.<span class="number">0</span>)
 	}
 
 	<span class="doccomment">/// Returns the primary language ID. Originally</span>
 	<span class="doccomment">/// [`PRIMARYLANGID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-primarylangid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">primary_lang_id</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::LANG</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">primary_lang_id</span>(<span class="self">self</span>) -&gt; <span class="ident">co::LANG</span> {
 		<span class="ident">co::LANG</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">&amp;</span> <span class="number">0x3ff</span>)
 	}
 
 	<span class="doccomment">/// Returns the sublanguage ID. Originally</span>
 	<span class="doccomment">/// [`SUBLANGID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-sublangid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">sub_lang_id</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::SUBLANG</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">sub_lang_id</span>(<span class="self">self</span>) -&gt; <span class="ident">co::SUBLANG</span> {
 		<span class="ident">co::SUBLANG</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">10</span>)
 	}
 }
@@ -330,21 +330,21 @@
 	<span class="doccomment">/// Creates a new `LCID`. Originally</span>
 	<span class="doccomment">/// [`MAKELCID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelcid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lang_id</span>: <span class="ident">LANGID</span>, <span class="ident">sort_id</span>: <span class="ident">co::SORT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LCID</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lang_id</span>: <span class="ident">LANGID</span>, <span class="ident">sort_id</span>: <span class="ident">co::SORT</span>) -&gt; <span class="ident">LCID</span> {
 		<span class="self">Self</span>(((<span class="ident">sort_id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">16</span>) <span class="op">|</span> <span class="ident">lang_id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 
 	<span class="doccomment">/// Returns the language identifier. Originally</span>
 	<span class="doccomment">/// [`LANGIDFROMLCID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-langidfromlcid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">lang_id</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LANGID</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">lang_id</span>(<span class="self">self</span>) -&gt; <span class="ident">LANGID</span> {
 		<span class="ident">LANGID</span>(<span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)
 	}
 
 	<span class="doccomment">/// Returns the sort ID. Originally</span>
 	<span class="doccomment">/// [`SORTIDFROMLCID`](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-sortidfromlcid)</span>
 	<span class="doccomment">/// macro.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">sort_id</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::SORT</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">sort_id</span>(<span class="self">self</span>) -&gt; <span class="ident">co::SORT</span> {
 		<span class="ident">co::SORT</span>(((<span class="self">self</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="op">&amp;</span> <span class="number">0xf</span>) <span class="kw">as</span> <span class="kw">_</span>)
 	}
 }

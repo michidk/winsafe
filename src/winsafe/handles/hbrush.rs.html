@@ -127,7 +127,7 @@
 	<span class="doccomment">/// **Note:** This should be used only to initialize the</span>
 	<span class="doccomment">/// [`WNDCLASSEX`](crate::WNDCLASSEX)&#39;s `hbrBackground` field. Any other use</span>
 	<span class="doccomment">/// will yield an invalid handle.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">from_sys_color</span>(<span class="ident">color</span>: <span class="ident">co::COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HBRUSH</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">from_sys_color</span>(<span class="ident">color</span>: <span class="ident">co::COLOR</span>) -&gt; <span class="ident">HBRUSH</span> {
 		<span class="self">Self</span>((<span class="ident">color</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="kw">_</span> )
 	}
 
@@ -136,7 +136,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HBRUSH::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateBrushIndirect</span>(<span class="ident">lb</span>: <span class="kw-2">&amp;</span><span class="ident">LOGBRUSH</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateBrushIndirect</span>(<span class="ident">lb</span>: <span class="kw-2">&amp;</span><span class="ident">LOGBRUSH</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreateBrushIndirect</span>(<span class="ident">lb</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -148,7 +148,7 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HBRUSH::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateHatchBrush</span>(
-		<span class="ident">hatch</span>: <span class="ident">co::HS</span>, <span class="ident">color</span>: <span class="ident">COLORREF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span>
+		<span class="ident">hatch</span>: <span class="ident">co::HS</span>, <span class="ident">color</span>: <span class="ident">COLORREF</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span>
 	{
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreateHatchBrush</span>(<span class="ident">hatch</span>.<span class="number">0</span>, <span class="ident">color</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
@@ -160,7 +160,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HBRUSH::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreatePatternBrush</span>(<span class="ident">hbmp</span>: <span class="ident">HBITMAP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreatePatternBrush</span>(<span class="ident">hbmp</span>: <span class="ident">HBITMAP</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreatePatternBrush</span>(<span class="ident">hbmp</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -171,7 +171,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HBRUSH::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateSolidBrush</span>(<span class="ident">color</span>: <span class="ident">COLORREF</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CreateSolidBrush</span>(<span class="ident">color</span>: <span class="ident">COLORREF</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::CreateSolidBrush</span>(<span class="ident">color</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -179,7 +179,7 @@
 
 	<span class="doccomment">/// [`GetObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getobjectw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetObject</span>(<span class="self">self</span>, <span class="ident">pv</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LOGBRUSH</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetObject</span>(<span class="self">self</span>, <span class="ident">pv</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LOGBRUSH</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
 			<span class="ident">gdi32::GetObjectW</span>(
 				<span class="self">self</span>.<span class="number">0</span>,
@@ -187,14 +187,14 @@
 				<span class="ident">pv</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		} {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(()),
 		}
 	}
 
 	<span class="doccomment">/// [`GetStockObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getstockobject)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetStockObject</span>(<span class="ident">sb</span>: <span class="ident">co::STOCK_BRUSH</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetStockObject</span>(<span class="ident">sb</span>: <span class="ident">co::STOCK_BRUSH</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::GetStockObject</span>(<span class="ident">sb</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
@@ -202,7 +202,7 @@
 
 	<span class="doccomment">/// [`GetSysColorBrush`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolorbrush)</span>
 	<span class="doccomment">/// static method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColorBrush</span>(<span class="ident">index</span>: <span class="ident">co::COLOR</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetSysColorBrush</span>(<span class="ident">index</span>: <span class="ident">co::COLOR</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBRUSH</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi32::GetSysColorBrush</span>(<span class="ident">index</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="self">Self</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())

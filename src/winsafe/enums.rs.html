@@ -634,8 +634,8 @@
 
 <span class="doccomment">/// Implements the `from_str` constructor method.</span>
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_fromstr</span> {
-	() <span class="op">=</span><span class="op">&gt;</span> {
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+	() =&gt; {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
 			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">WString::from_str</span>(<span class="ident">v</span>))
 		}
 	};
@@ -655,11 +655,11 @@
 
 <span class="kw">impl</span> <span class="ident">AccelMenuCtrl</span> {
 	<span class="doccomment">/// Returns the notification code and the control ID pair.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">co::CMD</span>, <span class="ident">u16</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">co::CMD</span>, <span class="ident">u16</span>) {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">AccelMenuCtrl::Accel</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">co::CMD::Accelerator</span>, <span class="kw-2">*</span><span class="ident">id</span>),
-			<span class="ident">AccelMenuCtrl::Menu</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">co::CMD::Menu</span>, <span class="kw-2">*</span><span class="ident">id</span>),
-			<span class="ident">AccelMenuCtrl::Ctrl</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">data</span>.<span class="ident">notif_code</span>, <span class="ident">data</span>.<span class="ident">ctrl_id</span>),
+			<span class="ident">AccelMenuCtrl::Accel</span>(<span class="ident">id</span>) =&gt; (<span class="ident">co::CMD::Accelerator</span>, <span class="kw-2">*</span><span class="ident">id</span>),
+			<span class="ident">AccelMenuCtrl::Menu</span>(<span class="ident">id</span>) =&gt; (<span class="ident">co::CMD::Menu</span>, <span class="kw-2">*</span><span class="ident">id</span>),
+			<span class="ident">AccelMenuCtrl::Ctrl</span>(<span class="ident">data</span>) =&gt; (<span class="ident">data</span>.<span class="ident">notif_code</span>, <span class="ident">data</span>.<span class="ident">ctrl_id</span>),
 		}
 	}
 }
@@ -691,10 +691,10 @@
 <span class="kw">impl</span> <span class="ident">AtomStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Atom</span>(<span class="ident">atom</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">atom</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::Atom</span>(<span class="ident">atom</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">atom</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -710,10 +710,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">BmpIcon</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		(<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="number">0</span>,
-			<span class="ident"><span class="self">Self</span>::Icon</span>(<span class="ident">hicon</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hicon</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) =&gt; <span class="ident">hbmp</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Icon</span>(<span class="ident">hicon</span>) =&gt; <span class="ident">hicon</span>.<span class="number">0</span>,
 		}) <span class="kw">as</span> <span class="ident">isize</span>
 	}
 }
@@ -736,12 +736,12 @@
 <span class="kw">impl</span> <span class="ident">BmpPtrStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hbmp</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Ptr</span>(<span class="ident">lp</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
+			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) =&gt; <span class="ident">hbmp</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Ptr</span>(<span class="ident">lp</span>) =&gt; <span class="kw-2">*</span><span class="ident">lp</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">std::ptr::null</span>(),
 		}
 	}
 }
@@ -794,10 +794,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndHmenu</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		(<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="number">0</span>,
-			<span class="ident"><span class="self">Self</span>::Hmenu</span>(<span class="ident">hmenu</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hmenu</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Hmenu</span>(<span class="ident">hmenu</span>) =&gt; <span class="ident">hmenu</span>.<span class="number">0</span>,
 		}) <span class="kw">as</span> <span class="kw">_</span>
 	}
 }
@@ -816,11 +816,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndPlace</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="number">0</span>,
-			<span class="ident"><span class="self">Self</span>::Place</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">v</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Place</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">std::ptr::null_mut</span>(),
 		}
 	}
 }
@@ -839,11 +839,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndPointId</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Point</span>(<span class="ident">pt</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEDWORD</span>(<span class="ident">pt</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">pt</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Point</span>(<span class="ident">pt</span>) =&gt; <span class="ident">MAKEDWORD</span>(<span class="ident">pt</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">pt</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -892,11 +892,11 @@
 <span class="kw">impl</span> <span class="ident">IdIdcStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Idc</span>(<span class="ident">idc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idc</span>.<span class="number">0</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Idc</span>(<span class="ident">idc</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idc</span>.<span class="number">0</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -917,11 +917,11 @@
 <span class="kw">impl</span> <span class="ident">IdIdiStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Idi</span>(<span class="ident">idi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idi</span>.<span class="number">0</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Idi</span>(<span class="ident">idi</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">idi</span>.<span class="number">0</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -941,19 +941,19 @@
 }
 
 <span class="kw">impl</span> <span class="ident">IdMenu</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Menu</span>(<span class="ident">hMenu</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hMenu</span>.<span class="number">0</span>,
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null_mut</span>(),
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Menu</span>(<span class="ident">hMenu</span>) =&gt; <span class="ident">hMenu</span>.<span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">std::ptr::null_mut</span>(),
 		}
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_usize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_usize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">IdMenu::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IdMenu::Menu</span>(<span class="ident">hMenu</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hMenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IdMenu::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+			<span class="ident">IdMenu::Id</span>(<span class="ident">id</span>) =&gt; <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IdMenu::Menu</span>(<span class="ident">hMenu</span>) =&gt; <span class="ident">hMenu</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IdMenu::None</span> =&gt; <span class="number">0</span>,
 		}
 	}
 }
@@ -983,27 +983,27 @@
 
 <span class="kw">impl</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// Returns whether value is `Pos`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_by_pos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_by_pos</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-			<span class="ident">IdPos::Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
+			<span class="ident">IdPos::Pos</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
 		}
 	}
 
 	<span class="doccomment">/// Returns the ID or the position as a plain `u32`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_or_pos_u32</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_or_pos_u32</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">IdPos::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">IdPos::Pos</span>(<span class="ident">pos</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">pos</span>,
+			<span class="ident">IdPos::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">IdPos::Pos</span>(<span class="ident">pos</span>) =&gt; <span class="ident">pos</span>,
 		}
 	}
 
 	<span class="doccomment">/// Returns [`MF::BYCOMMAND`](crate::co::MF::BYCOMMAND) if value is `Id`, or</span>
 	<span class="doccomment">/// [`MF::BYPOSITION`](crate::co::MF::BYPOSITION) if value is `Pos`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mf_flag</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::MF</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mf_flag</span>(<span class="self">self</span>) -&gt; <span class="ident">co::MF</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::MF::BYCOMMAND</span>,
-			<span class="ident">IdPos::Pos</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::MF::BYPOSITION</span>,
+			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::MF::BYCOMMAND</span>,
+			<span class="ident">IdPos::Pos</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::MF::BYPOSITION</span>,
 		}
 	}
 }
@@ -1028,7 +1028,7 @@
 <span class="kw">impl</span> <span class="ident">IdStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IdStr</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) -&gt; <span class="ident">IdStr</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">ptr</span>) {
 			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>)
 		} <span class="kw">else</span> {
@@ -1036,10 +1036,10 @@
 		}
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -1062,12 +1062,12 @@
 <span class="kw">impl</span> <span class="ident">IdTdiconStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
-			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Tdicon</span>(<span class="ident">tdi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">std::ptr::null</span>(),
+			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Tdicon</span>(<span class="ident">tdi</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">tdi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -1116,7 +1116,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ResStrs</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_strs</span>(<span class="ident">texts</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResStrs</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_strs</span>(<span class="ident">texts</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) -&gt; <span class="ident">ResStrs</span> {
 		<span class="ident"><span class="self">Self</span>::Strs</span>(<span class="ident">WString::from_str_vec</span>(<span class="ident">texts</span>))
 	}
 }
@@ -1149,39 +1149,39 @@
 
 <span class="kw">impl</span> <span class="ident">RegistryValue</span> {
 	<span class="doccomment">/// Creates a new `RegistryValue::Sz` value from a `&amp;str`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_sz</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RegistryValue</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_sz</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">RegistryValue</span> {
 		<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="ident">WString::from_str</span>(<span class="ident">s</span>))
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">std::ffi::c_void</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="ident">b</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">b</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::ptr::null</span>(),
+			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="ident">b</span>) =&gt; <span class="ident">b</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="ident">n</span>) =&gt; <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="ident">n</span>) =&gt; <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw">_</span> },
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">std::ptr::null</span>(),
 		}
 	}
 
 	<span class="doccomment">/// Returns the correspondent [`co::REG`](crate::co::REG) constant.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">co::REG</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reg_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::REG</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::REG::BINARY</span>,
-			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::REG::DWORD</span>,
-			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::REG::QWORD</span>,
-			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::REG::SZ</span>,
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">co::REG::NONE</span>,
+			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::REG::BINARY</span>,
+			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::REG::DWORD</span>,
+			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::REG::QWORD</span>,
+			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::REG::SZ</span>,
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="ident">co::REG::NONE</span>,
 		}
 	}
 
 	<span class="doccomment">/// Returns the length of the stored data.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="ident">b</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">b</span>.<span class="ident">len</span>(),
-			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(),
-			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(),
-			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">ws</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>(), <span class="comment">// including terminating null</span>
-			<span class="ident"><span class="self">Self</span>::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
+			<span class="ident"><span class="self">Self</span>::Binary</span>(<span class="ident">b</span>) =&gt; <span class="ident">b</span>.<span class="ident">len</span>(),
+			<span class="ident"><span class="self">Self</span>::Dword</span>(<span class="kw">_</span>) =&gt; <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(),
+			<span class="ident"><span class="self">Self</span>::Qword</span>(<span class="kw">_</span>) =&gt; <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(),
+			<span class="ident"><span class="self">Self</span>::Sz</span>(<span class="ident">ws</span>) =&gt; (<span class="ident">ws</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>(), <span class="comment">// including terminating null</span>
+			<span class="ident"><span class="self">Self</span>::None</span> =&gt; <span class="number">0</span>,
 		}
 	}
 }
@@ -1203,7 +1203,7 @@
 <span class="kw">impl</span> <span class="ident">RtStr</span> {
 	<span class="macro">pub_fn_fromstr!</span>();
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RtStr</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ptr</span>(<span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span>) -&gt; <span class="ident">RtStr</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="ident">ptr</span>) {
 			<span class="ident"><span class="self">Self</span>::Rt</span>(<span class="ident">co::RT</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw">_</span>))
 		} <span class="kw">else</span> {
@@ -1211,10 +1211,10 @@
 		}
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Rt</span>(<span class="ident">id</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
+			<span class="ident"><span class="self">Self</span>::Rt</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">id</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
+			<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">ws</span>) =&gt; <span class="kw">unsafe</span> { <span class="ident">ws</span>.<span class="ident">as_ptr</span>() },
 		}
 	}
 }
@@ -1231,20 +1231,20 @@
 }
 
 <span class="kw">impl</span> <span class="ident">TreeitemTvi</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_isize</span>(<span class="ident">val</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeitemTvi</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_isize</span>(<span class="ident">val</span>: <span class="ident">isize</span>) -&gt; <span class="ident">TreeitemTvi</span> {
 		<span class="kw">match</span> <span class="ident">co::TVI</span>(<span class="ident">val</span>) {
-			<span class="ident">co::TVI::FIRST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::FIRST</span>),
-			<span class="ident">co::TVI::LAST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::LAST</span>),
-			<span class="ident">co::TVI::ROOT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::ROOT</span>),
-			<span class="ident">co::TVI::SORT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::SORT</span>),
-			<span class="ident">val</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Treeitem</span>(<span class="ident">HTREEITEM</span>(<span class="ident">val</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)),
+			<span class="ident">co::TVI::FIRST</span> =&gt; <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::FIRST</span>),
+			<span class="ident">co::TVI::LAST</span> =&gt; <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::LAST</span>),
+			<span class="ident">co::TVI::ROOT</span> =&gt; <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::ROOT</span>),
+			<span class="ident">co::TVI::SORT</span> =&gt; <span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">co::TVI::SORT</span>),
+			<span class="ident">val</span> =&gt; <span class="ident"><span class="self">Self</span>::Treeitem</span>(<span class="ident">HTREEITEM</span>(<span class="ident">val</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>)),
 		}
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Treeitem</span>(<span class="ident">htreeitem</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">htreeitem</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">tvi</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tvi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Treeitem</span>(<span class="ident">htreeitem</span>) =&gt; <span class="ident">htreeitem</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident"><span class="self">Self</span>::Tvi</span>(<span class="ident">tvi</span>) =&gt; <span class="ident">tvi</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }

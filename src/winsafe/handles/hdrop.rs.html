@@ -170,7 +170,7 @@
 	<span class="doccomment">/// This method is rather tricky, consider using</span>
 	<span class="doccomment">/// [`HDROP::iter`](crate::HDROP::iter).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DragQueryFile</span>(<span class="self">self</span>,
-		<span class="ident">ifile</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">buf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
+		<span class="ident">ifile</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">buf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WString</span><span class="op">&gt;</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="ident">cch</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">buf</span><span class="op">|</span> <span class="ident">buf</span>.<span class="ident">buffer_size</span>());
 
@@ -182,8 +182,8 @@
 				<span class="ident">cch</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 		} {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
-			<span class="ident">char_count</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">char_count</span>),
+			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
+			<span class="ident">char_count</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">char_count</span>),
 		}
 	}
 
@@ -192,7 +192,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the coordinates and whether the drop occurred in the client area</span>
 	<span class="doccomment">/// of the window.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DragQueryPoint</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">POINT</span>, <span class="ident">bool</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">DragQueryPoint</span>(<span class="self">self</span>) -&gt; (<span class="ident">POINT</span>, <span class="ident">bool</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pt</span> <span class="op">=</span> <span class="ident">POINT::default</span>();
 		<span class="kw">let</span> <span class="ident">client_area</span> <span class="op">=</span> <span class="kw">unsafe</span> {
 			<span class="ident">shell32::DragQueryPoint</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pt</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>)
@@ -217,7 +217,7 @@
 	<span class="doccomment">///     println!(&quot;File: {}&quot;, file_path);</span>
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 		<span class="ident">DropsIter::new</span>(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -241,19 +241,19 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">DropsIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>;
 
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">count</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
 
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hdrop</span>
 			.<span class="ident">DragQueryFile</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">current</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>))
 		{
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 				<span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>; <span class="comment">// no further iterations will be made</span>
 				<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>))
 			},
-			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
 				<span class="self">self</span>.<span class="ident">current</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 				<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">to_string</span>()))
 			},
@@ -262,7 +262,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">DropsIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">hdrop</span>: <span class="ident">HDROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">hdrop</span>: <span class="ident">HDROP</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">hdrop</span>,
 			<span class="ident">buffer</span>: <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">MAX_PATH</span> <span class="op">+</span> <span class="number">1</span>), <span class="comment">// so we alloc just once</span>

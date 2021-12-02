@@ -78,18 +78,18 @@
 	<span class="kw">const</span> <span class="ident">NULL</span>: <span class="self">Self</span>;
 
 	<span class="doccomment">/// Creates a new handle instance by wrapping a pointer.</span>
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_ptr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_ptr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) -&gt; <span class="self">Self</span>;
 
 	<span class="doccomment">/// Returning the underlying raw pointer.</span>
-	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>;
+	<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="self">self</span>) -&gt; <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">std::ffi::c_void</span>;
 
 	<span class="doccomment">/// Tells if the handle is invalid (null).</span>
-	<span class="kw">fn</span> <span class="ident">is_null</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+	<span class="kw">fn</span> <span class="ident">is_null</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">as_ptr</span>().<span class="ident">is_null</span>() }
 	}
 
 	<span class="doccomment">/// Returns `None` if the handle is null, otherwise returns `Some(&amp;Self)`.</span>
-	<span class="kw">fn</span> <span class="ident">as_opt</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">as_opt</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_null</span>() {
 			<span class="prelude-val">None</span>
 		} <span class="kw">else</span> {
@@ -102,7 +102,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HandleClose</span>: <span class="ident">Handle</span> {
 	<span class="doccomment">/// [`CloseHandle`](https://docs.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-closehandle)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">CloseHandle</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">CloseHandle</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">kernel32::CloseHandle</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) })
 	}
 }
@@ -114,13 +114,13 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HandleGdi</span>: <span class="ident">Handle</span> {
 	<span class="doccomment">/// [`DeleteObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-deleteobject)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">DeleteObject</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">DeleteObject</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">gdi32::DeleteObject</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) } {
-			<span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">GetLastError</span>() {
-				<span class="ident">co::ERROR::SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()), <span class="comment">// not really an error</span>
-				<span class="ident">err</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+			<span class="number">0</span> =&gt; <span class="kw">match</span> <span class="ident">GetLastError</span>() {
+				<span class="ident">co::ERROR::SUCCESS</span> =&gt; <span class="prelude-val">Ok</span>(()), <span class="comment">// not really an error</span>
+				<span class="ident">err</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 			},
-			<span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(()),
 		}
 	}
 }
