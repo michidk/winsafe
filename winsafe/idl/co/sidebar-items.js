@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PICTYPE","`PICTYPE` constants (`i16`)."]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["vt","IDL COM virtual tables."]],"struct":[["IPersist","`IPersist` COM interface over `IPersistVT`."],["IPicture","`IPicture` COM interface over `IPictureVT`."]]});
+initSidebarItems({"mod":[["co","IDL constants and types of constants."],["vt","IDL COM virtual tables."]],"struct":[["IPersist","`IPersist` COM interface over `IPersistVT`."],["IPicture","`IPicture` COM interface over `IPictureVT`."],["ISequentialStream","`ISequentialStream` COM interface over `ISequentialStreamVT`."]]});
