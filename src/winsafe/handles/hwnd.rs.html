@@ -1469,6 +1469,12 @@
 <span id="1469">1469</span>
 <span id="1470">1470</span>
 <span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">HrResult</span>, <span class="ident">SUBCLASSPROC</span>, <span class="ident">TIMERPROC</span>, <span class="ident">WinResult</span>};
@@ -2287,7 +2293,13 @@
 	<span class="doccomment">/// [`KillTimer`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-killtimer)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">KillTimer</span>(<span class="self">self</span>, <span class="ident">event_id</span>: <span class="ident">usize</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user32::KillTimer</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">event_id</span>) })
+		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">user32::KillTimer</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">event_id</span>) } {
+			<span class="number">0</span> =&gt; <span class="kw">match</span> <span class="ident">GetLastError</span>() {
+				<span class="ident">co::ERROR::SUCCESS</span> =&gt; <span class="prelude-val">Ok</span>(()),
+				<span class="ident">e</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">e</span>),
+			}
+			<span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(()),
+		}
 	}
 
 	<span class="doccomment">/// [`LogicalToPhysicalPoint`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-logicaltophysicalpoint)</span>
