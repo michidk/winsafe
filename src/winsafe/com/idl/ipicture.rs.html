@@ -208,10 +208,44 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl::IStream</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComInterface</span>, <span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HANDLE</span>, <span class="ident">HRES</span>, <span class="ident">oleaut32</span>, <span class="ident">PCVOID</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HBITMAP</span>, <span class="ident">HDC</span>};
@@ -275,6 +309,38 @@
 			},
 		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">ppv_queried</span>))
 	}
+
+	<span class="doccomment">/// Calls [`IStream::from_slice`](crate::idl::IStream::from_slice) and</span>
+	<span class="doccomment">/// [`IPicture::from_stream`](crate::idl::IPicture::from_stream) to load a</span>
+	<span class="doccomment">/// picture straight from a slice.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_slice</span>(
+		<span class="ident">src</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+		<span class="ident">keep_original_format</span>: <span class="ident">bool</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IPicture</span><span class="op">&gt;</span>
+	{
+		<span class="ident"><span class="self">Self</span>::from_stream</span>(<span class="kw-2">&amp;</span><span class="ident">IStream::from_slice</span>(<span class="ident">src</span>)<span class="question-mark">?</span>, <span class="prelude-val">None</span>, <span class="ident">keep_original_format</span>)
+	}
+
+	<span class="doccomment">/// Calls</span>
+	<span class="doccomment">/// [`OleLoadPicture`](https://docs.microsoft.com/en-us/windows/win32/api/olectl/nf-olectl-oleloadpicture)</span>
+	<span class="doccomment">/// to load a picture from a stream.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_stream</span>(
+		<span class="ident">stream</span>: <span class="kw-2">&amp;</span><span class="ident">IStream</span>,
+		<span class="ident">size</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+		<span class="ident">keep_original_format</span>: <span class="ident">bool</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IPicture</span><span class="op">&gt;</span>
+	{
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="op">=</span> <span class="ident">ComPtr::null</span>();
+		<span class="ident">ok_to_hrresult</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">oleaut32::OleLoadPicture</span>(
+					<span class="ident">stream</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="ident">size</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="op">!</span><span class="ident">keep_original_format</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="comment">// note: reversed</span>
+					<span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IID</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ppv_queried</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>,
+				)
+			},
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">ppv_queried</span>))
+	}
 }
 
 <span class="doccomment">/// Exposes the [`IPicture`](crate::idl::IPicture) methods.</span>
@@ -307,7 +373,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let hdc = HWND::NULL.GetDC()?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let (_, height) = hdc.HiMetricToPixel(0, pp.get_Height()?);</span>
+	<span class="doccomment">/// let (_, height) = hdc.HiMetricToPixel(0, pic.get_Height()?);</span>
 	<span class="doccomment">/// println!(&quot;Height: {} px&quot;, height);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// HWND::NULL.ReleaseDC(hdc)?;</span>
@@ -349,7 +415,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let hdc = HWND::NULL.GetDC()?;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let (width, _) = hdc.HiMetricToPixel(pp.get_Width()?, 0);</span>
+	<span class="doccomment">/// let (width, _) = hdc.HiMetricToPixel(pic.get_Width()?, 0);</span>
 	<span class="doccomment">/// println!(&quot;Width: {} px&quot;, width);</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// HWND::NULL.ReleaseDC(hdc)?;</span>

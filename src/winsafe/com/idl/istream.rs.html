@@ -137,16 +137,33 @@
 <span id="137">137</span>
 <span id="138">138</span>
 <span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl::isequentialstream</span>::{
 	<span class="ident">ISequentialStreamT</span>,
 	<span class="ident">ISequentialStreamVT</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRES</span>, <span class="ident">PVOID</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">HRES</span>, <span class="ident">PVOID</span>, <span class="ident">shlwapi</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 
 <span class="doccomment">/// [`ISequentialStream`](crate::idl::ISequentialStream) virtual table.</span>
@@ -175,6 +192,21 @@
 <span class="macro">impl_iunknown!</span>(<span class="ident">IStream</span>, <span class="number">0x0000000c</span>, <span class="number">0x0000</span>, <span class="number">0x0000</span>, <span class="number">0xc000</span>, <span class="number">0x000000000046</span>);
 <span class="kw">impl</span> <span class="ident">ISequentialStreamT</span> <span class="kw">for</span> <span class="ident">IStream</span> {}
 <span class="kw">impl</span> <span class="ident">IStreamT</span> <span class="kw">for</span> <span class="ident">IStream</span> {}
+
+<span class="kw">impl</span> <span class="ident">IStream</span> {
+	<span class="doccomment">/// Calls</span>
+	<span class="doccomment">/// [`SHCreateMemStream`](https://docs.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-shcreatememstream)</span>
+	<span class="doccomment">/// to create a new stream over a slice.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_slice</span>(<span class="ident">src</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">IStream</span><span class="op">&gt;</span> {
+		<span class="kw">unsafe</span> {
+			<span class="ident">shlwapi::SHCreateMemStream</span>(<span class="ident">src</span>.<span class="ident">as_ptr</span>(), <span class="ident">src</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>)
+				.<span class="ident">as_ref</span>()
+		}.<span class="ident">map_or</span>(
+			<span class="prelude-val">Err</span>(<span class="ident">co::HRESULT::E_OUTOFMEMORY</span>),
+			<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="self">Self</span>(<span class="ident">ComPtr</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>))),
+		)
+	}
+}
 
 <span class="doccomment">/// Exposes the [`IStream`](crate::idl::IStream) methods.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IStreamT</span>: <span class="ident">IUnknownT</span> {
