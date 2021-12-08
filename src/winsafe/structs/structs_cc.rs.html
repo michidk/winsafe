@@ -1014,12 +1014,52 @@
 <span id="1014">1014</span>
 <span id="1015">1015</span>
 <span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Assorted Win32 structs used by common controls.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::PFNLVGROUPCOMPARE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums</span>::{<span class="ident">BmpIdbRes</span>, <span class="ident">IdStr</span>, <span class="ident">IndexStr</span>, <span class="ident">TreeitemTvi</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HBITMAP</span>, <span class="ident">HDC</span>, <span class="ident">HIMAGELIST</span>, <span class="ident">HINSTANCE</span>, <span class="ident">HTREEITEM</span>, <span class="ident">HWND</span>};
@@ -1358,6 +1398,25 @@
 	<span class="kw">pub</span> <span class="ident">iGroup</span>: <span class="ident">i32</span>,
 }
 
+<span class="doccomment">/// [`LVINSERTGROUPSORTED`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvinsertgroupsorted)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LVINSERTGROUPSORTED</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="ident">pfnGroupCompare</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PFNLVGROUPCOMPARE</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">pvData</span>: <span class="ident">usize</span>,
+	<span class="kw">pub</span> <span class="ident">lvGroup</span>: <span class="ident">LVGROUP</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">LVINSERTGROUPSORTED</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> {
+			<span class="ident">pfnGroupCompare</span>: <span class="prelude-val">None</span>,
+			<span class="ident">pvData</span>: <span class="number">0</span>,
+			<span class="ident">lvGroup</span>: <span class="ident">LVGROUP::default</span>(), <span class="comment">// has cbSize, so we can&#39;t use impl_default_size macro</span>
+		}
+	}
+}
+
 <span class="doccomment">/// [`LVINSERTMARK`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvinsertmark)</span>
 <span class="doccomment">/// struct.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
@@ -1406,6 +1465,25 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LVITEMINDEX</span> {
 	<span class="kw">pub</span> <span class="ident">iItem</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">iGroup</span>: <span class="ident">i32</span>,
+}
+
+<span class="doccomment">/// [`LVSETINFOTIP`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvsetinfotip)</span>
+<span class="doccomment">/// struct.</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LVSETINFOTIP</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="ident">cbSize</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">u32</span>, <span class="comment">// unspecified</span>
+	<span class="ident">pszText</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u16</span>,
+	<span class="kw">pub</span> <span class="ident">iItem</span>: <span class="ident">i32</span>,
+	<span class="kw">pub</span> <span class="ident">iSubItem</span>: <span class="ident">i32</span>,
+
+	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+}
+
+<span class="macro">impl_default_with_size!</span>(<span class="ident">LVSETINFOTIP</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>);
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LVSETINFOTIP</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszText</span>, <span class="ident">set_pszText</span>);
 }
 
 <span class="doccomment">/// [`LVTILEINFO`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvtileinfo)</span>

@@ -2251,9 +2251,6 @@
 <span id="2251">2251</span>
 <span id="2252">2252</span>
 <span id="2253">2253</span>
-<span id="2254">2254</span>
-<span id="2255">2255</span>
-<span id="2256">2256</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Generic window</span>
 <span class="doccomment">//! [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
 <span class="doccomment">//! whose constants have [`WM`](crate::co::WM) prefix.</span>
@@ -2271,7 +2268,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">HIBYTE</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LOWORD</span>, <span class="ident">MAKEDWORD</span>, <span class="ident">MAKEWORD</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HDC</span>, <span class="ident">HDROP</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HRGN</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSend</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">WndMsg</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros</span>::{<span class="ident">lp_to_point</span>, <span class="ident">point_to_lp</span>, <span class="ident">zero_as_none</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::macros::zero_as_none</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs</span>::{<span class="ident">CB_ERR</span>, <span class="ident">FAPPCOMMAND_MASK</span>, <span class="ident">LB_ERRSPACE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
 	<span class="ident">CREATESTRUCT</span>,
@@ -2514,7 +2511,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::CONTEXTMENU</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">cursor_pos</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">cursor_pos</span>.<span class="ident">into_u32</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -2523,7 +2520,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">hwnd</span>: <span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">cursor_pos</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
+			<span class="ident">cursor_pos</span>: <span class="ident">POINT::from_u32</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3189,7 +3186,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::HSCROLL</span>,
 			<span class="ident">wparam</span>: <span class="ident">MAKEDWORD</span>(<span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="ident">scroll_box_pos</span>) <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">unwrap_or_default</span>(),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">hcontrol</span>.<span class="ident">map_or</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3477,7 +3474,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::MOVE</span>,
 			<span class="ident">wparam</span>: <span class="number">0</span>,
-			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">coords</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">coords</span>.<span class="ident">into_u32</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3485,7 +3482,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">Move</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">coords</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
+			<span class="ident">coords</span>: <span class="ident">POINT::from_u32</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3618,7 +3615,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::NCHITTEST</span>,
 			<span class="ident">wparam</span>: <span class="number">0</span>,
-			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">cursor_pos</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">cursor_pos</span>.<span class="ident">into_u32</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -3626,7 +3623,7 @@
 <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="ident">NcHitTest</span> {
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">cursor_pos</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
+			<span class="ident">cursor_pos</span>: <span class="ident">POINT::from_u32</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
@@ -3798,7 +3795,7 @@
 			<span class="ident">data</span>: <span class="kw">match</span> <span class="ident">event</span> {
 				<span class="ident">co::WMPN::CREATE</span> <span class="op">|</span> <span class="ident">co::WMPN::DESTROY</span> =&gt; <span class="ident">HwndPointId::Hwnd</span>(<span class="ident">HWND</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 				<span class="ident">co::WMPN::POINTERDOWN</span> =&gt; <span class="ident">HwndPointId::Id</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-				<span class="kw">_</span> =&gt; <span class="ident">HwndPointId::Point</span>(<span class="ident">lp_to_point</span>(<span class="ident">p</span>)),
+				<span class="kw">_</span> =&gt; <span class="ident">HwndPointId::Point</span>(<span class="ident">POINT::from_u32</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>)),
 			},
 		}
 	}
@@ -4115,10 +4112,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SIZE</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="ident">MAKEDWORD</span>(
-				<span class="self">self</span>.<span class="ident">client_area</span>.<span class="ident">cx</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="self">self</span>.<span class="ident">client_area</span>.<span class="ident">cy</span> <span class="kw">as</span> <span class="kw">_</span>,
-			) <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">client_area</span>.<span class="ident">into_u32</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -4267,7 +4261,7 @@
 		<span class="ident">WndMsg</span> {
 			<span class="ident">msg_id</span>: <span class="ident">co::WM::SYSCOMMAND</span>,
 			<span class="ident">wparam</span>: <span class="self">self</span>.<span class="ident">request</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
-			<span class="ident">lparam</span>: <span class="ident">point_to_lp</span>(<span class="self">self</span>.<span class="ident">position</span>),
+			<span class="ident">lparam</span>: <span class="self">self</span>.<span class="ident">position</span>.<span class="ident">into_u32</span>() <span class="kw">as</span> <span class="kw">_</span>,
 		}
 	}
 }
@@ -4276,7 +4270,7 @@
 	<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">request</span>: <span class="ident">co::SC</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
-			<span class="ident">position</span>: <span class="ident">lp_to_point</span>(<span class="ident">p</span>),
+			<span class="ident">position</span>: <span class="ident">POINT::from_u32</span>(<span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw">_</span>),
 		}
 	}
 }
