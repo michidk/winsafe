@@ -242,14 +242,30 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::HrResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">HrResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::idl::IStream</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::com::iunknown</span>::{<span class="ident">ComInterface</span>, <span class="ident">ComPtr</span>, <span class="ident">IUnknownT</span>, <span class="ident">IUnknownVT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::{<span class="ident">BOOL</span>, <span class="ident">HANDLE</span>, <span class="ident">HRES</span>, <span class="ident">oleaut32</span>, <span class="ident">PCVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HBITMAP</span>, <span class="ident">HDC</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HBITMAP</span>, <span class="ident">HDC</span>, <span class="ident">HWND</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::privs::ok_to_hrresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">COLORREF</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
@@ -360,9 +376,11 @@
 	<span class="doccomment">/// [`IPicture::get_Height`](https://docs.microsoft.com/en-us/windows/win32/api/ocidl/nf-ocidl-ipicture-get_height)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// **Note:** Returns a value in HIMETRIC units. Use</span>
-	<span class="doccomment">/// [`HDC::HiMetricToPixel`](crate::HDC::HiMetricToPixel) to convert it to</span>
-	<span class="doccomment">/// pixels.</span>
+	<span class="doccomment">/// **Note:** Returns a value in HIMETRIC units. To convert it to pixels,</span>
+	<span class="doccomment">/// prefer using the simpler</span>
+	<span class="doccomment">/// [`IPicture::size_px`](crate::idl::IPictureT::size_px), or use</span>
+	<span class="doccomment">/// [`HDC::HiMetricToPixel`](crate::HDC::HiMetricToPixel) to perform the</span>
+	<span class="doccomment">/// conversion manually.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
@@ -402,9 +420,11 @@
 	<span class="doccomment">/// [`IPicture::get_Width`](https://docs.microsoft.com/en-us/windows/win32/api/ocidl/nf-ocidl-ipicture-get_width)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// **Note:** Returns a value in HIMETRIC units. Use</span>
-	<span class="doccomment">/// [`HDC::HiMetricToPixel`](crate::HDC::HiMetricToPixel) to convert it to</span>
-	<span class="doccomment">/// pixels.</span>
+	<span class="doccomment">/// **Note:** Returns a value in HIMETRIC units. To convert it to pixels,</span>
+	<span class="doccomment">/// prefer using the simpler</span>
+	<span class="doccomment">/// [`IPicture::size_px`](crate::idl::IPictureT::size_px), or use</span>
+	<span class="doccomment">/// [`HDC::HiMetricToPixel`](crate::HDC::HiMetricToPixel) to perform the</span>
+	<span class="doccomment">/// conversion manually.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
@@ -484,6 +504,18 @@
 				(<span class="ident">vt</span>.<span class="ident">SelectPicture</span>)(<span class="self">self</span>.<span class="ident">ptr</span>(), <span class="ident">hdc</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hdc_out</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hbmp</span>.<span class="number">0</span>),
 			)
 		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> (<span class="ident">hdc_out</span>, <span class="ident">hbmp</span>))
+	}
+
+	<span class="doccomment">/// Calls [`IPicture::get_Width`](crate::idl::IPictureT::get_Width) and</span>
+	<span class="doccomment">/// [`IPicture::get_Height`](crate::idl::IPictureT::get_Height), then</span>
+	<span class="doccomment">/// converts the HIMETRIC units to pixels.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// If `hdc` is not provided, `HWND::NULL.GetDC()` will be used.</span>
+	<span class="kw">fn</span> <span class="ident">size_px</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hdc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HDC</span><span class="op">&gt;</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">SIZE</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">our_hdc</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hdc</span>) <span class="op">=</span> <span class="ident">hdc</span> { <span class="ident">hdc</span> } <span class="kw">else</span> { <span class="ident">HWND::NULL</span>.<span class="ident">GetDC</span>()<span class="question-mark">?</span> };
+		<span class="kw">let</span> (<span class="ident">cx</span>, <span class="ident">cy</span>) <span class="op">=</span> <span class="ident">our_hdc</span>.<span class="ident">HiMetricToPixel</span>(<span class="self">self</span>.<span class="ident">get_Width</span>()<span class="question-mark">?</span>, <span class="self">self</span>.<span class="ident">get_Height</span>()<span class="question-mark">?</span>);
+		<span class="kw">if</span> <span class="ident">hdc</span>.<span class="ident">is_none</span>() { <span class="ident">HWND::NULL</span>.<span class="ident">ReleaseDC</span>(<span class="ident">our_hdc</span>)<span class="question-mark">?</span>; }
+		<span class="prelude-val">Ok</span>(<span class="ident">SIZE::new</span>(<span class="ident">cx</span>, <span class="ident">cy</span>))
 	}
 }
 </code></pre></div>
