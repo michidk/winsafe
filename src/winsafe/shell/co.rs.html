@@ -1,0 +1,798 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\shell\co.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>co.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../winsafe/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>)]</span>
+
+<span class="macro">const_ordinary!</span> { <span class="ident">DROPEFFECT</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`DROPEFFECT`](https://docs.microsoft.com/en-us/windows/win32/com/dropeffect-constants)</span>
+	<span class="doccomment">/// constants (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">NONE</span> <span class="number">0</span>
+	<span class="ident">COPY</span> <span class="number">1</span>
+	<span class="ident">MOVE</span> <span class="number">2</span>
+	<span class="ident">LINK</span> <span class="number">4</span>
+	<span class="ident">SCROLL</span> <span class="number">0x8000_0000</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">FO</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SHFILEOPSTRUCT`](crate::SHFILEOPSTRUCT) `wFunc` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">MOVE</span> <span class="number">0x0001</span>
+	<span class="ident">COPY</span> <span class="number">0x0002</span>
+	<span class="ident">DELETE</span> <span class="number">0x0003</span>
+	<span class="ident">RENAME</span> <span class="number">0x0004</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">FOF</span>: <span class="ident">u16</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SHFILEOPSTRUCT`](crate::SHFILEOPSTRUCT) `fFlags` (`u16`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">MULTIDESTFILES</span> <span class="number">0x0001</span>
+	<span class="ident">CONFIRMMOUSE</span> <span class="number">0x0002</span>
+	<span class="ident">SILENT</span> <span class="number">0x0004</span>
+	<span class="ident">RENAMEONCOLLISION</span> <span class="number">0x0008</span>
+	<span class="ident">NOCONFIRMATION</span> <span class="number">0x0010</span>
+	<span class="ident">WANTMAPPINGHANDLE</span> <span class="number">0x0020</span>
+	<span class="ident">ALLOWUNDO</span> <span class="number">0x0040</span>
+	<span class="ident">FILESONLY</span> <span class="number">0x0080</span>
+	<span class="ident">SIMPLEPROGRESS</span> <span class="number">0x0100</span>
+	<span class="ident">NOCONFIRMMKDIR</span> <span class="number">0x0200</span>
+	<span class="ident">NOERRORUI</span> <span class="number">0x0400</span>
+	<span class="ident">NOCOPYSECURITYATTRIBS</span> <span class="number">0x0800</span>
+	<span class="ident">NORECURSION</span> <span class="number">0x1000</span>
+	<span class="ident">NO_CONNECTED_ELEMENTS</span> <span class="number">0x2000</span>
+	<span class="ident">WANTNUKEWARNING</span> <span class="number">0x4000</span>
+	<span class="ident">NORECURSEREPARSE</span> <span class="number">0x8000</span>
+	<span class="ident">NO_UI</span> <span class="ident"><span class="self">Self</span>::SILENT</span>.<span class="number">0</span> <span class="op">|</span> <span class="ident"><span class="self">Self</span>::NOCONFIRMATION</span>.<span class="number">0</span> <span class="op">|</span> <span class="ident"><span class="self">Self</span>::NOERRORUI</span>.<span class="number">0</span> <span class="op">|</span> <span class="ident"><span class="self">Self</span>::NOCONFIRMMKDIR</span>.<span class="number">0</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">FOS</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`_FILEOPENDIALOGOPTIONS`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-_fileopendialogoptions)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="doccomment">/// When saving a file prompt before overwriting an existing file of the</span>
+	<span class="doccomment">/// same name. This is a default value for the Save dialog.</span>
+	<span class="ident">OVERWRITEPROMPT</span> <span class="number">0x2</span>
+	<span class="doccomment">/// In the Save dialog only allow the user to choose a file that has one of</span>
+	<span class="doccomment">/// the file name extensions specified through</span>
+	<span class="doccomment">/// [`IFileDialog::SetFileTypes`](crate::prelude::ShellIFileDialog::SetFileTypes).</span>
+	<span class="ident">STRICTFILETYPES</span> <span class="number">0x4</span>
+	<span class="doccomment">/// Don&#39;t change the current working directory.</span>
+	<span class="ident">NOCHANGEDIR</span> <span class="number">0x8</span>
+	<span class="doccomment">/// Present an Open dialog that offers a choice of folders rather than</span>
+	<span class="doccomment">/// files.</span>
+	<span class="ident">PICKFOLDERS</span> <span class="number">0x20</span>
+	<span class="doccomment">/// Ensures that returned items are file system items</span>
+	<span class="doccomment">/// ([`SFGAO::FILESYSTEM`](crate::co::SFGAO::FILESYSTEM)). Note that this</span>
+	<span class="doccomment">/// does not apply to items returned by</span>
+	<span class="doccomment">/// [`IFileDialog::GetCurrentSelection`](crate::prelude::ShellIFileDialog::GetCurrentSelection).</span>
+	<span class="ident">FORCEFILESYSTEM</span> <span class="number">0x40</span>
+	<span class="doccomment">/// Enables the user to choose any item in the Shell namespace not just</span>
+	<span class="doccomment">/// those with [`SFGAO::STREAM`](crate::co::SFGAO::STREAM) or</span>
+	<span class="doccomment">/// [`SFAGO::FILESYSTEM`](crate::co::SFGAO::FILESYSTEM) attributes. This</span>
+	<span class="doccomment">/// flag cannot be combined with</span>
+	<span class="doccomment">/// [`FOS::FORCEFILESYSTEM`](crate::co::FOS::FORCEFILESYSTEM).</span>
+	<span class="ident">ALLNONSTORAGEITEMS</span> <span class="number">0x80</span>
+	<span class="doccomment">/// Do not check for situations that would prevent an application from</span>
+	<span class="doccomment">/// opening the selected file such as sharing violations or access denied</span>
+	<span class="doccomment">/// errors.</span>
+	<span class="ident">NOVALIDATE</span> <span class="number">0x100</span>
+	<span class="doccomment">/// Enables the user to select multiple items in the open dialog. Note that</span>
+	<span class="doccomment">/// when this flag is set the [`IFileOpenDialog`](crate::IFileOpenDialog)</span>
+	<span class="doccomment">/// interface must be used to retrieve those items.</span>
+	<span class="ident">ALLOWMULTISELECT</span> <span class="number">0x200</span>
+	<span class="doccomment">/// The item returned must be in an existing folder. This is a default</span>
+	<span class="doccomment">/// value.</span>
+	<span class="ident">PATHMUSTEXIST</span> <span class="number">0x800</span>
+	<span class="doccomment">/// The item returned must exist. This is a default value for the Open</span>
+	<span class="doccomment">/// dialog.</span>
+	<span class="ident">FILEMUSTEXIST</span> <span class="number">0x1000</span>
+	<span class="doccomment">/// Prompt for creation if the item returned in the save dialog does not</span>
+	<span class="doccomment">/// exist. Note that this does not actually create the item.</span>
+	<span class="ident">CREATEPROMPT</span> <span class="number">0x2000</span>
+	<span class="doccomment">/// In the case of a sharing violation when an application is opening a</span>
+	<span class="doccomment">/// file call the application back through</span>
+	<span class="doccomment">/// [`OnShareViolation`](crate::prelude::ShellIFileDialogEvents::OnShareViolation)</span>
+	<span class="doccomment">/// for guidance. This flag is overridden by</span>
+	<span class="doccomment">/// [`FOS::NOVALIDATE`](crate::co::FOS::NOVALIDATE).</span>
+	<span class="ident">SHAREAWARE</span> <span class="number">0x4000</span>
+	<span class="doccomment">/// Do not return read-only items. This is a default value for the Save</span>
+	<span class="doccomment">/// dialog.</span>
+	<span class="ident">NOREADONLYRETURN</span> <span class="number">0x8000</span>
+	<span class="doccomment">/// Do not test whether creation of the item as specified in the Save dialog</span>
+	<span class="doccomment">/// will be successful. If this flag is not set the calling application</span>
+	<span class="doccomment">/// must handle errors such as denial of access discovered when the item</span>
+	<span class="doccomment">/// is created.</span>
+	<span class="ident">NOTESTFILECREATE</span> <span class="number">0x1_0000</span>
+	<span class="doccomment">/// Hide the list of places from which the user has recently opened or saved</span>
+	<span class="doccomment">/// items. This value is not supported as of Windows 7.</span>
+	<span class="ident">HIDEMRUPLACES</span> <span class="number">0x2_0000</span>
+	<span class="doccomment">/// Hide items shown by default in the view&#39;s navigation pane. This flag is</span>
+	<span class="doccomment">/// often used in conjunction with the</span>
+	<span class="doccomment">/// [`IFileDialog::AddPlace`](crate::prelude::ShellIFileDialog::AddPlace)</span>
+	<span class="doccomment">/// method, to hide standard locations and replace them with custom</span>
+	<span class="doccomment">/// locations.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Windows 7 and later. Hide all of the standard namespace locations (such</span>
+	<span class="doccomment">/// as Favorites Libraries Computer and Network) shown in the navigation</span>
+	<span class="doccomment">/// pane.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Windows Vista. Hide the contents of the Favorite Links tree in the</span>
+	<span class="doccomment">/// navigation pane. Note that the category itself is still displayed but</span>
+	<span class="doccomment">/// shown as empty.</span>
+	<span class="ident">HIDEPINNEDPLACES</span> <span class="number">0x4_0000</span>
+	<span class="doccomment">/// Shortcuts should not be treated as their target items. This allows an</span>
+	<span class="doccomment">/// application to open a .lnk file rather than what that file is a shortcut</span>
+	<span class="doccomment">/// to.</span>
+	<span class="ident">NODEREFERENCELINKS</span> <span class="number">0x10_0000</span>
+	<span class="doccomment">/// (This constant has no official documentation.)</span>
+	<span class="ident">OKBUTTONNEEDSINTERACTION</span> <span class="number">0x20_0000</span>
+	<span class="doccomment">/// Do not add the item being opened or saved to the recent documents list</span>
+	<span class="doccomment">/// ([`SHAddToRecentDocs`](crate::SHAddToRecentDocs)).</span>
+	<span class="ident">DONTADDTORECENT</span> <span class="number">0x200_0000</span>
+	<span class="doccomment">/// Include hidden and system items.</span>
+	<span class="ident">FORCESHOWHIDDEN</span> <span class="number">0x1000_0000</span>
+	<span class="doccomment">/// Indicates to the Save As dialog box that it should open in expanded</span>
+	<span class="doccomment">/// mode. Expanded mode is the mode that is set and unset by clicking the</span>
+	<span class="doccomment">/// button in the lower-left corner of the Save As dialog box that switches</span>
+	<span class="doccomment">/// between Browse Folders and Hide Folders when clicked. This value is not</span>
+	<span class="doccomment">/// supported as of Windows 7.</span>
+	<span class="ident">DEFAULTNOMINIMODE</span> <span class="number">0x2000_0000</span>
+	<span class="doccomment">/// Indicates to the Open dialog box that the preview pane should always be</span>
+	<span class="doccomment">/// displayed.</span>
+	<span class="ident">FORCEPREVIEWPANEON</span> <span class="number">0x4000_0000</span>
+	<span class="doccomment">/// Indicates that the caller is opening a file as a stream</span>
+	<span class="doccomment">/// ([`BHID_Stream`](crate::prelude::ShellIShellItem::BindToHandler)) so</span>
+	<span class="doccomment">/// there is no need to download that file.</span>
+	<span class="ident">SUPPORTSTREAMABLEITEMS</span> <span class="number">0x8000_0000</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">FDAP</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`FDAP`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-fdap)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">BOTTOM</span> <span class="number">0</span>
+	<span class="ident">TOP</span> <span class="number">1</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">NIF</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`NOTIFYICONDATA`](crate::NOTIFYICONDATA) `uFlags` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">MESSAGE</span> <span class="number">0x0000_0001</span>
+	<span class="ident">ICON</span> <span class="number">0x0000_0002</span>
+	<span class="ident">TIP</span> <span class="number">0x0000_0004</span>
+	<span class="ident">STATE</span> <span class="number">0x0000_0008</span>
+	<span class="ident">INFO</span> <span class="number">0x0000_0010</span>
+	<span class="ident">GUID</span> <span class="number">0x0000_0020</span>
+	<span class="ident">REALTIME</span> <span class="number">0x0000_0040</span>
+	<span class="ident">SHOWTIP</span> <span class="number">0x0000_0080</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">NIIF</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`NOTIFYICONDATA`](crate::NOTIFYICONDATA) `dwInfoFlags` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">NONE</span> <span class="number">0x0000_0000</span>
+	<span class="ident">INFO</span> <span class="number">0x0000_0001</span>
+	<span class="ident">WARNING</span> <span class="number">0x0000_0002</span>
+	<span class="ident">ERROR</span> <span class="number">0x0000_0003</span>
+	<span class="ident">USER</span> <span class="number">0x0000_0004</span>
+	<span class="ident">NOSOUND</span> <span class="number">0x0000_0010</span>
+	<span class="ident">LARGE_ICON</span> <span class="number">0x0000_0020</span>
+	<span class="ident">RESPECT_QUIET_TIME</span> <span class="number">0x0000_0080</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">NIM</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`Shell_NotifyIcon`](crate::Shell_NotifyIcon) `message` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">ADD</span> <span class="number">0x0000_0000</span>
+	<span class="ident">MODIFY</span> <span class="number">0x0000_0001</span>
+	<span class="ident">DELETE</span> <span class="number">0x0000_0002</span>
+	<span class="ident">SETFOCUS</span> <span class="number">0x0000_0003</span>
+	<span class="ident">SETVERSION</span> <span class="number">0x0000_0004</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">NIS</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`NOTIFYICONDATA`](crate::NOTIFYICONDATA) `dwState` and `dwStateFlags`</span>
+	<span class="doccomment">/// (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">HIDDEN</span> <span class="number">0x0000_0001</span>
+	<span class="ident">SHAREDICON</span> <span class="number">0x0000_0002</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">SE_ERR</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`HWND::ShellExecute`](crate::prelude::ShellHwnd::ShellExecute) return</span>
+	<span class="doccomment">/// value (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">FILE_NOT_FOUND</span> <span class="number">2</span>
+	<span class="ident">PATH_NOT_FOUND</span> <span class="number">3</span>
+	<span class="ident">BAD_FORMAT</span> <span class="number">11</span>
+
+	<span class="ident">ACCESSDENIED</span> <span class="number">5</span>
+	<span class="ident">OOM</span> <span class="number">8</span>
+	<span class="ident">DLLNOTFOUND</span> <span class="number">32</span>
+
+	<span class="ident">SHARE</span> <span class="number">26</span>
+	<span class="ident">ASSOCINCOMPLETE</span> <span class="number">27</span>
+	<span class="ident">DDETIMEOUT</span> <span class="number">28</span>
+	<span class="ident">DDEFAIL</span> <span class="number">29</span>
+	<span class="ident">DDEBUSY</span> <span class="number">30</span>
+	<span class="ident">NOASSOC</span> <span class="number">31</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">SFGAO</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SFGAO`](https://docs.microsoft.com/en-us/windows/win32/shell/sfgao)</span>
+	<span class="doccomment">/// constants (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">CANCOPY</span> <span class="ident">DROPEFFECT::COPY</span>.<span class="number">0</span>
+	<span class="ident">CANMOVE</span> <span class="ident">DROPEFFECT::MOVE</span>.<span class="number">0</span>
+	<span class="ident">CANLINK</span> <span class="ident">DROPEFFECT::LINK</span>.<span class="number">0</span>
+	<span class="ident">STORAGE</span> <span class="number">0x0000_0008</span>
+	<span class="ident">CANRENAME</span> <span class="number">0x0000_0010</span>
+	<span class="ident">CANDELETE</span> <span class="number">0x0000_0020</span>
+	<span class="ident">HASPROPSHEET</span> <span class="number">0x0000_0040</span>
+	<span class="ident">DROPTARGET</span> <span class="number">0x0000_0100</span>
+	<span class="ident">CAPABILITYMASK</span> <span class="number">0x0000_0177</span>
+	<span class="ident">SYSTEM</span> <span class="number">0x0000_1000</span>
+	<span class="ident">ENCRYPTED</span> <span class="number">0x0000_2000</span>
+	<span class="ident">ISSLOW</span> <span class="number">0x0000_4000</span>
+	<span class="ident">GHOSTED</span> <span class="number">0x0000_8000</span>
+	<span class="ident">LINK</span> <span class="number">0x0001_0000</span>
+	<span class="ident">SHARE</span> <span class="number">0x0002_0000</span>
+	<span class="ident">READONLY</span> <span class="number">0x0004_0000</span>
+	<span class="ident">HIDDEN</span> <span class="number">0x0008_0000</span>
+	<span class="ident">FILESYSANCESTOR</span> <span class="number">0x1000_0000</span>
+	<span class="ident">FOLDER</span> <span class="number">0x2000_0000</span>
+	<span class="ident">FILESYSTEM</span> <span class="number">0x4000_0000</span>
+	<span class="ident">HASSUBFOLDER</span> <span class="number">0x8000_0000</span>
+	<span class="ident">CONTENTSMASK</span> <span class="number">0x8000_0000</span>
+	<span class="ident">VALIDATE</span> <span class="number">0x0100_0000</span>
+	<span class="ident">REMOVABLE</span> <span class="number">0x0200_0000</span>
+	<span class="ident">COMPRESSED</span> <span class="number">0x0400_0000</span>
+	<span class="ident">BROWSABLE</span> <span class="number">0x0800_0000</span>
+	<span class="ident">NONENUMERATED</span> <span class="number">0x0010_0000</span>
+	<span class="ident">NEWCONTENT</span> <span class="number">0x0020_0000</span>
+	<span class="ident">CANMONIKER</span> <span class="number">0x0040_0000</span>
+	<span class="ident">HASSTORAGE</span> <span class="number">0x0040_0000</span>
+	<span class="ident">STREAM</span> <span class="number">0x0040_0000</span>
+	<span class="ident">STORAGEANCESTOR</span> <span class="number">0x0080_0000</span>
+	<span class="ident">STORAGECAPMASK</span> <span class="number">0x70c5_0008</span>
+	<span class="ident">PKEYSFGAOMASK</span> <span class="number">0x8104_4000</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">SHARD</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SHARD`](https://docs.microsoft.com/en-us/windows/win32/api/shlobj_core/ne-shlobj_core-shard)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">PIDL</span> <span class="number">0x0000_0001</span>
+	<span class="ident">PATHA</span> <span class="number">0x0000_0002</span>
+	<span class="ident">PATHW</span> <span class="number">0x0000_0003</span>
+	<span class="ident">APPIDINFO</span> <span class="number">0x0000_0004</span>
+	<span class="ident">APPIDINFOIDLIST</span> <span class="number">0x0000_0005</span>
+	<span class="ident">LINK</span> <span class="number">0x0000_0006</span>
+	<span class="ident">APPIDINFOLINK</span> <span class="number">0x0000_0007</span>
+	<span class="ident">SHELLITEM</span> <span class="number">0x0000_0008</span>
+}
+
+<span class="macro">const_bitflag!</span> { <span class="ident">SHGFI</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SHGetFileInfo`](crate::SHGetFileInfo) `flags` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">ICON</span> <span class="number">0x0000_0100</span>
+	<span class="ident">DISPLAYNAME</span> <span class="number">0x0000_0200</span>
+	<span class="ident">TYPENAME</span> <span class="number">0x0000_0400</span>
+	<span class="ident">ATTRIBUTES</span> <span class="number">0x0000_0800</span>
+	<span class="ident">ICONLOCATION</span> <span class="number">0x0000_1000</span>
+	<span class="ident">EXETYPE</span> <span class="number">0x0000_2000</span>
+	<span class="ident">SYSICONINDEX</span> <span class="number">0x0000_4000</span>
+	<span class="ident">LINKOVERLAY</span> <span class="number">0x0000_8000</span>
+	<span class="ident">SELECTED</span> <span class="number">0x0001_0000</span>
+	<span class="ident">ATTR_SPECIFIED</span> <span class="number">0x0002_0000</span>
+	<span class="ident">LARGEICON</span> <span class="number">0x0000_0000</span>
+	<span class="ident">SMALLICON</span> <span class="number">0x0000_0001</span>
+	<span class="ident">OPENICON</span> <span class="number">0x0000_0002</span>
+	<span class="ident">SHELLICONSIZE</span> <span class="number">0x0000_0004</span>
+	<span class="ident">PIDL</span> <span class="number">0x0000_0008</span>
+	<span class="ident">USEFILEATTRIBUTES</span> <span class="number">0x0000_0010</span>
+	<span class="ident">ADDOVERLAYS</span> <span class="number">0x0000_0020</span>
+	<span class="ident">OVERLAYINDEX</span> <span class="number">0x0000_0040</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">SIGDN</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`SIGDN`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-sigdn)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="doccomment">/// Returns the display name relative to the parent folder. In UI this name</span>
+	<span class="doccomment">/// is generally ideal for display to the user.</span>
+	<span class="ident">NORMALDISPLAY</span> <span class="number">0</span>
+	<span class="doccomment">/// Returns the parsing name relative to the parent folder. This name is not</span>
+	<span class="doccomment">/// suitable for use in UI.</span>
+	<span class="ident">PARENTRELATIVEPARSING</span> <span class="number">0x8001_8001</span>
+	<span class="doccomment">/// Returns the parsing name relative to the desktop. This name is not</span>
+	<span class="doccomment">/// suitable for use in UI.</span>
+	<span class="ident">DESKTOPABSOLUTEPARSING</span> <span class="number">0x8002_8000</span>
+	<span class="doccomment">/// Returns the editing name relative to the parent folder. In UI this name</span>
+	<span class="doccomment">/// is suitable for display to the user.</span>
+	<span class="ident">PARENTRELATIVEEDITING</span> <span class="number">0x8003_1001</span>
+	<span class="doccomment">/// Returns the editing name relative to the desktop. In UI this name is</span>
+	<span class="doccomment">/// suitable for display to the user.</span>
+	<span class="ident">DESKTOPABSOLUTEEDITING</span> <span class="number">0x8004_c000</span>
+	<span class="doccomment">/// Returns the item&#39;s file system path if it has one. Only items that</span>
+	<span class="doccomment">/// report [`SFGAO::FILESYSTEM`](crate::co::SFGAO::FILESYSTEM) have a file</span>
+	<span class="doccomment">/// system path. When an item does not have a file system path a call to</span>
+	<span class="doccomment">/// [`IShellItem::GetDisplayName`](crate::prelude::ShellIShellItem::GetDisplayName)</span>
+	<span class="doccomment">/// on that item will fail. In UI this name is suitable for display to the</span>
+	<span class="doccomment">/// user in some cases but note that it might not be specified for all</span>
+	<span class="doccomment">/// items.</span>
+	<span class="ident">FILESYSPATH</span> <span class="number">0x8005_8000</span>
+	<span class="doccomment">/// Returns the item&#39;s URL if it has one. Some items do not have a URL and</span>
+	<span class="doccomment">/// in those cases a call to</span>
+	<span class="doccomment">/// [`IShellItem::GetDisplayName`](crate::prelude::ShellIShellItem::GetDisplayName)</span>
+	<span class="doccomment">/// will fail. This name is suitable for display to the user in some cases,</span>
+	<span class="doccomment">/// but note that it might not be specified for all items.</span>
+	<span class="ident">URL</span> <span class="number">0x8006_8000</span>
+	<span class="doccomment">/// Returns the path relative to the parent folder in a friendly format as</span>
+	<span class="doccomment">/// displayed in an address bar. This name is suitable for display to the</span>
+	<span class="doccomment">/// user.</span>
+	<span class="ident">PARENTRELATIVEFORADDRESSBAR</span> <span class="number">0x8007_c001</span>
+	<span class="doccomment">/// Returns the path relative to the parent folder.</span>
+	<span class="ident">PARENTRELATIVE</span> <span class="number">0x8008_0001</span>
+	<span class="doccomment">/// Introduced in Windows 8.</span>
+	<span class="ident">PARENTRELATIVEFORUI</span> <span class="number">0x8009_4001</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">STPFLAG</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`STPFLAG`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-stpflag)</span>
+	<span class="doccomment">/// enumeration (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="ident">NONE</span> <span class="number">0</span>
+	<span class="ident">USEAPPTHUMBNAILALWAYS</span> <span class="number">0x1</span>
+	<span class="ident">USEAPPTHUMBNAILWHENACTIVE</span> <span class="number">0x2</span>
+	<span class="ident">USEAPPPEEKALWAYS</span> <span class="number">0x4</span>
+	<span class="ident">USEAPPPEEKWHENACTIVE</span> <span class="number">0x8</span>
+}
+
+<span class="macro">const_ordinary!</span> { <span class="ident">TBPF</span>: <span class="ident">u32</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="doccomment">/// [`ITaskbarList3::SetProgressState`](crate::prelude::ShellITaskbarList3::SetProgressState)</span>
+	<span class="doccomment">/// `tbpFlags` (`u32`).</span>
+	=&gt;
+	=&gt;
+	<span class="doccomment">/// Stops displaying progress and returns the button to its normal state.</span>
+	<span class="doccomment">/// Call this method with this flag to dismiss the progress bar when the</span>
+	<span class="doccomment">/// operation is complete or canceled.</span>
+	<span class="ident">NOPROGRESS</span> <span class="number">0</span>
+	<span class="doccomment">/// The progress indicator does not grow in size but cycles repeatedly</span>
+	<span class="doccomment">/// along the length of the taskbar button. This indicates activity without</span>
+	<span class="doccomment">/// specifying what proportion of the progress is complete. Progress is</span>
+	<span class="doccomment">/// taking place but there is no prediction as to how long the operation</span>
+	<span class="doccomment">/// will take.</span>
+	<span class="ident">INDETERMINATE</span> <span class="number">0x1</span>
+	<span class="doccomment">/// The progress indicator grows in size from left to right in proportion to</span>
+	<span class="doccomment">/// the estimated amount of the operation completed. This is a determinate</span>
+	<span class="doccomment">/// progress indicator; a prediction is being made as to the duration of the</span>
+	<span class="doccomment">/// operation.</span>
+	<span class="ident">NORMAL</span> <span class="number">0x2</span>
+	<span class="doccomment">/// The progress indicator turns red to show that an error has occurred in</span>
+	<span class="doccomment">/// one of the windows that is broadcasting progress. This is a determinate</span>
+	<span class="doccomment">/// state. If the progress indicator is in the indeterminate state it</span>
+	<span class="doccomment">/// switches to a red determinate display of a generic percentage not</span>
+	<span class="doccomment">/// indicative of actual progress.</span>
+	<span class="ident">ERROR</span> <span class="number">0x4</span>
+	<span class="doccomment">/// The progress indicator turns yellow to show that progress is currently</span>
+	<span class="doccomment">/// stopped in one of the windows but can be resumed by the user. No error</span>
+	<span class="doccomment">/// condition exists and nothing is preventing the progress from continuing.</span>
+	<span class="doccomment">/// This is a determinate state. If the progress indicator is in the</span>
+	<span class="doccomment">/// indeterminate state it switches to a yellow determinate display of a</span>
+	<span class="doccomment">/// generic percentage not indicative of actual progress.</span>
+	<span class="ident">PAUSED</span> <span class="number">0x8</span>
+}
+</code></pre></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
+</body></html>

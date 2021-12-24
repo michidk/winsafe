@@ -242,17 +242,14 @@
 <span id="242">242</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::events_wm</span>::{<span class="ident">GuiEventsView</span>, <span class="ident">ProcessResult</span>,
+	<span class="ident">sealed_events_wm::GuiSealedEventsWm</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::func_store::FuncStore</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::events_wm</span>::{
-	<span class="ident">EventsView</span>,
-	<span class="ident">ProcessResult</span>,
-	<span class="ident">sealed_events_wm::SealedEventsWm</span>,
-	<span class="ident">WindowEvents</span>,
-};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::ErrResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">wm</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span>;
 
 <span class="doccomment">/// Exposes window</span>
 <span class="doccomment">/// [messages](https://docs.microsoft.com/en-us/windows/win32/winmsg/about-messages-and-message-queues),</span>
@@ -260,6 +257,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// window.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowEventsAll</span> {
 	<span class="ident">events_wm</span>: <span class="ident">WindowEvents</span>,
 	<span class="ident">tmrs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// WM_TIMER messages</span>
@@ -396,11 +394,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Closing the window on ESC key:</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::{co, gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_command_accel_menu(co::DLGID::CANCEL.into(), {</span>
 	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
@@ -429,7 +428,7 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="kw">impl</span> <span class="ident">SealedEventsWm</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {
+<span class="kw">impl</span> <span class="ident">GuiSealedEventsWm</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {
 	<span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">WndMsg</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -437,9 +436,9 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">EventsView</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {}
+<span class="kw">impl</span> <span class="ident">GuiEventsView</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {}
 
-<span class="kw">impl</span> <span class="ident">sealed_events_wm_nfy::SealedEventsWmNfy</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {
+<span class="kw">impl</span> <span class="ident">sealed_events_wm_nfy::GuiSealedEventsWmNfy</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {
 	<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -448,14 +447,14 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">EventsViewAll</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {}
+<span class="kw">impl</span> <span class="ident">GuiEventsViewAll</span> <span class="kw">for</span> <span class="ident">WindowEventsAll</span> {}
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">mod</span> <span class="ident">sealed_events_wm_nfy</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">co</span>, <span class="ident">ErrResult</span>, <span class="ident">wm</span>};
 
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SealedEventsWmNfy</span> {
+	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GuiSealedEventsWmNfy</span> {
 		<span class="doccomment">/// Raw add notification.</span>
 		<span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id_from</span>: <span class="ident">u16</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
@@ -464,7 +463,8 @@
 
 <span class="doccomment">/// Exposes the methods of</span>
 <span class="doccomment">/// [`WindowEventsAll`](crate::gui::events::WindowEventsAll).</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EventsViewAll</span>: <span class="ident">sealed_events_wm_nfy::SealedEventsWmNfy</span> <span class="op">+</span> <span class="ident">EventsView</span> {
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GuiEventsViewAll</span>: <span class="ident">sealed_events_wm_nfy::GuiSealedEventsWmNfy</span> <span class="op">+</span> <span class="ident">GuiEventsView</span> {
 	<span class="doccomment">/// [`WM_NOTIFY`](crate::msg::wm::Notify) message, for specific ID and</span>
 	<span class="doccomment">/// notification code.</span>
 	<span class="doccomment">///</span>

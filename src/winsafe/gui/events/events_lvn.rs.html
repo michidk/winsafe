@@ -369,28 +369,13 @@
 <span id="369">369</span>
 <span id="370">370</span>
 <span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl</span>::{<span class="ident">NMITEMACTIVATE</span>, <span class="ident">NMLISTVIEW</span>, <span class="ident">NMLVCACHEHINT</span>,
+	<span class="ident">NMLVCUSTOMDRAW</span>, <span class="ident">NMLVDISPINFO</span>, <span class="ident">NMLVEMPTYMARKUP</span>, <span class="ident">NMLVFINDITEM</span>, <span class="ident">NMLVGETINFOTIP</span>,
+	<span class="ident">NMLVKEYDOWN</span>, <span class="ident">NMLVLINK</span>, <span class="ident">NMLVODSTATECHANGE</span>, <span class="ident">NMLVSCROLL</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::base_events_proxy::BaseEventsProxy</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{
-	<span class="ident">NMITEMACTIVATE</span>,
-	<span class="ident">NMLISTVIEW</span>,
-	<span class="ident">NMLVCACHEHINT</span>,
-	<span class="ident">NMLVCUSTOMDRAW</span>,
-	<span class="ident">NMLVDISPINFO</span>,
-	<span class="ident">NMLVEMPTYMARKUP</span>,
-	<span class="ident">NMLVFINDITEM</span>,
-	<span class="ident">NMLVGETINFOTIP</span>,
-	<span class="ident">NMLVKEYDOWN</span>,
-	<span class="ident">NMLVLINK</span>,
-	<span class="ident">NMLVODSTATECHANGE</span>,
-	<span class="ident">NMLVSCROLL</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::ErrResult</span>;
 
 <span class="doccomment">/// Exposes list view control</span>
 <span class="doccomment">/// [notifications](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-list-view-control-reference-notifications).</span>
@@ -401,6 +386,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewEvents</span>(<span class="ident">BaseEventsProxy</span>);
 
 <span class="kw">impl</span> <span class="ident">ListViewEvents</span> {
@@ -476,11 +462,13 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, ErrResult, NMLISTVIEW};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let list: gui::ListView; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+		<span class="doccomment">/// # let list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// list.on().lvn_delete_item(|p: &amp;NMLISTVIEW| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     println!(&quot;Item: {}&quot;, p.iItem);</span>
@@ -569,11 +557,13 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, ErrResult, NMLISTVIEW};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let list: gui::ListView; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+		<span class="doccomment">/// # let list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// list.on().lvn_item_changed(|p: &amp;NMLISTVIEW| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     println!(&quot;Item: {}&quot;, p.iItem);</span>
@@ -597,13 +587,15 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
-		<span class="doccomment">/// use winsafe::{gui, ErrResult, NMLVKEYDOWN};</span>
+		<span class="doccomment">/// use winsafe::{co, gui, ErrResult, NMLVKEYDOWN};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let list: gui::ListView; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+		<span class="doccomment">/// # let list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// list.on().lvn_delete_item(|p: &amp;NMLVKEYDOWN| -&gt; ErrResult&lt;()&gt; {</span>
+		<span class="doccomment">/// list.on().lvn_key_down(|p: &amp;NMLVKEYDOWN| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     if p.wVKey == co::VK::DELETE {</span>
 		<span class="doccomment">///         println!(&quot;DEL key was pressed.&quot;);</span>
 		<span class="doccomment">///     }</span>

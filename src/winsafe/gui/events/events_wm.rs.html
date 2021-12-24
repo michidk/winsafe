@@ -1138,11 +1138,28 @@
 <span id="1138">1138</span>
 <span id="1139">1139</span>
 <span id="1140">1140</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::ErrResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gdi::decl::HFONT</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::func_store::FuncStore</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HFONT</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">MsgSendRecv</span>, <span class="ident">wm</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::ErrResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">wm</span>, <span class="ident">WndMsg</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HBRUSH</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>};
 
 <span class="doccomment">/// The result of processing a message.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">enum</span> <span class="ident">ProcessResult</span> {
@@ -1161,6 +1178,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// window.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowEvents</span> {
 	<span class="ident">msgs</span>: <span class="ident">FuncStore</span><span class="op">&lt;</span> <span class="comment">// ordinary WM messages</span>
 		<span class="ident">co::WM</span>,
@@ -1207,7 +1225,7 @@
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
-<span class="kw">impl</span> <span class="ident">sealed_events_wm::SealedEventsWm</span> <span class="kw">for</span> <span class="ident">WindowEvents</span> {
+<span class="kw">impl</span> <span class="ident">sealed_events_wm::GuiSealedEventsWm</span> <span class="kw">for</span> <span class="ident">WindowEvents</span> {
 	<span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">WndMsg</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -1215,14 +1233,14 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">EventsView</span> <span class="kw">for</span> <span class="ident">WindowEvents</span> {}
+<span class="kw">impl</span> <span class="ident">GuiEventsView</span> <span class="kw">for</span> <span class="ident">WindowEvents</span> {}
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">mod</span> <span class="ident">sealed_events_wm</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">co</span>, <span class="ident">ErrResult</span>, <span class="ident">WndMsg</span>};
 
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SealedEventsWm</span> {
+	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GuiSealedEventsWm</span> {
 		<span class="doccomment">/// Raw add message.</span>
 		<span class="kw">fn</span> <span class="ident">add_msg</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ident</span>: <span class="ident">co::WM</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 			<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">WndMsg</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
@@ -1230,7 +1248,8 @@
 }
 
 <span class="doccomment">/// Exposes the methods of [`WindowEvents`](crate::gui::events::WindowEvents).</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EventsView</span>: <span class="ident">sealed_events_wm::SealedEventsWm</span> {
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GuiEventsView</span>: <span class="ident">sealed_events_wm::GuiSealedEventsWm</span> {
 	<span class="doccomment">/// Event to any [window message](crate::co::WM).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Instead of using this event, you should always prefer the</span>
@@ -1242,11 +1261,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Handling a custom, user-defined message:</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::{co, gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let CUSTOM_MSG = co::WM::from(0x1234);</span>
 	<span class="doccomment">///</span>
@@ -1311,8 +1331,8 @@
 		<span class="doccomment">/// or message box is displayed. Certain functions also send this</span>
 		<span class="doccomment">/// message explicitly to the specified window regardless of whether it</span>
 		<span class="doccomment">/// is the active window. For example, the</span>
-		<span class="doccomment">/// [`HWND::EnableWindow`](crate::HWND::EnableWindow) function sends</span>
-		<span class="doccomment">/// this message when disabling the specified window.</span>
+		<span class="doccomment">/// [`HWND::EnableWindow`](crate::prelude::UserHwnd::EnableWindow)</span>
+		<span class="doccomment">/// function sends this message when disabling the specified window.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_capture_changed</span>, <span class="ident">co::WM::CAPTURECHANGED</span>, <span class="ident">wm::CaptureChanged</span>,
@@ -1363,22 +1383,23 @@
 
 	<span class="doccomment">/// [`WM_CREATE`](crate::msg::wm::Create) message, sent only to non-dialog</span>
 	<span class="doccomment">/// windows. Dialog windows receive</span>
-	<span class="doccomment">/// [`WM_INITDIALOG`](crate::gui::prelude::EventsView::wm_init_dialog)</span>
+	<span class="doccomment">/// [`WM_INITDIALOG`](crate::prelude::GuiEventsView::wm_init_dialog)</span>
 	<span class="doccomment">/// instead.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Sent when an application requests that a window be created by calling</span>
-	<span class="doccomment">/// the [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx) function. The</span>
-	<span class="doccomment">/// message is sent before the function returns. The window procedure of the</span>
-	<span class="doccomment">/// new window receives this message after the window is created, but before</span>
-	<span class="doccomment">/// the window becomes visible.</span>
+	<span class="doccomment">/// the [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx)</span>
+	<span class="doccomment">/// function. The message is sent before the function returns. The window</span>
+	<span class="doccomment">/// procedure of the new window receives this message after the window is</span>
+	<span class="doccomment">/// created, but before the window becomes visible.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// wnd.on().wm_create({</span>
 	<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
@@ -1493,11 +1514,12 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_destroy(|| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///     println!(&quot;Window is gone, goodbye!&quot;);</span>
@@ -1520,16 +1542,17 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_drop_files(|p: msg::wm::DropFiles| -&gt; ErrResult&lt;()&gt; {</span>
-		<span class="doccomment">///     for dropped_file in p.hdrop.iter() {</span>
-		<span class="doccomment">///         let file = dropped_file?;</span>
-		<span class="doccomment">///         println!(&quot;Dropped: {}&quot;, file);</span>
+		<span class="doccomment">///     for dropped_file in p.hdrop.iter()? {</span>
+		<span class="doccomment">///         let dropped_file = dropped_file?;</span>
+		<span class="doccomment">///         println!(&quot;Dropped: {}&quot;, dropped_file);</span>
 		<span class="doccomment">///     }</span>
 		<span class="doccomment">///     Ok(())</span>
 		<span class="doccomment">/// });</span>
@@ -1541,7 +1564,8 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when an application changes the enabled state of a window. It</span>
 		<span class="doccomment">/// is sent to the window whose enabled state is changing. This message</span>
-		<span class="doccomment">/// is sent before the [`HWND::EnableWindow`](crate::HWND::EnableWindow)</span>
+		<span class="doccomment">/// is sent before the</span>
+		<span class="doccomment">/// [`HWND::EnableWindow`](crate::prelude::UserHwnd::EnableWindow)</span>
 		<span class="doccomment">/// function returns, but after the enabled state</span>
 		<span class="doccomment">/// ([`WS::DISABLED`](crate::co::WS::DISABLED) style bit) of the window</span>
 		<span class="doccomment">/// has changed.</span>
@@ -1579,11 +1603,12 @@
 		<span class="doccomment">/// loop. The window enters the moving or sizing modal loop when the</span>
 		<span class="doccomment">/// user clicks the window&#39;s title bar or sizing border, or when the</span>
 		<span class="doccomment">/// window passes the</span>
-		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::prelude::EventsView::wm_sys_command)</span>
-		<span class="doccomment">/// message to the `DefWindowProc` function and the `wParam` parameter</span>
-		<span class="doccomment">/// of the message specifies the [`SC_MOVE`](crate::co::SC::MOVE) or</span>
-		<span class="doccomment">/// [`SC_SIZE`](crate::co::SC::SIZE) value. The operation is complete</span>
-		<span class="doccomment">/// when `DefWindowProc` returns.</span>
+		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::prelude::GuiEventsView::wm_sys_command)</span>
+		<span class="doccomment">/// message to the</span>
+		<span class="doccomment">/// [`HWND::DefWindowProc`](crate::prelude::UserHwnd::DefWindowProc)</span>
+		<span class="doccomment">/// function and the `wParam` parameter of the message specifies the</span>
+		<span class="doccomment">/// [`SC_MOVE`](crate::co::SC::MOVE) or [`SC_SIZE`](crate::co::SC::SIZE)</span>
+		<span class="doccomment">/// value. The operation is complete when `DefWindowProc` returns.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The system sends the message regardless of whether the dragging of</span>
 		<span class="doccomment">/// full windows is enabled.</span>
@@ -1615,11 +1640,12 @@
 		<span class="doccomment">/// modal loop. The window enters the moving or sizing modal loop when</span>
 		<span class="doccomment">/// the user clicks the window&#39;s title bar or sizing border, or when the</span>
 		<span class="doccomment">/// window passes the</span>
-		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::gui::prelude::EventsView::wm_sys_command)</span>
-		<span class="doccomment">/// message to the `DefWindowProc` function and the `wParam` parameter</span>
-		<span class="doccomment">/// of the message specifies the [`SC_MOVE`](crate::co::SC::MOVE) or</span>
-		<span class="doccomment">/// [`SC_SIZE`](crate::co::SC::SIZE) value. The operation is complete</span>
-		<span class="doccomment">/// when `DefWindowProc` returns.</span>
+		<span class="doccomment">/// [`WM_SYSCOMMAND`](crate::prelude::GuiEventsView::wm_sys_command)</span>
+		<span class="doccomment">/// message to the</span>
+		<span class="doccomment">/// [`HWND::DefWindowProc`](crate::prelude::UserHwnd::DefWindowProc)</span>
+		<span class="doccomment">/// function and the `wParam` parameter of the message specifies the</span>
+		<span class="doccomment">/// [`SC_MOVE`](crate::co::SC::MOVE) or [`SC_SIZE`](crate::co::SC::SIZE)</span>
+		<span class="doccomment">/// value. The operation is complete when `DefWindowProc` returns.</span>
 	}
 
 	<span class="macro">pub_fn_wm_retco_param!</span> { <span class="ident">wm_get_dlg_code</span>, <span class="ident">co::WM::GETDLGCODE</span>, <span class="ident">wm::GetDlgCode</span>, <span class="ident">co::DLGC</span>,
@@ -1705,7 +1731,7 @@
 	<span class="macro">pub_fn_wm_retbool_param!</span> { <span class="ident">wm_init_dialog</span>, <span class="ident">co::WM::INITDIALOG</span>, <span class="ident">wm::InitDialog</span>,
 		<span class="doccomment">/// [`WM_INITDIALOG`](crate::msg::wm::InitDialog) message, sent only to</span>
 		<span class="doccomment">/// dialog windows. Non-dialog windows receive</span>
-		<span class="doccomment">/// [`WM_CREATE`](crate::gui::prelude::EventsView::wm_create) instead.</span>
+		<span class="doccomment">/// [`WM_CREATE`](crate::prelude::GuiEventsView::wm_create) instead.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to the dialog box procedure immediately before a dialog box is</span>
 		<span class="doccomment">/// displayed. Dialog box procedures typically use this message to</span>
@@ -1714,11 +1740,12 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_init_dialog({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
@@ -1781,11 +1808,12 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_l_button_down({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
@@ -1908,17 +1936,17 @@
 		<span class="doccomment">/// [`WM_NCCREATE`](crate::msg::wm::NcCreate) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent prior to the</span>
-		<span class="doccomment">/// [`WM_CREATE`](crate::gui::prelude::EventsView::wm_create) message</span>
-		<span class="doccomment">/// when a window is first created.</span>
+		<span class="doccomment">/// [`WM_CREATE`](crate::prelude::GuiEventsView::wm_create) message when</span>
+		<span class="doccomment">/// a window is first created.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_nc_destroy</span>, <span class="ident">co::WM::NCDESTROY</span>,
 		<span class="doccomment">/// [`WM_NCDESTROY`](crate::msg::wm::NcDestroy) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Notifies a window that its nonclient area is being destroyed. The</span>
-		<span class="doccomment">/// [`HWND::DestroyWindow`](crate::HWND::DestroyWindow) function sends</span>
-		<span class="doccomment">/// the message to the window following the</span>
-		<span class="doccomment">/// [`WM_DESTROY`](crate::gui::prelude::EventsView::wm_destroy) message.</span>
+		<span class="doccomment">/// [`HWND::DestroyWindow`](crate::prelude::UserHwnd::DestroyWindow)</span>
+		<span class="doccomment">/// function sends the message to the window following the</span>
+		<span class="doccomment">/// [`WM_DESTROY`](crate::prelude::GuiEventsView::wm_destroy) message.</span>
 		<span class="doccomment">/// `WM_DESTROY` is used to free the allocated memory object associated</span>
 		<span class="doccomment">/// with the window.</span>
 		<span class="doccomment">///</span>
@@ -1941,10 +1969,10 @@
 		<span class="doccomment">/// corresponds to a particular screen coordinate. This can happen, for</span>
 		<span class="doccomment">/// example, when the cursor moves, when a mouse button is pressed or</span>
 		<span class="doccomment">/// released, or in response to a call to a function such as</span>
-		<span class="doccomment">/// [`HWND::WindowFromPoint`](crate::HWND::WindowFromPoint). If the</span>
-		<span class="doccomment">/// mouse is not captured, the message is sent to the window beneath the</span>
-		<span class="doccomment">/// cursor. Otherwise, the message is sent to the window that has</span>
-		<span class="doccomment">/// captured the mouse.</span>
+		<span class="doccomment">/// [`HWND::WindowFromPoint`](crate::prelude::UserHwnd::WindowFromPoint).</span>
+		<span class="doccomment">/// If the mouse is not captured, the message is sent to the window</span>
+		<span class="doccomment">/// beneath the cursor. Otherwise, the message is sent to the window</span>
+		<span class="doccomment">/// that has captured the mouse.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_nc_paint</span>, <span class="ident">co::WM::NCPAINT</span>, <span class="ident">wm::NcPaint</span>,
@@ -1979,11 +2007,12 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent when the system or another application makes a request to paint</span>
 		<span class="doccomment">/// a portion of an application&#39;s window. The message is sent when the</span>
-		<span class="doccomment">/// [`HWND::UpdateWindow`](crate::HWND::UpdateWindow) or</span>
-		<span class="doccomment">/// [`HWND::RedrawWindow`](crate::HWND::RedrawWindow) function is</span>
-		<span class="doccomment">/// called, or by the [`DispatchMessage`](crate::DispatchMessage)</span>
-		<span class="doccomment">/// function when the application obtains a `WM_PAINT` message by using</span>
-		<span class="doccomment">/// the [`GetMessage`](crate::GetMessage) or</span>
+		<span class="doccomment">/// [`HWND::UpdateWindow`](crate::prelude::UserHwnd::UpdateWindow) or</span>
+		<span class="doccomment">/// [`HWND::RedrawWindow`](crate::prelude::UserHwnd::RedrawWindow)</span>
+		<span class="doccomment">/// function is called, or by the</span>
+		<span class="doccomment">/// [`DispatchMessage`](crate::DispatchMessage) function when the</span>
+		<span class="doccomment">/// application obtains a `WM_PAINT` message by using the</span>
+		<span class="doccomment">/// [`GetMessage`](crate::GetMessage) or</span>
 		<span class="doccomment">/// [`PeekMessage`](crate::PeekMessage) function.</span>
 	}
 
@@ -2092,19 +2121,20 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Examples</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// ```rust,ignore</span>
+		<span class="doccomment">/// ```rust,no_run</span>
 		<span class="doccomment">/// use winsafe::prelude::*;</span>
 		<span class="doccomment">/// use winsafe::{gui, msg, ErrResult};</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// let wnd: gui::WindowMain; // initialized somewhere</span>
+		<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// wnd.on().wm_size({</span>
 		<span class="doccomment">///     let wnd = wnd.clone(); // pass into the closure</span>
 		<span class="doccomment">///     move |p: msg::wm::Size| -&gt; ErrResult&lt;()&gt; {</span>
 		<span class="doccomment">///         println!(&quot;HWND: {}, client area: {}x{}&quot;,</span>
 		<span class="doccomment">///             wnd.hwnd(),</span>
-		<span class="doccomment">///             p.width,</span>
-		<span class="doccomment">///             p.height,</span>
+		<span class="doccomment">///             p.client_area.cx,</span>
+		<span class="doccomment">///             p.client_area.cy,</span>
 		<span class="doccomment">///         );</span>
 		<span class="doccomment">///         Ok(())</span>
 		<span class="doccomment">///     }</span>
@@ -2124,16 +2154,16 @@
 		<span class="doccomment">/// [`WM_STYLECHANGED`](crate::msg::wm::StyleChanged) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window after the</span>
-		<span class="doccomment">/// [`HWND::SetWindowLongPtr`](crate::HWND::SetWindowLongPtr) function</span>
-		<span class="doccomment">/// has changed one or more of the window&#39;s styles.</span>
+		<span class="doccomment">/// [`HWND::SetWindowLongPtr`](crate::prelude::UserHwnd::SetWindowLongPtr)</span>
+		<span class="doccomment">/// function has changed one or more of the window&#39;s styles.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_style_changing</span>, <span class="ident">co::WM::STYLECHANGING</span>, <span class="ident">wm::StyleChanging</span>,
 		<span class="doccomment">/// [`WM_STYLECHANGING`](crate::msg::wm::StyleChanging) message.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window when the</span>
-		<span class="doccomment">/// [`HWND::SetWindowLongPtr`](crate::HWND::SetWindowLongPtr) function</span>
-		<span class="doccomment">/// is about to change one or more of the window&#39;s styles.</span>
+		<span class="doccomment">/// [`HWND::SetWindowLongPtr`](crate::prelude::UserHwnd::SetWindowLongPtr)</span>
+		<span class="doccomment">/// function is about to change one or more of the window&#39;s styles.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0!</span> { <span class="ident">wm_sync_paint</span>, <span class="ident">co::WM::SYNCPAINT</span>,
@@ -2235,8 +2265,8 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window whose size, position, or place in the Z order has</span>
 		<span class="doccomment">/// changed as a result of a call to the</span>
-		<span class="doccomment">/// [`HWND::SetWindowPos`](crate::HWND::SetWindowPos) function or</span>
-		<span class="doccomment">/// another window-management function.</span>
+		<span class="doccomment">/// [`HWND::SetWindowPos`](crate::prelude::UserHwnd::SetWindowPos)</span>
+		<span class="doccomment">/// function or another window-management function.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_window_pos_changing</span>, <span class="ident">co::WM::WINDOWPOSCHANGING</span>, <span class="ident">wm::WindowPosChanging</span>,
@@ -2244,8 +2274,8 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Sent to a window whose size, position, or place in the Z order is</span>
 		<span class="doccomment">/// about to change as a result of a call to the</span>
-		<span class="doccomment">/// [`HWND::SetWindowPos`](crate::HWND::SetWindowPos) function or</span>
-		<span class="doccomment">/// another window-management function.</span>
+		<span class="doccomment">/// [`HWND::SetWindowPos`](crate::prelude::UserHwnd::SetWindowPos)</span>
+		<span class="doccomment">/// function or another window-management function.</span>
 	}
 
 	<span class="macro">pub_fn_wm_ret0_param!</span> { <span class="ident">wm_x_button_dbl_clk</span>, <span class="ident">co::WM::XBUTTONDBLCLK</span>, <span class="ident">wm::XButtonDblClk</span>,

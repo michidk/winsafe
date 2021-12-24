@@ -152,20 +152,25 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl::LVCOLUMN</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::multiply_dpi</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">hdm</span>, <span class="ident">lvm</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">LVCOLUMN</span>, <span class="ident">SIZE</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::UserHwnd</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HWND</span>, <span class="ident">SIZE</span>};
 
 <span class="doccomment">/// Exposes column methods of a [`ListView`](crate::gui::ListView) control.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewColumns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
@@ -179,16 +184,19 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// my_list.columns().add(&amp;[</span>
 	<span class="doccomment">///     (&quot;Name&quot;, 300),</span>
 	<span class="doccomment">///     (&quot;Address&quot;, 500),</span>
 	<span class="doccomment">/// ])?;</span>
+	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">texts_and_widths</span>: <span class="kw-2">&amp;</span>[(<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">u32</span>)]) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>

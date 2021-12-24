@@ -330,49 +330,26 @@
 <span id="330">330</span>
 <span id="331">331</span>
 <span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>, <span class="ident">HwndPlace</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">prelude::EventsView</span>, <span class="ident">ButtonEvents</span>, <span class="ident">WindowEvents</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
-	<span class="ident">BaseNativeControl</span>,
-	<span class="ident">OptsId</span>,
-};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{
-	<span class="ident">auto_ctrl_id</span>,
-	<span class="ident">calc_text_bound_box_check</span>,
-	<span class="ident">multiply_dpi_or_dtu</span>,
-	<span class="ident">ui_font</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ButtonEvents</span>, <span class="ident">WindowEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>,
+	<span class="ident">OptsId</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>,
+	<span class="ident">multiply_dpi_or_dtu</span>, <span class="ident">ui_font</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{
-	<span class="ident">AsAny</span>,
-	<span class="ident">Child</span>,
-	<span class="ident">FocusControl</span>,
-	<span class="ident">NativeControl</span>,
-	<span class="ident">NativeControlEvents</span>,
-	<span class="ident">Parent</span>,
-	<span class="ident">TextControl</span>,
-	<span class="ident">Window</span>,
-};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">bm</span>, <span class="ident">wm</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiFocusControl</span>,
+	<span class="ident">GuiNativeControl</span>, <span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiTextControl</span>,
+	<span class="ident">GuiWindow</span>, <span class="ident">Handle</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>, <span class="ident">HWND</span>, <span class="ident">HwndPlace</span>,
+	<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
 
 <span class="doccomment">/// Possible states of a [`CheckBox`](crate::gui::CheckBox) control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CheckState</span> {
 	<span class="doccomment">/// CheckBox is checked.</span>
@@ -391,6 +368,7 @@
 <span class="doccomment">/// [check box](https://docs.microsoft.com/en-us/windows/win32/controls/button-types-and-styles#check-boxes)</span>
 <span class="doccomment">/// control, actually a variation of the ordinary</span>
 <span class="doccomment">/// [`Button`](crate::gui::Button): just a button with a specific style.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CheckBox</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
@@ -408,13 +386,13 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
+<span class="kw">impl</span> <span class="ident">GuiWindow</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Child</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
+<span class="kw">impl</span> <span class="ident">GuiChild</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
 	<span class="kw">fn</span> <span class="ident">ctrl_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) =&gt; <span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
@@ -423,13 +401,13 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">NativeControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
+<span class="kw">impl</span> <span class="ident">GuiNativeControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
 	<span class="kw">fn</span> <span class="ident">on_subclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">WindowEvents</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">on_subclass</span>()
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">NativeControlEvents</span><span class="op">&lt;</span><span class="ident">ButtonEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
+<span class="kw">impl</span> <span class="ident">GuiNativeControlEvents</span><span class="op">&lt;</span><span class="ident">ButtonEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {
 	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">ButtonEvents</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control creation.&quot;</span>);
@@ -440,13 +418,13 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">FocusControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
-<span class="kw">impl</span> <span class="ident">TextControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
+<span class="kw">impl</span> <span class="ident">GuiFocusControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
+<span class="kw">impl</span> <span class="ident">GuiTextControl</span> <span class="kw">for</span> <span class="ident">CheckBox</span> {}
 
 <span class="kw">impl</span> <span class="ident">CheckBox</span> {
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be created on the parent window</span>
-	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) -&gt; <span class="ident">CheckBox</span> {
+	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) -&gt; <span class="ident">CheckBox</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">CheckBoxOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
@@ -469,9 +447,10 @@
 	}
 
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be loaded from a dialog</span>
-	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
+	<span class="doccomment">/// resource with</span>
+	<span class="doccomment">/// [`HWND::GetDlgItem`](crate::prelude::UserHwnd::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
-		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>,
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>,
 		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 		<span class="ident">resize_behavior</span>: (<span class="ident">Horz</span>, <span class="ident">Vert</span>)) -&gt; <span class="ident">CheckBox</span>
 	{
@@ -580,7 +559,7 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="doccomment">/// Calls [`set_text`](crate::prelude::TextControl::set_text) and resizes</span>
+	<span class="doccomment">/// Calls [`set_text`](crate::prelude::GuiTextControl::set_text) and resizes</span>
 	<span class="doccomment">/// the control to exactly fit the new text.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text_and_resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">set_text</span>(<span class="ident">text</span>)<span class="question-mark">?</span>;
@@ -595,6 +574,7 @@
 
 <span class="doccomment">/// Options to create a [`CheckBox`](crate::gui::CheckBox) programmatically with</span>
 <span class="doccomment">/// [`CheckBox::new`](crate::gui::CheckBox::new).</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CheckBoxOpts</span> {
 	<span class="doccomment">/// Text of the control to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>

@@ -195,26 +195,18 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">DispatchMessage</span>, <span class="ident">GetMessage</span>, <span class="ident">TranslateMessage</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{
-	<span class="ident">prelude::EventsView</span>,
-	<span class="ident">sealed_events_wm::SealedEventsWm</span>,
-	<span class="ident">ProcessResult</span>,
-	<span class="ident">WindowEventsAll</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">sealed_events_wm::GuiSealedEventsWm</span>, <span class="ident">ProcessResult</span>,
+	<span class="ident">WindowEventsAll</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">post_quit_error</span>, <span class="ident">QUIT_ERROR</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Resizer</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HACCEL</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::WndMsg</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs::MSG</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">GuiEventsView</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">DispatchMessage</span>, <span class="ident">GetMessage</span>, <span class="ident">HACCEL</span>, <span class="ident">HWND</span>, <span class="ident">MSG</span>,
+	<span class="ident">TranslateMessage</span>};
 
 <span class="doccomment">/// Base to `RawBase` and `DlgBase`.</span>
 <span class="doccomment">///</span>

@@ -177,18 +177,25 @@
 <span id="177">177</span>
 <span id="178">178</span>
 <span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>::{<span class="self">self</span>, <span class="ident">prelude::NativeBitflag</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::lb</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">NativeBitflag</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl::HWND</span>;
 
 <span class="doccomment">/// Exposes item methods of a [`ListBox`](crate::gui::ListBox) control.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListBoxItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
@@ -200,13 +207,15 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::ListBox;</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let lst_names: ListBox; // initialized somewhere</span>
+	<span class="doccomment">/// let my_list: gui::ListBox; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListBox::new(&amp;wnd, gui::ListBoxOpts::default());</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// lst_names.items().add(&amp;[&quot;John&quot;, &quot;Mary&quot;]);</span>
+	<span class="doccomment">/// my_list.items().add(&amp;[&quot;John&quot;, &quot;Mary&quot;]);</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">for</span> <span class="ident">text</span> <span class="kw">in</span> <span class="ident">items</span>.<span class="ident">iter</span>() {
@@ -240,16 +249,19 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_list: gui::ListBox; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListBox::new(&amp;wnd, gui::ListBoxOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// for text in my_list.items().iter() {</span>
 	<span class="doccomment">///     let text = text?;</span>
 	<span class="doccomment">///     println!(&quot;Text {}&quot;, text);</span>
 	<span class="doccomment">/// }</span>
+	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">ListBoxItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="self">self</span>.<span class="ident">count</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>))

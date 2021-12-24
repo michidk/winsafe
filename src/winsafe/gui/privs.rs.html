@@ -237,19 +237,21 @@
 <span id="237">237</span>
 <span id="238">238</span>
 <span id="239">239</span>
+<span id="240">240</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Global objects used within `gui` module.</span>
 
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>::{<span class="self">self</span>, <span class="ident">prelude::NativeBitflag</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::kernel32</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{<span class="ident">GetSystemMetrics</span>, <span class="ident">PostQuitMessage</span>, <span class="ident">SystemParametersInfo</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gdi::decl</span>::{<span class="ident">HFONT</span>, <span class="ident">NONCLIENTMETRICS</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HFONT</span>, <span class="ident">HTHEME</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">HandleGdi</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">MulDiv</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">NONCLIENTMETRICS</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GdiHdc</span>, <span class="ident">GdiHfont</span>, <span class="ident">Handle</span>, <span class="ident">HandleGdi</span>, <span class="ident">NativeBitflag</span>,
+	<span class="ident">UserHwnd</span>, <span class="ident">UxthemeHtheme</span>, <span class="ident">UxthemeHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">GetSystemMetrics</span>, <span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">PostQuitMessage</span>, <span class="ident">RECT</span>,
+	<span class="ident">SIZE</span>, <span class="ident">SystemParametersInfo</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::uxtheme::decl</span>::{<span class="ident">IsAppThemed</span>, <span class="ident">IsThemeActive</span>};
 
 <span class="doccomment">/// Global return error, will be taken in main loop.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">QUIT_ERROR</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -330,12 +332,12 @@
 		}
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pt</span>) <span class="op">=</span> <span class="ident">pt</span> {
-			<span class="ident">pt</span>.<span class="ident">x</span> <span class="op">=</span> <span class="ident">kernel32::MulDiv</span>(<span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">DPI</span>.<span class="ident">x</span>, <span class="number">96</span>);
-			<span class="ident">pt</span>.<span class="ident">y</span> <span class="op">=</span> <span class="ident">kernel32::MulDiv</span>(<span class="ident">pt</span>.<span class="ident">y</span>, <span class="ident">DPI</span>.<span class="ident">y</span>, <span class="number">96</span>);
+			<span class="ident">pt</span>.<span class="ident">x</span> <span class="op">=</span> <span class="ident">MulDiv</span>(<span class="ident">pt</span>.<span class="ident">x</span>, <span class="ident">DPI</span>.<span class="ident">x</span>, <span class="number">96</span>);
+			<span class="ident">pt</span>.<span class="ident">y</span> <span class="op">=</span> <span class="ident">MulDiv</span>(<span class="ident">pt</span>.<span class="ident">y</span>, <span class="ident">DPI</span>.<span class="ident">y</span>, <span class="number">96</span>);
 		}
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sz</span>) <span class="op">=</span> <span class="ident">sz</span> {
-			<span class="ident">sz</span>.<span class="ident">cx</span> <span class="op">=</span> <span class="ident">kernel32::MulDiv</span>(<span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">DPI</span>.<span class="ident">x</span>, <span class="number">96</span>);
-			<span class="ident">sz</span>.<span class="ident">cy</span> <span class="op">=</span> <span class="ident">kernel32::MulDiv</span>(<span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">DPI</span>.<span class="ident">y</span>, <span class="number">96</span>);
+			<span class="ident">sz</span>.<span class="ident">cx</span> <span class="op">=</span> <span class="ident">MulDiv</span>(<span class="ident">sz</span>.<span class="ident">cx</span>, <span class="ident">DPI</span>.<span class="ident">x</span>, <span class="number">96</span>);
+			<span class="ident">sz</span>.<span class="ident">cy</span> <span class="op">=</span> <span class="ident">MulDiv</span>(<span class="ident">sz</span>.<span class="ident">cy</span>, <span class="ident">DPI</span>.<span class="ident">y</span>, <span class="number">96</span>);
 		}
 	}
 	<span class="prelude-val">Ok</span>(())
@@ -443,8 +445,8 @@
 
 	<span class="kw">let</span> <span class="ident">ex_style</span> <span class="op">=</span> <span class="ident">co::WS_EX</span>(<span class="ident">hwnd</span>.<span class="ident">GetWindowLongPtr</span>(<span class="ident">co::GWLP::EXSTYLE</span>) <span class="kw">as</span> <span class="kw">_</span>);
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">ex_style</span>.<span class="ident">has</span>(<span class="ident">co::WS_EX::CLIENTEDGE</span>) <span class="comment">// no border</span>
-		<span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">HTHEME::IsThemeActive</span>()
-		<span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">HTHEME::IsAppThemed</span>()
+		<span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">IsThemeActive</span>()
+		<span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">IsAppThemed</span>()
 	{
 		<span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 	}

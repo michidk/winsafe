@@ -459,19 +459,29 @@
 <span id="459">459</span>
 <span id="460">460</span>
 <span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>::{<span class="self">self</span>, <span class="ident">prelude::NativeBitflag</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl</span>::{<span class="ident">LVFINDINFO</span>, <span class="ident">LVHITTESTINFO</span>, <span class="ident">LVITEM</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::lvm</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">LVFINDINFO</span>, <span class="ident">LVHITTESTINFO</span>, <span class="ident">LVITEM</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">NativeBitflag</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>};
 
 <span class="doccomment">/// Exposes item methods of a [`ListView`](crate::gui::ListView) control.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
@@ -486,11 +496,13 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let new_item = my_list.items().add(</span>
 	<span class="doccomment">///     &amp;[</span>
@@ -499,6 +511,7 @@
 	<span class="doccomment">///     ],</span>
 	<span class="doccomment">///     None, // no icon; requires a previous set_image_list()</span>
 	<span class="doccomment">/// )?;</span>
+	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
@@ -616,11 +629,13 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::gui::ListView;</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let my_list: ListView; // initialized somewhere</span>
+	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// for item in my_list.items().iter() {</span>
 	<span class="doccomment">///     println!(&quot;Item {}, text of the first column: {}&quot;,</span>
@@ -635,11 +650,13 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
+	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
 	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let my_list: gui::ListView; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let my_list = gui::ListView::new(&amp;wnd, gui::ListViewOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// for item in my_list.items().iter_selected() {</span>
 	<span class="doccomment">///     println!(&quot;Selected item {}, text of the first column: {}&quot;,</span>
@@ -690,6 +707,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// You cannot directly instantiate this object, it is created internally by the</span>
 <span class="doccomment">/// control.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListViewItem</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,

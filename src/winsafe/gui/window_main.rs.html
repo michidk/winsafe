@@ -247,25 +247,25 @@
 <span id="247">247</span>
 <span id="248">248</span>
 <span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases</span>::{<span class="ident">ErrResult</span>, <span class="ident">WinResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi::BOOL</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{
-	<span class="ident">InitCommonControls</span>,
-	<span class="ident">IsWindowsVistaOrGreater</span>,
-	<span class="ident">SetProcessDPIAware</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl::InitCommonControls</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi_types::BOOL</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::dlg_main::DlgMain</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::WindowEventsAll</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::gui_traits_sealed</span>::{<span class="ident">GuiSealedBase</span>, <span class="ident">GuiSealedParent</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">create_ui_font</span>, <span class="ident">delete_ui_font</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_main</span>::{<span class="ident">RawMain</span>, <span class="ident">WindowMainOpts</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">AsAny</span>, <span class="ident">Parent</span>, <span class="ident">UiThread</span>, <span class="ident">Window</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits_sealed</span>::{<span class="ident">SealedBase</span>, <span class="ident">SealedParent</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">HPROCESS</span>, <span class="ident">HWND</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">HPROCESS</span>, <span class="ident">IsWindowsVistaOrGreater</span>,
+	<span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">AsAny</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiThread</span>, <span class="ident">GuiWindow</span>, <span class="ident">KernelHprocess</span>,
+	<span class="ident">UserHprocess</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HWND</span>, <span class="ident">SetProcessDPIAware</span>};
 
 <span class="doccomment">/// Keeps a raw or dialog window.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -298,7 +298,7 @@
 <span class="doccomment">/// with a closure, and it displays the clicked coordinates in the</span>
 <span class="doccomment">/// [title bar](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowtextw).</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// ```rust,no_run</span>
 <span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// use winsafe::prelude::*;</span>
@@ -349,13 +349,15 @@
 <span class="doccomment">/// instead of creating the window programmatically. Note how</span>
 <span class="doccomment">/// `WindowMain::new_dlg` instead of `WindowMain::new`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">/// ```rust,no_run</span>
 <span class="doccomment">/// #![windows_subsystem = &quot;windows&quot;]</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// use winsafe::prelude::*;</span>
-<span class="doccomment">/// use winsafe::gui;</span>
+<span class="doccomment">/// use winsafe::{gui, seq_ids};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// const ID_DLG_MAIN: i32 = 101; // in our .res file, this is the dialog ID</span>
+<span class="doccomment">/// seq_ids! {</span>
+<span class="doccomment">///     ID_DLG_MAIN = 101; // in our .res file, this is the dialog ID</span>
+<span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// fn main() {</span>
 <span class="doccomment">///     let my_main = MyDlg::new();</span>
@@ -382,6 +384,7 @@
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowMain</span> {
 	<span class="ident">raw_dlg</span>: <span class="ident">RawDlg</span>,
@@ -395,13 +398,13 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Window</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+<span class="kw">impl</span> <span class="ident">GuiWindow</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">hwnd</span>()
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">SealedBase</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+<span class="kw">impl</span> <span class="ident">GuiSealedBase</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">as_base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Base</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_dlg</span> {
 			<span class="ident">RawDlg::Raw</span>(<span class="ident">r</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="number">0</span>.<span class="ident">raw_base</span>.<span class="ident">base</span>,
@@ -410,7 +413,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">SealedParent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+<span class="kw">impl</span> <span class="ident">GuiSealedParent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">add_to_resizer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hchild</span>: <span class="ident">HWND</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
@@ -418,13 +421,13 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Parent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+<span class="kw">impl</span> <span class="ident">GuiParent</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">WindowEventsAll</span> {
 		<span class="self">self</span>.<span class="ident">as_base</span>().<span class="ident">on</span>()
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">UiThread</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
+<span class="kw">impl</span> <span class="ident">GuiThread</span> <span class="kw">for</span> <span class="ident">WindowMain</span> {
 	<span class="kw">fn</span> <span class="ident">spawn_new_thread</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -440,7 +443,7 @@
 
 <span class="kw">impl</span> <span class="ident">WindowMain</span> {
 	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be created with</span>
-	<span class="doccomment">/// [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
+	<span class="doccomment">/// [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">opts</span>: <span class="ident">WindowMainOpts</span>) -&gt; <span class="ident">WindowMain</span> {
 		<span class="self">Self</span> {
 			<span class="ident">raw_dlg</span>: <span class="ident">RawDlg::Raw</span>(
@@ -450,7 +453,8 @@
 	}
 
 	<span class="doccomment">/// Instantiates a new `WindowMain` object, to be loaded from a dialog</span>
-	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
+	<span class="doccomment">/// resource with</span>
+	<span class="doccomment">/// [`HWND::GetDlgItem`](crate::prelude::UserHwnd::GetDlgItem).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
 		<span class="ident">dialog_id</span>: <span class="ident">u16</span>,
 		<span class="ident">icon_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>,

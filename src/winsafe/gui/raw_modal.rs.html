@@ -215,33 +215,18 @@
 <span id="215">215</span>
 <span id="216">216</span>
 <span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::enums::IdMenu</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::funcs</span>::{
-	<span class="ident">AdjustWindowRectEx</span>,
-	<span class="ident">DispatchMessage</span>,
-	<span class="ident">GetMessage</span>,
-	<span class="ident">PostQuitMessage</span>,
-	<span class="ident">TranslateMessage</span>,
-};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::prelude::EventsView</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::multiply_dpi</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_base::RawBase</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles</span>::{<span class="ident">prelude::Handle</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::structs</span>::{<span class="ident">MSG</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::various::WString</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GdiHbrush</span>, <span class="ident">GuiEventsView</span>, <span class="ident">Handle</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">AdjustWindowRectEx</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>,
+	<span class="ident">DispatchMessage</span>, <span class="ident">GetMessage</span>, <span class="ident">IdMenu</span>, <span class="ident">MSG</span>, <span class="ident">POINT</span>, <span class="ident">PostQuitMessage</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>,
+	<span class="ident">TranslateMessage</span>, <span class="ident">WNDCLASSEX</span>};
 
 <span class="doccomment">/// A WindowModal with a raw window.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -375,6 +360,7 @@
 
 <span class="doccomment">/// Options to create a [`WindowModal`](crate::gui::WindowModal) programmatically</span>
 <span class="doccomment">/// with [`WindowModal::new`](crate::gui::WindowModal::new).</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WindowModalOpts</span> {
 	<span class="doccomment">/// Window class name to be</span>
 	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>

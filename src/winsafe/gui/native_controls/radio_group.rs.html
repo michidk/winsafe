@@ -197,22 +197,35 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::Index</span>;
 <span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::aliases::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">prelude::EventsView</span>, <span class="ident">RadioGroupEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::RadioGroupEvents</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::radio_button</span>::{<span class="ident">RadioButton</span>, <span class="ident">RadioButtonOpts</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::traits</span>::{<span class="ident">Child</span>, <span class="ident">NativeControlEvents</span>, <span class="ident">Parent</span>, <span class="ident">Window</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handles::prelude::Handle</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>,
+	<span class="ident">GuiWindow</span>, <span class="ident">Handle</span>};
 
 <span class="doccomment">/// A group of native [`RadioButton`](crate::gui::RadioButton) controls.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RadioGroup</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
 
@@ -244,7 +257,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">NativeControlEvents</span><span class="op">&lt;</span><span class="ident">RadioGroupEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
+<span class="kw">impl</span> <span class="ident">GuiNativeControlEvents</span><span class="op">&lt;</span><span class="ident">RadioGroupEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RadioGroup</span> {
 	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">RadioGroupEvents</span> {
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">index</span>(<span class="number">0</span>).<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control creation.&quot;</span>);
@@ -258,12 +271,15 @@
 <span class="kw">impl</span> <span class="ident">RadioGroup</span> {
 	<span class="doccomment">/// Instantiates a new `RadioGroup` object, each `RadioButton` to be created</span>
 	<span class="doccomment">/// on the parent window with</span>
-	<span class="doccomment">/// [`HWND::CreateWindowEx`](crate::HWND::CreateWindowEx).</span>
+	<span class="doccomment">/// [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Panics if `opts` is empty</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">opts</span>: <span class="kw-2">&amp;</span>[<span class="ident">RadioButtonOpts</span>]) -&gt; <span class="ident">RadioGroup</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>,
+		<span class="ident">opts</span>: <span class="kw-2">&amp;</span>[<span class="ident">RadioButtonOpts</span>]) -&gt; <span class="ident">RadioGroup</span>
+	{
 		<span class="kw">if</span> <span class="ident">opts</span>.<span class="ident">is_empty</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
@@ -309,12 +325,16 @@
 	}
 
 	<span class="doccomment">/// Instantiates a new `RadioGroup` object, to be loaded from a dialog</span>
-	<span class="doccomment">/// resource with [`HWND::GetDlgItem`](crate::HWND::GetDlgItem).</span>
+	<span class="doccomment">/// resource with</span>
+	<span class="doccomment">/// [`HWND::GetDlgItem`](crate::prelude::UserHwnd::GetDlgItem).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Panics if `ctrls` is empty.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Parent</span>, <span class="ident">ctrls</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u16</span>, <span class="ident">Horz</span>, <span class="ident">Vert</span>)]) -&gt; <span class="ident">RadioGroup</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
+		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>,
+		<span class="ident">ctrls</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u16</span>, <span class="ident">Horz</span>, <span class="ident">Vert</span>)]) -&gt; <span class="ident">RadioGroup</span>
+	{
 		<span class="kw">if</span> <span class="ident">ctrls</span>.<span class="ident">is_empty</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;RadioGroup needs at least one RadioButton.&quot;</span>);
 		}
@@ -360,14 +380,18 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Changing the text of all radio buttons to `&quot;One&quot;`:</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,ignore</span>
-	<span class="doccomment">/// use winsafe::gui::RadioGroup;</span>
+	<span class="doccomment">/// ```rust,no_run</span>
+	<span class="doccomment">/// use winsafe::prelude::*;</span>
+	<span class="doccomment">/// use winsafe::gui;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let radio_group: RadioGroup; // initialized somewhere</span>
+	<span class="doccomment">/// let radio_group: gui::RadioGroup; // initialized somewhere</span>
+	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
+	<span class="doccomment">/// # let radio_group = gui::RadioGroup::new(&amp;wnd, &amp;[]);</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// for single_radio in me.rads.iter() {</span>
+	<span class="doccomment">/// for single_radio in radio_group.iter() {</span>
 	<span class="doccomment">///     single_radio.hwnd().SetWindowText(&quot;One&quot;)?;</span>
 	<span class="doccomment">/// }</span>
+	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">RadioButton</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">radios</span>.<span class="ident">iter</span>()

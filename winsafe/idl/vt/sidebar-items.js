@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["IPersistVT","`IPersist` virtual table."],["IPictureVT","`IPicture` virtual table."],["ISequentialStreamVT","`ISequentialStream` virtual table."],["IStreamVT","`ISequentialStream` virtual table."]]});
