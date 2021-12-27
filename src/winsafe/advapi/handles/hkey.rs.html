@@ -633,14 +633,18 @@
 	<span class="doccomment">/// Usually, they are the starting point to open a registry key.</span>
 }
 
+<span class="kw">impl</span> <span class="ident">AdvapiHkey</span> <span class="kw">for</span> <span class="ident">HKEY</span> {}
+
 <span class="macro">macro_rules!</span> <span class="ident">predef_key</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span>:<span class="ident">expr</span>) =&gt; {
 		<span class="doccomment">/// Predefined registry key, always open.</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="self">Self</span> <span class="op">=</span> <span class="self">Self</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>);
+		<span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">HKEY</span> <span class="op">=</span> <span class="ident">HKEY</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">val</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>);
 	};
 }
 
-<span class="kw">impl</span> <span class="ident">HKEY</span> {
+<span class="doccomment">/// [`HKEY`](crate::HKEY) methods from `advapi` feature.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;advapi&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdvapiHkey</span>: <span class="ident">Handle</span> {
 	<span class="macro">predef_key!</span>(<span class="ident">CLASSES_ROOT</span>, <span class="number">0x8000_0000</span>);
 	<span class="macro">predef_key!</span>(<span class="ident">CURRENT_USER</span>, <span class="number">0x8000_0001</span>);
 	<span class="macro">predef_key!</span>(<span class="ident">LOCAL_MACHINE</span>, <span class="number">0x8000_0002</span>);
@@ -654,8 +658,8 @@
 
 	<span class="doccomment">/// [`RegCloseKey`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regclosekey)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">CloseKey</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">advapi::ffi::RegCloseKey</span>(<span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="kw">_</span> }) {
+	<span class="kw">fn</span> <span class="ident">CloseKey</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="ident">co::ERROR</span>(<span class="kw">unsafe</span> { <span class="ident">advapi::ffi::RegCloseKey</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) <span class="kw">as</span> <span class="kw">_</span> }) {
 			<span class="ident">co::ERROR::SUCCESS</span> =&gt; <span class="prelude-val">Ok</span>(()),
 			<span class="ident">err</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">err</span>),
 		}
@@ -685,8 +689,8 @@
 	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumKeyEx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-		<span class="ident">EnumKeyIter::new</span>(<span class="self">self</span>)
+	<span class="kw">fn</span> <span class="ident">EnumKeyEx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">EnumKeyIter::new</span>(<span class="ident">HKEY</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">as_ptr</span>() }))<span class="question-mark">?</span>))
 	}
 
 	<span class="doccomment">/// Returns an iterator of the names and types of the values, which calls</span>
@@ -713,8 +717,8 @@
 	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">EnumValue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">co::REG</span>)<span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-		<span class="ident">EnumValueIter::new</span>(<span class="self">self</span>)
+	<span class="kw">fn</span> <span class="ident">EnumValue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">co::REG</span>)<span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">EnumValueIter::new</span>(<span class="ident">HKEY</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">as_ptr</span>() }))<span class="question-mark">?</span>))
 	}
 
 	<span class="doccomment">/// [`RegGetValue`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-reggetvaluew)</span>
@@ -749,9 +753,7 @@
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">GetValue</span>(<span class="self">self</span>,
-		<span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span>
-	{
+	<span class="kw">fn</span> <span class="ident">GetValue</span>(<span class="self">self</span>, <span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">sub_key_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>);
 		<span class="kw">let</span> <span class="ident">value_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">value</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_data_type</span> <span class="op">=</span> <span class="ident">u32::default</span>();
@@ -761,7 +763,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegGetValueW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
@@ -781,7 +783,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegGetValueW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">sub_key_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					(<span class="ident">co::RRF::RT_ANY</span> <span class="op">|</span> <span class="ident">co::RRF::NOEXPAND</span>).<span class="number">0</span>,
@@ -834,19 +836,19 @@
 	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">OpenKeyEx</span>(<span class="self">self</span>, <span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+	<span class="kw">fn</span> <span class="ident">OpenKeyEx</span>(<span class="self">self</span>, <span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 		<span class="ident">options</span>: <span class="ident">co::REG_OPTION</span>, <span class="ident">access_rights</span>: <span class="ident">co::KEY</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HKEY</span><span class="op">&gt;</span>
 	{
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hKey</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::NULL</span>;
+		<span class="kw">let</span> <span class="ident">hKey</span> <span class="op">=</span> <span class="ident">HKEY::NULL</span>;
 
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegOpenKeyExW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">options</span>.<span class="number">0</span>,
 					<span class="ident">access_rights</span>.<span class="number">0</span>,
-					<span class="kw-2">&amp;mut</span> <span class="ident">hKey</span>.<span class="number">0</span>,
+					<span class="kw-2">&amp;mut</span> <span class="ident">hKey</span>.<span class="ident">as_ptr</span>(),
 				)
 			} <span class="kw">as</span> <span class="kw">_</span>,
 		) {
@@ -857,7 +859,7 @@
 
 	<span class="doccomment">/// [`RegQueryInfoKey`](https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryinfokeyw)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryInfoKey</span>(<span class="self">self</span>,
+	<span class="kw">fn</span> <span class="ident">QueryInfoKey</span>(<span class="self">self</span>,
 		<span class="kw-2">mut</span> <span class="ident">class</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">WString</span><span class="op">&gt;</span>,
 		<span class="ident">num_sub_keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
 		<span class="ident">max_sub_key_name_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
@@ -893,7 +895,7 @@
 			<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 				<span class="kw">unsafe</span> {
 					<span class="ident">advapi::ffi::RegQueryInfoKeyW</span>(
-						<span class="self">self</span>.<span class="number">0</span>,
+						<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 						<span class="ident">class_ptr</span>,
 						<span class="kw-2">&amp;mut</span> <span class="ident">class_len</span>,
 						<span class="ident">std::ptr::null_mut</span>(),
@@ -959,7 +961,7 @@
 	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">QueryValueEx</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">QueryValueEx</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">RegistryValue</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">value_w</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(<span class="ident">value</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw_data_type</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data_len</span> <span class="op">=</span> <span class="ident">u32::default</span>();
@@ -968,7 +970,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegQueryValueExW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
 					<span class="kw-2">&amp;mut</span> <span class="ident">raw_data_type</span>,
@@ -987,7 +989,7 @@
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegQueryValueExW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">value_w</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
 					<span class="ident">std::ptr::null_mut</span>(),
@@ -1037,13 +1039,13 @@
 	<span class="doccomment">/// )?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetKeyValue</span>(<span class="self">self</span>,
+	<span class="kw">fn</span> <span class="ident">SetKeyValue</span>(<span class="self">self</span>,
 		<span class="ident">sub_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	{
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegSetKeyValueW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">sub_key</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
 					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
@@ -1083,13 +1085,11 @@
 	<span class="doccomment">/// hkey.CloseKey()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SetValueEx</span>(<span class="self">self</span>,
-		<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-	{
+	<span class="kw">fn</span> <span class="ident">SetValueEx</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">RegistryValue</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">co::ERROR</span>(
 			<span class="kw">unsafe</span> {
 				<span class="ident">advapi::ffi::RegSetValueExW</span>(
-					<span class="self">self</span>.<span class="number">0</span>,
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
 					<span class="ident">WString::from_str</span>(<span class="ident">value</span>).<span class="ident">as_ptr</span>(),
 					<span class="number">0</span>,
 					<span class="ident">data</span>.<span class="ident">reg_type</span>().<span class="number">0</span>,
