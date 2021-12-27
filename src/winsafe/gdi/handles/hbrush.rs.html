@@ -101,12 +101,18 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gdi</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">gdi</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gdi::decl::LOGBRUSH</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">GetLastError</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">HandleGdi</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">COLORREF</span>, <span class="ident">HBITMAP</span>, <span class="ident">HBRUSH</span>};
 
@@ -200,6 +206,12 @@
 		<span class="kw">unsafe</span> { <span class="ident">gdi::ffi::GetSysColorBrush</span>(<span class="ident">index</span>.<span class="number">0</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HBRUSH</span>(<span class="ident">ptr</span>))
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">GetLastError</span>())
+	}
+
+	<span class="doccomment">/// [`UnrealizeObject`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-unrealizeobject)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">fn</span> <span class="ident">UnrealizeObject</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">gdi::ffi::UnrealizeObject</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) })
 	}
 }
 </code></pre></div>
