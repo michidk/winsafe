@@ -218,11 +218,9 @@
 <span id="215">215</span>
 <span id="216">216</span>
 <span id="217">217</span>
-<span id="218">218</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dshow::decl::TIME_FORMAT</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi_types</span>::{<span class="ident">HRES</span>, <span class="ident">PCVOID</span>, <span class="ident">PVOID</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::decl</span>::{<span class="ident">ComPtr</span>, <span class="ident">HrResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::privs::ok_to_hrresult</span>;
@@ -268,7 +266,7 @@
 <span class="doccomment">/// use winsafe::{IGraphBuilder, IMediaSeeking};</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let graph_builder: IGraphBuilder; // initialized somewhere</span>
-<span class="doccomment">/// # use winsafe::{CLSID, co::CLSCTX, CoCreateInstance};</span>
+<span class="doccomment">/// # use winsafe::{co::CLSID, co::CLSCTX, CoCreateInstance};</span>
 <span class="doccomment">/// # let graph_builder = CoCreateInstance::&lt;IGraphBuilder&gt;(&amp;CLSID::new(0,0,0,0,0), None, CLSCTX::INPROC_SERVER)?;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let media_seeking = graph_builder</span>
@@ -288,8 +286,8 @@
 	<span class="doccomment">/// [`IMediaSeeking::ConvertTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-converttimeformat)</span>
 	<span class="doccomment">/// method.</span>
 	<span class="kw">fn</span> <span class="ident">ConvertTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">target_format</span>: <span class="kw-2">&amp;</span><span class="ident">TIME_FORMAT</span>,
-		<span class="ident">source</span>: <span class="ident">i64</span>, <span class="ident">source_format</span>: <span class="kw-2">&amp;</span><span class="ident">TIME_FORMAT</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
+		<span class="ident">target_format</span>: <span class="kw-2">&amp;</span><span class="ident">co::TIME_FORMAT</span>,
+		<span class="ident">source</span>: <span class="ident">i64</span>, <span class="ident">source_format</span>: <span class="kw-2">&amp;</span><span class="ident">co::TIME_FORMAT</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">i64::default</span>();
 		<span class="kw">unsafe</span> {
@@ -382,8 +380,8 @@
 
 	<span class="doccomment">/// [`IMediaSeeking::GetTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-gettimeformat)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">GetTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">TIME_FORMAT</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_guid</span> <span class="op">=</span> <span class="ident">TIME_FORMAT::NONE</span>;
+	<span class="kw">fn</span> <span class="ident">GetTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">co::TIME_FORMAT</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_guid</span> <span class="op">=</span> <span class="ident">co::TIME_FORMAT::NONE</span>;
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw-2">*mut</span> <span class="ident">IMediaSeekingVT</span>);
 			<span class="ident">ok_to_hrresult</span>(
@@ -428,7 +426,7 @@
 
 	<span class="doccomment">/// [`IMediaSeeking::SetTimeFormat`](https://docs.microsoft.com/en-us/windows/win32/api/strmif/nf-strmif-imediaseeking-settimeformat)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">SetTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">format</span>: <span class="kw-2">&amp;</span><span class="ident">TIME_FORMAT</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">SetTimeFormat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">format</span>: <span class="kw-2">&amp;</span><span class="ident">co::TIME_FORMAT</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw-2">*mut</span> <span class="ident">IMediaSeekingVT</span>);
 			<span class="ident">ok_to_hrresult</span>(

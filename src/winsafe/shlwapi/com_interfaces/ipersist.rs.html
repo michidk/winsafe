@@ -44,10 +44,12 @@
 <span id="41">41</span>
 <span id="42">42</span>
 <span id="43">43</span>
+<span id="44">44</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi_types</span>::{<span class="ident">HRES</span>, <span class="ident">PVOID</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::decl</span>::{<span class="ident">CLSID</span>, <span class="ident">ComPtr</span>, <span class="ident">HrResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::decl</span>::{<span class="ident">ComPtr</span>, <span class="ident">HrResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::privs::ok_to_hrresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::OleIUnknown</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::vt::IUnknownVT</span>;
@@ -77,8 +79,8 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShlwapiIPersist</span>: <span class="ident">OleIUnknown</span> {
 	<span class="doccomment">/// [`IPersist::GetClassID`](https://docs.microsoft.com/en-us/windows/win32/api/objidl/nf-objidl-ipersist-getclassid)</span>
 	<span class="doccomment">/// method.</span>
-	<span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">CLSID</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="op">=</span> <span class="ident">CLSID::new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
+	<span class="kw">fn</span> <span class="ident">GetClassID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">co::CLSID</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clsid</span> <span class="op">=</span> <span class="ident">co::CLSID::new</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
 		<span class="kw">unsafe</span> {
 			<span class="kw">let</span> <span class="ident">vt</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span>(<span class="self">self</span>.<span class="ident">ptr</span>().<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw-2">*mut</span> <span class="ident">IPersistVT</span>);
 			<span class="ident">ok_to_hrresult</span>(

@@ -103,6 +103,16 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
 
 <span class="doccomment">/// Implements IUnknown trait to COM object, plus all its trait bounds.</span>
@@ -130,8 +140,7 @@
 		}
 
 		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::ComInterface</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-			<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident"><span class="kw">crate</span>::ole::decl::IID</span> <span class="op">=</span>
-				<span class="ident"><span class="kw">crate</span>::ole::decl::IID::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p5</span>);
+			<span class="kw">const</span> <span class="ident">IID</span>: <span class="ident"><span class="kw">crate</span>::co::IID</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::co::IID::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p5</span>);
 		}
 
 		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::OleIUnknown</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
@@ -142,11 +151,30 @@
 	};
 }
 
-<span class="doccomment">/// Creates a safe wrapper to a `GUID`.</span>
-<span class="macro">macro_rules!</span> <span class="ident">pub_guid_wrapper</span> {
+<span class="doccomment">/// Creates multiple `GUID`-derived pub const values.</span>
+<span class="macro">macro_rules!</span> <span class="ident">const_guid_values</span> {
+	(
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> $(: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>:<span class="ident">literal</span>)<span class="kw-2">*</span>;
+		$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>:<span class="ident">expr</span>)<span class="op">*</span>
+	) =&gt; {
+		$( <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>)))]</span> )<span class="op">*</span>
+		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+			$(
+				<span class="kw">pub</span> <span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubname</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>);
+			)<span class="op">*</span>
+		}
+	};
+}
+
+<span class="doccomment">/// Declares the type of a GUID constant, along with public values.</span>
+<span class="macro">macro_rules!</span> <span class="ident">const_guid</span> {
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>:<span class="ident">literal</span>;
 		$( <span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">meta</span>]</span> )<span class="op">*</span>
+		=&gt;
+		$(
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubname</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>:<span class="ident">expr</span>
+		)<span class="op">*</span>
 	) =&gt; {
 		$( <span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span> )<span class="op">*</span>
 		<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>)))]</span>
@@ -160,7 +188,7 @@
 			}
 		}
 
-		<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">GUID</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::ole::decl::GUID</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::ole::decl::GUID</span> {
 				<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>
 			}
@@ -188,19 +216,11 @@
 				<span class="self">Self</span>(<span class="ident"><span class="kw">crate</span>::ole::decl::GUID::new</span>(<span class="ident">p1</span>, <span class="ident">p2</span>, <span class="ident">p3</span>, <span class="ident">p4</span>, <span class="ident">p5</span>))
 			}
 		}
-	};
-}
 
-<span class="doccomment">/// Creates multiple `GUID`-derived pub const values.</span>
-<span class="macro">macro_rules!</span> <span class="ident">pub_const_guid</span> {
-	(
-		<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>:<span class="ident">literal</span>;
-		$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>:<span class="ident">expr</span>)<span class="op">*</span>
-	) =&gt; {
-		<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>)))]</span>
-		<span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="kw">type</span> {
+		<span class="macro">const_guid_values!</span> {
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 			$(
-				<span class="kw">pub</span> <span class="kw">const</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="macro-nonterminal">$</span><span class="kw">type</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="kw">type</span><span class="macro-nonterminal">::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>);
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pubname</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid1</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid2</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid3</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid4</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iid5</span>
 			)<span class="op">*</span>
 		}
 	};

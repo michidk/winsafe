@@ -133,6 +133,23 @@
 <span id="130">130</span>
 <span id="131">131</span>
 <span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">shell</span>};
@@ -142,8 +159,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::decl</span>::{<span class="ident">CoTaskMemFree</span>, <span class="ident">HrResult</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::privs::ok_to_hrresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">KernelHlocal</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shell::decl</span>::{<span class="ident">KNOWNFOLDERID</span>, <span class="ident">NOTIFYICONDATA</span>, <span class="ident">SHFILEINFO</span>,
-	<span class="ident">SHFILEOPSTRUCT</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shell::decl</span>::{<span class="ident">NOTIFYICONDATA</span>, <span class="ident">SHFILEINFO</span>, <span class="ident">SHFILEOPSTRUCT</span>};
 
 <span class="doccomment">/// [`CommandLineToArgv`](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw)</span>
 <span class="doccomment">/// function.</span>
@@ -243,9 +259,27 @@
 
 <span class="doccomment">/// [`SHGetKnownFolderPath`](https://docs.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderpath)</span>
 <span class="doccomment">/// function.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Retrieving documents folder:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,no_run</span>
+<span class="doccomment">/// use winsafe::prelude::*;</span>
+<span class="doccomment">/// use winsafe::{co, SHGetKnownFolderPath};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let docs_folder = SHGetKnownFolderPath(</span>
+<span class="doccomment">///     &amp;co::KNOWNFOLDERID::Documents,</span>
+<span class="doccomment">///     co::KF::DEFAULT,</span>
+<span class="doccomment">///     None,</span>
+<span class="doccomment">/// )?;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// println!(&quot;Docs folder: {}&quot;, docs_folder);</span>
+<span class="doccomment">/// # Ok::&lt;_, co::HRESULT&gt;(())</span>
+<span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;shell&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">SHGetKnownFolderPath</span>(
-	<span class="ident">folder_id</span>: <span class="kw-2">&amp;</span><span class="ident">KNOWNFOLDERID</span>,
+	<span class="ident">folder_id</span>: <span class="kw-2">&amp;</span><span class="ident">co::KNOWNFOLDERID</span>,
 	<span class="ident">flags</span>: <span class="ident">co::KF</span>,
 	<span class="ident">token</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HACCESSTOKEN</span><span class="op">&gt;</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
 {
