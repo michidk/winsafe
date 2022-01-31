@@ -1,65 +1,353 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\shell\clsid.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>clsid.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../../winsafe/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></div>
         </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../winsafe/index.html"><img class="rust-logo" src="../../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div>
-                                <input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1"> 1</span>
-<span id="2"> 2</span>
-<span id="3"> 3</span>
-<span id="4"> 4</span>
-<span id="5"> 5</span>
-<span id="6"> 6</span>
-<span id="7"> 7</span>
-<span id="8"> 8</span>
-<span id="9"> 9</span>
-<span id="10">10</span>
-<span id="11">11</span>
-<span id="12">12</span>
-<span id="13">13</span>
-<span id="14">14</span>
-<span id="15">15</span>
-<span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
+                                <input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_upper_case_globals</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ole::decl::CLSID</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shell::decl::BHID</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shell::decl</span>::{<span class="ident">BHID</span>, <span class="ident">KNOWNFOLDERID</span>};
 
 <span class="macro">pub_const_guid!</span> { <span class="ident">CLSID</span>: <span class="string">&quot;shell&quot;</span>;
-	<span class="ident">FileOpenDialog</span>, <span class="number">0xdc1c5a9c</span>, <span class="number">0xe88a</span>, <span class="number">0x4dde</span>, <span class="number">0xa5a1</span>, <span class="number">0x60f82a20aef7</span>
-	<span class="ident">FileSaveDialog</span>, <span class="number">0xc0b4e2f3</span>, <span class="number">0xba21</span>, <span class="number">0x4773</span>, <span class="number">0x8dba</span>, <span class="number">0x335ec946eb8b</span>
-	<span class="ident">TaskbarList</span>, <span class="number">0x56fdf344</span>, <span class="number">0xfd6d</span>, <span class="number">0x11d0</span>, <span class="number">0x958a</span>, <span class="number">0x006097c9a090</span>
+	<span class="ident">FileOpenDialog</span> <span class="number">0xdc1c5a9c</span>, <span class="number">0xe88a</span>, <span class="number">0x4dde</span>, <span class="number">0xa5a1</span>, <span class="number">0x60f82a20aef7</span>
+	<span class="ident">FileSaveDialog</span> <span class="number">0xc0b4e2f3</span>, <span class="number">0xba21</span>, <span class="number">0x4773</span>, <span class="number">0x8dba</span>, <span class="number">0x335ec946eb8b</span>
+	<span class="ident">TaskbarList</span> <span class="number">0x56fdf344</span>, <span class="number">0xfd6d</span>, <span class="number">0x11d0</span>, <span class="number">0x958a</span>, <span class="number">0x006097c9a090</span>
 }
 
 <span class="macro">pub_const_guid!</span> { <span class="ident">BHID</span>: <span class="string">&quot;shell&quot;</span>;
-	<span class="ident">SFObject</span>, <span class="number">0x3981e224</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
-	<span class="ident">SFUIObject</span>, <span class="number">0x3981e225</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
-	<span class="ident">SFViewObject</span>, <span class="number">0x3981e226</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
-	<span class="ident">Storage</span>, <span class="number">0x3981e227</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
-	<span class="ident">Stream</span>, <span class="number">0x1cebb3ab</span>, <span class="number">0x7c10</span>, <span class="number">0x499a</span>, <span class="number">0xa417</span>, <span class="number">0x92ca16c4cb83</span>
-	<span class="ident">RandomAccessStream</span>, <span class="number">0xf16fc93b</span>, <span class="number">0x77ae</span>, <span class="number">0x4cfe</span>, <span class="number">0xbda7</span>, <span class="number">0xa866eea6878d</span>
-	<span class="ident">LinkTargetItem</span>, <span class="number">0x3981e228</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
-	<span class="ident">StorageEnum</span>, <span class="number">0x4621a4e3</span>, <span class="number">0xf0d6</span>, <span class="number">0x4773</span>, <span class="number">0x8a9c</span>, <span class="number">0x46e77b174840</span>
-	<span class="ident">Transfer</span>, <span class="number">0xd5e346a1</span>, <span class="number">0xf753</span>, <span class="number">0x4932</span>, <span class="number">0xb403</span>, <span class="number">0x4574800e2498</span>
-	<span class="ident">PropertyStore</span>, <span class="number">0x0384e1a4</span>, <span class="number">0x1523</span>, <span class="number">0x439c</span>, <span class="number">0xa4c8</span>, <span class="number">0xab911052f586</span>
-	<span class="ident">ThumbnailHandler</span>, <span class="number">0x7b2e650a</span>, <span class="number">0x8e20</span>, <span class="number">0x4f4a</span>, <span class="number">0xb09e</span>, <span class="number">0x6597afc72fb0</span>
-	<span class="ident">EnumItems</span>, <span class="number">0x94f60519</span>, <span class="number">0x2850</span>, <span class="number">0x4924</span>, <span class="number">0xaa5a</span>, <span class="number">0xd15e84868039</span>
-	<span class="ident">DataObject</span>, <span class="number">0xb8c0bd9f</span>, <span class="number">0xed24</span>, <span class="number">0x455c</span>, <span class="number">0x83e6</span>, <span class="number">0xd5390c4fe8c4</span>
-	<span class="ident">AssociationArray</span>, <span class="number">0xbea9ef17</span>, <span class="number">0x82f1</span>, <span class="number">0x4f60</span>, <span class="number">0x9284</span>, <span class="number">0x4f8db75c3be9</span>
-	<span class="ident">Filter</span>, <span class="number">0x38d08778</span>, <span class="number">0xf557</span>, <span class="number">0x4690</span>, <span class="number">0x9ebf</span>, <span class="number">0xba54706ad8f7</span>
-	<span class="ident">EnumAssocHandlers</span>, <span class="number">0xb8ab0b9c</span>, <span class="number">0xc2ec</span>, <span class="number">0x4f7a</span>, <span class="number">0x918d</span>, <span class="number">0x314900e6280a</span>
-	<span class="ident">FilePlaceholder</span>, <span class="number">0x8677dceb</span>, <span class="number">0xaae0</span>, <span class="number">0x4005</span>, <span class="number">0x8d3d</span>, <span class="number">0x547fa852f825</span>
+	<span class="ident">SFObject</span> <span class="number">0x3981e224</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
+	<span class="ident">SFUIObject</span> <span class="number">0x3981e225</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
+	<span class="ident">SFViewObject</span> <span class="number">0x3981e226</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
+	<span class="ident">Storage</span> <span class="number">0x3981e227</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
+	<span class="ident">Stream</span> <span class="number">0x1cebb3ab</span>, <span class="number">0x7c10</span>, <span class="number">0x499a</span>, <span class="number">0xa417</span>, <span class="number">0x92ca16c4cb83</span>
+	<span class="ident">RandomAccessStream</span> <span class="number">0xf16fc93b</span>, <span class="number">0x77ae</span>, <span class="number">0x4cfe</span>, <span class="number">0xbda7</span>, <span class="number">0xa866eea6878d</span>
+	<span class="ident">LinkTargetItem</span> <span class="number">0x3981e228</span>, <span class="number">0xf559</span>, <span class="number">0x11d3</span>, <span class="number">0x8e3a</span>, <span class="number">0x00c04f6837d5</span>
+	<span class="ident">StorageEnum</span> <span class="number">0x4621a4e3</span>, <span class="number">0xf0d6</span>, <span class="number">0x4773</span>, <span class="number">0x8a9c</span>, <span class="number">0x46e77b174840</span>
+	<span class="ident">Transfer</span> <span class="number">0xd5e346a1</span>, <span class="number">0xf753</span>, <span class="number">0x4932</span>, <span class="number">0xb403</span>, <span class="number">0x4574800e2498</span>
+	<span class="ident">PropertyStore</span> <span class="number">0x0384e1a4</span>, <span class="number">0x1523</span>, <span class="number">0x439c</span>, <span class="number">0xa4c8</span>, <span class="number">0xab911052f586</span>
+	<span class="ident">ThumbnailHandler</span> <span class="number">0x7b2e650a</span>, <span class="number">0x8e20</span>, <span class="number">0x4f4a</span>, <span class="number">0xb09e</span>, <span class="number">0x6597afc72fb0</span>
+	<span class="ident">EnumItems</span> <span class="number">0x94f60519</span>, <span class="number">0x2850</span>, <span class="number">0x4924</span>, <span class="number">0xaa5a</span>, <span class="number">0xd15e84868039</span>
+	<span class="ident">DataObject</span> <span class="number">0xb8c0bd9f</span>, <span class="number">0xed24</span>, <span class="number">0x455c</span>, <span class="number">0x83e6</span>, <span class="number">0xd5390c4fe8c4</span>
+	<span class="ident">AssociationArray</span> <span class="number">0xbea9ef17</span>, <span class="number">0x82f1</span>, <span class="number">0x4f60</span>, <span class="number">0x9284</span>, <span class="number">0x4f8db75c3be9</span>
+	<span class="ident">Filter</span> <span class="number">0x38d08778</span>, <span class="number">0xf557</span>, <span class="number">0x4690</span>, <span class="number">0x9ebf</span>, <span class="number">0xba54706ad8f7</span>
+	<span class="ident">EnumAssocHandlers</span> <span class="number">0xb8ab0b9c</span>, <span class="number">0xc2ec</span>, <span class="number">0x4f7a</span>, <span class="number">0x918d</span>, <span class="number">0x314900e6280a</span>
+	<span class="ident">FilePlaceholder</span> <span class="number">0x8677dceb</span>, <span class="number">0xaae0</span>, <span class="number">0x4005</span>, <span class="number">0x8d3d</span>, <span class="number">0x547fa852f825</span>
+}
+
+<span class="macro">pub_const_guid!</span> { <span class="ident">KNOWNFOLDERID</span>: <span class="string">&quot;shell&quot;</span>;
+	<span class="ident">NetworkFolder</span> <span class="number">0xd20beec4</span>, <span class="number">0x5ca8</span>, <span class="number">0x4905</span>, <span class="number">0xae3b</span>, <span class="number">0xbf251ea09b53</span>
+	<span class="ident">ComputerFolder</span> <span class="number">0x0ac0837c</span>, <span class="number">0xbbf8</span>, <span class="number">0x452a</span>, <span class="number">0x850d</span>, <span class="number">0x79d08e667ca7</span>
+	<span class="ident">InternetFolder</span> <span class="number">0x4d9f7874</span>, <span class="number">0x4e0c</span>, <span class="number">0x4904</span>, <span class="number">0x967b</span>, <span class="number">0x40b0d20c3e4b</span>
+	<span class="ident">ControlPanelFolder</span> <span class="number">0x82a74aeb</span>, <span class="number">0xaeb4</span>, <span class="number">0x465c</span>, <span class="number">0xa014</span>, <span class="number">0xd097ee346d63</span>
+	<span class="ident">PrintersFolder</span> <span class="number">0x76fc4e2d</span>, <span class="number">0xd6ad</span>, <span class="number">0x4519</span>, <span class="number">0xa663</span>, <span class="number">0x37bd56068185</span>
+	<span class="ident">SyncManagerFolder</span> <span class="number">0x43668bf8</span>, <span class="number">0xc14e</span>, <span class="number">0x49b2</span>, <span class="number">0x97c9</span>, <span class="number">0x747784d784b7</span>
+	<span class="ident">SyncSetupFolder</span> <span class="number">0x0f214138</span>, <span class="number">0xb1d3</span>, <span class="number">0x4a90</span>, <span class="number">0xbba9</span>, <span class="number">0x27cbc0c5389a</span>
+	<span class="ident">ConflictFolder</span> <span class="number">0x4bfefb45</span>, <span class="number">0x347d</span>, <span class="number">0x4006</span>, <span class="number">0xa5be</span>, <span class="number">0xac0cb0567192</span>
+	<span class="ident">SyncResultsFolder</span> <span class="number">0x289a9a43</span>, <span class="number">0xbe44</span>, <span class="number">0x4057</span>, <span class="number">0xa41b</span>, <span class="number">0x587a76d7e7f9</span>
+	<span class="ident">RecycleBinFolder</span> <span class="number">0xb7534046</span>, <span class="number">0x3ecb</span>, <span class="number">0x4c18</span>, <span class="number">0xbe4e</span>, <span class="number">0x64cd4cb7d6ac</span>
+	<span class="ident">ConnectionsFolder</span> <span class="number">0x6f0cd92b</span>, <span class="number">0x2e97</span>, <span class="number">0x45d1</span>, <span class="number">0x88ff</span>, <span class="number">0xb0d186b8dedd</span>
+	<span class="ident">Fonts</span> <span class="number">0xfd228cb7</span>, <span class="number">0xae11</span>, <span class="number">0x4ae3</span>, <span class="number">0x864c</span>, <span class="number">0x16f3910ab8fe</span>
+	<span class="ident">Desktop</span> <span class="number">0xb4bfcc3a</span>, <span class="number">0xdb2c</span>, <span class="number">0x424c</span>, <span class="number">0xb029</span>, <span class="number">0x7fe99a87c641</span>
+	<span class="ident">Startup</span> <span class="number">0xb97d20bb</span>, <span class="number">0xf46a</span>, <span class="number">0x4c97</span>, <span class="number">0xba10</span>, <span class="number">0x5e3608430854</span>
+	<span class="ident">Programs</span> <span class="number">0xa77f5d77</span>, <span class="number">0x2e2b</span>, <span class="number">0x44c3</span>, <span class="number">0xa6a2</span>, <span class="number">0xaba601054a51</span>
+	<span class="ident">StartMenu</span> <span class="number">0x625b53c3</span>, <span class="number">0xab48</span>, <span class="number">0x4ec1</span>, <span class="number">0xba1f</span>, <span class="number">0xa1ef4146fc19</span>
+	<span class="ident">Recent</span> <span class="number">0xae50c081</span>, <span class="number">0xebd2</span>, <span class="number">0x438a</span>, <span class="number">0x8655</span>, <span class="number">0x8a092e34987a</span>
+	<span class="ident">SendTo</span> <span class="number">0x8983036c</span>, <span class="number">0x27c0</span>, <span class="number">0x404b</span>, <span class="number">0x8f08</span>, <span class="number">0x102d10dcfd74</span>
+	<span class="ident">Documents</span> <span class="number">0xfdd39ad0</span>, <span class="number">0x238f</span>, <span class="number">0x46af</span>, <span class="number">0xadb4</span>, <span class="number">0x6c85480369c7</span>
+	<span class="ident">Favorites</span> <span class="number">0x1777f761</span>, <span class="number">0x68ad</span>, <span class="number">0x4d8a</span>, <span class="number">0x87bd</span>, <span class="number">0x30b759fa33dd</span>
+	<span class="ident">NetHood</span> <span class="number">0xc5abbf53</span>, <span class="number">0xe17f</span>, <span class="number">0x4121</span>, <span class="number">0x8900</span>, <span class="number">0x86626fc2c973</span>
+	<span class="ident">PrintHood</span> <span class="number">0x9274bd8d</span>, <span class="number">0xcfd1</span>, <span class="number">0x41c3</span>, <span class="number">0xb35e</span>, <span class="number">0xb13f55a758f4</span>
+	<span class="ident">Templates</span> <span class="number">0xa63293e8</span>, <span class="number">0x664e</span>, <span class="number">0x48db</span>, <span class="number">0xa079</span>, <span class="number">0xdf759e0509f7</span>
+	<span class="ident">CommonStartup</span> <span class="number">0x82a5ea35</span>, <span class="number">0xd9cd</span>, <span class="number">0x47c5</span>, <span class="number">0x9629</span>, <span class="number">0xe15d2f714e6e</span>
+	<span class="ident">CommonPrograms</span> <span class="number">0x0139d44e</span>, <span class="number">0x6afe</span>, <span class="number">0x49f2</span>, <span class="number">0x8690</span>, <span class="number">0x3dafcae6ffb8</span>
+	<span class="ident">CommonStartMenu</span> <span class="number">0xa4115719</span>, <span class="number">0xd62e</span>, <span class="number">0x491d</span>, <span class="number">0xaa7c</span>, <span class="number">0xe74b8be3b067</span>
+	<span class="ident">PublicDesktop</span> <span class="number">0xc4aa340d</span>, <span class="number">0xf20f</span>, <span class="number">0x4863</span>, <span class="number">0xafef</span>, <span class="number">0xf87ef2e6ba25</span>
+	<span class="ident">ProgramData</span> <span class="number">0x62ab5d82</span>, <span class="number">0xfdc1</span>, <span class="number">0x4dc3</span>, <span class="number">0xa9dd</span>, <span class="number">0x070d1d495d97</span>
+	<span class="ident">CommonTemplates</span> <span class="number">0xb94237e7</span>, <span class="number">0x57ac</span>, <span class="number">0x4347</span>, <span class="number">0x9151</span>, <span class="number">0xb08c6c32d1f7</span>
+	<span class="ident">PublicDocuments</span> <span class="number">0xed4824af</span>, <span class="number">0xdce4</span>, <span class="number">0x45a8</span>, <span class="number">0x81e2</span>, <span class="number">0xfc7965083634</span>
+	<span class="ident">RoamingAppData</span> <span class="number">0x3eb685db</span>, <span class="number">0x65f9</span>, <span class="number">0x4cf6</span>, <span class="number">0xa03a</span>, <span class="number">0xe3ef65729f3d</span>
+	<span class="ident">LocalAppData</span> <span class="number">0xf1b32785</span>, <span class="number">0x6fba</span>, <span class="number">0x4fcf</span>, <span class="number">0x9d55</span>, <span class="number">0x7b8e7f157091</span>
+	<span class="ident">LocalAppDataLow</span> <span class="number">0xa520a1a4</span>, <span class="number">0x1780</span>, <span class="number">0x4ff6</span>, <span class="number">0xbd18</span>, <span class="number">0x167343c5af16</span>
+	<span class="ident">InternetCache</span> <span class="number">0x352481e8</span>, <span class="number">0x33be</span>, <span class="number">0x4251</span>, <span class="number">0xba85</span>, <span class="number">0x6007caedcf9d</span>
+	<span class="ident">Cookies</span> <span class="number">0x2b0f765d</span>, <span class="number">0xc0e9</span>, <span class="number">0x4171</span>, <span class="number">0x908e</span>, <span class="number">0x08a611b84ff6</span>
+	<span class="ident">History</span> <span class="number">0xd9dc8a3b</span>, <span class="number">0xb784</span>, <span class="number">0x432e</span>, <span class="number">0xa781</span>, <span class="number">0x5a1130a75963</span>
+	<span class="ident">System</span> <span class="number">0x1ac14e77</span>, <span class="number">0x02e7</span>, <span class="number">0x4e5d</span>, <span class="number">0xb744</span>, <span class="number">0x2eb1ae5198b7</span>
+	<span class="ident">SystemX86</span> <span class="number">0xd65231b0</span>, <span class="number">0xb2f1</span>, <span class="number">0x4857</span>, <span class="number">0xa4ce</span>, <span class="number">0xa8e7c6ea7d27</span>
+	<span class="ident">Windows</span> <span class="number">0xf38bf404</span>, <span class="number">0x1d43</span>, <span class="number">0x42f2</span>, <span class="number">0x9305</span>, <span class="number">0x67de0b28fc23</span>
+	<span class="ident">Profile</span> <span class="number">0x5e6c858f</span>, <span class="number">0x0e22</span>, <span class="number">0x4760</span>, <span class="number">0x9afe</span>, <span class="number">0xea3317b67173</span>
+	<span class="ident">Pictures</span> <span class="number">0x33e28130</span>, <span class="number">0x4e1e</span>, <span class="number">0x4676</span>, <span class="number">0x835a</span>, <span class="number">0x98395c3bc3bb</span>
+	<span class="ident">ProgramFilesX86</span> <span class="number">0x7c5a40ef</span>, <span class="number">0xa0fb</span>, <span class="number">0x4bfc</span>, <span class="number">0x874a</span>, <span class="number">0xc0f2e0b9fa8e</span>
+	<span class="ident">ProgramFilesCommonX86</span> <span class="number">0xde974d24</span>, <span class="number">0xd9c6</span>, <span class="number">0x4d3e</span>, <span class="number">0xbf91</span>, <span class="number">0xf4455120b917</span>
+	<span class="ident">ProgramFilesX64</span> <span class="number">0x6d809377</span>, <span class="number">0x6af0</span>, <span class="number">0x444b</span>, <span class="number">0x8957</span>, <span class="number">0xa3773f02200e</span>
+	<span class="ident">ProgramFilesCommonX64</span> <span class="number">0x6365d5a7</span>, <span class="number">0x0f0d</span>, <span class="number">0x45e5</span>, <span class="number">0x87f6</span>, <span class="number">0x0da56b6a4f7d</span>
+	<span class="ident">ProgramFiles</span> <span class="number">0x905e63b6</span>, <span class="number">0xc1bf</span>, <span class="number">0x494e</span>, <span class="number">0xb29c</span>, <span class="number">0x65b732d3d21a</span>
+	<span class="ident">ProgramFilesCommon</span> <span class="number">0xf7f1ed05</span>, <span class="number">0x9f6d</span>, <span class="number">0x47a2</span>, <span class="number">0xaaae</span>, <span class="number">0x29d317c6f066</span>
+	<span class="ident">UserProgramFiles</span> <span class="number">0x5cd7aee2</span>, <span class="number">0x2219</span>, <span class="number">0x4a67</span>, <span class="number">0xb85d</span>, <span class="number">0x6c9ce15660cb</span>
+	<span class="ident">UserProgramFilesCommon</span> <span class="number">0xbcbd3057</span>, <span class="number">0xca5c</span>, <span class="number">0x4622</span>, <span class="number">0xb42d</span>, <span class="number">0xbc56db0ae516</span>
+	<span class="ident">AdminTools</span> <span class="number">0x724ef170</span>, <span class="number">0xa42d</span>, <span class="number">0x4fef</span>, <span class="number">0x9f26</span>, <span class="number">0xb60e846fba4f</span>
+	<span class="ident">CommonAdminTools</span> <span class="number">0xd0384e7d</span>, <span class="number">0xbac3</span>, <span class="number">0x4797</span>, <span class="number">0x8f14</span>, <span class="number">0xcba229b392b5</span>
+	<span class="ident">Music</span> <span class="number">0x4bd8d571</span>, <span class="number">0x6d19</span>, <span class="number">0x48d3</span>, <span class="number">0xbe97</span>, <span class="number">0x422220080e43</span>
+	<span class="ident">Videos</span> <span class="number">0x18989b1d</span>, <span class="number">0x99b5</span>, <span class="number">0x455b</span>, <span class="number">0x841c</span>, <span class="number">0xab7c74e4ddfc</span>
+	<span class="ident">Ringtones</span> <span class="number">0xc870044b</span>, <span class="number">0xf49e</span>, <span class="number">0x4126</span>, <span class="number">0xa9c3</span>, <span class="number">0xb52a1ff411e8</span>
+	<span class="ident">PublicPictures</span> <span class="number">0xb6ebfb86</span>, <span class="number">0x6907</span>, <span class="number">0x413c</span>, <span class="number">0x9af7</span>, <span class="number">0x4fc2abf07cc5</span>
+	<span class="ident">PublicMusic</span> <span class="number">0x3214fab5</span>, <span class="number">0x9757</span>, <span class="number">0x4298</span>, <span class="number">0xbb61</span>, <span class="number">0x92a9deaa44ff</span>
+	<span class="ident">PublicVideos</span> <span class="number">0x2400183a</span>, <span class="number">0x6185</span>, <span class="number">0x49fb</span>, <span class="number">0xa2d8</span>, <span class="number">0x4a392a602ba3</span>
+	<span class="ident">PublicRingtones</span> <span class="number">0xe555ab60</span>, <span class="number">0x153b</span>, <span class="number">0x4d17</span>, <span class="number">0x9f04</span>, <span class="number">0xa5fe99fc15ec</span>
+	<span class="ident">ResourceDir</span> <span class="number">0x8ad10c31</span>, <span class="number">0x2adb</span>, <span class="number">0x4296</span>, <span class="number">0xa8f7</span>, <span class="number">0xe4701232c972</span>
+	<span class="ident">LocalizedResourcesDir</span> <span class="number">0x2a00375e</span>, <span class="number">0x224c</span>, <span class="number">0x49de</span>, <span class="number">0xb8d1</span>, <span class="number">0x440df7ef3ddc</span>
+	<span class="ident">CommonOEMLinks</span> <span class="number">0xc1bae2d0</span>, <span class="number">0x10df</span>, <span class="number">0x4334</span>, <span class="number">0xbedd</span>, <span class="number">0x7aa20b227a9d</span>
+	<span class="ident">CDBurning</span> <span class="number">0x9e52ab10</span>, <span class="number">0xf80d</span>, <span class="number">0x49df</span>, <span class="number">0xacb8</span>, <span class="number">0x4330f5687855</span>
+	<span class="ident">UserProfiles</span> <span class="number">0x0762d272</span>, <span class="number">0xc50a</span>, <span class="number">0x4bb0</span>, <span class="number">0xa382</span>, <span class="number">0x697dcd729b80</span>
+	<span class="ident">Playlists</span> <span class="number">0xde92c1c7</span>, <span class="number">0x837f</span>, <span class="number">0x4f69</span>, <span class="number">0xa3bb</span>, <span class="number">0x86e631204a23</span>
+	<span class="ident">SamplePlaylists</span> <span class="number">0x15ca69b3</span>, <span class="number">0x30ee</span>, <span class="number">0x49c1</span>, <span class="number">0xace1</span>, <span class="number">0x6b5ec372afb5</span>
+	<span class="ident">SampleMusic</span> <span class="number">0xb250c668</span>, <span class="number">0xf57d</span>, <span class="number">0x4ee1</span>, <span class="number">0xa63c</span>, <span class="number">0x290ee7d1aa1f</span>
+	<span class="ident">SamplePictures</span> <span class="number">0xc4900540</span>, <span class="number">0x2379</span>, <span class="number">0x4c75</span>, <span class="number">0x844b</span>, <span class="number">0x64e6faf8716b</span>
+	<span class="ident">SampleVideos</span> <span class="number">0x859ead94</span>, <span class="number">0x2e85</span>, <span class="number">0x48ad</span>, <span class="number">0xa71a</span>, <span class="number">0x0969cb56a6cd</span>
+	<span class="ident">PhotoAlbums</span> <span class="number">0x69d2cf90</span>, <span class="number">0xfc33</span>, <span class="number">0x4fb7</span>, <span class="number">0x9a0c</span>, <span class="number">0xebb0f0fcb43c</span>
+	<span class="ident">Public</span> <span class="number">0xdfdf76a2</span>, <span class="number">0xc82a</span>, <span class="number">0x4d63</span>, <span class="number">0x906a</span>, <span class="number">0x5644ac457385</span>
+	<span class="ident">ChangeRemovePrograms</span> <span class="number">0xdf7266ac</span>, <span class="number">0x9274</span>, <span class="number">0x4867</span>, <span class="number">0x8d55</span>, <span class="number">0x3bd661de872d</span>
+	<span class="ident">AppUpdates</span> <span class="number">0xa305ce99</span>, <span class="number">0xf527</span>, <span class="number">0x492b</span>, <span class="number">0x8b1a</span>, <span class="number">0x7e76fa98d6e4</span>
+	<span class="ident">AddNewPrograms</span> <span class="number">0xde61d971</span>, <span class="number">0x5ebc</span>, <span class="number">0x4f02</span>, <span class="number">0xa3a9</span>, <span class="number">0x6c82895e5c04</span>
+	<span class="ident">Downloads</span> <span class="number">0x374de290</span>, <span class="number">0x123f</span>, <span class="number">0x4565</span>, <span class="number">0x9164</span>, <span class="number">0x39c4925e467b</span>
+	<span class="ident">PublicDownloads</span> <span class="number">0x3d644c9b</span>, <span class="number">0x1fb8</span>, <span class="number">0x4f30</span>, <span class="number">0x9b45</span>, <span class="number">0xf670235f79c0</span>
+	<span class="ident">SavedSearches</span> <span class="number">0x7d1d3a04</span>, <span class="number">0xdebb</span>, <span class="number">0x4115</span>, <span class="number">0x95cf</span>, <span class="number">0x2f29da2920da</span>
+	<span class="ident">QuickLaunch</span> <span class="number">0x52a4f021</span>, <span class="number">0x7b75</span>, <span class="number">0x48a9</span>, <span class="number">0x9f6b</span>, <span class="number">0x4b87a210bc8f</span>
+	<span class="ident">Contacts</span> <span class="number">0x56784854</span>, <span class="number">0xc6cb</span>, <span class="number">0x462b</span>, <span class="number">0x8169</span>, <span class="number">0x88e350acb882</span>
+	<span class="ident">SidebarParts</span> <span class="number">0xa75d362e</span>, <span class="number">0x50fc</span>, <span class="number">0x4fb7</span>, <span class="number">0xac2c</span>, <span class="number">0xa8beaa314493</span>
+	<span class="ident">SidebarDefaultParts</span> <span class="number">0x7b396e54</span>, <span class="number">0x9ec5</span>, <span class="number">0x4300</span>, <span class="number">0xbe0a</span>, <span class="number">0x2482ebae1a26</span>
+	<span class="ident">PublicGameTasks</span> <span class="number">0xdebf2536</span>, <span class="number">0xe1a8</span>, <span class="number">0x4c59</span>, <span class="number">0xb6a2</span>, <span class="number">0x414586476aea</span>
+	<span class="ident">GameTasks</span> <span class="number">0x054fae61</span>, <span class="number">0x4dd8</span>, <span class="number">0x4787</span>, <span class="number">0x80b6</span>, <span class="number">0x090220c4b700</span>
+	<span class="ident">SavedGames</span> <span class="number">0x4c5c32ff</span>, <span class="number">0xbb9d</span>, <span class="number">0x43b0</span>, <span class="number">0xb5b4</span>, <span class="number">0x2d72e54eaaa4</span>
+	<span class="ident">Games</span> <span class="number">0xcac52c1a</span>, <span class="number">0xb53d</span>, <span class="number">0x4edc</span>, <span class="number">0x92d7</span>, <span class="number">0x6b2e8ac19434</span>
+	<span class="ident">SEARCH_MAPI</span> <span class="number">0x98ec0e18</span>, <span class="number">0x2098</span>, <span class="number">0x4d44</span>, <span class="number">0x8644</span>, <span class="number">0x66979315a281</span>
+	<span class="ident">SEARCH_CSC</span> <span class="number">0xee32e446</span>, <span class="number">0x31ca</span>, <span class="number">0x4aba</span>, <span class="number">0x814f</span>, <span class="number">0xa5ebd2fd6d5e</span>
+	<span class="ident">Links</span> <span class="number">0xbfb9d5e0</span>, <span class="number">0xc6a9</span>, <span class="number">0x404c</span>, <span class="number">0xb2b2</span>, <span class="number">0xae6db6af4968</span>
+	<span class="ident">UsersFiles</span> <span class="number">0xf3ce0f7c</span>, <span class="number">0x4901</span>, <span class="number">0x4acc</span>, <span class="number">0x8648</span>, <span class="number">0xd5d44b04ef8f</span>
+	<span class="ident">UsersLibraries</span> <span class="number">0xa302545d</span>, <span class="number">0xdeff</span>, <span class="number">0x464b</span>, <span class="number">0xabe8</span>, <span class="number">0x61c8648d939b</span>
+	<span class="ident">SearchHome</span> <span class="number">0x190337d1</span>, <span class="number">0xb8ca</span>, <span class="number">0x4121</span>, <span class="number">0xa639</span>, <span class="number">0x6d472d16972a</span>
+	<span class="ident">OriginalImages</span> <span class="number">0x2c36c0aa</span>, <span class="number">0x5812</span>, <span class="number">0x4b87</span>, <span class="number">0xbfd0</span>, <span class="number">0x4cd0dfb19b39</span>
+	<span class="ident">DocumentsLibrary</span> <span class="number">0x7b0db17d</span>, <span class="number">0x9cd2</span>, <span class="number">0x4a93</span>, <span class="number">0x9733</span>, <span class="number">0x46cc89022e7c</span>
+	<span class="ident">MusicLibrary</span> <span class="number">0x2112ab0a</span>, <span class="number">0xc86a</span>, <span class="number">0x4ffe</span>, <span class="number">0xa368</span>, <span class="number">0x0de96e47012e</span>
+	<span class="ident">PicturesLibrary</span> <span class="number">0xa990ae9f</span>, <span class="number">0xa03b</span>, <span class="number">0x4e80</span>, <span class="number">0x94bc</span>, <span class="number">0x9912d7504104</span>
+	<span class="ident">VideosLibrary</span> <span class="number">0x491e922f</span>, <span class="number">0x5643</span>, <span class="number">0x4af4</span>, <span class="number">0xa7eb</span>, <span class="number">0x4e7a138d8174</span>
+	<span class="ident">RecordedTVLibrary</span> <span class="number">0x1a6fdba2</span>, <span class="number">0xf42d</span>, <span class="number">0x4358</span>, <span class="number">0xa798</span>, <span class="number">0xb74d745926c5</span>
+	<span class="ident">HomeGroup</span> <span class="number">0x52528a6b</span>, <span class="number">0xb9e3</span>, <span class="number">0x4add</span>, <span class="number">0xb60d</span>, <span class="number">0x588c2dba842d</span>
+	<span class="ident">HomeGroupCurrentUser</span> <span class="number">0x9b74b6a3</span>, <span class="number">0x0dfd</span>, <span class="number">0x4f11</span>, <span class="number">0x9e78</span>, <span class="number">0x5f7800f2e772</span>
+	<span class="ident">DeviceMetadataStore</span> <span class="number">0x5ce4a5e9</span>, <span class="number">0xe4eb</span>, <span class="number">0x479d</span>, <span class="number">0xb89f</span>, <span class="number">0x130c02886155</span>
+	<span class="ident">Libraries</span> <span class="number">0x1b3ea5dc</span>, <span class="number">0xb587</span>, <span class="number">0x4786</span>, <span class="number">0xb4ef</span>, <span class="number">0xbd1dc332aeae</span>
+	<span class="ident">PublicLibraries</span> <span class="number">0x48daf80b</span>, <span class="number">0xe6cf</span>, <span class="number">0x4f4e</span>, <span class="number">0xb800</span>, <span class="number">0x0e69d84ee384</span>
+	<span class="ident">UserPinned</span> <span class="number">0x9e3995ab</span>, <span class="number">0x1f9c</span>, <span class="number">0x4f13</span>, <span class="number">0xb827</span>, <span class="number">0x48b24b6c7174</span>
+	<span class="ident">ImplicitAppShortcuts</span> <span class="number">0xbcb5256f</span>, <span class="number">0x79f6</span>, <span class="number">0x4cee</span>, <span class="number">0xb725</span>, <span class="number">0xdc34e402fd46</span>
+	<span class="ident">AccountPictures</span> <span class="number">0x008ca0b1</span>, <span class="number">0x55b4</span>, <span class="number">0x4c56</span>, <span class="number">0xb8a8</span>, <span class="number">0x4de4b299d3be</span>
+	<span class="ident">PublicUserTiles</span> <span class="number">0x0482af6c</span>, <span class="number">0x08f1</span>, <span class="number">0x4c34</span>, <span class="number">0x8c90</span>, <span class="number">0xe17ec98b1e17</span>
+	<span class="ident">AppsFolder</span> <span class="number">0x1e87508d</span>, <span class="number">0x89c2</span>, <span class="number">0x42f0</span>, <span class="number">0x8a7e</span>, <span class="number">0x645a0f50ca58</span>
+	<span class="ident">StartMenuAllPrograms</span> <span class="number">0xf26305ef</span>, <span class="number">0x6948</span>, <span class="number">0x40b9</span>, <span class="number">0xb255</span>, <span class="number">0x81453d09c785</span>
+	<span class="ident">CommonStartMenuPlaces</span> <span class="number">0xa440879f</span>, <span class="number">0x87a0</span>, <span class="number">0x4f7d</span>, <span class="number">0xb700</span>, <span class="number">0x0207b966194a</span>
+	<span class="ident">ApplicationShortcuts</span> <span class="number">0xa3918781</span>, <span class="number">0xe5f2</span>, <span class="number">0x4890</span>, <span class="number">0xb3d9</span>, <span class="number">0xa7e54332328c</span>
+	<span class="ident">RoamingTiles</span> <span class="number">0x00bcfc5a</span>, <span class="number">0xed94</span>, <span class="number">0x4e48</span>, <span class="number">0x96a1</span>, <span class="number">0x3f6217f21990</span>
+	<span class="ident">RoamedTileImages</span> <span class="number">0xaaa8d5a5</span>, <span class="number">0xf1d6</span>, <span class="number">0x4259</span>, <span class="number">0xbaa8</span>, <span class="number">0x78e7ef60835e</span>
+	<span class="ident">Screenshots</span> <span class="number">0xb7bede81</span>, <span class="number">0xdf94</span>, <span class="number">0x4682</span>, <span class="number">0xa7d8</span>, <span class="number">0x57a52620b86f</span>
+	<span class="ident">CameraRoll</span> <span class="number">0xab5fb87b</span>, <span class="number">0x7ce2</span>, <span class="number">0x4f83</span>, <span class="number">0x915d</span>, <span class="number">0x550846c9537b</span>
+	<span class="ident">SkyDrive</span> <span class="number">0xa52bba46</span>, <span class="number">0xe9e1</span>, <span class="number">0x435f</span>, <span class="number">0xb3d9</span>, <span class="number">0x28daa648c0f6</span>
+	<span class="ident">OneDrive</span> <span class="number">0xa52bba46</span>, <span class="number">0xe9e1</span>, <span class="number">0x435f</span>, <span class="number">0xb3d9</span>, <span class="number">0x28daa648c0f6</span>
+	<span class="ident">SkyDriveDocuments</span> <span class="number">0x24d89e24</span>, <span class="number">0x2f19</span>, <span class="number">0x4534</span>, <span class="number">0x9dde</span>, <span class="number">0x6a6671fbb8fe</span>
+	<span class="ident">SkyDrivePictures</span> <span class="number">0x339719b5</span>, <span class="number">0x8c47</span>, <span class="number">0x4894</span>, <span class="number">0x94c2</span>, <span class="number">0xd8f77add44a6</span>
+	<span class="ident">SkyDriveMusic</span> <span class="number">0xc3f2459e</span>, <span class="number">0x80d6</span>, <span class="number">0x45dc</span>, <span class="number">0xbfef</span>, <span class="number">0x1f769f2be730</span>
+	<span class="ident">SkyDriveCameraRoll</span> <span class="number">0x767e6811</span>, <span class="number">0x49cb</span>, <span class="number">0x4273</span>, <span class="number">0x87c2</span>, <span class="number">0x20f355e1085b</span>
+	<span class="ident">SearchHistory</span> <span class="number">0x0d4c3db6</span>, <span class="number">0x03a3</span>, <span class="number">0x462f</span>, <span class="number">0xa0e6</span>, <span class="number">0x08924c41b5d4</span>
+	<span class="ident">SearchTemplates</span> <span class="number">0x7e636bfe</span>, <span class="number">0xdfa9</span>, <span class="number">0x4d5e</span>, <span class="number">0xb456</span>, <span class="number">0xd7b39851d8a9</span>
+	<span class="ident">CameraRollLibrary</span> <span class="number">0x2b20df75</span>, <span class="number">0x1eda</span>, <span class="number">0x4039</span>, <span class="number">0x8097</span>, <span class="number">0x38798227d5b7</span>
+	<span class="ident">SavedPictures</span> <span class="number">0x3b193882</span>, <span class="number">0xd3ad</span>, <span class="number">0x4eab</span>, <span class="number">0x965a</span>, <span class="number">0x69829d1fb59f</span>
+	<span class="ident">SavedPicturesLibrary</span> <span class="number">0xe25b5812</span>, <span class="number">0xbe88</span>, <span class="number">0x4bd9</span>, <span class="number">0x94b0</span>, <span class="number">0x29233477b6c3</span>
+	<span class="ident">RetailDemo</span> <span class="number">0x12d4c69e</span>, <span class="number">0x24ad</span>, <span class="number">0x4923</span>, <span class="number">0xbe19</span>, <span class="number">0x31321c43a767</span>
+	<span class="ident">Device</span> <span class="number">0x1c2ac1dc</span>, <span class="number">0x4358</span>, <span class="number">0x4b6c</span>, <span class="number">0x9733</span>, <span class="number">0xaf21156576f0</span>
+	<span class="ident">DevelopmentFiles</span> <span class="number">0xdbe8e08e</span>, <span class="number">0x3053</span>, <span class="number">0x4bbc</span>, <span class="number">0xb183</span>, <span class="number">0x2a7b2b191e59</span>
+	<span class="ident">Objects3D</span> <span class="number">0x31c0dd25</span>, <span class="number">0x9439</span>, <span class="number">0x4f12</span>, <span class="number">0xbf41</span>, <span class="number">0x7ff4eda38722</span>
+	<span class="ident">AppCaptures</span> <span class="number">0xedc0fe71</span>, <span class="number">0x98d8</span>, <span class="number">0x4f4a</span>, <span class="number">0xb920</span>, <span class="number">0xc8dc133cb165</span>
+	<span class="ident">LocalDocuments</span> <span class="number">0xf42ee2d3</span>, <span class="number">0x909f</span>, <span class="number">0x4907</span>, <span class="number">0x8871</span>, <span class="number">0x4c22fc0bf756</span>
+	<span class="ident">LocalPictures</span> <span class="number">0x0ddd015d</span>, <span class="number">0xb06c</span>, <span class="number">0x45d5</span>, <span class="number">0x8c4c</span>, <span class="number">0xf59713854639</span>
+	<span class="ident">LocalVideos</span> <span class="number">0x35286a68</span>, <span class="number">0x3c57</span>, <span class="number">0x41a1</span>, <span class="number">0xbbb1</span>, <span class="number">0x0eae73d76c95</span>
+	<span class="ident">LocalMusic</span> <span class="number">0xa0c69a99</span>, <span class="number">0x21c8</span>, <span class="number">0x4671</span>, <span class="number">0x8703</span>, <span class="number">0x7934162fcf1d</span>
+	<span class="ident">LocalDownloads</span> <span class="number">0x7d83ee9b</span>, <span class="number">0x2244</span>, <span class="number">0x4e70</span>, <span class="number">0xb1f5</span>, <span class="number">0x5393042af1e4</span>
+	<span class="ident">RecordedCalls</span> <span class="number">0x2f8b40c2</span>, <span class="number">0x83ed</span>, <span class="number">0x48ee</span>, <span class="number">0xb383</span>, <span class="number">0xa1f157ec6f9a</span>
+	<span class="ident">AllAppMods</span> <span class="number">0x7ad67899</span>, <span class="number">0x66af</span>, <span class="number">0x43ba</span>, <span class="number">0x9156</span>, <span class="number">0x6aad42e6c596</span>
+	<span class="ident">CurrentAppMods</span> <span class="number">0x3db40b20</span>, <span class="number">0x2a30</span>, <span class="number">0x4dbe</span>, <span class="number">0x917e</span>, <span class="number">0x771dd21dd099</span>
+	<span class="ident">AppDataDesktop</span> <span class="number">0xb2c5e279</span>, <span class="number">0x7add</span>, <span class="number">0x439f</span>, <span class="number">0xb28c</span>, <span class="number">0xc41fe1bbf672</span>
+	<span class="ident">AppDataDocuments</span> <span class="number">0x7be16610</span>, <span class="number">0x1f7f</span>, <span class="number">0x44ac</span>, <span class="number">0xbff0</span>, <span class="number">0x83e15f2ffca1</span>
+	<span class="ident">AppDataFavorites</span> <span class="number">0x7cfbefbc</span>, <span class="number">0xde1f</span>, <span class="number">0x45aa</span>, <span class="number">0xb843</span>, <span class="number">0xa542ac536cc9</span>
+	<span class="ident">AppDataProgramData</span> <span class="number">0x559d40a3</span>, <span class="number">0xa036</span>, <span class="number">0x40fa</span>, <span class="number">0xaf61</span>, <span class="number">0x84cb430a4d34</span>
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1bd4fdc94 2022-01-12)" ></div>

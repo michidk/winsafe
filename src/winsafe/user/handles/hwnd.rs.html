@@ -1339,6 +1339,21 @@
 <span id="1336">1336</span>
 <span id="1337">1337</span>
 <span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
+<span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">user</span>};
@@ -2372,23 +2387,38 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Sending a [`lvm::SetItem`](crate::msg::lvm::SetItem) list view message,</span>
-	<span class="doccomment">/// which demands a reference to an [`LVITEM`](crate::LVITEM) object:</span>
+	<span class="doccomment">/// Sending a [`bm::GetImage`](crate::msg::bm::GetImage) button message,</span>
+	<span class="doccomment">/// which demands an image type parameter. Note that this specific message</span>
+	<span class="doccomment">/// can also return an error, which is handled with `?`:</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// ```rust,no_run</span>
 	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::{co, HWND, LVITEM, msg::lvm};</span>
+	<span class="doccomment">/// use winsafe::{co, HWND, msg::bm};</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// let hwnd: HWND; // initialized somewhere</span>
 	<span class="doccomment">/// # let hwnd = HWND::NULL;</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// let mut lvi = LVITEM::default(); // object to be sent</span>
-	<span class="doccomment">/// lvi.mask = co::LVIF::IMAGE;</span>
-	<span class="doccomment">/// lvi.iImage = 3;</span>
+	<span class="doccomment">/// let bmp = hwnd.SendMessage(bm::GetImage {</span>
+	<span class="doccomment">///     img_type: co::IMAGE_TYPE::BITMAP,</span>
+	<span class="doccomment">/// })?;</span>
+	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
+	<span class="doccomment">/// ```</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// hwnd.SendMessage(lvm::SetItem {</span>
-	<span class="doccomment">///     lvitem: &amp;lvi,</span>
-	<span class="doccomment">/// });</span>
+	<span class="doccomment">/// Sending an [`em::CharFromPos`](crate::msg::em::CharFromPos) edit message,</span>
+	<span class="doccomment">/// which receives point coordinates and returns two values:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```rust,no_run</span>
+	<span class="doccomment">/// use winsafe::prelude::*;</span>
+	<span class="doccomment">/// use winsafe::{HWND, msg::em, POINT};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let hwnd: HWND; // initialized somewhere</span>
+	<span class="doccomment">/// # let hwnd = HWND::NULL;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let (char_pos, line_pos) = hwnd.SendMessage(</span>
+	<span class="doccomment">///     em::CharFromPos {</span>
+	<span class="doccomment">///         coords: POINT::new(12, 20),</span>
+	<span class="doccomment">///     },</span>
+	<span class="doccomment">/// );</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">fn</span> <span class="ident">SendMessage</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) -&gt; <span class="ident">M::RetType</span>
 		<span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MsgSend</span>,
