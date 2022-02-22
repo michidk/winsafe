@@ -187,6 +187,8 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">HINSTANCE</span>, <span class="ident">SetLastError</span>, <span class="ident">WinResult</span>,
 	<span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
@@ -307,19 +309,21 @@
 
 		<span class="comment">// Our hwnd member is set during WM_NCCREATE processing, already set when</span>
 		<span class="comment">// CreateWindowEx returns.</span>
-		<span class="ident">HWND::CreateWindowEx</span>(
-			<span class="ident">ex_styles</span>,
-			<span class="ident">AtomStr::Atom</span>(<span class="ident">class_name</span>),
-			<span class="ident">title</span>, <span class="ident">styles</span>,
-			<span class="ident">pos</span>, <span class="ident">sz</span>,
-			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="ident">parent</span>.<span class="ident">hwnd</span>()),
-			<span class="ident">hmenu</span>,
-			<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map_or_else</span>(
-				<span class="op">|</span><span class="op">|</span> <span class="ident">HINSTANCE::GetModuleHandle</span>(<span class="prelude-val">None</span>),
-				<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">parent</span>.<span class="ident">hwnd</span>().<span class="ident">hinstance</span>()),
-			)<span class="question-mark">?</span>,
-			<span class="prelude-val">Some</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// pass pointer to self</span>
-		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+		<span class="kw">unsafe</span> {
+			<span class="ident">HWND::CreateWindowEx</span>(
+				<span class="ident">ex_styles</span>,
+				<span class="ident">AtomStr::Atom</span>(<span class="ident">class_name</span>),
+				<span class="ident">title</span>, <span class="ident">styles</span>,
+				<span class="ident">pos</span>, <span class="ident">sz</span>,
+				<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="ident">parent</span>.<span class="ident">hwnd</span>()),
+				<span class="ident">hmenu</span>,
+				<span class="self">self</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">map_or_else</span>(
+					<span class="op">|</span><span class="op">|</span> <span class="ident">HINSTANCE::GetModuleHandle</span>(<span class="prelude-val">None</span>),
+					<span class="op">|</span><span class="ident">parent</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">parent</span>.<span class="ident">hwnd</span>().<span class="ident">hinstance</span>()),
+				)<span class="question-mark">?</span>,
+				<span class="prelude-val">Some</span>(<span class="self">self</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="comment">// pass pointer to self</span>
+			)
+		}.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">window_proc</span>(
@@ -372,5 +376,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (734368a20 2022-02-07)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1e12aef3f 2022-02-13)" ></div>
 </body></html>

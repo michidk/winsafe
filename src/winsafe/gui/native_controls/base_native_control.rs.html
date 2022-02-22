@@ -163,6 +163,8 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
@@ -240,16 +242,18 @@
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot create control before parent window creation.&quot;</span>);
 		}
 
-		<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">as_mut</span>() <span class="op">=</span> <span class="ident">HWND::CreateWindowEx</span>(
-			<span class="ident">ex_styles</span>,
-			<span class="ident">AtomStr::from_str</span>(<span class="ident">class_name</span>),
-			<span class="ident">title</span>, <span class="ident">styles</span>,
-			<span class="ident">pos</span>, <span class="ident">sz</span>,
-			<span class="prelude-val">Some</span>(<span class="ident">hparent</span>),
-			<span class="ident">IdMenu::Id</span>(<span class="ident">ctrl_id</span>),
-			<span class="ident">hparent</span>.<span class="ident">hinstance</span>(),
-			<span class="prelude-val">None</span>,
-		)<span class="question-mark">?</span>;
+		<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">as_mut</span>() <span class="op">=</span> <span class="kw">unsafe</span> {
+			<span class="ident">HWND::CreateWindowEx</span>(
+				<span class="ident">ex_styles</span>,
+				<span class="ident">AtomStr::from_str</span>(<span class="ident">class_name</span>),
+				<span class="ident">title</span>, <span class="ident">styles</span>,
+				<span class="ident">pos</span>, <span class="ident">sz</span>,
+				<span class="prelude-val">Some</span>(<span class="ident">hparent</span>),
+				<span class="ident">IdMenu::Id</span>(<span class="ident">ctrl_id</span>),
+				<span class="ident">hparent</span>.<span class="ident">hinstance</span>(),
+				<span class="prelude-val">None</span>,
+			)<span class="question-mark">?</span>
+		};
 
 		<span class="self">self</span>.<span class="ident">install_subclass_if_needed</span>()<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">hwnd</span>)
@@ -324,5 +328,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (734368a20 2022-02-07)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1e12aef3f 2022-02-13)" ></div>
 </body></html>
