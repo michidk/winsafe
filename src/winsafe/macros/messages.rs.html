@@ -207,6 +207,7 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
 
 <span class="doccomment">/// Struct for a message that has no parameters and no meaningful return value.</span>
@@ -220,9 +221,10 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Return type: `()`.</span>
 		<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">feature</span>)))]</span>
+		<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 		<span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
 
-		<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
 
 			<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) -&gt; <span class="ident"><span class="self">Self</span>::RetType</span> {
@@ -252,7 +254,7 @@
 			$( <span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">msdn</span>]</span> )<span class="op">*</span>
 		}
 
-		<span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="kw">_</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 				<span class="self">Self</span> {}
 			}
@@ -281,7 +283,7 @@
 			<span class="kw">pub</span> <span class="ident">key_is_being_released</span>: <span class="ident">bool</span>,
 		}
 
-		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
 
 			<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) -&gt; <span class="ident"><span class="self">Self</span>::RetType</span> {
@@ -306,7 +308,7 @@
 			}
 		}
 
-		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident"><span class="kw">crate</span>::msg::WndMsg</span>) -&gt; <span class="self">Self</span> {
 				<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">HIBYTE</span>, <span class="ident">HIWORD</span>, <span class="ident">LOBYTE</span>, <span class="ident">LOWORD</span>};
 				<span class="self">Self</span> {
@@ -339,7 +341,7 @@
 			<span class="kw">pub</span> <span class="ident">hwnd</span>: <span class="ident"><span class="kw">crate</span>::user::decl::HWND</span>,
 		}
 
-		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::user::decl::HBRUSH</span>;
 
 			<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="ident">isize</span>) -&gt; <span class="ident"><span class="self">Self</span>::RetType</span> {
@@ -355,7 +357,7 @@
 			}
 		}
 
-		<span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident"><span class="kw">crate</span>::prelude::MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident"><span class="kw">crate</span>::msg::WndMsg</span>) -&gt; <span class="self">Self</span> {
 				<span class="self">Self</span> {
 					<span class="ident">hdc</span>: <span class="ident"><span class="kw">crate</span>::user::decl::HDC</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -382,7 +384,7 @@
 			<span class="kw">pub</span> <span class="ident">coords</span>: <span class="ident">POINT</span>,
 		}
 
-		<span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">MsgSend</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">type</span> <span class="ident">RetType</span> <span class="op">=</span> ();
 
 			<span class="kw">fn</span> <span class="ident">convert_ret</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">isize</span>) -&gt; <span class="ident"><span class="self">Self</span>::RetType</span> {
@@ -398,7 +400,7 @@
 			}
 		}
 
-		<span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+		<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">MsgSendRecv</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
 			<span class="kw">fn</span> <span class="ident">from_generic_wm</span>(<span class="ident">p</span>: <span class="ident">WndMsg</span>) -&gt; <span class="self">Self</span> {
 				<span class="self">Self</span> {
 					<span class="ident">vkey_code</span>: <span class="ident">co::VK</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -412,5 +414,5 @@
 	};
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1e12aef3f 2022-02-13)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (532d3cda9 2022-02-23)" ></div>
 </body></html>

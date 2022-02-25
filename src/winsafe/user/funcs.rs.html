@@ -571,6 +571,8 @@
 <span id="566">566</span>
 <span id="567">567</span>
 <span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">DISPLAY_DEVICE</span>, <span class="ident">user</span>};
@@ -999,7 +1001,9 @@
 <span class="doccomment">/// [`PostThreadMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postthreadmessagew)</span>
 <span class="doccomment">/// function.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;user&quot;</span>)))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostThreadMessage</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MsgSend</span><span class="op">&gt;</span>(<span class="ident">thread_id</span>: <span class="ident">u32</span>, <span class="ident">msg</span>: <span class="ident">M</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">PostThreadMessage</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">thread_id</span>: <span class="ident">u32</span>, <span class="ident">msg</span>: <span class="ident">M</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MsgSend</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>;
 	<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
 	<span class="ident">bool_to_winresult</span>(
@@ -1140,5 +1144,5 @@
 	<span class="ident">bool_to_winresult</span>(<span class="kw">unsafe</span> { <span class="ident">user::ffi::WaitMessage</span>() })
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1e12aef3f 2022-02-13)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (532d3cda9 2022-02-23)" ></div>
 </body></html>

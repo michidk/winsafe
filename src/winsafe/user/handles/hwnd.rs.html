@@ -1353,8 +1353,6 @@
 <span id="1348">1348</span>
 <span id="1349">1349</span>
 <span id="1350">1350</span>
-<span id="1351">1351</span>
-<span id="1352">1352</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">user</span>};
@@ -2252,35 +2250,8 @@
 
 	<span class="doccomment">/// [`PostMessage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postmessagew)</span>
 	<span class="doccomment">/// method. Note that this method is asychronous.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Examples</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Programatically closing a window:</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,no_run</span>
-	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::{HWND, msg::wm};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// let hwnd: HWND; // initialized somewhere</span>
-	<span class="doccomment">/// # let hwnd = HWND::NULL;</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// hwnd.PostMessage(wm::Close {})?;</span>
-	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
-	<span class="doccomment">/// ```</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Sending a message to all top-level windows:</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// ```rust,no_run</span>
-	<span class="doccomment">/// use winsafe::prelude::*;</span>
-	<span class="doccomment">/// use winsafe::{HWND, msg::wm};</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// HWND::BROADCAST.PostMessage(</span>
-	<span class="doccomment">///     wm::ExitMenuLoop { is_shortcut: false },</span>
-	<span class="doccomment">/// )?;</span>
-	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
-	<span class="doccomment">/// ```</span>
 	<span class="kw">fn</span> <span class="ident">PostMessage</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">M</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-		<span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MsgSend</span>,
+		<span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MsgSend</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>;
 		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
@@ -2432,6 +2403,31 @@
 				)
 			},
 		)
+	}
+
+	<span class="doccomment">/// [`SendMessageTimeout`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagetimeoutw)</span>
+	<span class="doccomment">/// method.</span>
+	<span class="kw">fn</span> <span class="ident">SendMessageTimeout</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="self">self</span>,
+		<span class="ident">msg</span>: <span class="ident">M</span>, <span class="ident">flags</span>: <span class="ident">co::SMTO</span>, <span class="ident">timeout_ms</span>: <span class="ident">u32</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">M::RetType</span><span class="op">&gt;</span>
+		<span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MsgSend</span>,
+	{
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>;
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">as_generic_wm</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">isize::default</span>();
+
+		<span class="ident">bool_to_winresult</span>(
+			<span class="kw">unsafe</span> {
+				<span class="ident">user::ffi::SendMessageTimeoutW</span>(
+					<span class="self">self</span>.<span class="ident">as_ptr</span>(),
+					<span class="ident">wm_any</span>.<span class="ident">msg_id</span>.<span class="number">0</span>,
+					<span class="ident">wm_any</span>.<span class="ident">wparam</span>,
+					<span class="ident">wm_any</span>.<span class="ident">lparam</span>,
+					<span class="ident">flags</span>.<span class="number">0</span>,
+					<span class="ident">timeout_ms</span>,
+					<span class="kw-2">&amp;mut</span> <span class="ident">result</span>,
+				)
+			} <span class="kw">as</span> <span class="kw">_</span>,
+		).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">msg</span>.<span class="ident">convert_ret</span>(<span class="ident">result</span>))
 	}
 
 	<span class="doccomment">/// [`SetCapture`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcapture)</span>
@@ -2708,5 +2704,5 @@
 	<span class="ident">func</span>(<span class="ident">hwnd</span>) <span class="kw">as</span> <span class="kw">_</span>
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (1e12aef3f 2022-02-13)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (532d3cda9 2022-02-23)" ></div>
 </body></html>
