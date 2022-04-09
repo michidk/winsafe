@@ -158,6 +158,8 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
@@ -215,6 +217,7 @@
 	<span class="doccomment">///     .collect::&lt;WinResult&lt;Vec&lt;_&gt;&gt;&gt;()?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">DropsIter::new</span>(<span class="ident">HDROP</span>(<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">as_ptr</span>() }))<span class="question-mark">?</span>))
 	}
@@ -256,6 +259,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the coordinates and whether the drop occurred in the client area</span>
 	<span class="doccomment">/// of the window.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">DragQueryPoint</span>(<span class="self">self</span>) -&gt; (<span class="ident">POINT</span>, <span class="ident">bool</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pt</span> <span class="op">=</span> <span class="ident">POINT::default</span>();
 		<span class="kw">let</span> <span class="ident">client_area</span> <span class="op">=</span> <span class="kw">unsafe</span> {
@@ -270,7 +274,7 @@
 	<span class="ident">buffer</span>: <span class="ident">WString</span>,
 	<span class="ident">count</span>: <span class="ident">u32</span>,
 	<span class="ident">current</span>: <span class="ident">u32</span>,
-	<span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="ident">_owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">DropsIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -309,10 +313,10 @@
 			<span class="ident">buffer</span>: <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">MAX_PATH</span> <span class="op">+</span> <span class="number">1</span>), <span class="comment">// so we alloc just once</span>
 			<span class="ident">count</span>: <span class="ident">hdrop</span>.<span class="ident">DragQueryFile</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>,
 			<span class="ident">current</span>: <span class="number">0</span>,
-			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">_owner</span>: <span class="ident">PhantomData</span>,
 		})
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

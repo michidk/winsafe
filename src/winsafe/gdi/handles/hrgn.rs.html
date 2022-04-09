@@ -89,6 +89,11 @@
 <span id="84">84</span>
 <span id="85">85</span>
 <span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">gdi</span>};
@@ -107,6 +112,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">CreateRectRgn</span>(<span class="ident">bounds</span>: <span class="ident">RECT</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">gdi::ffi::CreateRectRgn</span>(
@@ -122,6 +128,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">CreateRectRgnIndirect</span>(<span class="ident">rc</span>: <span class="ident">RECT</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi::ffi::CreateRectRgnIndirect</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HRGN</span>(<span class="ident">ptr</span>))
@@ -133,6 +140,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HRGN::DeleteObject`](crate::prelude::HandleGdi::DeleteObject) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">CreateRoundRectRgn</span>(
 		<span class="ident">bounds</span>: <span class="ident">RECT</span>, <span class="ident">size</span>: <span class="ident">SIZE</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HRGN</span><span class="op">&gt;</span>
 	{
@@ -165,16 +173,18 @@
 
 	<span class="doccomment">/// [`PtInRegion`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-ptinregion)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">PtInRegion</span>(<span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi::ffi::PtInRegion</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 
 	<span class="doccomment">/// [`RectInRegion`](https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-rectinregion)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">RectInRegion</span>(<span class="self">self</span>, <span class="ident">rc</span>: <span class="kw-2">&amp;</span><span class="ident">RECT</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw">unsafe</span> { <span class="ident">gdi::ffi::RectInRegion</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> }
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

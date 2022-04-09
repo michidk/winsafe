@@ -416,6 +416,17 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -425,19 +436,23 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ListViewEvents</span>, <span class="ident">WindowEvents</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::sealed_events_wm_nfy::GuiSealedEventsWmNfy</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>,
-	<span class="ident">OptsId</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::list_view_columns::ListViewColumns</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::list_view_items::ListViewItems</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">lvm</span>, <span class="ident">wm</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiFocusControl</span>,
-	<span class="ident">GuiNativeControl</span>, <span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiWindow</span>, <span class="ident">Handle</span>,
-	<span class="ident">NativeBitflag</span>, <span class="ident">UserHmenu</span>, <span class="ident">UserHwnd</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">GetAsyncKeyState</span>, <span class="ident">GetCursorPos</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
+	<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiFocusControl</span>, <span class="ident">GuiNativeControl</span>,
+	<span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiWindow</span>, <span class="ident">Handle</span>, <span class="ident">NativeBitflag</span>,
+	<span class="ident">UserHmenu</span>, <span class="ident">UserHwnd</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
+	<span class="ident">GetAsyncKeyState</span>, <span class="ident">GetCursorPos</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>,
+};
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [list view](https://docs.microsoft.com/en-us/windows/win32/controls/list-view-controls-overview)</span>
@@ -499,6 +514,7 @@
 <span class="kw">impl</span> <span class="ident">ListView</span> {
 	<span class="doccomment">/// Instantiates a new `ListView` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>, <span class="ident">opts</span>: <span class="ident">ListViewOpts</span>) -&gt; <span class="ident">ListView</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ListViewOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
@@ -531,6 +547,7 @@
 	<span class="doccomment">/// **Note:** The optional `context_menu` is shared: it must be destroyed</span>
 	<span class="doccomment">/// manually after the control is destroyed. But note that menus loaded from</span>
 	<span class="doccomment">/// resources don&#39;t need to be destroyed.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
 		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>,
 		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
@@ -616,10 +633,11 @@
 	}
 
 	<span class="doccomment">/// Exposes the column methods.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">columns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="ident">ListViewColumns</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 		<span class="ident">ListViewColumns</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>(),
-			<span class="ident">owner</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">_owner</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 
@@ -628,26 +646,30 @@
 	<span class="doccomment">/// The context menu is attached when the list view is created, either by</span>
 	<span class="doccomment">/// calling [`ListView::new`](crate::gui::ListView::new) or</span>
 	<span class="doccomment">/// [`ListView::new_dlg`](crate::gui::ListView::new_dlg).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">context_menu</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">context_menu</span>
 	}
 
 	<span class="doccomment">/// Retrieves one of the associated image lists by sending an</span>
 	<span class="doccomment">/// [`lvm::GetImageList`](crate::msg::lvm::GetImageList) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">image_list</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">co::LVSIL</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HIMAGELIST</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetImageList</span> { <span class="ident">kind</span> })
 	}
 
 	<span class="doccomment">/// Exposes the item methods.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">items</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="ident">ListViewItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 		<span class="ident">ListViewItems</span> {
 			<span class="ident">hwnd</span>: <span class="self">self</span>.<span class="ident">hwnd</span>(),
-			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">_owner</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 
 	<span class="doccomment">/// Retrieves the current view by sending an</span>
 	<span class="doccomment">/// [`lvm::GetView`](crate::msg::lvm::GetView) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_view</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">co::LV_VIEW</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">lvm::GetView</span> {})
 	}
@@ -830,5 +852,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

@@ -97,6 +97,11 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">kernel</span>};
@@ -120,6 +125,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalFree`](crate::prelude::KernelHglobal::GlobalFree) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GlobalAlloc</span>(<span class="ident">flags</span>: <span class="ident">co::GMEM</span>, <span class="ident">num_bytes</span>: <span class="ident">u64</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GlobalAlloc</span>(<span class="ident">flags</span>.<span class="number">0</span>, <span class="ident">num_bytes</span>).<span class="ident">as_mut</span>() }
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">HGLOBAL</span>(<span class="ident">ptr</span>))
@@ -128,6 +134,7 @@
 
 	<span class="doccomment">/// [`GlobalFlags`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-globalflags)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GlobalFlags</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">co::GMEM</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GlobalFlags</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) } {
 			<span class="ident">GMEM_INVALID_HANDLE</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -153,6 +160,7 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalUnlock`](crate::prelude::KernelHglobal::GlobalUnlock)</span>
 	<span class="doccomment">/// call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GlobalLock</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">mem_sz</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">GlobalSize</span>()<span class="question-mark">?</span>;
 		<span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GlobalLock</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>() }
@@ -167,6 +175,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HGLOBAL::GlobalFree`](crate::prelude::KernelHglobal::GlobalFree) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GlobalReAlloc</span>(<span class="self">self</span>,
 		<span class="ident">num_bytes</span>: <span class="ident">u64</span>, <span class="ident">flags</span>: <span class="ident">co::GMEM</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HGLOBAL</span><span class="op">&gt;</span>
 	{
@@ -178,6 +187,7 @@
 
 	<span class="doccomment">/// [`GlobalSize`](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-globalsize)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GlobalSize</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GlobalSize</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) } {
 			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -192,5 +202,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

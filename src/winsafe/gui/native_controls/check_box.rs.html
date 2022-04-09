@@ -335,23 +335,39 @@
 <span id="330">330</span>
 <span id="331">331</span>
 <span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ButtonEvents</span>, <span class="ident">WindowEvents</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{<span class="ident">BaseNativeControl</span>,
-	<span class="ident">OptsId</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>,
-	<span class="ident">multiply_dpi_or_dtu</span>, <span class="ident">ui_font</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
+	<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{
+	<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box_check</span>, <span class="ident">multiply_dpi_or_dtu</span>, <span class="ident">ui_font</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">bm</span>, <span class="ident">wm</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiFocusControl</span>,
-	<span class="ident">GuiNativeControl</span>, <span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiTextControl</span>,
-	<span class="ident">GuiWindow</span>, <span class="ident">Handle</span>, <span class="ident">UserHwnd</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>, <span class="ident">HWND</span>, <span class="ident">HwndPlace</span>,
-	<span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
+	<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiFocusControl</span>, <span class="ident">GuiNativeControl</span>,
+	<span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiTextControl</span>, <span class="ident">GuiWindow</span>, <span class="ident">Handle</span>,
+	<span class="ident">UserHwnd</span>,
+};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
+	<span class="ident">AccelMenuCtrl</span>, <span class="ident">AccelMenuCtrlData</span>, <span class="ident">HWND</span>, <span class="ident">HwndPlace</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>,
+};
 
 <span class="doccomment">/// Possible states of a [`CheckBox`](crate::gui::CheckBox) control.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
@@ -429,6 +445,7 @@
 <span class="kw">impl</span> <span class="ident">CheckBox</span> {
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>, <span class="ident">opts</span>: <span class="ident">CheckBoxOpts</span>) -&gt; <span class="ident">CheckBox</span> {
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">CheckBoxOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
@@ -454,6 +471,7 @@
 	<span class="doccomment">/// Instantiates a new `CheckBox` object, to be loaded from a dialog</span>
 	<span class="doccomment">/// resource with</span>
 	<span class="doccomment">/// [`HWND::GetDlgItem`](crate::prelude::UserHwnd::GetDlgItem).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dlg</span>(
 		<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>,
 		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
@@ -513,6 +531,7 @@
 
 	<span class="doccomment">/// Retrieves the current check state by sending a</span>
 	<span class="doccomment">/// [`bm::GetCheck`](crate::msg::bm::GetCheck) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">CheckState</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">bm::GetCheck</span> {}) {
 			<span class="ident">co::BST::CHECKED</span> =&gt; <span class="ident">CheckState::Checked</span>,
@@ -530,6 +549,7 @@
 	<span class="doccomment">/// Calls [`check_state`](crate::gui::CheckBox::check_state) and compares</span>
 	<span class="doccomment">/// the result with</span>
 	<span class="doccomment">/// [`CheckState::Checked`](crate::gui::CheckState::Checked).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">check_state</span>() <span class="op">==</span> <span class="ident">CheckState::Checked</span>
 	}
@@ -550,7 +570,9 @@
 	<span class="doccomment">/// [`bm::SetCheck`](crate::msg::bm::SetCheck) message, then sends a</span>
 	<span class="doccomment">/// [`wm::Command`](crate::msg::wm::Command) message to the parent, so it</span>
 	<span class="doccomment">/// can handle the event.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check_state_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="ident">CheckState</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_check_state_and_trigger</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">state</span>: <span class="ident">CheckState</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	{
 		<span class="self">self</span>.<span class="ident">set_check_state</span>(<span class="ident">state</span>);
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">GetParent</span>()<span class="question-mark">?</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::Command</span> {
 			<span class="ident">event</span>: <span class="ident">AccelMenuCtrl::Ctrl</span>(
@@ -668,5 +690,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

@@ -207,13 +207,25 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>, <span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">user</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">GetLastError</span>, <span class="ident">HINSTANCE</span>, <span class="ident">IdStr</span>, <span class="ident">WinResult</span>, <span class="ident">WString</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">ATOM</span>, <span class="ident">DLGPROC</span>, <span class="ident">HACCEL</span>, <span class="ident">HBITMAP</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>,
-	<span class="ident">HWND</span>, <span class="ident">IdIdcStr</span>, <span class="ident">IdIdiStr</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::Handle</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
+	<span class="ident">ATOM</span>, <span class="ident">DLGPROC</span>, <span class="ident">HACCEL</span>, <span class="ident">HBITMAP</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">IdIdcStr</span>,
+	<span class="ident">IdIdiStr</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>,
+};
 
 <span class="kw">impl</span> <span class="ident">UserHinstance</span> <span class="kw">for</span> <span class="ident">HINSTANCE</span> {}
 
@@ -297,6 +309,7 @@
 
 	<span class="doccomment">/// [`LoadAccelerators`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadacceleratorsw)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadAccelerators</span>(<span class="self">self</span>, <span class="ident">table_name</span>: <span class="ident">IdStr</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">user::ffi::LoadAcceleratorsW</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">table_name</span>.<span class="ident">as_ptr</span>())
@@ -320,6 +333,7 @@
 	<span class="doccomment">///     .LoadCursor(IdIdcStr::Idc(co::IDC::ARROW))?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadCursor</span>(<span class="self">self</span>, <span class="ident">resource_id</span>: <span class="ident">IdIdcStr</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">user::ffi::LoadCursorW</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">resource_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
@@ -342,6 +356,7 @@
 	<span class="doccomment">///     .LoadIcon(IdIdiStr::Idi(co::IDI::INFORMATION))?;</span>
 	<span class="doccomment">/// # Ok::&lt;_, co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadIcon</span>(<span class="self">self</span>, <span class="ident">icon_id</span>: <span class="ident">IdIdiStr</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">user::ffi::LoadIconW</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">icon_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
@@ -351,6 +366,7 @@
 
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HBITMAP`](crate::HBITMAP).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadImageBitmap</span>(<span class="self">self</span>,
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">sz</span>: <span class="ident">SIZE</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HBITMAP</span><span class="op">&gt;</span>
 	{
@@ -364,6 +380,7 @@
 
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HCURSOR`](crate::HCURSOR).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadImageCursor</span>(<span class="self">self</span>,
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HCURSOR</span><span class="op">&gt;</span>
 	{
@@ -376,6 +393,7 @@
 
 	<span class="doccomment">/// [`LoadImage`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagew)</span>
 	<span class="doccomment">/// method for [`HICON`](crate::HICON).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadImageIcon</span>(<span class="self">self</span>,
 		<span class="ident">name</span>: <span class="ident">u16</span>, <span class="ident">cx</span>: <span class="ident">i32</span>, <span class="ident">cy</span>: <span class="ident">i32</span>, <span class="ident">load</span>: <span class="ident">co::LR</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HICON</span><span class="op">&gt;</span>
 	{
@@ -388,6 +406,7 @@
 
 	<span class="doccomment">/// [`LoadMenu`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadmenuw)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadMenu</span>(<span class="self">self</span>, <span class="ident">resource_id</span>: <span class="ident">IdStr</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HMENU</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="ident">user::ffi::LoadMenuW</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>(), <span class="ident">resource_id</span>.<span class="ident">as_ptr</span>()).<span class="ident">as_mut</span>()
@@ -397,6 +416,7 @@
 
 	<span class="doccomment">/// [`LoadString`](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadstringw)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">LoadString</span>(<span class="self">self</span>, <span class="ident">id</span>: <span class="ident">u16</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pdata</span>: <span class="kw-2">*const</span> <span class="ident">u16</span> <span class="op">=</span> <span class="ident">std::ptr::null_mut</span>();
 		<span class="kw">match</span> <span class="kw">unsafe</span> {
@@ -412,5 +432,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

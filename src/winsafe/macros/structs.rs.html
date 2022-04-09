@@ -152,6 +152,13 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
 
 <span class="doccomment">/// Implements `Default` trait by zeroing all members.</span>
@@ -183,6 +190,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_bool_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) =&gt; {
 		<span class="doccomment">/// Returns the bool field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
 		}
@@ -199,6 +207,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_resource_id_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) =&gt; {
 		<span class="doccomment">/// Returns the resource ID field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
 			<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span> <span class="kw">as</span> <span class="kw">_</span>
 		}
@@ -214,6 +223,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_string_ptr_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) =&gt; {
 		<span class="doccomment">/// Returns the string field, if any.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WString::from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
@@ -230,6 +240,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_string_arr_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>) =&gt; {
 		<span class="doccomment">/// Returns the string field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
 			<span class="ident"><span class="kw">crate</span>::kernel::decl::WString::from_wchars_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>).<span class="ident">to_string</span>()
 		}
@@ -246,6 +257,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_string_buf_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span>:<span class="ident">ident</span>) =&gt; {
 		<span class="doccomment">/// Returns the string field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">psz</span><span class="op">|</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WString::from_wchars_nullt</span>(<span class="ident">psz</span>).<span class="ident">to_string</span>())
@@ -263,6 +275,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_ptr_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>) =&gt; {
 		<span class="doccomment">/// Returns the pointer field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span> {
 			<span class="kw">unsafe</span> { <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>() }
 		}
@@ -279,6 +292,7 @@
 <span class="macro">macro_rules!</span> <span class="ident">pub_fn_array_buf_get_set</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span>:<span class="ident">lifetime</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setter</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cch</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>) =&gt; {
 		<span class="doccomment">/// Returns the array field.</span>
+		<span class="attribute">#[<span class="ident">must_use</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">life</span> <span class="kw-2">mut</span> [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>]<span class="op">&gt;</span> {
 			<span class="kw">unsafe</span> {
 				<span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">as_mut</span>()
@@ -302,5 +316,5 @@
 	};
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

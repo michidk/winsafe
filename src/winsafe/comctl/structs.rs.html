@@ -1246,20 +1246,33 @@
 <span id="1241">1241</span>
 <span id="1242">1242</span>
 <span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
+<span id="1248">1248</span>
+<span id="1249">1249</span>
+<span id="1250">1250</span>
+<span id="1251">1251</span>
+<span id="1252">1252</span>
+<span id="1253">1253</span>
+<span id="1254">1254</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl</span>::{<span class="ident">BmpIdbRes</span>, <span class="ident">HIMAGELIST</span>, <span class="ident">HTREEITEM</span>, <span class="ident">IconId</span>,
-	<span class="ident">IconIdTdicon</span>, <span class="ident">IndexStr</span>, <span class="ident">PFNLVGROUPCOMPARE</span>, <span class="ident">PFTASKDIALOGCALLBACK</span>,
-	<span class="ident">TreeitemTvi</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl</span>::{
+	<span class="ident">BmpIdbRes</span>, <span class="ident">HIMAGELIST</span>, <span class="ident">HTREEITEM</span>, <span class="ident">IconId</span>, <span class="ident">IconIdTdicon</span>, <span class="ident">IndexStr</span>,
+	<span class="ident">PFNLVGROUPCOMPARE</span>, <span class="ident">PFTASKDIALOGCALLBACK</span>, <span class="ident">TreeitemTvi</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::privs</span>::{<span class="ident">HINST_COMMCTRL</span>, <span class="ident">L_MAX_URL_LENGTH</span>, <span class="ident">MAX_LINKID_TEXT</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">HINSTANCE</span>, <span class="ident">IdStr</span>, <span class="ident">SYSTEMTIME</span>, <span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::privs</span>::{<span class="ident">IS_INTRESOURCE</span>, <span class="ident">MAKEINTRESOURCE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::Handle</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">COLORREF</span>, <span class="ident">HBITMAP</span>, <span class="ident">HDC</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>,
-	<span class="ident">WINDOWPOS</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
+	<span class="ident">COLORREF</span>, <span class="ident">HBITMAP</span>, <span class="ident">HDC</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WINDOWPOS</span>,
+};
 
 <span class="doccomment">/// [`BUTTON_IMAGELIST`](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-button_imagelist)</span>
 <span class="doccomment">/// struct.</span>
@@ -1309,8 +1322,8 @@
 	<span class="ident">pszText</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">ttiIcon</span>: <span class="ident">co::TTI</span>,
 
-	<span class="ident">pszTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">EDITBALLOONTIP</span>, <span class="ident">cbStruct</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
@@ -1338,7 +1351,7 @@
 	<span class="kw">pub</span> <span class="ident">pvFilter</span>: <span class="kw-2">*mut</span> <span class="ident">std::ffi::c_void</span>,
 	<span class="kw">pub</span> <span class="ident">state</span>: <span class="ident">co::HDIS</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">HDITEM</span>, <span class="lifetime">&#39;a</span>);
@@ -1365,10 +1378,9 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HDLAYOUT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
 	<span class="ident">prc</span>: <span class="kw-2">*mut</span> <span class="ident">RECT</span>,
 	<span class="ident">pwpos</span>: <span class="kw-2">*mut</span> <span class="ident">WINDOWPOS</span>,
-	<span class="ident">fuuu</span>: <span class="ident">i32</span>,
 
-	<span class="ident">prc_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RECT</span><span class="op">&gt;</span>,
-	<span class="ident">pwpos_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span>,
+	<span class="ident">_prc</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">RECT</span><span class="op">&gt;</span>,
+	<span class="ident">_pwpos</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">WINDOWPOS</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">HDLAYOUT</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>);
@@ -1428,7 +1440,7 @@
 	<span class="kw">pub</span> <span class="ident">xOffsetPercent</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">yOffsetPercent</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszImage_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszImage</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVBKIMAGE</span>, <span class="lifetime">&#39;a</span>);
@@ -1454,7 +1466,7 @@
 	<span class="kw">pub</span> <span class="ident">cxDefault</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">cxIdeal</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVCOLUMN</span>, <span class="lifetime">&#39;a</span>);
@@ -1474,7 +1486,7 @@
 	<span class="kw">pub</span> <span class="ident">pt</span>: <span class="ident">POINT</span>,
 	<span class="kw">pub</span> <span class="ident">vkDirection</span>: <span class="ident">co::VK_DIR</span>,
 
-	<span class="ident">psz_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_psz</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVFINDINFO</span>, <span class="lifetime">&#39;a</span>);
@@ -1493,7 +1505,7 @@
 	<span class="ident">cchTextMax</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">cItems</span>: <span class="ident">u32</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVFOOTERINFO</span>, <span class="lifetime">&#39;a</span>);
@@ -1514,7 +1526,7 @@
 	<span class="kw">pub</span> <span class="ident">state</span>: <span class="ident">co::LVFIS</span>,
 	<span class="kw">pub</span> <span class="ident">stateMask</span>: <span class="ident">co::LVFIS</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVFOOTERITEM</span>, <span class="lifetime">&#39;a</span>);
@@ -1553,13 +1565,13 @@
 	<span class="ident">pszSubsetTitle</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 	<span class="ident">cchSubsetTitle</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszHeader_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszFooter_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszSubtitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszTask_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;d</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszDescriptionTop_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;e</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszDescriptionBottom_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;f</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszSubsetTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszHeader</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszFooter</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszSubtitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszTask</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;d</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszDescriptionTop</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;e</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszDescriptionBottom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;f</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszSubsetTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">LVGROUP</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>);
@@ -1619,6 +1631,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">LVINSERTGROUPSORTED</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span><span class="op">&gt;</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">pfnGroupCompare</span>: <span class="prelude-val">None</span>,
@@ -1662,7 +1675,7 @@
 	<span class="kw">pub</span> <span class="ident">piColFmt</span>: <span class="kw-2">*mut</span> <span class="ident">co::LVCFMT_I</span>,
 	<span class="kw">pub</span> <span class="ident">iGroup</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">LVITEM</span>, <span class="lifetime">&#39;a</span>);
@@ -1692,7 +1705,7 @@
 	<span class="kw">pub</span> <span class="ident">iItem</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">iSubItem</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">LVSETINFOTIP</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>);
@@ -1712,13 +1725,14 @@
 	<span class="ident">puColumns</span>: <span class="kw-2">*mut</span> <span class="ident">u32</span>,
 	<span class="ident">piColFmt</span>: <span class="kw-2">*mut</span> <span class="ident">co::LVCFMT_C</span>,
 
-	<span class="ident">puColumns_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="ident">_puColumns</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">LVTILEINFO</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LVTILEINFO</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `puColumns` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">puColumns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">u32</span>]<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="self">self</span>.<span class="ident">puColumns</span>.<span class="ident">as_mut</span>()
@@ -1727,6 +1741,7 @@
 	}
 
 	<span class="doccomment">/// Returns the `piColFmt` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">piColFmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">co::LVCFMT_C</span>]<span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> {
 			<span class="self">self</span>.<span class="ident">puColumns</span>.<span class="ident">as_mut</span>()
@@ -1831,7 +1846,7 @@
 	<span class="ident">pszDisplay</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 	<span class="ident">szDisplay</span>: [<span class="ident">u16</span>; <span class="number">64</span>], <span class="comment">// used as a buffer to pszDisplay</span>
 
-	<span class="ident">pszFormat_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMDATETIMEFORMAT</span>, <span class="lifetime">&#39;a</span>);
@@ -1840,6 +1855,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszFormat</span>, <span class="ident">set_pszFormat</span>);
 
 	<span class="doccomment">/// Returns the `pszDisplay` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszDisplay</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
 		<span class="ident">WString::from_wchars_nullt</span>(<span class="self">self</span>.<span class="ident">pszDisplay</span>).<span class="ident">to_string</span>()
 	}
@@ -1859,7 +1875,7 @@
 	<span class="ident">pszFormat</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">szMax</span>: <span class="ident">SIZE</span>,
 
-	<span class="ident">pszFormat_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMDATETIMEFORMATQUERY</span>, <span class="lifetime">&#39;a</span>);
@@ -1878,7 +1894,7 @@
 	<span class="kw">pub</span> <span class="ident">st</span>: <span class="ident">SYSTEMTIME</span>,
 	<span class="kw">pub</span> <span class="ident">dwFlags</span>: <span class="ident">co::GDT</span>,
 
-	<span class="ident">pszUserString_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszUserString</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMDATETIMESTRING</span>, <span class="lifetime">&#39;a</span>);
@@ -1897,7 +1913,7 @@
 	<span class="ident">pszFormat</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 	<span class="kw">pub</span> <span class="ident">st</span>: <span class="ident">SYSTEMTIME</span>,
 
-	<span class="ident">pszFormat_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszFormat</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMDATETIMEWMKEYDOWN</span>, <span class="lifetime">&#39;a</span>);
@@ -1916,7 +1932,7 @@
 	<span class="ident">cDayState</span>: <span class="ident">i32</span>,
 	<span class="ident">prgDayState</span>: <span class="kw-2">*mut</span> <span class="ident">u32</span>,
 
-	<span class="ident">prgDayState_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="ident">_prgDayState</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u32</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMDAYSTATE</span>, <span class="lifetime">&#39;a</span>);
@@ -1943,6 +1959,7 @@
 
 <span class="kw">impl</span> <span class="ident">NMHDR</span> {
 	<span class="doccomment">/// `Returns the `idFrom` field, the ID of the control sending the message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">idFrom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
 		<span class="self">self</span>.<span class="ident">idFrom</span> <span class="kw">as</span> <span class="kw">_</span>
 	}
@@ -2090,7 +2107,7 @@
 	<span class="kw">pub</span> <span class="ident">iSubItem</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">lParam</span>: <span class="ident">isize</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">NMLVGETINFOTIP</span>, <span class="lifetime">&#39;a</span>);
@@ -2230,7 +2247,7 @@
 	<span class="ident">nButtonID</span>: <span class="ident">i32</span>,
 	<span class="ident">pszButtonText</span>: <span class="kw-2">*mut</span> <span class="ident">u16</span>,
 
-	<span class="ident">pszButtonText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszButtonText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">TASKDIALOG_BUTTON</span>, <span class="lifetime">&#39;a</span>);
@@ -2270,16 +2287,16 @@
 	<span class="kw">pub</span> <span class="ident">lpCallbackData</span>: <span class="ident">isize</span>,
 	<span class="kw">pub</span> <span class="ident">cxWidth</span>: <span class="ident">u32</span>,
 
-	<span class="ident">pszWindowTitle_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszMainInstruction_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszContent_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pButtons_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;d</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;d</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">pRadioButtons_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;e</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;e</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">pszVerificationText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;f</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszExpandedInformation_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszExpandedControlText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;h</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszCollapsedControlText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;i</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
-	<span class="ident">pszFooter_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;j</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszWindowTitle</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszMainInstruction</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszContent</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pButtons</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;d</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;d</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">_pRadioButtons</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;e</span> <span class="kw-2">mut</span> <span class="ident">TASKDIALOG_BUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;e</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">_pszVerificationText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;f</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszExpandedInformation</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszExpandedControlText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;h</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszCollapsedControlText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;i</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszFooter</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;j</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default_with_size!</span>(<span class="ident">TASKDIALOGCONFIG</span>, <span class="ident">cbSize</span>, <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;e</span>, <span class="lifetime">&#39;f</span>, <span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;h</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;j</span>);
@@ -2290,6 +2307,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszWindowTitle</span>, <span class="ident">set_pszWindowTitle</span>);
 
 	<span class="doccomment">/// Returns the `pszMainIcon` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszMainIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IconIdTdicon</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszMainIcon</span>) {
 			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">pszMainIcon</span> <span class="kw">as</span> <span class="ident">u16</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0xfffc</span> {
@@ -2322,6 +2340,7 @@
 	<span class="macro">pub_fn_string_ptr_get_set!</span>(<span class="lifetime">&#39;i</span>, <span class="ident">pszCollapsedControlText</span>, <span class="ident">set_pszCollapsedControlText</span>);
 
 	<span class="doccomment">/// Returns the `pszFooterIcon` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pszFooterIcon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IconId</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span>) {
 			<span class="ident">IconId::Id</span>(<span class="self">self</span>.<span class="ident">pszFooterIcon</span> <span class="kw">as</span> <span class="kw">_</span>)
@@ -2356,6 +2375,7 @@
 
 <span class="kw">impl</span> <span class="ident">TBADDBITMAP</span> {
 	<span class="doccomment">/// Returns the `hInst` and `nID` fields.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nID</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BmpIdbRes</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hInst</span> {
 			<span class="ident">HINST_COMMCTRL</span> =&gt; <span class="ident">BmpIdbRes::Idb</span>(<span class="ident">co::IDB</span>(<span class="self">self</span>.<span class="ident">nID</span>)),
@@ -2387,13 +2407,14 @@
 	<span class="kw">pub</span> <span class="ident">dwData</span>: <span class="ident">usize</span>,
 	<span class="ident">iString</span>: <span class="ident">isize</span>,
 
-	<span class="ident">iString_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_iString</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">TBBUTTON</span>, <span class="lifetime">&#39;a</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TBBUTTON</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `iString` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iString</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IndexStr</span> {
 		<span class="kw">if</span> <span class="ident">IS_INTRESOURCE</span>(<span class="self">self</span>.<span class="ident">iString</span> <span class="kw">as</span> <span class="kw">_</span>) {
 			<span class="ident">IndexStr::Index</span>(<span class="self">self</span>.<span class="ident">iString</span> <span class="kw">as</span> <span class="kw">_</span>)
@@ -2425,6 +2446,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TVINSERTSTRUCT</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Returns the `hInsertAfter` field.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hInsertAfter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeitemTvi</span> {
 		<span class="ident">TreeitemTvi::from_isize</span>(<span class="self">self</span>.<span class="ident">hInsertAfter</span>)
 	}
@@ -2456,7 +2478,7 @@
 	<span class="kw">pub</span> <span class="ident">iExpandedImage</span>: <span class="ident">i32</span>,
 	<span class="ident">iReserved</span>: <span class="ident">i32</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">TVITEMEX</span>, <span class="lifetime">&#39;a</span>);
@@ -2481,7 +2503,7 @@
 	<span class="kw">pub</span> <span class="ident">cChildren</span>: <span class="ident">i32</span>,
 	<span class="kw">pub</span> <span class="ident">lParam</span>: <span class="ident">isize</span>,
 
-	<span class="ident">pszText_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
+	<span class="ident">_pszText</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">u16</span><span class="op">&gt;</span>,
 }
 
 <span class="macro">impl_default!</span>(<span class="ident">TVITEM</span>, <span class="lifetime">&#39;a</span>);
@@ -2490,5 +2512,5 @@
 	<span class="macro">pub_fn_string_buf_get_set!</span>(<span class="lifetime">&#39;a</span>, <span class="ident">pszText</span>, <span class="ident">set_pszText</span>, <span class="ident">cchTextMax</span>);
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

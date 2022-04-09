@@ -135,11 +135,19 @@
 <span id="130">130</span>
 <span id="131">131</span>
 <span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">co</span>, <span class="ident">kernel</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">FILETIME</span>, <span class="ident">GetLastError</span>, <span class="ident">HACCESSTOKEN</span>,
-	<span class="ident">SECURITY_ATTRIBUTES</span>, <span class="ident">WinResult</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{
+	<span class="ident">FILETIME</span>, <span class="ident">GetLastError</span>, <span class="ident">HACCESSTOKEN</span>, <span class="ident">SECURITY_ATTRIBUTES</span>, <span class="ident">WinResult</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::privs::bool_to_winresult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">HandleClose</span>};
 
@@ -162,6 +170,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HTHREAD::CloseHandle`](crate::prelude::HandleClose::CloseHandle) call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">CreateThread</span>(
 		<span class="ident">thread_attrs</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">SECURITY_ATTRIBUTES</span><span class="op">&gt;</span>,
 		<span class="ident">stack_size</span>: <span class="ident">u64</span>,
@@ -191,12 +200,14 @@
 
 	<span class="doccomment">/// [`GetCurrentThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthread)</span>
 	<span class="doccomment">/// static method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetCurrentThread</span>() -&gt; <span class="ident">HTHREAD</span> {
 		<span class="ident">HTHREAD</span>(<span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GetCurrentThread</span>() })
 	}
 
 	<span class="doccomment">/// [`GetExitCodeThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodethread)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetExitCodeThread</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exit_code</span> <span class="op">=</span> <span class="ident">u32::default</span>();
 		<span class="ident">bool_to_winresult</span>(
@@ -208,6 +219,7 @@
 
 	<span class="doccomment">/// [`GetProcessIdOfThread`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessidofthread)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetProcessIdOfThread</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GetProcessIdOfThread</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) } {
 			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -217,6 +229,7 @@
 
 	<span class="doccomment">/// [`GetThreadId`](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadid)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetThreadId</span>(<span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">kernel::ffi::GetThreadId</span>(<span class="self">self</span>.<span class="ident">as_ptr</span>()) } {
 			<span class="number">0</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">GetLastError</span>()),
@@ -251,6 +264,7 @@
 	<span class="doccomment">/// **Note:** Must be paired with an</span>
 	<span class="doccomment">/// [`HACCESSTOKEN::CloseHandle`](crate::prelude::HandleClose::CloseHandle)</span>
 	<span class="doccomment">/// call.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">OpenThreadToken</span>(<span class="self">self</span>,
 		<span class="ident">desired_access</span>: <span class="ident">co::TOKEN</span>, <span class="ident">open_as_self</span>: <span class="ident">bool</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">HACCESSTOKEN</span><span class="op">&gt;</span>
 	{
@@ -268,5 +282,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

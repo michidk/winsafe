@@ -382,13 +382,33 @@
 <span id="377">377</span>
 <span id="378">378</span>
 <span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WString</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::privs::MAKEINTRESOURCE</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">ATOM</span>, <span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">NCCALCSIZE_PARAMS</span>,
-	<span class="ident">POINT</span>, <span class="ident">RECT</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
+	<span class="ident">ATOM</span>, <span class="ident">HBITMAP</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">NCCALCSIZE_PARAMS</span>, <span class="ident">POINT</span>, <span class="ident">RECT</span>,
+};
 
 <span class="doccomment">/// Variant parameters of a [`wm::Command`](crate::msg::wm::Command) message.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;user&quot;</span>)))]</span>
@@ -405,6 +425,7 @@
 
 <span class="kw">impl</span> <span class="ident">AccelMenuCtrl</span> {
 	<span class="doccomment">/// Returns the notification code and the control ID pair.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">code_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">co::CMD</span>, <span class="ident">u16</span>) {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">AccelMenuCtrl::Accel</span>(<span class="ident">id</span>) =&gt; (<span class="ident">co::CMD::Accelerator</span>, <span class="kw-2">*</span><span class="ident">id</span>),
@@ -441,10 +462,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">AtomStr</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">WString::from_str</span>(<span class="ident">v</span>))
 	}
 
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Atom</span>(<span class="ident">atom</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="ident">atom</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -465,6 +488,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">BmpIcon</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		(<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) =&gt; <span class="ident">hbmp</span>.<span class="number">0</span>,
@@ -490,10 +514,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">BmpPtrStr</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">WString::from_str</span>(<span class="ident">v</span>))
 	}
 
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Bmp</span>(<span class="ident">hbmp</span>) =&gt; <span class="ident">hbmp</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -542,6 +568,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndHmenu</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		(<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span>,
@@ -565,6 +592,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndPlace</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">std::ffi::c_void</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span>,
@@ -589,6 +617,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">HwndPointId</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_isize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">isize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Hwnd</span>(<span class="ident">hwnd</span>) =&gt; <span class="ident">hwnd</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -613,10 +642,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">IdIdcStr</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">WString::from_str</span>(<span class="ident">v</span>))
 	}
 
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -641,10 +672,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">IdIdiStr</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident"><span class="self">Self</span>::Str</span>(<span class="ident">WString::from_str</span>(<span class="ident">v</span>))
 	}
 
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">u16</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">MAKEINTRESOURCE</span>(<span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>),
@@ -670,6 +703,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">IdMenu</span> {
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">std::ffi::c_void</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident"><span class="self">Self</span>::Id</span>(<span class="ident">id</span>) =&gt; <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -678,6 +712,7 @@
 		}
 	}
 
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_usize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdMenu::Id</span>(<span class="ident">id</span>) =&gt; <span class="kw-2">*</span><span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -713,6 +748,7 @@
 
 <span class="kw">impl</span> <span class="ident">IdPos</span> {
 	<span class="doccomment">/// Returns whether value is `Pos`.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_by_pos</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
@@ -721,6 +757,7 @@
 	}
 
 	<span class="doccomment">/// Returns the ID or the position as a plain `u32`.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_or_pos_u32</span>(<span class="self">self</span>) -&gt; <span class="ident">u32</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">id</span> <span class="kw">as</span> <span class="kw">_</span>,
@@ -730,6 +767,7 @@
 
 	<span class="doccomment">/// Returns [`MF::BYCOMMAND`](crate::co::MF::BYCOMMAND) if value is `Id`, or</span>
 	<span class="doccomment">/// [`MF::BYPOSITION`](crate::co::MF::BYPOSITION) if value is `Pos`.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mf_flag</span>(<span class="self">self</span>) -&gt; <span class="ident">co::MF</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">IdPos::Id</span>(<span class="kw">_</span>) =&gt; <span class="ident">co::MF::BYCOMMAND</span>,
@@ -762,5 +800,5 @@
 	<span class="ident">Rect</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">RECT</span>),
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

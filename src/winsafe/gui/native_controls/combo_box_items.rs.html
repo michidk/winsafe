@@ -182,6 +182,11 @@
 <span id="177">177</span>
 <span id="178">178</span>
 <span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
@@ -196,7 +201,7 @@
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ComboBoxItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">_owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ComboBoxItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -226,6 +231,7 @@
 
 	<span class="doccomment">/// Retrieves the number of items by sending a</span>
 	<span class="doccomment">/// [`cb::GetCount`](crate::msg::cb::GetCount) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetCount</span> {})
 	}
@@ -261,6 +267,7 @@
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="ident">ComboBoxItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="self">self</span>.<span class="ident">count</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>))
 	}
@@ -273,6 +280,7 @@
 
 	<span class="doccomment">/// Retrieves the index of the currently selected item, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetCurSel`](crate::msg::cb::GetCurSel) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetCurSel</span> {})
 	}
@@ -280,6 +288,7 @@
 	<span class="doccomment">/// Retrieves the currently selected text, if any, by calling</span>
 	<span class="doccomment">/// [`selected_index`](crate::gui::spec::ComboBoxItems::selected_index) and</span>
 	<span class="doccomment">/// [`text`](crate::gui::spec::ComboBoxItems::text) methods.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">text</span>(
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">selected_index</span>() {
@@ -291,6 +300,7 @@
 
 	<span class="doccomment">/// Retrieves the text at the given position, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetLbText`](crate::msg::cb::GetLbText) message.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span> }) {
@@ -311,7 +321,7 @@
 	<span class="ident">count</span>: <span class="ident">u32</span>,
 	<span class="ident">current</span>: <span class="ident">u32</span>,
 	<span class="ident">buffer</span>: <span class="ident">WString</span>,
-	<span class="ident">owner_</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="ident">_owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ComboBoxItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -357,10 +367,10 @@
 			<span class="ident">count</span>,
 			<span class="ident">current</span>: <span class="number">0</span>,
 			<span class="ident">buffer</span>: <span class="ident">WString::new_alloc_buffer</span>(<span class="number">40</span>), <span class="comment">// arbitrary</span>
-			<span class="ident">owner_</span>: <span class="ident">PhantomData</span>,
+			<span class="ident">_owner</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>

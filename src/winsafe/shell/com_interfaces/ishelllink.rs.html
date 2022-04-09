@@ -275,6 +275,12 @@
 <span id="270">270</span>
 <span id="271">271</span>
 <span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
@@ -344,6 +350,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShellIShellLink</span>: <span class="ident">OleIUnknown</span> {
 	<span class="doccomment">/// [`IShellLinkW::GetArguments`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinkw-getarguments)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetArguments</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">INFOTIPSIZE</span> <span class="op">+</span> <span class="number">1</span>); <span class="comment">// arbitrary</span>
 		<span class="kw">unsafe</span> {
@@ -360,6 +367,7 @@
 
 	<span class="doccomment">/// [`IShellLinkW::GetDescription`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinkw-getdescription)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetDescription</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">INFOTIPSIZE</span> <span class="op">+</span> <span class="number">1</span>);
 		<span class="kw">unsafe</span> {
@@ -378,6 +386,7 @@
 	<span class="doccomment">/// method.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the path of the icon and its index within the file.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetIconLocation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">i32</span>)<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">MAX_PATH</span> <span class="op">+</span> <span class="number">1</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
@@ -397,6 +406,7 @@
 
 	<span class="doccomment">/// [`IShellLinkW::GetPath`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinkw-getpath)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetPath</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">fd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">WIN32_FIND_DATA</span><span class="op">&gt;</span>,
 		<span class="ident">flags</span>: <span class="ident">co::SLGP</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
@@ -418,6 +428,7 @@
 
 	<span class="doccomment">/// [`IShellLinkW::GetShowCmd`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinkw-getshowcmd)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetShowCmd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">co::SW</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">show_cmd</span> <span class="op">=</span> <span class="ident">co::SW::default</span>();
 		<span class="kw">unsafe</span> {
@@ -429,6 +440,7 @@
 
 	<span class="doccomment">/// [`IShellLinkW::GetWorkingDirectory`](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinkw-getworkingdirectory)</span>
 	<span class="doccomment">/// method.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">fn</span> <span class="ident">GetWorkingDirectory</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HrResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">MAX_PATH</span> <span class="op">+</span> <span class="number">1</span>);
 		<span class="kw">unsafe</span> {
@@ -548,5 +560,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (1eb72580d 2022-03-08)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
 </body></html>
