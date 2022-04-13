@@ -257,7 +257,6 @@
 <span id="252">252</span>
 <span id="253">253</span>
 <span id="254">254</span>
-<span id="255">255</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomPinned</span>;
 <span class="kw">use</span> <span class="ident">std::pin::Pin</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
@@ -266,15 +265,13 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::WindowEventsAll</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::multiply_dpi</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_base::RawBase</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::raw_base</span>::{<span class="ident">Brush</span>, <span class="ident">Cursor</span>, <span class="ident">Icon</span>, <span class="ident">RawBase</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">HINSTANCE</span>, <span class="ident">WString</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
-	<span class="ident">GdiHbrush</span>, <span class="ident">GuiEvents</span>, <span class="ident">Handle</span>, <span class="ident">KernelHinstance</span>, <span class="ident">UserHaccel</span>, <span class="ident">UserHwnd</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GuiEvents</span>, <span class="ident">Handle</span>, <span class="ident">KernelHinstance</span>, <span class="ident">UserHaccel</span>, <span class="ident">UserHwnd</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
-	<span class="ident">AdjustWindowRectEx</span>, <span class="ident">GetSystemMetrics</span>, <span class="ident">HACCEL</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HMENU</span>,
-	<span class="ident">HWND</span>, <span class="ident">IdMenu</span>, <span class="ident">POINT</span>, <span class="ident">PostQuitMessage</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>,
+	<span class="ident">AdjustWindowRectEx</span>, <span class="ident">GetSystemMetrics</span>, <span class="ident">HACCEL</span>, <span class="ident">HMENU</span>, <span class="ident">HWND</span>, <span class="ident">IdMenu</span>, <span class="ident">POINT</span>,
+	<span class="ident">PostQuitMessage</span>, <span class="ident">RECT</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>,
 };
 
 <span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of RawMain</span>
@@ -339,8 +336,9 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">class_name_buf</span> <span class="op">=</span> <span class="ident">WString::default</span>();
 		<span class="ident">RawBase::fill_wndclassex</span>(
 			<span class="ident">HINSTANCE::GetModuleHandle</span>(<span class="prelude-val">None</span>).<span class="ident">unwrap</span>(),
-			<span class="ident">opts</span>.<span class="ident">class_style</span>, <span class="ident">opts</span>.<span class="ident">class_icon</span>, <span class="ident">opts</span>.<span class="ident">class_icon</span>,
-			<span class="ident">opts</span>.<span class="ident">class_bg_brush</span>, <span class="ident">opts</span>.<span class="ident">class_cursor</span>, <span class="kw-2">&amp;mut</span> <span class="ident">wcx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">class_name_buf</span>);
+			<span class="ident">opts</span>.<span class="ident">class_style</span>, <span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">class_icon</span>, <span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">class_icon</span>,
+			<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">class_bg_brush</span>, <span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">class_cursor</span>, <span class="kw-2">&amp;mut</span> <span class="ident">wcx</span>,
+			<span class="kw-2">&amp;mut</span> <span class="ident">class_name_buf</span>);
 		<span class="kw">let</span> <span class="ident">atom</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">raw_base</span>.<span class="ident">register_class</span>(<span class="kw-2">&amp;mut</span> <span class="ident">wcx</span>);
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wnd_sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
@@ -437,18 +435,18 @@
 	<span class="doccomment">/// Window main icon to be</span>
 	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to none.</span>
-	<span class="kw">pub</span> <span class="ident">class_icon</span>: <span class="ident">HICON</span>,
+	<span class="doccomment">/// Defaults to `Icon::None`.</span>
+	<span class="kw">pub</span> <span class="ident">class_icon</span>: <span class="ident">Icon</span>,
 	<span class="doccomment">/// Window cursor to be</span>
 	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `co::IDC::ARROW`.</span>
-	<span class="kw">pub</span> <span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
+	<span class="doccomment">/// Defaults to `Cursor::Idc(co::IDC::ARROW)`.</span>
+	<span class="kw">pub</span> <span class="ident">class_cursor</span>: <span class="ident">Cursor</span>,
 	<span class="doccomment">/// Window background brush to be</span>
 	<span class="doccomment">/// [registered](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Defaults to `co::COLOR::BTNFACE`.</span>
-	<span class="kw">pub</span> <span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>,
+	<span class="doccomment">/// Defaults to `Brush::Color(co::COLOR::BTNFACE)`.</span>
+	<span class="kw">pub</span> <span class="ident">class_bg_brush</span>: <span class="ident">Brush</span>,
 
 	<span class="doccomment">/// Window title to be</span>
 	<span class="doccomment">/// [created](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw).</span>
@@ -501,9 +499,9 @@
 		<span class="self">Self</span> {
 			<span class="ident">class_name</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
 			<span class="ident">class_style</span>: <span class="ident">co::CS::DBLCLKS</span>,
-			<span class="ident">class_icon</span>: <span class="ident">HICON::NULL</span>,
-			<span class="ident">class_cursor</span>: <span class="ident">HCURSOR::NULL</span>,
-			<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH::from_sys_color</span>(<span class="ident">co::COLOR::BTNFACE</span>),
+			<span class="ident">class_icon</span>: <span class="ident">Icon::None</span>,
+			<span class="ident">class_cursor</span>: <span class="ident">Cursor::Idc</span>(<span class="ident">co::IDC::ARROW</span>),
+			<span class="ident">class_bg_brush</span>: <span class="ident">Brush::Color</span>(<span class="ident">co::COLOR::BTNFACE</span>),
 			<span class="ident">title</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
 			<span class="ident">size</span>: <span class="ident">SIZE</span> { <span class="ident">cx</span>: <span class="number">600</span>, <span class="ident">cy</span>: <span class="number">500</span> },
 			<span class="ident">style</span>: <span class="ident">co::WS::CAPTION</span> <span class="op">|</span> <span class="ident">co::WS::SYSMENU</span> <span class="op">|</span> <span class="ident">co::WS::CLIPCHILDREN</span> <span class="op">|</span> <span class="ident">co::WS::BORDER</span> <span class="op">|</span> <span class="ident">co::WS::VISIBLE</span>,

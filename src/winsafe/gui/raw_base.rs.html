@@ -218,17 +218,173 @@
 <span id="213">213</span>
 <span id="214">214</span>
 <span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEventsAll</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs::post_quit_error</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">HINSTANCE</span>, <span class="ident">SetLastError</span>, <span class="ident">WString</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">wm</span>, <span class="ident">WndMsg</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">Handle</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">UserHinstance</span>, <span class="ident">UserHwnd</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GdiHbrush</span>, <span class="ident">Handle</span>, <span class="ident">MsgSendRecv</span>, <span class="ident">UserHinstance</span>, <span class="ident">UserHwnd</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{
-	<span class="ident">ATOM</span>, <span class="ident">AtomStr</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>, <span class="ident">IdIdcStr</span>, <span class="ident">IdMenu</span>, <span class="ident">POINT</span>,
-	<span class="ident">RegisterClassEx</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>,
+	<span class="ident">ATOM</span>, <span class="ident">AtomStr</span>, <span class="ident">HBRUSH</span>, <span class="ident">HCURSOR</span>, <span class="ident">HICON</span>, <span class="ident">HWND</span>, <span class="ident">IdIdcStr</span>, <span class="ident">IdIdiStr</span>, <span class="ident">IdMenu</span>,
+	<span class="ident">POINT</span>, <span class="ident">RegisterClassEx</span>, <span class="ident">SIZE</span>, <span class="ident">WNDCLASSEX</span>,
 };
+
+<span class="doccomment">/// The class background brush to be loaded for</span>
+<span class="doccomment">/// [`WindowMainOpts`](crate::gui::WindowMainOpts),</span>
+<span class="doccomment">/// [`WindowModalOpts`](crate::gui::WindowModalOpts) or</span>
+<span class="doccomment">/// [`WindowControlOpts`](crate::gui::WindowControlOpts).</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Brush</span> {
+	<span class="doccomment">/// A solid [system color](co::COLOR).</span>
+	<span class="ident">Color</span>(<span class="ident">co::COLOR</span>),
+	<span class="doccomment">/// A brush handle, previously created by you.</span>
+	<span class="ident">Handle</span>(<span class="ident">HBRUSH</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">Brush</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_hbrush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HBRUSH</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">Brush::Color</span>(<span class="ident">c</span>) =&gt; <span class="ident">HBRUSH::from_sys_color</span>(<span class="kw-2">*</span><span class="ident">c</span>),
+			<span class="ident">Brush::Handle</span>(<span class="ident">h</span>) =&gt; <span class="kw-2">*</span><span class="ident">h</span>,
+		}
+	}
+}
+
+<span class="doccomment">/// The class cursor to be loaded for</span>
+<span class="doccomment">/// [`WindowMainOpts`](crate::gui::WindowMainOpts),</span>
+<span class="doccomment">/// [`WindowModalOpts`](crate::gui::WindowModalOpts) or</span>
+<span class="doccomment">/// [`WindowControlOpts`](crate::gui::WindowControlOpts).</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Cursor</span> {
+	<span class="doccomment">/// A cursor handle, previously loaded by you.</span>
+	<span class="ident">Handle</span>(<span class="ident">HCURSOR</span>),
+	<span class="doccomment">/// A resource ID.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// A [`co::IDC`](crate::co::IDC) constant for a stock system cursor.</span>
+	<span class="ident">Idc</span>(<span class="ident">co::IDC</span>),
+	<span class="doccomment">/// A resource string identifier.</span>
+	<span class="ident">Str</span>(<span class="ident">WString</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">Cursor</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_hcursor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>) -&gt; <span class="ident">HCURSOR</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">Cursor::Handle</span>(<span class="ident">h</span>) =&gt; <span class="kw-2">*</span><span class="ident">h</span>,
+			<span class="ident">Cursor::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">hinst</span>.<span class="ident">LoadCursor</span>(<span class="ident">IdIdcStr::Id</span>(<span class="kw-2">*</span><span class="ident">id</span>)).<span class="ident">unwrap</span>(),
+			<span class="ident">Cursor::Idc</span>(<span class="ident">idc</span>) =&gt; <span class="ident">HINSTANCE::NULL</span>.<span class="ident">LoadCursor</span>(<span class="ident">IdIdcStr::Idc</span>(<span class="kw-2">*</span><span class="ident">idc</span>)).<span class="ident">unwrap</span>(),
+			<span class="ident">Cursor::Str</span>(<span class="ident">s</span>) =&gt; <span class="ident">hinst</span>.<span class="ident">LoadCursor</span>(<span class="ident">IdIdcStr::Str</span>(<span class="ident">s</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>(),
+		}
+	}
+}
+
+<span class="doccomment">/// The class icon to be loaded for</span>
+<span class="doccomment">/// [`WindowMainOpts`](crate::gui::WindowMainOpts),</span>
+<span class="doccomment">/// [`WindowModalOpts`](crate::gui::WindowModalOpts) or</span>
+<span class="doccomment">/// [`WindowControlOpts`](crate::gui::WindowControlOpts).</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Icon</span> {
+	<span class="doccomment">/// An icon handle, previously loaded by you.</span>
+	<span class="ident">Handle</span>(<span class="ident">HICON</span>),
+	<span class="doccomment">/// A resource ID.</span>
+	<span class="ident">Id</span>(<span class="ident">u16</span>),
+	<span class="doccomment">/// A [`co::IDC`](crate::co::IDC) constant for a stock system icon.</span>
+	<span class="ident">Idi</span>(<span class="ident">co::IDI</span>),
+	<span class="doccomment">/// No icon.</span>
+	<span class="prelude-val">None</span>,
+	<span class="doccomment">/// A resource string identifier.</span>
+	<span class="ident">Str</span>(<span class="ident">WString</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">Icon</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_hicon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>) -&gt; <span class="ident">HICON</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">Icon::Handle</span>(<span class="ident">h</span>) =&gt; <span class="kw-2">*</span><span class="ident">h</span>,
+			<span class="ident">Icon::Id</span>(<span class="ident">id</span>) =&gt; <span class="ident">hinst</span>.<span class="ident">LoadIcon</span>(<span class="ident">IdIdiStr::Id</span>(<span class="kw-2">*</span><span class="ident">id</span>)).<span class="ident">unwrap</span>(),
+			<span class="ident">Icon::Idi</span>(<span class="ident">idi</span>) =&gt; <span class="ident">HINSTANCE::NULL</span>.<span class="ident">LoadIcon</span>(<span class="ident">IdIdiStr::Idi</span>(<span class="kw-2">*</span><span class="ident">idi</span>)).<span class="ident">unwrap</span>(),
+			<span class="ident">Icon::None</span> =&gt; <span class="ident">HICON::NULL</span>,
+			<span class="ident">Icon::Str</span>(<span class="ident">s</span>) =&gt; <span class="ident">hinst</span>.<span class="ident">LoadIcon</span>(<span class="ident">IdIdiStr::Str</span>(<span class="ident">s</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>(),
+		}
+	}
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Base to all ordinary windows.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">RawBase</span> {
@@ -289,23 +445,19 @@
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">fill_wndclassex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
 		<span class="ident">hinst</span>: <span class="ident">HINSTANCE</span>,
 		<span class="ident">class_style</span>: <span class="ident">co::CS</span>,
-		<span class="ident">class_icon</span>: <span class="ident">HICON</span>, <span class="ident">class_icon_sm</span>: <span class="ident">HICON</span>,
-		<span class="ident">class_bg_brush</span>: <span class="ident">HBRUSH</span>,
-		<span class="ident">class_cursor</span>: <span class="ident">HCURSOR</span>,
+		<span class="ident">class_icon</span>: <span class="kw-2">&amp;</span><span class="ident">Icon</span>, <span class="ident">class_icon_sm</span>: <span class="kw-2">&amp;</span><span class="ident">Icon</span>,
+		<span class="ident">class_bg_brush</span>: <span class="kw-2">&amp;</span><span class="ident">Brush</span>,
+		<span class="ident">class_cursor</span>: <span class="kw-2">&amp;</span><span class="ident">Cursor</span>,
 		<span class="ident">wcx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">WNDCLASSEX</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 		<span class="ident">class_name_buf</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">WString</span>)
 	{
 		<span class="ident">wcx</span>.<span class="ident">lpfnWndProc</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident"><span class="self">Self</span>::window_proc</span>);
 		<span class="ident">wcx</span>.<span class="ident">hInstance</span> <span class="op">=</span> <span class="ident">hinst</span>;
 		<span class="ident">wcx</span>.<span class="ident">style</span> <span class="op">=</span> <span class="ident">class_style</span>;
-		<span class="ident">wcx</span>.<span class="ident">hIcon</span> <span class="op">=</span> <span class="ident">class_icon</span>;
-		<span class="ident">wcx</span>.<span class="ident">hIconSm</span> <span class="op">=</span> <span class="ident">class_icon_sm</span>;
-		<span class="ident">wcx</span>.<span class="ident">hbrBackground</span> <span class="op">=</span> <span class="ident">class_bg_brush</span>;
-
-		<span class="ident">wcx</span>.<span class="ident">hCursor</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">class_cursor</span>.<span class="ident">as_opt</span>() {
-			<span class="prelude-val">Some</span>(<span class="ident">h</span>) =&gt; <span class="ident">h</span>,
-			<span class="prelude-val">None</span> =&gt; <span class="ident">HINSTANCE::NULL</span>.<span class="ident">LoadCursor</span>(<span class="ident">IdIdcStr::Idc</span>(<span class="ident">co::IDC::ARROW</span>)).<span class="ident">unwrap</span>(),
-		};
+		<span class="ident">wcx</span>.<span class="ident">hIcon</span> <span class="op">=</span> <span class="ident">class_icon</span>.<span class="ident">as_hicon</span>(<span class="ident">hinst</span>);
+		<span class="ident">wcx</span>.<span class="ident">hIconSm</span> <span class="op">=</span> <span class="ident">class_icon_sm</span>.<span class="ident">as_hicon</span>(<span class="ident">hinst</span>);
+		<span class="ident">wcx</span>.<span class="ident">hbrBackground</span> <span class="op">=</span> <span class="ident">class_bg_brush</span>.<span class="ident">as_hbrush</span>();
+		<span class="ident">wcx</span>.<span class="ident">hCursor</span> <span class="op">=</span> <span class="ident">class_cursor</span>.<span class="ident">as_hcursor</span>(<span class="ident">hinst</span>);
 
 		<span class="kw">if</span> <span class="ident">wcx</span>.<span class="ident">lpszClassName</span>().<span class="ident">is_none</span>() { <span class="comment">// an actual class name was not provided?</span>
 			<span class="kw-2">*</span><span class="ident">class_name_buf</span> <span class="op">=</span> <span class="ident">WString::from_str</span>(
