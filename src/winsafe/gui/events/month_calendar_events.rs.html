@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\events\events_mcn.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>events_mcn.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\gui\events\month_calendar_events.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>month_calendar_events.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../winsafe/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -51,24 +51,11 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl</span>::{<span class="ident">NMDAYSTATE</span>, <span class="ident">NMSELCHANGE</span>, <span class="ident">NMVIEWCHANGE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::base_events_proxy::BaseEventsProxy</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::ErrResult</span>;
 
 <span class="doccomment">/// Exposes month calendar control</span>
 <span class="doccomment">/// [notifications](https://docs.microsoft.com/en-us/windows/win32/controls/bumper-month-calendar-control-reference-notifications).</span>
@@ -87,46 +74,31 @@
 		<span class="self">Self</span>(<span class="ident">BaseEventsProxy::new</span>(<span class="ident">parent_base</span>, <span class="ident">ctrl_id</span>))
 	}
 
-	<span class="macro">pub_fn_nfy_ret0_param!</span> { <span class="ident">mcn_get_day_state</span>, <span class="ident">co::MCN::GETDAYSTATE</span>, <span class="ident">NMDAYSTATE</span>,
+	<span class="macro">pub_fn_nfy_withparm_noret!</span> { <span class="ident">mcn_get_day_state</span>, <span class="ident">co::MCN::GETDAYSTATE</span>, <span class="ident">NMDAYSTATE</span>,
 		<span class="doccomment">/// [`MCN_GETDAYSTATE`](https://docs.microsoft.com/en-us/windows/win32/controls/mcn-getdaystate)</span>
 		<span class="doccomment">/// notification.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Sent by a month calendar control to request information about how</span>
-		<span class="doccomment">/// individual days should be displayed. This notification code is sent</span>
-		<span class="doccomment">/// only by month calendar controls that use the</span>
-		<span class="doccomment">/// [`MCS_DAYSTATE`](crate::co::MCS::DAYSTATE) style</span>
 	}
 
-	<span class="macro">pub_fn_nfy_ret0_param!</span> { <span class="ident">mcn_sel_change</span>, <span class="ident">co::MCN::SELCHANGE</span>, <span class="ident">NMSELCHANGE</span>,
+	<span class="macro">pub_fn_nfy_withparm_noret!</span> { <span class="ident">mcn_sel_change</span>, <span class="ident">co::MCN::SELCHANGE</span>, <span class="ident">NMSELCHANGE</span>,
 		<span class="doccomment">/// [`MCN_GETDAYSTATE`](https://docs.microsoft.com/en-us/windows/win32/controls/mcn-selchange)</span>
 		<span class="doccomment">/// notification.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Sent by a month calendar control when the currently selected date or</span>
-		<span class="doccomment">/// range of dates changes.</span>
 	}
 
-	<span class="macro">pub_fn_nfy_ret0_param!</span> { <span class="ident">mcn_select</span>, <span class="ident">co::MCN::SELECT</span>, <span class="ident">NMSELCHANGE</span>,
+	<span class="macro">pub_fn_nfy_withparm_noret!</span> { <span class="ident">mcn_select</span>, <span class="ident">co::MCN::SELECT</span>, <span class="ident">NMSELCHANGE</span>,
 		<span class="doccomment">/// [`MCN_SELECT`](https://docs.microsoft.com/en-us/windows/win32/controls/mcn-select)</span>
 		<span class="doccomment">/// notification.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Sent by a month calendar control when the user makes an explicit</span>
-		<span class="doccomment">/// date selection within a month calendar control.</span>
 	}
 
-	<span class="macro">pub_fn_nfy_ret0_param!</span> { <span class="ident">mcn_view_change</span>, <span class="ident">co::MCN::VIEWCHANGE</span>, <span class="ident">NMVIEWCHANGE</span>,
+	<span class="macro">pub_fn_nfy_withparm_noret!</span> { <span class="ident">mcn_view_change</span>, <span class="ident">co::MCN::VIEWCHANGE</span>, <span class="ident">NMVIEWCHANGE</span>,
 		<span class="doccomment">/// [`MCN_VIEWCHANGE`](https://docs.microsoft.com/en-us/windows/win32/controls/mcn-viewchange)</span>
 		<span class="doccomment">/// notification.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Sent by a month calendar control when the current view changes.</span>
 	}
 
-	<span class="macro">pub_fn_nfy_ret0!</span> { <span class="ident">nm_released_capture</span>, <span class="ident">co::NM::RELEASEDCAPTURE</span>,
+	<span class="macro">pub_fn_nfy_noparm_noret!</span> { <span class="ident">nm_released_capture</span>, <span class="ident">co::NM::RELEASEDCAPTURE</span>,
 		<span class="doccomment">/// [`NM_RELEASEDCAPTURE`](https://docs.microsoft.com/en-us/windows/win32/controls/nm-releasedcapture-monthcal-)</span>
 		<span class="doccomment">/// notification.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Notifies that the control is releasing mouse capture.</span>
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (52ca603da 2022-04-12)" ></div>
 </body></html>

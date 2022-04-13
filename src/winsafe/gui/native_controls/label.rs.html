@@ -270,52 +270,66 @@
 <span id="265">265</span>
 <span id="266">266</span>
 <span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomPinned</span>;
+<span class="kw">use</span> <span class="ident">std::pin::Pin</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">LabelEvents</span>, <span class="ident">WindowEvents</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::layout_arranger</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
 	<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{
 	<span class="ident">auto_ctrl_id</span>, <span class="ident">calc_text_bound_box</span>, <span class="ident">multiply_dpi_or_dtu</span>, <span class="ident">ui_font</span>,
 };
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
-	<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiNativeControl</span>, <span class="ident">GuiNativeControlEvents</span>,
-	<span class="ident">GuiParent</span>, <span class="ident">GuiTextControl</span>, <span class="ident">GuiWindow</span>, <span class="ident">Handle</span>, <span class="ident">UserHwnd</span>,
+	<span class="ident">GuiChild</span>, <span class="ident">GuiEvents</span>, <span class="ident">GuiNativeControl</span>, <span class="ident">GuiNativeControlEvents</span>, <span class="ident">GuiParent</span>,
+	<span class="ident">GuiWindow</span>, <span class="ident">GuiWindowText</span>, <span class="ident">Handle</span>, <span class="ident">UserHwnd</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HWND</span>, <span class="ident">HwndPlace</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of Label</span>
+	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
+	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">LabelOpts</span><span class="op">&gt;</span>,
+	<span class="ident">events</span>: <span class="ident">LabelEvents</span>,
+	<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [label](https://docs.microsoft.com/en-us/windows/win32/controls/about-static-controls)</span>
 <span class="doccomment">/// control.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Label</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
-
-<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of Label</span>
-	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
-	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">LabelOpts</span><span class="op">&gt;</span>,
-	<span class="ident">events</span>: <span class="ident">LabelEvents</span>,
-}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Label</span>(<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Label</span> {}
-
-<span class="kw">impl</span> <span class="ident">AsAny</span> <span class="kw">for</span> <span class="ident">Label</span> {
-	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
-		<span class="self">self</span>
-	}
-}
 
 <span class="kw">impl</span> <span class="ident">GuiWindow</span> <span class="kw">for</span> <span class="ident">Label</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
 	}
+
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
+	}
 }
+
+<span class="kw">impl</span> <span class="ident">GuiWindowText</span> <span class="kw">for</span> <span class="ident">Label</span> {}
 
 <span class="kw">impl</span> <span class="ident">GuiChild</span> <span class="kw">for</span> <span class="ident">Label</span> {
 	<span class="kw">fn</span> <span class="ident">ctrl_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
@@ -334,40 +348,41 @@
 
 <span class="kw">impl</span> <span class="ident">GuiNativeControlEvents</span><span class="op">&lt;</span><span class="ident">LabelEvents</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Label</span> {
 	<span class="kw">fn</span> <span class="ident">on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">LabelEvents</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the control creation.&quot;</span>);
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>().<span class="ident">hwnd</span>().<span class="ident">is_null</span>() {
 			<span class="macro">panic!</span>(<span class="string">&quot;Cannot add events after the parent window creation.&quot;</span>);
 		}
 		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">events</span>
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">GuiTextControl</span> <span class="kw">for</span> <span class="ident">Label</span> {}
-
 <span class="kw">impl</span> <span class="ident">Label</span> {
 	<span class="doccomment">/// Instantiates a new `Label` object, to be created on the parent window</span>
 	<span class="doccomment">/// with [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>, <span class="ident">opts</span>: <span class="ident">LabelOpts</span>) -&gt; <span class="ident">Label</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Base::from_guiparent</span>(<span class="ident">parent</span>) };
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">LabelOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">ctrl_id</span>, <span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">ctrl_id</span>, <span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
+			<span class="ident">Arc::pin</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>),
-					<span class="ident">events</span>: <span class="ident">LabelEvents::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>(), <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">LabelEvents::new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
 				},
 			),
 		);
 
-		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">wmcreate_or_wminitdialog</span>(), {
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
-				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="number">0</span>)
+		<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">creation_msg</span>(), <span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+			<span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>);
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// not meaningful</span>
 		});
+
 		<span class="ident">new_self</span>
 	}
 
@@ -380,53 +395,57 @@
 		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 		<span class="ident">resize_behavior</span>: (<span class="ident">Horz</span>, <span class="ident">Vert</span>)) -&gt; <span class="ident">Label</span>
 	{
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Base::from_guiparent</span>(<span class="ident">parent</span>) };
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
+			<span class="ident">Arc::pin</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>),
-					<span class="ident">events</span>: <span class="ident">LabelEvents::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>(), <span class="ident">ctrl_id</span>),
+					<span class="ident">events</span>: <span class="ident">LabelEvents::new</span>(<span class="ident">parent_ref</span>, <span class="ident">ctrl_id</span>),
+					<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
 				},
 			),
 		);
 
-		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>({
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
-				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>)
+		<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+			<span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>);
+			<span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) <span class="comment">// not meaningful</span>
 		});
+
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) =&gt; {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 				<span class="ident">multiply_dpi_or_dtu</span>(
-					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">pos</span>), <span class="prelude-val">None</span>);
 
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
 				<span class="kw">if</span> <span class="ident">sz</span>.<span class="ident">cx</span> <span class="op">==</span> <span class="op">-</span><span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">sz</span>.<span class="ident">cy</span> <span class="op">==</span> <span class="op">-</span><span class="number">1</span> {
-					<span class="ident">sz</span> <span class="op">=</span> <span class="ident">calc_text_bound_box</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>)<span class="question-mark">?</span>; <span class="comment">// resize to fit text</span>
+					<span class="ident">sz</span> <span class="op">=</span> <span class="ident">calc_text_bound_box</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>); <span class="comment">// resize to fit text</span>
 				} <span class="kw">else</span> {
 					<span class="ident">multiply_dpi_or_dtu</span>(
-						<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>; <span class="comment">// user-defined size</span>
+						<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>(), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sz</span>)); <span class="comment">// user-defined size</span>
 				}
 
-				<span class="kw">let</span> <span class="ident">our_hwnd</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
+				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
 					<span class="string">&quot;STATIC&quot;</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">opts</span>.<span class="ident">text</span>), <span class="ident">pos</span>, <span class="ident">sz</span>,
 					<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
 					<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
 					<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">label_style</span>.<span class="ident">into</span>(),
-				)<span class="question-mark">?</span>;
+				);
 
-				<span class="ident">our_hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">wm::SetFont</span> { <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
+				<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(
+					<span class="ident">wm::SetFont</span> { <span class="ident">hfont</span>: <span class="ident">ui_font</span>(), <span class="ident">redraw</span>: <span class="bool-val">true</span> });
 			},
-			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) =&gt; <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>,
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) =&gt; <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>),
 		}
 
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">add_to_resizer</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>().<span class="ident">add_to_layout_arranger</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>);
 	}
 
 	<span class="doccomment">/// Calls [`set_text`](crate::prelude::GuiTextControl::set_text) and resizes</span>
@@ -442,15 +461,14 @@
 	<span class="doccomment">/// # let wnd = gui::WindowMain::new(gui::WindowMainOpts::default());</span>
 	<span class="doccomment">/// # let my_label = gui::Label::new(&amp;wnd, gui::LabelOpts::default());</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// my_label.set_text_and_resize(&quot;This my text&quot;)?;</span>
-	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
+	<span class="doccomment">/// my_label.set_text_and_resize(&quot;This my text&quot;);</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text_and_resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">set_text</span>(<span class="ident">text</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">bound_box</span> <span class="op">=</span> <span class="ident">calc_text_bound_box</span>(<span class="ident">text</span>)<span class="question-mark">?</span>;
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text_and_resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+		<span class="self">self</span>.<span class="ident">set_text</span>(<span class="ident">text</span>);
+		<span class="kw">let</span> <span class="ident">bound_box</span> <span class="op">=</span> <span class="ident">calc_text_bound_box</span>(<span class="ident">text</span>);
 		<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowPos</span>(
 			<span class="ident">HwndPlace::None</span>, <span class="ident">POINT::default</span>(), <span class="ident">bound_box</span>,
-			<span class="ident">co::SWP::NOZORDER</span> <span class="op">|</span> <span class="ident">co::SWP::NOMOVE</span>)
+			<span class="ident">co::SWP::NOZORDER</span> <span class="op">|</span> <span class="ident">co::SWP::NOMOVE</span>).<span class="ident">unwrap</span>();
 	}
 }
 
@@ -538,5 +556,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (52ca603da 2022-04-12)" ></div>
 </body></html>

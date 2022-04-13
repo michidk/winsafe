@@ -179,20 +179,10 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">WinResult</span>, <span class="ident">WString</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::combo_box::ComboBox</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WString</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::cb</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::UserHwnd</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl::HWND</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">GuiWindow</span>, <span class="ident">UserHwnd</span>};
 
 <span class="doccomment">/// Exposes item methods of a [`ComboBox`](crate::gui::ComboBox) control.</span>
 <span class="doccomment">///</span>
@@ -200,11 +190,14 @@
 <span class="doccomment">/// control.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ComboBoxItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">hwnd</span>: <span class="ident">HWND</span>,
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls</span>) <span class="ident">_owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
+	<span class="ident">owner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ComboBox</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ComboBoxItems</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">owner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ComboBox</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">owner</span> }
+	}
+
 	<span class="doccomment">/// Adds new texts by sending [`cb::AddString`](crate::msg::cb::AddString)</span>
 	<span class="doccomment">/// messages.</span>
 	<span class="doccomment">///</span>
@@ -220,33 +213,41 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// my_combo.items().add(&amp;[&quot;John&quot;, &quot;Mary&quot;]);</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>]) {
 		<span class="kw">for</span> <span class="ident">text</span> <span class="kw">in</span> <span class="ident">items</span>.<span class="ident">iter</span>() {
-			<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::AddString</span> {
-				<span class="ident">text</span>: <span class="ident">WString::from_str</span>(<span class="ident">text</span>.<span class="ident">as_ref</span>()),
-			})<span class="question-mark">?</span>;
+			<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+				.<span class="ident">SendMessage</span>(<span class="ident">cb::AddString</span> {
+					<span class="ident">text</span>: <span class="ident">WString::from_str</span>(<span class="ident">text</span>.<span class="ident">as_ref</span>()),
+				})
+				.<span class="ident">unwrap</span>();
 		}
-		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="doccomment">/// Retrieves the number of items by sending a</span>
 	<span class="doccomment">/// [`cb::GetCount`](crate::msg::cb::GetCount) message.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetCount</span> {})
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+			.<span class="ident">SendMessage</span>(<span class="ident">cb::GetCount</span> {})
+			.<span class="ident">unwrap</span>()
 	}
 
 	<span class="doccomment">/// Deletes the item at the given index by sending a</span>
 	<span class="doccomment">/// [`cb::DeleteString`](crate::msg::cb::DeleteString) message.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::DeleteString</span> { <span class="ident">index</span> })
-			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if the index is invalid.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) {
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+			.<span class="ident">SendMessage</span>(<span class="ident">cb::DeleteString</span> { <span class="ident">index</span> })
+			.<span class="ident">unwrap</span>();
 	}
 
 	<span class="doccomment">/// Deletes all items by sending a</span>
 	<span class="doccomment">/// [`cb::ResetContent`](crate::msg::cb::ResetContent) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::ResetContent</span> {})
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::ResetContent</span> {});
 	}
 
 	<span class="doccomment">/// Returns an iterator over the texts.</span>
@@ -262,115 +263,98 @@
 	<span class="doccomment">/// # let my_combo = gui::ComboBox::new(&amp;wnd, gui::ComboBoxOpts::default());</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// for text in my_combo.items().iter() {</span>
-	<span class="doccomment">///     let text = text?;</span>
 	<span class="doccomment">///     println!(&quot;Text {}&quot;, text);</span>
 	<span class="doccomment">/// }</span>
-	<span class="doccomment">/// # Ok::&lt;_, winsafe::co::ERROR&gt;(())</span>
 	<span class="doccomment">/// ```</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
-		<span class="ident">ComboBoxItemIter::new</span>(<span class="self">self</span>.<span class="ident">hwnd</span>, <span class="self">self</span>.<span class="ident">count</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>))
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+		<span class="ident">ComboBoxItemIter::new</span>(<span class="self">self</span>.<span class="ident">owner</span>)
 	}
 
 	<span class="doccomment">/// Sets the currently selected index, or clears it, by sending a</span>
 	<span class="doccomment">/// [`cb::SetCurSel`](crate::msg::cb::SetCurSel) message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::SetCurSel</span> { <span class="ident">index</span> });
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::SetCurSel</span> { <span class="ident">index</span> });
 	}
 
 	<span class="doccomment">/// Retrieves the index of the currently selected item, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetCurSel`](crate::msg::cb::GetCurSel) message.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetCurSel</span> {})
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>().<span class="ident">SendMessage</span>(<span class="ident">cb::GetCurSel</span> {})
 	}
 
 	<span class="doccomment">/// Retrieves the currently selected text, if any, by calling</span>
 	<span class="doccomment">/// [`selected_index`](crate::gui::spec::ComboBoxItems::selected_index) and</span>
 	<span class="doccomment">/// [`text`](crate::gui::spec::ComboBoxItems::text) methods.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">text</span>(
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">selected_index</span>() {
-				<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-				<span class="prelude-val">Some</span>(<span class="ident">idx</span>) =&gt; <span class="ident">idx</span>,
-			},
-		)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">selected_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">selected_index</span>()
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">text</span>(<span class="ident">idx</span>))
 	}
 
 	<span class="doccomment">/// Retrieves the text at the given position, if any, by sending a</span>
 	<span class="doccomment">/// [`cb::GetLbText`](crate::msg::cb::GetLbText) message.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Panics if the index is invalid.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span> }) {
-				<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>), <span class="comment">// index out of bounds</span>
-				<span class="prelude-val">Ok</span>(<span class="ident">len</span>) =&gt; <span class="ident">len</span>,
-			} <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>,
-		);
-
-		<span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbText</span> { <span class="ident">index</span>, <span class="ident">text</span>: <span class="kw-2">&amp;mut</span> <span class="ident">buf</span> })
-			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">buf</span>.<span class="ident">to_string</span>()))
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">String</span> {
+		<span class="kw">let</span> <span class="ident">num_chars</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+			.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span> })
+			.<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">WString::new_alloc_buffer</span>(<span class="ident">num_chars</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+			.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbText</span> { <span class="ident">index</span>, <span class="ident">text</span>: <span class="kw-2">&amp;mut</span> <span class="ident">buf</span> })
+			.<span class="ident">unwrap</span>();
+		<span class="ident">buf</span>.<span class="ident">to_string</span>()
 	}
 }
 
 <span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="kw">struct</span> <span class="ident">ComboBoxItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="ident">hwnd</span>: <span class="ident">HWND</span>,
+	<span class="ident">owner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ComboBox</span>,
 	<span class="ident">count</span>: <span class="ident">u32</span>,
 	<span class="ident">current</span>: <span class="ident">u32</span>,
 	<span class="ident">buffer</span>: <span class="ident">WString</span>,
-	<span class="ident">_owner</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ComboBoxItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">WinResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">String</span>;
 
 	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">current</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">count</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
 
-		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>
+		<span class="kw">let</span> <span class="ident">num_chars</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
 			.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbTextLen</span> { <span class="ident">index</span>: <span class="self">self</span>.<span class="ident">current</span> })
-		{
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>; <span class="comment">// no further iterations will be made</span>
-				<span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>))
-			},
-			<span class="prelude-val">Ok</span>(<span class="ident">len</span>) =&gt; <span class="ident">len</span>,
-		};
+			.<span class="ident">unwrap</span>();
+		<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">realloc_buffer</span>(<span class="ident">num_chars</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
 
-		<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">realloc_buffer</span>(<span class="ident">len</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
-
-		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">hwnd</span>.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbText</span> {
-			<span class="ident">index</span>: <span class="self">self</span>.<span class="ident">current</span>,
-			<span class="ident">text</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buffer</span>,
-		}) {
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">current</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span>; <span class="comment">// no further iterations will be made</span>
-				<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>))
-			},
-			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">current</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-				<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">to_string</span>()))
-			},
-		}
+		<span class="self">self</span>.<span class="ident">owner</span>.<span class="ident">hwnd</span>()
+			.<span class="ident">SendMessage</span>(<span class="ident">cb::GetLbText</span> {
+				<span class="ident">index</span>: <span class="self">self</span>.<span class="ident">current</span>,
+				<span class="ident">text</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buffer</span>,
+			})
+			.<span class="ident">unwrap</span>();
+		<span class="self">self</span>.<span class="ident">current</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+		<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">to_string</span>())
 	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ComboBoxItemIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">count</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">owner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ComboBox</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">hwnd</span>,
-			<span class="ident">count</span>,
+			<span class="ident">owner</span>,
+			<span class="ident">count</span>: <span class="ident">owner</span>.<span class="ident">items</span>().<span class="ident">count</span>(),
 			<span class="ident">current</span>: <span class="number">0</span>,
 			<span class="ident">buffer</span>: <span class="ident">WString::new_alloc_buffer</span>(<span class="number">40</span>), <span class="comment">// arbitrary</span>
-			<span class="ident">_owner</span>: <span class="ident">PhantomData</span>,
 		}
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (52ca603da 2022-04-12)" ></div>
 </body></html>

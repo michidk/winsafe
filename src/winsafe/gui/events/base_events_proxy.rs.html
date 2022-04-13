@@ -39,15 +39,19 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::events_wm_nfy::sealed_events_wm_nfy::GuiSealedEventsWmNfy</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::ErrResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
 
-<span class="doccomment">/// Base to all native control event proxies.</span>
+<span class="doccomment">/// Base to all native control events. This is actually a proxy to the events of</span>
+<span class="doccomment">/// the parent window; events added to a native control are actually added as</span>
+<span class="doccomment">/// `WM_COMMAND` or `WM_NOTIFY` messages under the parent window.</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">struct</span> <span class="ident">BaseEventsProxy</span> {
 	<span class="ident">parent_ptr</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">Base</span><span class="op">&gt;</span>,
 	<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
@@ -61,6 +65,7 @@
 		}
 	}
 
+	<span class="doccomment">/// Adds a `WM_COMMAND` event to the parent window.</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">wm_command</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::CMD</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>() -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
@@ -68,13 +73,14 @@
 		<span class="ident">parent_base_ref</span>.<span class="ident">on</span>().<span class="ident">wm_command</span>(<span class="ident">code</span>, <span class="self">self</span>.<span class="ident">ctrl_id</span>, <span class="ident">func</span>);
 	}
 
-	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">add_nfy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
+	<span class="doccomment">/// Adds a `WM_NOTIFY` event to the parent window.</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">wm_notify</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">co::NM</span><span class="op">&gt;</span>, <span class="ident">func</span>: <span class="ident">F</span>)
 		<span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">wm::Notify</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
 	{
-		<span class="kw">let</span> <span class="ident">parent_base_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">parent_ptr</span>.<span class="ident">as_ref</span>() };
-		<span class="ident">parent_base_ref</span>.<span class="ident">on</span>().<span class="ident">add_nfy</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">code</span>, <span class="ident">func</span>);
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">parent_ptr</span>.<span class="ident">as_ref</span>() };
+		<span class="ident">parent_ref</span>.<span class="ident">on</span>().<span class="ident">wm_notify</span>(<span class="self">self</span>.<span class="ident">ctrl_id</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">code</span>, <span class="ident">func</span>);
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (52ca603da 2022-04-12)" ></div>
 </body></html>

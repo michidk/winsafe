@@ -296,48 +296,62 @@
 <span id="291">291</span>
 <span id="292">292</span>
 <span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::any::Any</span>;
+<span class="kw">use</span> <span class="ident">std::marker::PhantomPinned</span>;
+<span class="kw">use</span> <span class="ident">std::pin::Pin</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comctl::decl::PBRANGE</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events::WindowEvents</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::layout_arranger</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::native_controls::base_native_control</span>::{
 	<span class="ident">BaseNativeControl</span>, <span class="ident">OptsId</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">auto_ctrl_id</span>, <span class="ident">multiply_dpi_or_dtu</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::resizer</span>::{<span class="ident">Horz</span>, <span class="ident">Vert</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::WinResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::pbm</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
-	<span class="ident">AsAny</span>, <span class="ident">GuiChild</span>, <span class="ident">GuiEventsView</span>, <span class="ident">GuiNativeControl</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiWindow</span>,
-	<span class="ident">NativeBitflag</span>, <span class="ident">UserHwnd</span>,
+	<span class="ident">GuiChild</span>, <span class="ident">GuiEvents</span>, <span class="ident">GuiNativeControl</span>, <span class="ident">GuiParent</span>, <span class="ident">GuiWindow</span>, <span class="ident">NativeBitflag</span>,
+	<span class="ident">UserHwnd</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::user::decl</span>::{<span class="ident">HWND</span>, <span class="ident">POINT</span>, <span class="ident">SIZE</span>};
+
+<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of ProgressBar</span>
+	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
+	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">ProgressBarOpts</span><span class="op">&gt;</span>,
+	<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
+}
+
+<span class="comment">//------------------------------------------------------------------------------</span>
 
 <span class="doccomment">/// Native</span>
 <span class="doccomment">/// [progress bar](https://docs.microsoft.com/en-us/windows/win32/controls/progress-bar-control)</span>
 <span class="doccomment">/// control.</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gui&quot;</span>)))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProgressBar</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span>);
-
-<span class="kw">struct</span> <span class="ident">Obj</span> { <span class="comment">// actual fields of ProgressBar</span>
-	<span class="ident">base</span>: <span class="ident">BaseNativeControl</span>,
-	<span class="ident">opts_id</span>: <span class="ident">OptsId</span><span class="op">&lt;</span><span class="ident">ProgressBarOpts</span><span class="op">&gt;</span>,
-}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProgressBar</span>(<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Obj</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {}
-
-<span class="kw">impl</span> <span class="ident">AsAny</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {
-	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
-		<span class="self">self</span>
-	}
-}
 
 <span class="kw">impl</span> <span class="ident">GuiWindow</span> <span class="kw">for</span> <span class="ident">ProgressBar</span> {
 	<span class="kw">fn</span> <span class="ident">hwnd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">HWND</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">hwnd</span>()
+	}
+
+	<span class="kw">fn</span> <span class="ident">as_any</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span> {
+		<span class="self">self</span>
 	}
 }
 
@@ -362,23 +376,26 @@
 	<span class="doccomment">/// [`HWND::CreateWindowEx`](crate::prelude::UserHwnd::CreateWindowEx).</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">parent</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">GuiParent</span>, <span class="ident">opts</span>: <span class="ident">ProgressBarOpts</span>) -&gt; <span class="ident">ProgressBar</span> {
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Base::from_guiparent</span>(<span class="ident">parent</span>) };
 		<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ProgressBarOpts::define_ctrl_id</span>(<span class="ident">opts</span>);
 		<span class="kw">let</span> (<span class="ident">horz</span>, <span class="ident">vert</span>) <span class="op">=</span> (<span class="ident">opts</span>.<span class="ident">horz_resize</span>, <span class="ident">opts</span>.<span class="ident">vert_resize</span>);
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
+			<span class="ident">Arc::pin</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>),
+					<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
 				},
 			),
 		);
 
-		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">wmcreate_or_wminitdialog</span>(), {
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
-				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="number">0</span>)
+		<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_on</span>().<span class="ident">wm</span>(<span class="ident">parent_ref</span>.<span class="ident">creation_msg</span>(), <span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+			<span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">horz</span>, <span class="ident">vert</span>);
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// not meaningful</span>
 		});
+
 		<span class="ident">new_self</span>
 	}
 
@@ -391,43 +408,46 @@
 		<span class="ident">ctrl_id</span>: <span class="ident">u16</span>,
 		<span class="ident">resize_behavior</span>: (<span class="ident">Horz</span>, <span class="ident">Vert</span>)) -&gt; <span class="ident">ProgressBar</span>
 	{
+		<span class="kw">let</span> <span class="ident">parent_ref</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Base::from_guiparent</span>(<span class="ident">parent</span>) };
+
 		<span class="kw">let</span> <span class="ident">new_self</span> <span class="op">=</span> <span class="self">Self</span>(
-			<span class="ident">Arc::new</span>(
+			<span class="ident">Arc::pin</span>(
 				<span class="ident">Obj</span> {
-					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent</span>.<span class="ident">as_base</span>()),
+					<span class="ident">base</span>: <span class="ident">BaseNativeControl::new</span>(<span class="ident">parent_ref</span>),
 					<span class="ident">opts_id</span>: <span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>),
+					<span class="ident">_pin</span>: <span class="ident">PhantomPinned</span>,
 				},
 			),
 		);
 
-		<span class="ident">parent</span>.<span class="ident">as_base</span>().<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>({
-			<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
-			<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
-				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>)
+		<span class="kw">let</span> <span class="ident">self2</span> <span class="op">=</span> <span class="ident">new_self</span>.<span class="ident">clone</span>();
+		<span class="ident">parent_ref</span>.<span class="ident">privileged_on</span>().<span class="ident">wm_init_dialog</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+			<span class="ident">self2</span>.<span class="ident">create</span>(<span class="ident">resize_behavior</span>.<span class="number">0</span>, <span class="ident">resize_behavior</span>.<span class="number">1</span>);
+			<span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) <span class="comment">// not meaningful</span>
 		});
+
 		<span class="ident">new_self</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) -&gt; <span class="ident">WinResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">create</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">horz</span>: <span class="ident">Horz</span>, <span class="ident">vert</span>: <span class="ident">Vert</span>) {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">opts_id</span> {
 			<span class="ident">OptsId::Wnd</span>(<span class="ident">opts</span>) =&gt; {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">position</span>;
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">opts</span>.<span class="ident">size</span>;
 				<span class="ident">multiply_dpi_or_dtu</span>(
-					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sz</span>))<span class="question-mark">?</span>;
+					<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">pos</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sz</span>));
 
 				<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_window</span>(
 					<span class="string">&quot;msctls_progress32&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pos</span>, <span class="ident">sz</span>,
 					<span class="ident">opts</span>.<span class="ident">ctrl_id</span>,
 					<span class="ident">opts</span>.<span class="ident">window_ex_style</span>,
 					<span class="ident">opts</span>.<span class="ident">window_style</span> <span class="op">|</span> <span class="ident">opts</span>.<span class="ident">progress_bar_style</span>.<span class="ident">into</span>(),
-				)<span class="question-mark">?</span>;
+				);
 			},
-			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) =&gt; <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>,
+			<span class="ident">OptsId::Dlg</span>(<span class="ident">ctrl_id</span>) =&gt; <span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">create_dlg</span>(<span class="kw-2">*</span><span class="ident">ctrl_id</span>),
 		}
 
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent_base</span>().<span class="ident">add_to_resizer</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>)
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">base</span>.<span class="ident">parent</span>().<span class="ident">add_to_layout_arranger</span>(<span class="self">self</span>.<span class="ident">hwnd</span>(), <span class="ident">horz</span>, <span class="ident">vert</span>);
 	}
 
 	<span class="doccomment">/// Retrieves the current position by sending a</span>
@@ -456,6 +476,8 @@
 	<span class="doccomment">/// for a style change.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_marquee</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">marquee</span>: <span class="ident">bool</span>) {
 		<span class="kw">if</span> <span class="ident">marquee</span> {
+			<span class="comment">// We must also adjust the window style before/after sending</span>
+			<span class="comment">// PBM_SETMARQUEE message.</span>
 			<span class="self">self</span>.<span class="ident">hwnd</span>().<span class="ident">SetWindowLongPtr</span>(
 				<span class="ident">co::GWLP::STYLE</span>,
 				<span class="ident">u32::from</span>(<span class="self">self</span>.<span class="ident">cur_style</span>() <span class="op">|</span> <span class="ident">co::PBS::MARQUEE</span>) <span class="kw">as</span> <span class="kw">_</span>,
@@ -590,5 +612,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (8f36334ca 2022-04-06)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="winsafe" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (52ca603da 2022-04-12)" ></div>
 </body></html>
