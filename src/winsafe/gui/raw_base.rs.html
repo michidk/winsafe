@@ -291,9 +291,6 @@
 <span id="286">286</span>
 <span id="287">287</span>
 <span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
-<span id="291">291</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEventsAll</span>};
@@ -539,16 +536,13 @@
 	<span class="kw">extern</span> <span class="string">&quot;system&quot;</span> <span class="kw">fn</span> <span class="ident">window_proc</span>(
 		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) -&gt; <span class="ident">isize</span>
 	{
-		<span class="ident"><span class="self">Self</span>::window_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>)
-			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">err</span>); <span class="number">0</span> })
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg::new</span>(<span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>);
+		<span class="ident"><span class="self">Self</span>::window_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">wm_any</span>)
+			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">wm_any</span>, <span class="ident">err</span>); <span class="number">0</span> })
 	}
 
-	<span class="kw">fn</span> <span class="ident">window_proc_proc</span>(
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
-	{
-		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
-
-		<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
+	<span class="kw">fn</span> <span class="ident">window_proc_proc</span>(<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> {
 			<span class="ident">co::WM::NCCREATE</span> =&gt; { <span class="comment">// first message being handled</span>
 				<span class="kw">let</span> <span class="ident">wm_ncc</span> <span class="op">=</span> <span class="ident">wm::NcCreate::from_generic_wm</span>(<span class="ident">wm_any</span>);
 				<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">wm_ncc</span>.<span class="ident">createstruct</span>.<span class="ident">lpCreateParams</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="self">Self</span>;
@@ -573,7 +567,7 @@
 		<span class="comment">// Execute user closure, if any.</span>
 		<span class="kw">let</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">process_user_message</span>(<span class="ident">wm_any</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">==</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
+		<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">==</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
 			<span class="ident">hwnd</span>.<span class="ident">SetWindowLongPtr</span>(<span class="ident">co::GWLP::USERDATA</span>, <span class="number">0</span>); <span class="comment">// clear passed pointer</span>
 			<span class="kw">unsafe</span> { <span class="ident">ref_self</span>.<span class="ident">base</span>.<span class="ident">set_hwnd</span>(<span class="ident">HWND::NULL</span>); } <span class="comment">// clear stored HWND</span>
 		}

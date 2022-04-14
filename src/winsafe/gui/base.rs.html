@@ -217,12 +217,14 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
+<span id="215">215</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ptr::NonNull</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::events</span>::{<span class="ident">ProcessResult</span>, <span class="ident">WindowEventsAll</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::layout_arranger</span>::{<span class="ident">Horz</span>, <span class="ident">LayoutArranger</span>, <span class="ident">Vert</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::privs</span>::{<span class="ident">post_quit_error</span>, <span class="ident">QUIT_ERROR</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::runtime_error::RunResult</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::very_unsafe_cell::VeryUnsafeCell</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl</span>::{<span class="ident">ErrResult</span>, <span class="ident">HINSTANCE</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::WndMsg</span>;
@@ -387,14 +389,14 @@
 			<span class="kw">if</span> <span class="ident">co::WM</span>(<span class="ident">p</span>.<span class="ident">wparam</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="op">==</span> <span class="ident"><span class="self">Self</span>::WM_UI_THREAD</span> { <span class="comment">// additional safety check</span>
 				<span class="kw">let</span> <span class="ident">ptr_pack</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">lparam</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>;
 				<span class="kw">let</span> <span class="ident">pack</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Box::from_raw</span>(<span class="ident">ptr_pack</span>) };
-				<span class="ident">pack</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">post_quit_error</span>(<span class="ident">err</span>));
+				<span class="ident">pack</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">post_quit_error</span>(<span class="ident">p</span>, <span class="ident">err</span>));
 			}
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) <span class="comment">// not meaningful</span>
 		});
 	}
 
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">run_main_loop</span>(
-		<span class="ident">haccel</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
+		<span class="ident">haccel</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HACCEL</span><span class="op">&gt;</span>) -&gt; <span class="ident">RunResult</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">MSG::default</span>();
 
@@ -404,7 +406,7 @@
 				<span class="comment">// wParam has the program exit code.</span>
 				<span class="comment">// https://docs.microsoft.com/en-us/windows/win32/winmsg/using-messages-and-message-queues</span>
 				<span class="kw">return</span> <span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">QUIT_ERROR</span>.<span class="ident">take</span>() } {
-					<span class="prelude-val">Some</span>(<span class="ident">err</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+					<span class="prelude-val">Some</span>(<span class="ident">rt_err</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">rt_err</span>),
 					<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">msg</span>.<span class="ident">wParam</span> <span class="kw">as</span> <span class="kw">_</span>),
 				};
 			}

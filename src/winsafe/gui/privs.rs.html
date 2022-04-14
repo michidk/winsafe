@@ -239,6 +239,10 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Global objects used within `gui` module.</span>
 
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
@@ -246,8 +250,9 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gdi::decl</span>::{<span class="ident">HFONT</span>, <span class="ident">NONCLIENTMETRICS</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::base::Base</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::gui::runtime_error::RuntimeError</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::kernel::decl::MulDiv</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg::wm</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::msg</span>::{<span class="ident">wm</span>, <span class="ident">WndMsg</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{
 	<span class="ident">GdiHdc</span>, <span class="ident">GdiHfont</span>, <span class="ident">Handle</span>, <span class="ident">HandleGdi</span>, <span class="ident">NativeBitflag</span>, <span class="ident">UserHwnd</span>, <span class="ident">UxthemeHtheme</span>,
 	<span class="ident">UxthemeHwnd</span>,
@@ -258,12 +263,15 @@
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::uxtheme::decl</span>::{<span class="ident">IsAppThemed</span>, <span class="ident">IsThemeActive</span>};
 
-<span class="doccomment">/// Global return error, will be taken in main loop.</span>
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">QUIT_ERROR</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+<span class="doccomment">/// Global return error originated from an event handling closure; will be taken</span>
+<span class="doccomment">/// in main loop.</span>
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">QUIT_ERROR</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuntimeError</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
 <span class="doccomment">/// Terminates the program with the given error.</span>
-<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">post_quit_error</span>(<span class="ident">err</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>) {
-	<span class="kw">unsafe</span> { <span class="ident">QUIT_ERROR</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>); } <span class="comment">// store the error, so the main window/dialog can grab it</span>
+<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::gui</span>) <span class="kw">fn</span> <span class="ident">post_quit_error</span>(
+	<span class="ident">src_msg</span>: <span class="ident">WndMsg</span>, <span class="ident">err</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>)
+{
+	<span class="kw">unsafe</span> { <span class="ident">QUIT_ERROR</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">RuntimeError::new</span>(<span class="ident">src_msg</span>, <span class="ident">err</span>)); } <span class="comment">// store the error, so the main window/dialog can grab it</span>
 	<span class="ident">PostQuitMessage</span>(<span class="op">-</span><span class="number">1</span>); <span class="comment">// this -1 will be discarded in the main loop, anyway</span>
 }
 

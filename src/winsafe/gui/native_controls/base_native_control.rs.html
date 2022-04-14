@@ -291,16 +291,16 @@
 		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>,
 		<span class="ident">subclass_id</span>: <span class="ident">usize</span>, <span class="ident">ref_data</span>: <span class="ident">usize</span>) -&gt; <span class="ident">isize</span>
 	{
-		<span class="ident"><span class="self">Self</span>::subclass_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>, <span class="ident">subclass_id</span>, <span class="ident">ref_data</span>)
-			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">err</span>); <span class="number">0</span> })
+		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg::new</span>(<span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span>);
+		<span class="ident"><span class="self">Self</span>::subclass_proc_proc</span>(<span class="ident">hwnd</span>, <span class="ident">wm_any</span>, <span class="ident">subclass_id</span>, <span class="ident">ref_data</span>)
+			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> { <span class="ident">post_quit_error</span>(<span class="ident">wm_any</span>, <span class="ident">err</span>); <span class="number">0</span> })
 	}
 
 	<span class="kw">fn</span> <span class="ident">subclass_proc_proc</span>(
-		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">msg</span>: <span class="ident">co::WM</span>, <span class="ident">wparam</span>: <span class="ident">usize</span>, <span class="ident">lparam</span>: <span class="ident">isize</span>,
+		<span class="ident">hwnd</span>: <span class="ident">HWND</span>, <span class="ident">wm_any</span>: <span class="ident">WndMsg</span>,
 		<span class="ident">subclass_id</span>: <span class="ident">usize</span>, <span class="ident">ref_data</span>: <span class="ident">usize</span>) -&gt; <span class="ident">ErrResult</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>
 	{
 		<span class="kw">let</span> <span class="ident">ptr_self</span> <span class="op">=</span> <span class="ident">ref_data</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="self">Self</span>; <span class="comment">// retrieve</span>
-		<span class="kw">let</span> <span class="ident">wm_any</span> <span class="op">=</span> <span class="ident">WndMsg</span> { <span class="ident">msg_id</span>: <span class="ident">msg</span>, <span class="ident">wparam</span>, <span class="ident">lparam</span> };
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">process_result</span> <span class="op">=</span> <span class="ident">ProcessResult::NotHandled</span>;
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">ptr_self</span>.<span class="ident">is_null</span>() {
@@ -310,7 +310,7 @@
 			}
 		}
 
-		<span class="kw">if</span> <span class="ident">msg</span> <span class="op">==</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
+		<span class="kw">if</span> <span class="ident">wm_any</span>.<span class="ident">msg_id</span> <span class="op">==</span> <span class="ident">co::WM::NCDESTROY</span> { <span class="comment">// always check</span>
 			<span class="ident">hwnd</span>.<span class="ident">RemoveWindowSubclass</span>(<span class="ident"><span class="self">Self</span>::subclass_proc</span>, <span class="ident">subclass_id</span>)<span class="question-mark">?</span>;
 		}
 
